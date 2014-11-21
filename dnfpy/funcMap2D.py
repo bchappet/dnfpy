@@ -5,6 +5,7 @@ class FuncMap2D(Map2D):
     """On compute, the func will be called
     The arguments are the set of the funcarg:rParam name dictionary and the children names
     TODO maybe put a dictionary to associate funcarg with child name
+    The children argument are pritoritary on the global arguments
     """
     def __init__(self,size,dt,globalRealParams,func,argNamesDict):
         """TODO : the attributes globalRealParams is unused in this class"""
@@ -27,24 +28,24 @@ class FuncMap2D(Map2D):
         """Call the func with the good arguments"""
         super(FuncMap2D,self).compute()
         self.funcargs.update(self.__getAttributeArgs())
-        print("Funcargs dictionary : %s" % self.funcargs)
+        self.funcargs.update(self.__getChildrenArgs())
         self.data = self.func(**self.funcargs)
 
     def __getAttributeArgs(self):
         """Because of immutable type, we cannot store ref. We have to get the value at every computation
         TODO find another way"""
-
-        print("attrDict %s " % self.attributesArgDict)
         newDict = dict((k,self.attributesArgDict[k]()) for k in self.attributesArgDict.keys())
-        print("New dict %s" % newDict)
-        print("self.time %s " % self.getTime())
-        print("exec : %s " % self.attributesArgDict['time']())
         return newDict
+    def __getChildrenArgs(self):
+        """Return a dictionary with child name and its value"""
+        newDict = dict((k,self.children[k].getData()) for k in self.children.keys())
+        return newDict
+
         
     def addChildren(self,childrenToAdd):
         """Add the children and add them to the argNameDict"""
         super(FuncMap2D,self).addChildren(childrenToAdd)
-        self.argNamesDict.update(childrenToAdd)
+        #self.funcargs.update(childrenToAdd)
         return None
 
     @staticmethod
@@ -64,7 +65,7 @@ class FuncMap2D(Map2D):
     def __updateFuncArgs(self,globalRealParams):
         """Update funcArgs on globalRealParams change"""
         self.funcargs = FuncMap2D.__associateDict(self.argNamesDict,globalRealParams)
-        self.funcargs.update(self.children)
+        #self.funcargs.update(self.children)
         #self.funcargs.update(self.attributesArgDict)
         
     def mapAttributesToFunc(self,attributesArgDict):

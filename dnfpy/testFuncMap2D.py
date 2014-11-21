@@ -7,10 +7,10 @@ class TestFuncMap2D(unittest.TestCase):
     
     def setUp(self):
         self.dir = "./testFiles/"
-        self.precision = 10
+        self.precision = 7
 
         self.size = 10
-        self.dt = 1
+        self.dt = 0.1
         self.globalRealParams = {'size':10,'wrap':True,'iA':10,'wA':4,'cX':7,'cY':1}
         self.argNamesDict = {'size':'size','wrap':'wrap','intensity':'iA','width':'wA','centerX':'cX','centerY':'cY'}
         self.func = utils.gauss2d
@@ -74,9 +74,19 @@ class TestFuncMap2D(unittest.TestCase):
 
     def test_addChildren(self):
         """Method addChildren
-        scenario:we add one children and we compue"""
-        #globalRealParams = {'time'
-        #child = FuncMap2D(1,0.1,
+        scenario:we add one children and we update"""
+        self.uut.addChildren({'centerX':self.uut2})
+        self.uut.update(0.1)
+        expected = 0.23681245526846784
+        obtained = self.uut2.getData()
+        self.assertAlmostEqual(expected,obtained,self.precision,"The computation of the child should be as expected")
+
+        #expected = 7.3161559
+        expected = 2.5362177
+        obtained = self.uut.getData()[3,6]
+        self.assertAlmostEqual(expected,obtained,self.precision,"The computation of uut should take the child as parameter for centerX")
+
+
 
 
 

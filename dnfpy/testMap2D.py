@@ -4,10 +4,12 @@ from map2D import Map2D
 import numpy as np
 import copy
 class TestMap2D(TestCase):
+
+	
         
         def setUp(self):
         
-                self.precision = 10
+                self.precision = 7
         
                 self.size = 20
                 self.dt = 0.1
@@ -138,5 +140,5 @@ class TestMap2D(TestCase):
                 
                 
 if __name__ == '__main__':
-        unittest.main()
+        unittest.main(7)
         

@@ -6,7 +6,7 @@ import numpy as np
 class TestUtils(unittest.TestCase):
     def setUp(self):
         self.dir = "./testFiles/"
-        self.precision = 10
+        self.precision = 7
     def test_gauss2DWrap(self):
         """Function : gaus2D
         Scenario : wrap"""

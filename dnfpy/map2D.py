@@ -16,7 +16,7 @@ class Map2D(object):
         self.globalRealParams = globalRealParams #global parameters for computation
         self.data = np.zeros((size,size),dtype=np.float32)
         
-        self.precision = 10 #allowed precision for time values
+        self.precision = 7 #allowed precision
         self.children = {} #dict of str:Map2D: the children are computed before self
         
         #Debug utilities
@@ -73,7 +73,7 @@ class Map2D(object):
                         
     def getTime(self):
         """Accessor return self.time"""
-        print("selfTime %s " % self.time)
+        #print("selfTime %s " % self.time)
         return self.time
         
     def getData(self):
