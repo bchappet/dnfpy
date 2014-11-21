@@ -2,33 +2,31 @@ import numpy as np
 
 
 #Utilitary functions 
-#TODO try in cython
+#TODO try with cython
 
 
-def __generateWrappedDistance(size,center,wrap):
+def __generateWrappedDistance(size,centerX,centerY,wrap):
     """Compute the distance (real) between the set (0..size-1) and the center
     if wrap is true, the distance will be the minimal from center and center + size"""
     X = np.arange(0, size, 1,dtype= np.float32)
     Y = X[:,np.newaxis]
-    x0 = center[0]
-    y0 = center[1]
-    distX = abs(X-x0)
-    distY = abs(Y-y0)
+    distX = abs(X-centerX)
+    distY = abs(Y-centerY)
      
     if wrap:
-            distX = np.minimum(distX,abs(X-(x0+size)))
-            distY = np.minimum(distY,abs(Y-(y0+size)))
+            distX = np.minimum(distX,abs(X-(centerX+size)))
+            distY = np.minimum(distY,abs(Y-(centerY+size)))
     return (distX,distY)
 
 
-def gauss2d(size,wrap,intensity,width,center):
+def gauss2d(size,wrap,intensity,width,centerX,centerY):
     """ Make a  gaussian kernel."""
-    (distX,distY) = generateWrappedDistance(size,center,wrap);
+    (distX,distY) = __generateWrappedDistance(size,centerX,centerY,wrap);
     return intensity * np.exp( (-((distX)**2 + (distY)**2)) / width**2)
 
-def exp2d(size,wrap,intensity,proba,center):
+def exp2d(size,wrap,intensity,proba,centerX,centerY):
     """Make an Exponential kernel """
-    (distX,distY) = generateWrappedDistance(size,center,wrap);
+    (distX,distY) = __generateWrappedDistance(size,centerX,centerY,wrap);
     return intensity * (proba ** (distX + distY) )
 
 def cosTraj(time,center,radius,period,phase):

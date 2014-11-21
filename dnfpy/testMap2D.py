@@ -6,8 +6,12 @@ import copy
 class TestMap2D(TestCase):
         
         def setUp(self):
+        
+                self.precision = 10
+        
                 self.size = 20
                 self.dt = 0.1
+                
                 #Without children
                 self.uut = Map2D(self.size,self.dt,{'a':1,'b':2})
                 #with children
@@ -74,11 +78,11 @@ class TestMap2D(TestCase):
                         
         #test params
         def test_params(self):
-                self.assertEqual(1,self.uut.rParams['a'],"params should be the same")
+                self.assertEqual(1,self.uut.globalRealParams['a'],"params should be the same")
                 
         def test_updateParams(self):
                 self.uut.updateParams({'new':10,'a':100})
-                self.assertEqual(100,self.uut.rParams['a'],"params should be updated")
+                self.assertEqual(100,self.uut.globalRealParams['a'],"params should be updated")
         
         #With children
         def test_addChildren(self):
@@ -123,8 +127,14 @@ class TestMap2D(TestCase):
                         1,
                         self.uut_children.nb_computation,
                         "The nb computation for uut_children should be 1")
-        
-                
+        def test_getTime(self):
+            """Method getTime
+            Scenario : the time should be rounded after 3 update"""
+            self.uut.update(0.1)
+            self.uut.update(0.2)
+            self.uut.update(0.30000000000000001)
+            obtained = self.uut.getTime()
+            self.assertAlmostEqual(0.3,obtained,self.precision,"the result should be the same")
                 
                 
 if __name__ == '__main__':

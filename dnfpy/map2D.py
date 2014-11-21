@@ -1,38 +1,40 @@
 import numpy as np
-
+import math
 
 
 class Map2D(object):
     """The Map2D will be updated when simuTime = self.time + self.dt
     The allowed precision for the time values is 1e-10"""
 
-    def __init__(self,size,dt,rParams):
+    def __init__(self,size,dt,globalRealParams):
         """Init a 2D numpy array of shape (size,size) dtype float32"""
         
-        self.size = size
-        self.rParams = rParams
+        self.size = size #size of the np.array shape
+        self.time = 0 #last simulation time (in seconds) : it is updated just befor compute() call
+        self.dt = dt #dt between to computation (in seconds)
+        
+        self.globalRealParams = globalRealParams #global parameters for computation
         self.data = np.zeros((size,size),dtype=np.float32)
         
-        self.allowed_error = 1e-10 #allowed precision for time values
-        self.time = 0
-        self.dt = dt
-        self.children = {} #dict of str:Map2D
+        self.precision = 10 #allowed precision for time values
+        self.children = {} #dict of str:Map2D: the children are computed before self
+        
         #Debug utilities
         self.nb_computation = 0
         
     
     def compute(self):
         """Abstract should call super
-        Update the array using the childrens and rParams"""
+        Update the array using the childrens and globalRealParams"""
         self.nb_computation += 1
         return None
         
     
-    def modifyParams(self,params,rParams):
+    def modifyParams(self,params,globalRealParams):
         """Abstarct Optional : 
         Whenever the parameter dictionary is changed (and on model initialisation)
-        The rParams (for real params) are processed with this method recursively
-        The syntax is : rParams['some_param'] = 2 * params['some_param'] + 1"""
+        The globalRealParams (for real params) are processed with this method recursively
+        The syntax is : globalRealParams['some_param'] = 2 * params['some_param'] + 1"""
         return None
         
     def getNextUpdateTime(self):
@@ -56,27 +58,33 @@ class Map2D(object):
     def update(self,simuTime):
         """Compute first the children and then self
         Computation occurs only if simuTime = Map2D.getNextUpdateTime"""
-                
         selfNUT = self.getNextUpdateTime()
-        assert( simuTime - selfNUT <= self.allowed_error), \
+        allowed_error = math.pow(10,-self.precision)
+        assert( simuTime - selfNUT <= allowed_error), \
             "Simulation problem: %r has not been updated. %r < %r" % (self,selfNUT,simuTime)
+            
         for child in self.children.values():
                 child.update(simuTime)
-        if abs(self.getNextUpdateTime() - simuTime) <= self.allowed_error :
-                self.time = simuTime
+        if abs(self.getNextUpdateTime() - simuTime) <= allowed_error :
+                self.time = round(simuTime,self.precision)
+               
                 self.compute()
         return None
                         
+    def getTime(self):
+        """Accessor return self.time"""
+        print("selfTime %s " % self.time)
+        return self.time
         
     def getData(self):
         """Accessor return self.data"""
         return self.data
         
-    def updateParams(self,rParams):
+    def updateParams(self,globalRealParams):
         """If the params are modified update here"""
-        self.rParams = rParams
+        self.globalRealParams = globalRealParams
         for child in self.children.values():
-                child.updateParams(self.rParams)
+                child.updateParams(self.globalRealParams)
         return None
     
     def addChildren(self,childrenToAdd):
