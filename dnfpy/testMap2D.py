@@ -15,9 +15,8 @@ class TestMap2D(TestCase):
                 self.uut_children.addChildren({'child1':self.uut,'child2':copy.deepcopy(self.uut)})
         
         def test_init(self):
-                self.assertEqual(
-                        np.sum(np.zeros((self.size,self.size),dtype=np.float32)),
-                        np.sum(self.uut.getData()),
+                self.assertTrue(
+                        (np.zeros((self.size,self.size),dtype=np.float32)==np.sum(self.uut.getData())).all(),
                         "The array should be initiated at 0")
                 self.assertEqual(
                         self.dt,
