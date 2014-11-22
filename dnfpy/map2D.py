@@ -14,7 +14,8 @@ class Map2D(object):
         self.dt = dt #dt between to computation (in seconds)
         
         self.globalRealParams = globalRealParams #global parameters for computation
-        self.data = np.zeros((size,size),dtype=np.float32)
+        self.reset() #init self.data
+
         
         self.precision = 7 #allowed precision
         self.children = {} #dict of str:Map2D: the children are computed before self
@@ -29,7 +30,7 @@ class Map2D(object):
         self.nb_computation += 1
         return None
         
-    
+    @staticmethod    
     def modifyParams(self,params,globalRealParams):
         """Abstarct Optional : 
         Whenever the parameter dictionary is changed (and on model initialisation)
@@ -91,6 +92,12 @@ class Map2D(object):
         """Add N children using dictionary"""
         self.children.update(childrenToAdd)
         return None
+    def reset(self):
+        """Reset the data to 0"""
+        if self.size == 1:
+            self.data = 0.
+        else:
+            self.data = np.zeros((self.size,self.size))
         
      
 

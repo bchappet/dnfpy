@@ -137,8 +137,23 @@ class TestMap2D(TestCase):
             self.uut.update(0.30000000000000001)
             obtained = self.uut.getTime()
             self.assertAlmostEqual(0.3,obtained,self.precision,"the result should be the same")
+        def test_reset(self):
+            """Method reset"""
+            self.uut.update(0.1)
+            self.uut.update(0.2)
+            self.uut.reset()
+            self.assertTrue(
+                    (np.zeros((self.size,self.size),dtype=np.float32)==np.sum(self.uut.getData())).all(),
+                    "The array should be reset at 0")
+        def test_init_size0(self):
+            """Init
+            With a size 0. data should be a real"""
+            test = Map2D(1,self.dt,{})
+            self.assertEqual(0.,test.getData(),"When initiated with a size == 1, the data should be a real")
+            
+
                 
                 
 if __name__ == '__main__':
-        unittest.main(7)
+        unittest.main()
         

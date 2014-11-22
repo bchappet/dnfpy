@@ -15,14 +15,16 @@ class TestFuncMap2D(unittest.TestCase):
         self.argNamesDict = {'size':'size','wrap':'wrap','intensity':'iA','width':'wA','centerX':'cX','centerY':'cY'}
         self.func = utils.gauss2d
 
-        self.uut = FuncMap2D(self.size,self.dt,self.globalRealParams,self.func,self.argNamesDict)
+        self.uut = FuncMap2D(self.size,self.dt,self.globalRealParams,self.func)
+        self.uut.registerOnGlobalParamsChange(self.argNamesDict)
 
         #Another one
         globalRealParams2 = {'c':0.2,'r':0.1,'p':10,'ph':0.2}
         argNamesDict2 = {'center':'c','radius':'r','period':'p','phase':'ph'}
         func2 = utils.cosTraj
-        self.uut2 = FuncMap2D(1,0.1,globalRealParams2,func2,argNamesDict2)
+        self.uut2 = FuncMap2D(1,0.1,globalRealParams2,func2)
         self.uut2.mapAttributesToFunc({'time':self.uut2.getTime})
+        self.uut2.registerOnGlobalParamsChange(argNamesDict2)
 
     def test_computeGauss2d(self):
         """Method: compute
@@ -86,8 +88,45 @@ class TestFuncMap2D(unittest.TestCase):
         obtained = self.uut.getData()[3,6]
         self.assertAlmostEqual(expected,obtained,self.precision,"The computation of uut should take the child as parameter for centerX")
 
+    def test_constantArgs(self):
+        """Test with only constant args"""
+        func2 = utils.cosTraj
+        self.uut2 = FuncMap2D(1,0.1,{},func2,{'time':0.1,'center':0.2,'radius':0.1,'period':10,'phase':0.2})
+        self.uut2.compute()
+        expected = 0.23681245526846784
+        obtained = self.uut2.getData()
+        self.assertAlmostEqual(expected,obtained,self.precision,"The computation of  should be as expected")
 
+    def test_constantArgs_attribute_andGlobalArgs(self):
+        func2 = utils.cosTraj
+        globalArg = {'c' : 0.2}
+        globalKeyDict = {'center':'c'}
+        self.uut2 = FuncMap2D(1,0.1,globalArg,func2,{'radius':0.1,'period':10,'phase':0.2})
+        self.uut2.mapAttributesToFunc({'time':self.uut2.getTime})
+        self.uut2.registerOnGlobalParamsChange(globalKeyDict)
 
+        self.uut2.update(0.1)
+
+        expected = 0.23681245526846784
+        obtained = self.uut2.getData()
+        self.assertAlmostEqual(expected,obtained,self.precision,"The computation of  should be as expected")
+
+    def test_constantArgs_attribute_andGlobalArgs_changeArgs(self):
+        """Scenario : change args after 1 computation"""
+        func2 = utils.cosTraj
+        globalArg = {'c' : 0.2}
+        globalKeyDict = {'center':'c'}
+        self.uut2 = FuncMap2D(1,0.1,globalArg,func2,{'radius':0.1,'period':10,'phase':0.2})
+        self.uut2.mapAttributesToFunc({'time':self.uut2.getTime})
+        self.uut2.registerOnGlobalParamsChange(globalKeyDict)
+
+        self.uut2.update(0.1)
+        self.uut2.updateParams({'c':0.3})
+        self.uut2.update(0.2)
+
+        expected = 0.34257792915650725
+        obtained = self.uut2.getData()
+        self.assertAlmostEqual(expected,obtained,self.precision,"The computation of  should be as expected")
 
 
 
