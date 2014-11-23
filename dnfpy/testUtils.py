@@ -45,6 +45,15 @@ class TestUtils(unittest.TestCase):
         expected = 2.0
         obtained = cosTraj(1,1,1,1,1)
         self.assertAlmostEqual(expected,obtained,self.precision,"the result should be the same")
+    def test_sumArrays(self):
+        """Function sumArray
+        scenario sum 3 array"""
+        a = [1,2]
+        b = [2,3]
+        c = [2,7]
+        expected = [5,12]
+        obtained=sumArrays(a,b,c)
+        self.assertTrue((expected==obtained).all(),"the result should be the same")
 
 
 if __name__ == '__main__':

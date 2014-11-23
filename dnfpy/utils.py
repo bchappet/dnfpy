@@ -32,3 +32,14 @@ def exp2d(size,wrap,intensity,proba,centerX,centerY):
 def cosTraj(time,center,radius,period,phase):
     """Definie a cosinus trajectory"""
     return center + radius * np.cos(2*np.pi*(time/period-phase))
+
+def sumArrays(*varlist):
+    """Sum n arrays"""
+    res = 0 
+    for i in range(len(varlist)):
+        res = np.add(res, varlist[i])
+
+    return res
+
+def subArrays(a,b):
+    return a-b

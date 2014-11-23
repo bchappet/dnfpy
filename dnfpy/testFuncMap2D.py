@@ -127,6 +127,7 @@ class TestFuncMap2D(unittest.TestCase):
         expected = 0.34257792915650725
         obtained = self.uut2.getData()
         self.assertAlmostEqual(expected,obtained,self.precision,"The computation of  should be as expected")
+    
 
 
 

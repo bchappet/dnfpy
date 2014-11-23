@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 import math
 
 
@@ -19,9 +20,14 @@ class Map2D(object):
         
         self.precision = 7 #allowed precision
         self.children = {} #dict of str:Map2D: the children are computed before self
+
+        #To avoid recursivity
+        self.lock =False #True when method already called
         
         #Debug utilities
         self.nb_computation = 0
+
+
         
     
     def compute(self):
@@ -44,32 +50,45 @@ class Map2D(object):
         
     def getSmallestNextUpdateTime(self):
         """Return the smallest NUT of self and the children (recursive)
-        This should be call before each update to know the global minimal NUT"""
-        minNUT = self.getNextUpdateTime()
-        for child in self.children.values():
-                childNUT = child.getSmallestNextUpdateTime()
-                if childNUT < minNUT:
-                        minNUT = childNUT
+        This should be call before each update to know the global minimal NUT
+        recursif"""
+        if not(self.lock):
+            self.lock = True
+            minNUT = self.getNextUpdateTime()
+            for child in self.children.values():
+                    childNUT = child.getSmallestNextUpdateTime()
+                    if childNUT < minNUT:
+                            minNUT = childNUT
         
-        return minNUT
+            self.lock = False
+            return minNUT
+        else:
+            return sys.maxint
     
-        
-        
         
     def update(self,simuTime):
         """Compute first the children and then self
-        Computation occurs only if simuTime = Map2D.getNextUpdateTime"""
-        selfNUT = self.getNextUpdateTime()
-        allowed_error = math.pow(10,-self.precision)
-        assert( simuTime - selfNUT <= allowed_error), \
-            "Simulation problem: %r has not been updated. %r < %r" % (self,selfNUT,simuTime)
+        Computation occurs only if simuTime = Map2D.getNextUpdateTime
+        recursif"""
+
+        if not(self.lock):
+            self.lock = True
+            selfNUT = self.getNextUpdateTime()
+            allowed_error = math.pow(10,-self.precision)
+            assert( simuTime - selfNUT <= allowed_error), \
+                "Simulation problem: %r has not been updated. %r < %r" % (self,selfNUT,simuTime)
             
-        for child in self.children.values():
-                child.update(simuTime)
-        if abs(self.getNextUpdateTime() - simuTime) <= allowed_error :
+            for child in self.children.values():
+                 child.update(simuTime)
+
+            if abs(self.getNextUpdateTime() - simuTime) <= allowed_error :
                 self.time = round(simuTime,self.precision)
-               
+#                print("time %f : compute %s"%(self.time,self))
                 self.compute()
+#                print("result : %s " %self.data)
+            self.lock = False
+        else:
+                pass
         return None
                         
     def getTime(self):
@@ -82,16 +101,26 @@ class Map2D(object):
         return self.data
         
     def updateParams(self,globalRealParams):
-        """If the params are modified update here"""
-        self.globalRealParams = globalRealParams
-        for child in self.children.values():
+        """If the params are modified update here: recursif"""
+        if not(self.lock):
+            self.lock = True
+            self.globalRealParams = globalRealParams
+            for child in self.children.values():
                 child.updateParams(self.globalRealParams)
+            self.lock = False
+        else:
+            pass
         return None
     
     def addChildren(self,childrenToAdd):
         """Add N children using dictionary"""
         self.children.update(childrenToAdd)
         return None
+    def removeChild(self,childName):
+        """Remove one child with the name childName"""
+        del self.children[childName]
+    def getChildrenCount(self):
+        return len(self.children)
     def reset(self):
         """Reset the data to 0"""
         if self.size == 1:

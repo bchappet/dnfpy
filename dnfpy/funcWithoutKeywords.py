@@ -8,11 +8,13 @@ class FuncWithoutKeywords(Map2D):
         super(FuncWithoutKeywords,self).__init__(size,dt,globalRealParams)
         self.cstList = cstList or [] #constant which will be passed to the function
         self.func = func #function to call at every computation with children
+
     def compute(self):
         """Call the func with the good arguments"""
         super(FuncWithoutKeywords,self).compute()
         args = self.__getChildrenArgs() + self.cstList
-        self.data = self.func(args)
+        self.data = self.func(*args)
+
     def __getChildrenArgs(self):
         """Return a list with children  value"""
         ret = [v.getData() for v in self.children.values()]
