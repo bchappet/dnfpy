@@ -146,6 +146,15 @@ class TestMap2D(TestCase):
             expected = dict(size=self.size,dt=self.dt,a=100,b=2,time=0.1,joey=self.uut_children.getData())
             obtained = self.uut.last_computation_dictionary
             self.assertEqual(expected,obtained,"result should be the same")
+
+        def test_get_children_names(self):
+            obtained = self.uut_children.getChildrenNames()
+            expected = set(['child1','child2'])
+            self.assertEqual(expected,obtained,"result should be the same")
+        def test_get_attributes_names(self):
+            obtained = self.uut.getAttributesNames()
+            expected = set(['time','size','dt','a','b'])
+            self.assertEqual(expected,obtained,"result should be the same")
         
             
 

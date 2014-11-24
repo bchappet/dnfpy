@@ -12,10 +12,10 @@ class Map2D(Computable):
     Construction arguments:
         'size':   the data will be np.array of shape (size,size)
                 or a double if size = 1
-        'dt':  the update will be done every dt (second)
 
     Attributes:
         'size': the data is of shape (size,size)
+        'dt':  the update will be done every dt (second)
         'time': simulation time
         self._data: data accessible with self.getData()
 
@@ -108,6 +108,20 @@ class Map2D(Computable):
         """
         newDict = {k:self.__children[k].getData() for k in self.__children.keys()}
         return newDict
+    def getChildrenNames(self):
+        """
+            Public
+            Return the children name set
+        """
+        return set(self.__children.viewkeys())
+    def getAttributesNames(self):
+        """
+            Public
+            Return the attributes name set
+            the children are not considered as attributes
+        """
+        return  self._getDictionaryNames() - self.getChildrenNames()
+        
 
 
                         
@@ -122,8 +136,8 @@ class Map2D(Computable):
     def _modifyParams(self,params,globalParams):
         """
             Abstract Optional : 
-            Mofify the params taken from globalParams
-            for there final value to be in self.__dictionary
+            Mofify the params using params and  globalParams
+            Their final value will be added to self.__dictionary
         """
         return params
     def registerOnGlobalParamsChange(self,**kwargs):
