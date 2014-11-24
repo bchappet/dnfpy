@@ -15,6 +15,7 @@ class Map2D(Computable):
         'dt':  the update will be done every dt (second)
 
     Attributes:
+        'size': the data is of shape (size,size)
         'time': simulation time
         self._data: data accessible with self.getData()
 
