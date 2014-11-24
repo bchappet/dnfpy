@@ -26,6 +26,8 @@ class Computable2(Computable):
         return self._getArgs(keys)
     def getDictionaryNames(self):
         return self._getDictionaryNames()
+    def subDictionary(self,keys):
+        return self._subDictionary(keys)
 
 
 
@@ -85,17 +87,10 @@ class TestComputable(unittest.TestCase):
         obtained = self.uut.getDictionaryNames()
         expected = set(['a','b','c','time'])
         self.assertEqual(expected,obtained,"shoud be equal")
-
-            
-
-        
-
-
-
-
-
-
-
+    def test_sub_dictionary(self):
+        obtained = self.uut.subDictionary(set(['a','b']))
+        expected = dict(a=1,b=2)
+        self.assertEqual(expected,obtained,"shoud be equal")
         
 
 if __name__ == '__main__':
