@@ -140,6 +140,21 @@ class Map2D(Computable):
             Their final value will be added to self.__dictionary
         """
 
+    def _modifyParamsRecursively(self,params):
+        """
+            Protected,  Absract, Optional 
+            Define modification on params.
+            This modification are definitive and will be 
+            transmitted to the children
+
+            Thus this modifications are prioritary over self._modifyParams
+
+            The advantage is to be able to transform very 
+            parameter at the same level without redifining
+            _modifyParams for every Map2D
+        """
+        pass
+
     def registerOnGlobalParamsChange(self,**kwargs):
         """
             Public
@@ -169,21 +184,33 @@ class Map2D(Computable):
         """
 
 
-        
-    def updateParams(self,globalParams):
-        """
-            Public, Final, Recursif
-            If the globalParams are mofified, there should be updated
-        """
+    def __updateParams_recursif(self,params):
         if not(self.__lock):
             self.__lock = True
-            self.__updateParams(globalParams)
+            self._modifyParamsRecursively(params)#will alter param for self and the children
+            self.__updateParams(params) #will alter param for self and add them to self.__dictionary
             for child in self.__children.values():
-                child.updateParams(globalParams)
+                child.__updateParams_recursif(params)
             self.__lock = False
         else:
             pass
         return None
+        
+    def updateParams(self,globalParams):
+        """
+            Public, Final, Recursif (cons dict globalParams)
+            Update self and recursively children with the globalParams
+            It means that if self used registerOnGlobalParamsChange 
+            the parameters stated in this function will be updated
+
+            But they can also be transformed:
+                If there is a behaviour in self._modifyParams
+                If one of the parent or self defines a self._modifyParamsRecursively method:
+                    the globalParams will be transformed by it (after copy)
+            PostCondition: globalParams is unaltered
+        """
+        copyOfGlobalParams = dict(**globalParams)
+        self.__updateParams_recursif(copyOfGlobalParams)
     
     def addChildren(self,**kwards):
         """
