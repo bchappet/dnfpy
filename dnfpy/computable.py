@@ -46,7 +46,7 @@ class Computable(object):
             Protected:
             Return a subDictionary of self.__dictionary
         """
-        return self._subDictionary(self.__dictionary,list(*keys))
+        return self._subDictionary(list(*keys))
 
     def _rmArg(self,key):
         """
@@ -67,7 +67,7 @@ class Computable(object):
             call get the subdict of compute argument from 
             self.dictionary and gives cal compute with it
         """
-        args = self._subDictionary(self.__dictionary,self._computeArgs)
+        args = self._subDictionary(self._computeArgs)
         self._compute(**args)
         self.nb_computation += 1
         self.last_computation_args = args
@@ -80,8 +80,11 @@ class Computable(object):
         return set(self.__dictionary.viewkeys())
             
 
-    @staticmethod
-    def _subDictionary(dictio,keyList):
-        return {k : dictio[k] for k in keyList}
+    def _subDictionary(self,keys):
+        """
+            Protected final:
+            return the subductionary of self.__dictionary using the keys (must be itarable)
+        """
+        return {k :self.__dictionary[k] for k in keys}
 
 
