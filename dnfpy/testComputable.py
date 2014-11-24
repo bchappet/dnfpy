@@ -22,6 +22,9 @@ class Computable2(Computable):
     def rmArg(self,key):
         return self._rmArg(key)
 
+    def getArgs(self,*keys):
+        return self._getArgs(keys)
+
 
 
 class TestComputable(unittest.TestCase):
@@ -69,6 +72,16 @@ class TestComputable(unittest.TestCase):
         obtained = self.uut.last_computation_args
         expected = dict(a=1,b=2,c=3,time=0.1)
         self.assertEqual(expected,obtained,"shoud be equal")
+    def test_getArgs(self):
+        obtained = self.uut.getArgs('a','b')
+        expected = dict(a=1,b=2)
+        self.assertEqual(expected,obtained,"shoud be equal")
+    def test_getArgs_keyError(self):
+        with self.assertRaises(KeyError):
+            obtained = self.uut.getArgs('d','b')
+            
+
+        
 
 
 

@@ -41,6 +41,12 @@ class Computable(object):
             Access the state of an argument
         """
         return self.__dictionary[key]
+    def _getArgs(self,*keys):
+        """
+            Protected:
+            Return a subDictionary of self.__dictionary
+        """
+        return self._subDictionary(self.__dictionary,list(*keys))
 
     def _rmArg(self,key):
         """
