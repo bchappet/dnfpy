@@ -24,6 +24,8 @@ class Computable2(Computable):
 
     def getArgs(self,*keys):
         return self._getArgs(keys)
+    def getDictionaryNames(self):
+        return self._getDictionaryNames()
 
 
 
@@ -79,6 +81,11 @@ class TestComputable(unittest.TestCase):
     def test_getArgs_keyError(self):
         with self.assertRaises(KeyError):
             obtained = self.uut.getArgs('d','b')
+    def test_get_dictionary_names(self):
+        obtained = self.uut.getDictionaryNames()
+        expected = set(['a','b','c','time'])
+        self.assertEqual(expected,obtained,"shoud be equal")
+
             
 
         

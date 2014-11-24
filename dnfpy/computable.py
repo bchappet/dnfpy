@@ -72,6 +72,13 @@ class Computable(object):
         self.nb_computation += 1
         self.last_computation_args = args
         self.last_computation_dictionary = self.__dictionary
+    def _getDictionaryNames(self):
+        """
+            Protected final:
+            return the set of self._dictionary names
+        """
+        return set(self.__dictionary.viewkeys())
+            
 
     @staticmethod
     def _subDictionary(dictio,keyList):
