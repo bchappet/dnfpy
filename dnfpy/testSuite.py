@@ -6,6 +6,7 @@ from testFuncMap2D import TestFuncMap2D
 from testFuncWithoutKeywords import TestFuncWithoutKewords
 from testInputMap import TestInputMap
 from testFieldMap import TestFieldMap
+from testLateralWeightsMap import TestLateralWeightsMap
 
 def suite():
         suite = unittest.TestSuite()
@@ -16,6 +17,7 @@ def suite():
         suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestFuncWithoutKewords))
         suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestInputMap))
         suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestFieldMap))
+        suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestLateralWeightsMap))
 
         return suite
 
