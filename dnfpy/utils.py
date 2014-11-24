@@ -42,4 +42,5 @@ def sumArrays(*varlist):
     return res
 
 def subArrays(a,b):
+    """Return a - b"""
     return a-b
