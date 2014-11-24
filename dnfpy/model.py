@@ -5,6 +5,7 @@ from inputMap import InputMap
 from fieldMap import FieldMap
 from activationMap import ActivationMap
 from lateralWeightsMap import LateralWeightsMap
+import matplotlib.pyplot as plt
 
 
 
@@ -12,23 +13,30 @@ class Model(object):
     def __init__(self,globalParams):
         self.globalParams = globalParams
         self.initMaps()
-#TODO transform into real params
-        
-
 
     def initMaps(self):
         """We initiate the map and link them"""
         #Create maps
         size = self.globalParams['size']
-        dt = self.globalParams['dt']
-        self.aff = InputMap(size,self.globalParams['input_dt'],self.globalParams)
-        self.field = FieldMap(size,dt,self.globalParams)
-        self.activation = ActivationMap(size,dt,self.globalParams)
-        self.lat = LateralWeightsMap(size,dt,self.globalParams)
+        self.aff = InputMap(size)
+        self.field = FieldMap(size)
+        self.activation = ActivationMap(size)
+        self.lat = LateralWeightsMap(size,self.globalParams['lateralWKernel'])
         #Link maps
-        self.field.addChildren({'afferent':self.aff,'lateral':self.lat})
-        self.activation.addChildren({'field':self.field})
-        self.lat.addChildren({'activation':self.activation})
+        self.aff.registerOnGlobalParamsChange_ignoreCompute(dt='input_dt',nb_distr='nbDistr')
+
+
+        self.field.registerOnGlobalParamsChange(model='model',dt='dt',tau='tau',h='h',th='threshold')
+        self.field.addChildren(aff=self.aff,lat=self.lat)
+
+        self.activation.registerOnGlobalParamsChange(dt='dt',model='model',th='threshold')
+        self.activation.addChildren(field=self.field)
+
+        self.lat.registerOnGlobalParamsChange(wrap='wrap')
+        self.lat.addChildren(activation=self.activation)
+
+        #Update args
+        self.field.updateParams(self.globalParams)
 
     def run(self,timeEnd):
         simuTime = 0
@@ -37,6 +45,9 @@ class Model(object):
             nextTime = self.field.getSmallestNextUpdateTime()
             simuTime = nextTime
             self.field.update(simuTime)
+
+        plt.imshow(self.field.getData())
+        plt.show()
         
 if __name__ == "__main__":
     args = sys.argv[1]

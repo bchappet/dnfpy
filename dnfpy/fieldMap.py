@@ -1,20 +1,14 @@
 from map2D import Map2D
+import numpy as np
 
 class FieldMap(Map2D):
-    def compute(self):
-        super(FieldMap,self).compute()
-
-        model = self.globalRealParams['model']
-        lat = self.children['lateral'].getData()
-        aff = self.children['afferent'].getData()
+    def _compute(self,model,lat,aff,dt,tau,h,th):
 
         if model == 'cnft':
-            self.data = self.data + self.globalRealParams['dt']/self.globalRealParams['tau']*(-self.data + self.globalRealParams['h'] + aff + lat)
+            self._data = self._data + dt/tau*(-self._data + h + aff + lat)
         elif model == 'spike':
-            tau = self.globalRealParams['tau']
-            th = self.globalRealParams['threshold']
-            self.data = np.where(self.data > th,0,self.data) # if x > th => x = 0
-            self.data = self.data + self.globalRealParams['dt']/tau*(-self.data + self.globalRealParams['h'] + aff ) +  1/tau*lat
+            self._data = np.where(self._data > th,0,self._data) # if x > th => x = 0
+            self._data = self._data + dt/tau*(-self._data + h + aff ) +  0/tau*lat
         else:
             print "Invalid model option : " + model
 

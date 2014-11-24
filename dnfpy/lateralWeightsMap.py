@@ -3,37 +3,31 @@ import cv2
 from map2D import Map2D
 from funcMap2D import FuncMap2D
 class LateralWeightsMap(Map2D):
-    def __init__(self,size,dt,globalRealParams):
-        super(LateralWeightsMap,self).__init__(size,dt,globalRealParams)
+    def __init__(self,size,kernelType):
+        super(LateralWeightsMap,self).__init__(size,kernelType=kernelType)
         center = (size - 1)/2
         dtKern = 1e30
-        latKernel = self.globalRealParams['lateralWKernel']
-        if latKernel == 'gauss':
-            kernelExc = FuncMap2D(size,dtKern,globalRealParams,utils.gauss2d,{'size':size,'centerX':center,'centerY':center})
-            kernelExc.registerOnGlobalParamsChange({'wrap':'wrap','intensity':'iExc','width':'wExc'})
-            kernelInh = FuncMap2D(size,dtKern,globalRealParams,utils.gauss2d,{'size':size,'centerX':center,'centerY':center})
-            kernelInh.registerOnGlobalParamsChange({'wrap':'wrap','intensity':'iInh','width':'wInh'})
-        elif latKernel == 'exp':
-            kernelExc = FuncMap2D(size,dtKern,globalRealParams,utils.exp2d,{'size':size,'centerX':center,'centerY':center})
-            kernelExc.registerOnGlobalParamsChange({'wrap':'wrap','intensity':'iExc','proba':'pExc'})
-            kernelInh = FuncMap2D(size,dtKern,globalRealParams,utils.exp2d,{'size':size,'centerX':center,'centerY':center})
-            kernelInh.registerOnGlobalParamsChange({'wrap':'wrap','intensity':'iInh','proba':'pInh'})
+        if kernelType == 'gauss':
+            kernelExc = FuncMap2D(utils.gauss2d,size,dt=dtKern,centerX=center,centerY=center)
+            kernelExc.registerOnGlobalParamsChange(wrap='wrap',intensity='iExc',width='wExc')
+            kernelInh = FuncMap2D(utils.gauss2d,size,dt=dtKern,centerX=center,centerY=center)
+            kernelInh.registerOnGlobalParamsChange(wrap='wrap',intensity='iInh',width='wInh')
+        elif kernelType == 'exp':
+            kernelExc = FuncMap2D(utils.exp2d,size,dt=dtKern,centerX=center,centerY=center)
+            kernelExc.registerOnGlobalParamsChange(wrap='wrap',intensity='iExc',proba='pExc')
+            kernelInh = FuncMap2D(utils.exp2d,size,dt=dtKern,centerX=center,centerY=center)
+            kernelInh.registerOnGlobalParamsChange(wrap='wrap',intensity='iInh',proba='pInh')
         else:
-                print("Error bad kernel param %s"%latKernel)
+                print("Error bad kernel param %s"%kernelType)
         
-        kernel = FuncMap2D(size,dtKern,globalRealParams,utils.subArrays)
-        kernel.addChildren({'a':kernelExc,'b':kernelInh})
-        kernelExc.compute()
-        kernelInh.compute()
-        kernel.compute()
+        kernel = FuncMap2D(utils.subArrays,size,dt=dtKern)
+        kernel.addChildren(a=kernelExc,b=kernelInh)
 
-        self.addChildren({'kernel':kernel})
-    def compute(self):
-        super(LateralWeightsMap,self).compute()
-        act = self.children['activation'].getData()
-        kernel = self.children['kernel'].getData()
-        
-        if self.globalRealParams['wrap']:
+        self.addChildren(kernel=kernel)
+        self._setArg(dt=dtKern)
+
+    def _compute(self,act,kernel,wrap):
+        if wrap:
             border = cv2.BORDER_WRAP
         else:
             border = cv2.BORDER_DEFAULT

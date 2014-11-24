@@ -1,4 +1,5 @@
 import unittest
+import copy
 import inspect
 class Computable(object):
     """
@@ -19,26 +20,55 @@ class Computable(object):
             the inspection store the arguments expected by
             compute in self.computeArgs
         """
-        self.dictionary = dict(**kwargs)
-        self.computeArgs = inspect.getargspec(self.compute)[0]
-        self.computeArgs.remove('self')
+        self.__dictionary = dict(**kwargs)
+        self._computeArgs = inspect.getargspec(self._compute)[0]
+        self._computeArgs.remove('self')
+        #Debug utilities
+        self.nb_computation = 0
+        self.last_computation_args = {}
+        self.last_computation_dictionary = {}
 
     def _setArg(self,**kwargs):
         """
             Protected:
             To add or change parameters in self.dictionary
         """
-        self.dictionary.update(**kwargs)
+        self.__dictionary.update(**kwargs)
+
+    def _getArg(self,key):
+        """
+            Protected:
+            Access the state of an argument
+        """
+        return self.__dictionary[key]
+
+    def _rmArg(self,key):
+        """
+            Protected, Final
+            Remove the argument given by key
+            Return: True if the argument was successfully removed
+        """
+        try:
+            del self.__dictionary[key]
+            return True
+        except KeyError:
+            return False
+
+               
 
     def _compute_with_params(self):
         """ Protected:
             call get the subdict of compute argument from 
             self.dictionary and gives cal compute with it
         """
-        args = self.__paramsToExpectedArgs(self.dictionary,self.computeArgs)
-        self.compute(**args)
+        args = self.paramsToExpectedArgs(self.__dictionary,self._computeArgs)
+        self._compute(**args)
+        self.nb_computation += 1
+        self.last_computation_args = args
+        self.last_computation_dictionary = self.__dictionary
 
-    def __paramsToExpectedArgs(self,dictionary,keyList):
-        return {k : self.dictionary[k] for k in keyList}
+    @staticmethod
+    def paramsToExpectedArgs(dictio,keyList):
+        return {k : dictio[k] for k in keyList}
 
 

@@ -15,11 +15,13 @@ class Computable2(Computable):
         self._setArg(time=compTime) 
         self._compute_with_params()
 
-    def compute(self,a,b,c,time):
+    def _compute(self,a,b,c,time):
         self.data = a +b *c + time
+    def getArg(self,key):
+        return self._getArg(key)
+    def rmArg(self,key):
+        return self._rmArg(key)
 
-    def registerOnGlobalParamChange(self,globalParam):
-        pass
 
 
 class TestComputable(unittest.TestCase):
@@ -45,6 +47,32 @@ class TestComputable(unittest.TestCase):
         obtained = self.uut.getData()
         expected = 7
         self.assertEqual(expected,obtained,"shoud be equal")
+
+    def test_getArg(self):
+        obtained = self.uut.getArg('a')
+        expected = 1
+        self.assertEqual(expected,obtained,"shoud be equal")
+    def test_nb_computation(self):
+        self.uut.updateData(0.0)
+        self.uut.updateData(0.0)
+        self.uut.updateData(0.0)
+        expected = 3
+        obtained = self.uut.nb_computation
+        self.assertEqual(expected,obtained,"shoud be equal")
+    def test_rm_arg(self):
+        ret = self.uut.rmArg('a')
+        self.assertTrue(ret,"The key should be present")
+        ret = self.uut.rmArg('a')
+        self.assertFalse(ret,"The key should not be present")
+    def test_last_computation_args(self):
+        self.uut.updateData(0.1)
+        obtained = self.uut.last_computation_args
+        expected = dict(a=1,b=2,c=3,time=0.1)
+        self.assertEqual(expected,obtained,"shoud be equal")
+
+
+
+
 
 
 

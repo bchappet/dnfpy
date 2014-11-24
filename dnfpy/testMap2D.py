@@ -1,43 +1,24 @@
+#-*- coding: utf-8 -*-
 from unittest import TestCase
 import unittest
 from map2D import Map2D
 import numpy as np
 import copy
 class TestMap2D(TestCase):
-
-	
-        
         def setUp(self):
-        
-                self.precision = 7
-        
-                self.size = 20
-                self.dt = 0.1
-                
-                #Without children
-                self.uut = Map2D(self.size,self.dt,{'a':1,'b':2})
-                #with children
-                self.uut_children = Map2D(self.size,self.dt*3,{'c':3,'d':4})
-                self.uut_children.addChildren({'child1':self.uut,'child2':copy.deepcopy(self.uut)})
+            self.precision = 7
+            self.size= 20
+            self.dt =0.1
+            #Without children
+            self.uut = Map2D(size=self.size,dt=self.dt,a=1,b=2)
+            #with children
+            self.uut_children = Map2D(size=self.size,dt=self.dt*3,c=3,d=4)
+            self.uut_children.addChildren(child1=self.uut,child2=copy.deepcopy(self.uut))
         
         def test_init(self):
                 self.assertTrue(
                         (np.zeros((self.size,self.size),dtype=np.float32)==np.sum(self.uut.getData())).all(),
                         "The array should be initiated at 0")
-                self.assertEqual(
-                        self.dt,
-                        self.uut.dt,
-                        "Dt should be good")
-                self.assertEqual(
-                        self.size,
-                        self.uut.size,
-                        "Size should be good")
-        def test_getNextUpdateTime(self):
-                self.assertEqual(
-                        0.1,
-                        self.uut.getNextUpdateTime(),
-                        "The next update time should be 0.1")
-                        
                         
         def test_getSmallestNextUpdateTime(self):
                 """ Method : getSmallestNextUpdateTime
@@ -47,13 +28,6 @@ class TestMap2D(TestCase):
                         self.uut.getSmallestNextUpdateTime(),
                         "The smallest next update time without children should be 0.1")
         
-        def test_compute1(self):
-                self.uut.compute()
-                self.assertEqual(
-                        1,
-                        self.uut.nb_computation,
-                        "The nb computation should be 1")
-                        
         def test_update1(self):
                 """Method: update
                 Scenario: the simuTime is exactly the nextSimuTime, there is 1 computation"""
@@ -78,20 +52,6 @@ class TestMap2D(TestCase):
                 with self.assertRaises(AssertionError): 
                         self.uut.update(1)
                         
-        #test params
-        def test_params(self):
-                self.assertEqual(1,self.uut.globalRealParams['a'],"params should be the same")
-                
-        def test_updateParams(self):
-                self.uut.updateParams({'new':10,'a':100})
-                self.assertEqual(100,self.uut.globalRealParams['a'],"params should be updated")
-        
-        #With children
-        def test_addChildren(self):
-                self.assertEqual(
-                        self.uut,
-                        self.uut_children.children['child1'],
-                        "The first child1 should be the same")
                         
         def test_update2(self):
                 """Method: update
@@ -103,7 +63,7 @@ class TestMap2D(TestCase):
                 self.uut_children.update(0.1)
                 self.assertEqual(
                         1,
-                        self.uut_children.children['child1'].nb_computation,
+                        self.uut.nb_computation,
                         "The nb computation for children should be 1")
                 self.assertEqual(
                         0,
@@ -113,7 +73,7 @@ class TestMap2D(TestCase):
                 self.uut_children.update(0.2)
                 self.assertEqual(
                         2,
-                        self.uut_children.children['child1'].nb_computation,
+                        self.uut.nb_computation,
                         "The nb computation for children should be 2")
                 self.assertEqual(
                         0,
@@ -123,7 +83,7 @@ class TestMap2D(TestCase):
                 self.uut_children.update(0.3)
                 self.assertEqual(
                         3,
-                        self.uut_children.children['child1'].nb_computation,
+                        self.uut.nb_computation,
                         "The nb computation for children should be 3")
                 self.assertEqual(
                         1,
@@ -145,11 +105,48 @@ class TestMap2D(TestCase):
             self.assertTrue(
                     (np.zeros((self.size,self.size),dtype=np.float32)==np.sum(self.uut.getData())).all(),
                     "The array should be reset at 0")
-        def test_init_size0(self):
+        def test_init_size1(self):
             """Init
-            With a size 0. data should be a real"""
-            test = Map2D(1,self.dt,{})
+            With a size 1. data should be a real"""
+            test = Map2D(size=1,dt=self.dt)
             self.assertEqual(0.,test.getData(),"When initiated with a size == 1, the data should be a real")
+        def test_arg_init(self):
+            self.uut.update(0.1)
+            expected = dict(size=self.size,dt=self.dt,a=1,b=2,time=0.1)
+            obtained = self.uut.last_computation_dictionary
+            self.assertEqual(expected,obtained,"result should be the same")
+
+        def test_arg_init_and_global(self):
+            globalParams = dict(zz=100)
+            self.uut.registerOnGlobalParamsChange(a='zz')
+            self.uut.updateParams(globalParams)
+            self.uut.update(0.1)
+            expected = dict(size=self.size,dt=self.dt,a=100,b=2,time=0.1)
+            obtained = self.uut.last_computation_dictionary
+            self.assertEqual(expected,obtained,"result should be the same")
+        def test_arg_init_and_global_and_update_params(self):
+            globalParams = dict(zz=100)
+            self.uut.registerOnGlobalParamsChange(a='zz')
+            self.uut.updateParams(globalParams)
+            self.uut.update(0.1)
+            globalParams = dict(zz='ee')
+            self.uut.updateParams(globalParams)
+            self.uut.update(0.2)
+
+            expected = dict(size=self.size,dt=self.dt,a='ee',b=2,time=0.2)
+            obtained = self.uut.last_computation_dictionary
+            self.assertEqual(expected,obtained,"result should be the same")
+
+        def test_arg_init_and_global_and_children(self):
+            globalParams = dict(zz=100)
+            self.uut.registerOnGlobalParamsChange(a='zz')
+            self.uut.updateParams(globalParams)
+            self.uut.addChildren(joey=self.uut_children)
+            self.uut.update(0.1)
+            expected = dict(size=self.size,dt=self.dt,a=100,b=2,time=0.1,joey=self.uut_children.getData())
+            obtained = self.uut.last_computation_dictionary
+            self.assertEqual(expected,obtained,"result should be the same")
+        
             
 
                 

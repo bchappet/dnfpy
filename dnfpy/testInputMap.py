@@ -14,10 +14,12 @@ class TestInputMap(unittest.TestCase):
         self.globalParams = \
                 {'dt':0.1,'size':11,'wrap':True,'iStim':1,'wStim':2,'iDistr':1,'wDistr':2, \
                 'nbDistr':2,'distr_dt':0.4,'tck_dt':0.2,'noise_dt':0.1,'noiseI':0., \
-                'tck_radius':0.1}
+                'tck_radius':0.1,'input_dt':0.1}
         self.dt = 0.1
 
-        self.uut = InputMap(self.globalParams['size'],self.dt,self.globalParams)
+        self.uut = InputMap(self.globalParams['size'])
+        self.uut.registerOnGlobalParamsChange_ignoreCompute(dt='input_dt',nb_distr='nbDistr')
+        self.uut.updateParams(self.globalParams)
 
     def test_init(self):
         self.uut.update(0.1)

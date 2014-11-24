@@ -4,14 +4,16 @@ from testUtils import TestUtils
 from testFuncMap2D import TestFuncMap2D
 from testFuncWithoutKeywords import TestFuncWithoutKewords
 from testInputMap import TestInputMap
+from testFieldMap import TestFieldMap
 
 def suite():
         suite = unittest.TestSuite()
-        suite.addTest(TestMap2D())
-        suite.addTest(TestUtils())
-        suite.addTest(TestFuncMap2D())
-        suite.addTest(TestFuncWithoutKewords())
-        suite.addTest(TestInputMap())
+        suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestMap2D))
+        suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestUtils))
+        suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestFuncMap2D))
+        suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestFuncWithoutKewords))
+        suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestInputMap))
+        suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestFieldMap))
 
         return suite
 

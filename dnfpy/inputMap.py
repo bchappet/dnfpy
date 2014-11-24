@@ -1,66 +1,64 @@
 from map2D import Map2D
 from funcMap2D import FuncMap2D
 from funcWithoutKeywords import FuncWithoutKeywords
+import random
 import numpy as np
 import utils
 
 
 
-def randomNormal(scale,size):
+def randomNormal(scale,size_):
     """np.random.normal does not support scale = 0"""
     if scale == 0:
-        return np.zeros(size,dtype=np.float32)
+        return np.zeros(size_,dtype=np.float32)
     else:
-        return np.random.normal(scale=scale,size=size)
-
-
+        return np.random.normal(scale=scale,size=size_)
 
 class InputMap(FuncWithoutKeywords):
     """The input are defined here"""
-    def __init__(self,size,dt,globalRealParams):
-        super(InputMap,self).__init__(size,dt,globalRealParams,utils.sumArrays)
-        self.distrs = FuncWithoutKeywords(self.size,self.globalRealParams['distr_dt'],self.globalRealParams,utils.sumArrays)
-        self.updateNbDistr(self.globalRealParams['nbDistr'])
+    def __init__(self,size,**kwargs):
+        super(InputMap,self).__init__(utils.sumArrays,size,**kwargs)
+        self.distrs = FuncWithoutKeywords(utils.sumArrays,self._getArg('size'))
+        self.distrs.registerOnGlobalParamsChange_ignoreCompute(dt='distr_dt')
 
-
-        period = 36
         self.track1 = self.newTrack(0)
         self.track2 = self.newTrack(1)
 
-        self.noise = FuncMap2D(self.size,self.globalRealParams['noise_dt'],self.globalRealParams,randomNormal,{'size':(self.size,self.size)})
-        self.noise.registerOnGlobalParamsChange({'scale':'noiseI'})
+        self.noise = FuncMap2D(randomNormal,self._getArg('size'),size_=(size,size))
+        self.noise.registerOnGlobalParamsChange(dt='noise_dt',scale='noiseI')
 
+        self.addChildren(track1=self.track1,track2=self.track2,noise=self.noise,distrs=self.distrs)
 
-        self.addChildren({'track1':self.track1,'track2':self.track2,'noise':self.noise,'distrs':self.distrs})
+    def _onParamUpdate(self):
+        self.updateNbDistr(self._getArg('nb_distr'))
+
 
     def newTrack(self,index):
-        dt = self.globalRealParams['tck_dt']
         period  = 36
-        track = FuncMap2D(self.size,dt,self.globalRealParams,utils.gauss2d)
-        track.registerOnGlobalParamsChange({'size':'size','wrap':'wrap','intensity':'iStim','width':'wStim'})
+        track = FuncMap2D(utils.gauss2d,self._getArg('size'))
+        track.registerOnGlobalParamsChange(dt='tck_dt',wrap='wrap',intensity='iStim',width='wStim')
 
-        center = (self.size-1)/2
+        center = (self._getArg('size')-1)/2
 
         phase = index/2. + 0
-        cX = FuncMap2D(1,dt,self.globalRealParams,utils.cosTraj,{'center':center,'period':period,'phase':phase})
-        cX.registerOnGlobalParamsChange({'radius':'tck_radius'})
-        cX.mapAttributesToFunc({'time':cX.getTime})
+        cX = FuncMap2D(utils.cosTraj,1,center=center,period=period,phase=phase)
+        cX.registerOnGlobalParamsChange(dt='tck_dt',radius='tck_radius')
 
         phase = index/2. + 0.25
-        cY = FuncMap2D(1,dt,self.globalRealParams,utils.cosTraj,{'center':center,'period':period,'phase':phase})
-        cY.registerOnGlobalParamsChange({'radius':'tck_radius'})
-        cY.mapAttributesToFunc({'time':cY.getTime})
+        cY = FuncMap2D(utils.cosTraj,1,center=center,period=period,phase=phase)
+        cY.registerOnGlobalParamsChange(dt='tck_dt',radius='tck_radius')
 
-        track.addChildren({'centerX':cX,'centerY':cY})
+        track.addChildren(centerX=cX,centerY=cY)
         return track
 
     def newDistr(self):
-        dt = self.globalRealParams['distr_dt']
-        distr = FuncMap2D(self.size,dt,self.globalRealParams,utils.gauss2d)
-        distr.registerOnGlobalParamsChange({'size':'size','wrap':'wrap','intensity':'iDistr','width':'wDistr'})
-        cX = FuncMap2D(1,dt,self.globalRealParams,np.random.uniform,{'high':self.size})
-        cY = FuncMap2D(1,dt,self.globalRealParams,np.random.uniform,{'high':self.size})
-        distr.addChildren({'centerX':cX,'centerY':cY})
+        distr = FuncMap2D(utils.gauss2d,self._getArg('size'))
+        distr.registerOnGlobalParamsChange(dt='distr_dt',wrap='wrap',intensity='iDistr',width='wDistr')
+        cX = FuncMap2D(random.uniform,1,a=0,b=self._getArg('size'))
+        cX.registerOnGlobalParamsChange(dt='distr_dt')
+        cY = FuncMap2D(random.uniform,1,a=0,b=self._getArg('size'))
+        cY.registerOnGlobalParamsChange(dt='distr_dt')
+        distr.addChildren(centerX=cX,centerY=cY)
         return distr
 
     def updateNbDistr(self,nb):
@@ -69,15 +67,5 @@ class InputMap(FuncWithoutKeywords):
 
         while self.distrs.getChildrenCount() < nb:
             distr = self.newDistr()
-            self.distrs.addChildren({'distr'+str(self.distrs.getChildrenCount()):distr})
-
-
-        
-
-
-
-
-        
-        
-
+            self.distrs.addChildren(**{'distr'+str(self.distrs.getChildrenCount()):distr})
 
