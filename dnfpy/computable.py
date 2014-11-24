@@ -61,14 +61,14 @@ class Computable(object):
             call get the subdict of compute argument from 
             self.dictionary and gives cal compute with it
         """
-        args = self.paramsToExpectedArgs(self.__dictionary,self._computeArgs)
+        args = self._subDictionary(self.__dictionary,self._computeArgs)
         self._compute(**args)
         self.nb_computation += 1
         self.last_computation_args = args
         self.last_computation_dictionary = self.__dictionary
 
     @staticmethod
-    def paramsToExpectedArgs(dictio,keyList):
+    def _subDictionary(dictio,keyList):
         return {k : dictio[k] for k in keyList}
 
 
