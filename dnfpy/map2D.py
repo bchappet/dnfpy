@@ -139,7 +139,7 @@ class Map2D(Computable):
             Mofify the params using params and  globalParams
             Their final value will be added to self.__dictionary
         """
-        return params
+
     def registerOnGlobalParamsChange(self,**kwargs):
         """
             Public
@@ -157,8 +157,10 @@ class Map2D(Computable):
             of the globalParams chosen by self.__paramDict
         """
         params = Map2D.__associateDict(self.__paramDict,globalParams)
-        params = self._modifyParams(params,globalParams)
-        self._setArg(**params)
+        subdict = self._subDictionary(self.getAttributesNames())
+        subdict.update(params)
+        self._modifyParams(subdict,globalParams)
+        self._setArg(**subdict)
         self._onParamUpdate()
     def _onParamUpdate(self):
         """
