@@ -160,6 +160,13 @@ class TestMap2D(TestCase):
         def test_remove_children(self):
             self.uut_children.removeChild('child2')
             self.assertEqual(1,self.uut_children.getChildrenCount())
+        def test_artificial_recursive_computation(self):
+            self.uut_children.artificialRecursiveComputation()
+            self.assertEqual(1,self.uut_children.nb_computation)
+            self.assertEqual(1,self.uut.nb_computation)
+            self.assertEqual(0.0,self.uut_children.getTime())
+            self.assertEqual(0.0,self.uut.getTime())
+
         
             
 
