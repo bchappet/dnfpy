@@ -1,9 +1,9 @@
-from map2D import Map2D
-from funcMap2D import FuncMap2D
-from funcWithoutKeywords import FuncWithoutKeywords
+from dnfpy.core.map2D import Map2D
+from dnfpy.core.funcMap2D import FuncMap2D
+from dnfpy.core.funcWithoutKeywords import FuncWithoutKeywords
+import dnfpy.core.utils as utils
 import random
 import numpy as np
-import utils
 
 
 

@@ -1,12 +1,14 @@
 import unittest
-from funcMap2D import FuncMap2D
-import utils
+from dnfpy.core.funcMap2D import FuncMap2D
+import dnfpy.core.utils as utils
 import numpy as np
+import os
 
 class TestFuncMap2D(unittest.TestCase):
     
     def setUp(self):
-        self.dir = "./testFiles/"
+        path =  os.path.dirname(os.path.realpath(__file__))
+        self.testDir =path +  "/testFiles/"
         self.precision = 7
 
         self.size = 10
@@ -31,7 +33,7 @@ class TestFuncMap2D(unittest.TestCase):
         """Method: compute
         scenario: the func is gauss2d and the args are 10,wrap,10,4,7,1"""
         self.uut.update(0.1)
-        expected1 = np.loadtxt(self.dir+"testGauss2DWrap.csv",dtype=np.float32,delimiter=",")
+        expected1 = np.loadtxt(self.testDir+"testGauss2DWrap.csv",dtype=np.float32,delimiter=",")
         obtained1 = self.uut.getData()
         self.assertTrue((expected1==obtained1).all(),"the result should be the same") 
 
@@ -41,7 +43,7 @@ class TestFuncMap2D(unittest.TestCase):
         self.globalParams['wrap'] = False
         self.uut.updateParams(self.globalParams)
         self.uut.update(0.1)
-        expected = np.loadtxt(self.dir+"testGauss2DWrap.csv",dtype=np.float32,delimiter=",")
+        expected = np.loadtxt(self.testDir+"testGauss2DWrap.csv",dtype=np.float32,delimiter=",")
         obtained = self.uut.getData()
         self.assertFalse((expected==obtained).all(),"we changed the params, the results should be different") 
 

@@ -1,7 +1,7 @@
-import utils
+import dnfpy.core.utils as utils
+from dnfpy.core.map2D import Map2D
+from dnfpy.core.funcMap2D import FuncMap2D
 import cv2
-from map2D import Map2D
-from funcMap2D import FuncMap2D
 
 class LateralWeightsMap(Map2D):
     DT_MAX = 1e30 #global constant for the static map: they will not be updated

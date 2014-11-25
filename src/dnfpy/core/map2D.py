@@ -149,7 +149,7 @@ class Map2D(Computable):
 
             Thus this modifications are prioritary over self._modifyParams
 
-            The advantage is to be able to transform very 
+
             parameter at the same level without redifining
             _modifyParams for every Map2D
         """

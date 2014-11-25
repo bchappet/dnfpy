@@ -1,4 +1,4 @@
-from map2D import Map2D
+from dnfpy.core.map2D import Map2D
 import numpy as np
 
 class FieldMap(Map2D):

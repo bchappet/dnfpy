@@ -1,12 +1,5 @@
 import unittest
-from testMap2D import TestMap2D
-from testMap2DExtensions import TestMap2DExtensions
-from testUtils import TestUtils
-from testFuncMap2D import TestFuncMap2D
-from testFuncWithoutKeywords import TestFuncWithoutKewords
-from testInputMap import TestInputMap
-from testFieldMap import TestFieldMap
-from testLateralWeightsMap import TestLateralWeightsMap
+from dnfpy_tests import *
 
 def suite():
         suite = unittest.TestSuite()

@@ -1,5 +1,5 @@
 import numpy as np
-from map2D import Map2D
+from dnfpy.core.map2D import Map2D
 
 class ActivationMap(Map2D):
     def _compute(self,model,field,th):

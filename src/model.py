@@ -1,10 +1,10 @@
 import numpy as np
 import sys
-from funcMap2D import FuncMap2D
-from inputMap import InputMap
-from fieldMap import FieldMap
-from activationMap import ActivationMap
-from lateralWeightsMap import LateralWeightsMap
+from dnfpy.core.funcMap2D import FuncMap2D
+from dnfpy.model.inputMap import InputMap
+from dnfpy.model.fieldMap import FieldMap
+from dnfpy.model.activationMap import ActivationMap
+from dnfpy.model.lateralWeightsMap import LateralWeightsMap
 import matplotlib.pyplot as plt
 
 

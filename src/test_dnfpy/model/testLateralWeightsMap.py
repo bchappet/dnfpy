@@ -1,10 +1,9 @@
-from lateralWeightsMap import LateralWeightsMap
-from map2D import Map2D
 import unittest
 import numpy as np
-from funcMap2D import FuncMap2D
 import matplotlib.pyplot as plt
 import graphix
+from dnfpy.model.lateralWeightsMap import *
+import dnfpy.core.utils as utils
 
 def constantArray(shape,value):
         arr =  np.zeros(shape)

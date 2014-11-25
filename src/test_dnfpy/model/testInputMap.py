@@ -1,6 +1,8 @@
-from inputMap import InputMap
 import numpy as np
 import unittest
+from dnfpy.model.inputMap import InputMap
+import dnfpy.core.utils as utils
+import os
 
 
 
@@ -10,7 +12,9 @@ class TestInputMap(unittest.TestCase):
         if self.gui:
             import matplotlib.pyplot as plt
         self.precision = 7
-        self.testDir = "./testFiles/"
+        path =  os.path.dirname(os.path.realpath(__file__))
+        self.testDir =path +  "/testFiles/"
+
         self.globalParams = \
                 {'dt':0.1,'size':11,'wrap':True,'iStim':1,'wStim':2,'iDistr':1,'wDistr':2, \
                 'nbDistr':2,'distr_dt':0.4,'tck_dt':0.2,'noise_dt':0.1,'noiseI':0., \

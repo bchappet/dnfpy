@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 from unittest import TestCase
 import unittest
-from map2D import Map2D
+from dnfpy.core.map2D import Map2D
 import numpy as np
 import copy
 class TestMap2D(TestCase):

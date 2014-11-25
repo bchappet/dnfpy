@@ -1,8 +1,8 @@
 import numpy as np
-import utils
-from funcWithoutKeywords import FuncWithoutKeywords
 import unittest
-from funcMap2D import FuncMap2D
+from dnfpy.core.funcWithoutKeywords import FuncWithoutKeywords
+from dnfpy.core.funcMap2D import FuncMap2D
+import dnfpy.core.utils as utils
 
 
 class TestFuncWithoutKewords(unittest.TestCase):

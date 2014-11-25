@@ -1,5 +1,5 @@
 import unittest
-from map2D import Map2D
+from dnfpy.core.map2D import Map2D
 
 class ExtensionMap2D(Map2D):
         def _modifyParams(self,params,globalParams):

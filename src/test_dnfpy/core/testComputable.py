@@ -1,6 +1,6 @@
 import inspect
 import unittest
-from computable import Computable
+from dnfpy.core.computable import Computable
 
 class Computable2(Computable):
     def __init__(self,**kwargs):
