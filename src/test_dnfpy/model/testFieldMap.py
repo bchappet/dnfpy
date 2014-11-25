@@ -1,5 +1,5 @@
 import unittest
-from dnfpy.model import FieldMap
+from dnfpy.model.fieldMap import FieldMap
 
 
 class TestFieldMap(unittest.TestCase):
