@@ -210,6 +210,7 @@ class Map2D(Computable):
             PostCondition: globalParams is unaltered
         """
         copyOfGlobalParams = dict(**globalParams)
+        print "copy dict : " + str(copyOfGlobalParams)
         self.__updateParams_recursif(copyOfGlobalParams)
     
     def addChildren(self,**kwards):

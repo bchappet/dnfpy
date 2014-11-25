@@ -8,7 +8,7 @@ import numpy as np
 
 
 def randomNormal(scale,size_):
-    """np.random.normal does not support scale = 0"""
+    """because np.random.normal does not support scale = 0"""
     if scale == 0:
         return np.zeros(size_,dtype=np.float32)
     else:
@@ -29,9 +29,18 @@ class InputMap(FuncWithoutKeywords):
 
         self.addChildren(track1=self.track1,track2=self.track2,noise=self.noise,distrs=self.distrs)
 
+        #debug:
+    def get_nbDistr(self):
+        return self.distrs.getChildrenCount()
+
     def _onParamUpdate(self):
         self.updateNbDistr(self._getArg('nb_distr'))
 
+    def _modifyParamsRecursively(self,params):
+        size = params['size']
+        params['wStim'] *= size
+        params['wDistr'] *= size
+        params['tck_radius'] *= size
 
     def newTrack(self,index):
         period  = 36
