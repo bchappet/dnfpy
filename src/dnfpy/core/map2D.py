@@ -108,10 +108,7 @@ class Map2D(Computable):
 
             if abs(self.__getNextUpdateTime() - simuTime) <= allowed_error :
                  self._setArg(time= round(simuTime,self.__precision))
-#                print("time %f : compute %s"%(self.time,self))
                  self.__computationStep()
-                 #Update self.__dictionary with children vals
-#                print("result : %s " %self._data)
             self.__lock = False
         else:
                 pass
