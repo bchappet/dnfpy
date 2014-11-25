@@ -6,6 +6,7 @@ from dnfpy.model.fieldMap import FieldMap
 from dnfpy.model.activationMap import ActivationMap
 from dnfpy.model.lateralWeightsMap import LateralWeightsMap
 import matplotlib.pyplot as plt
+import test_dnfpy.model.graphix as graphix
 
 
 
@@ -32,21 +33,25 @@ class Model(object):
         self.activation.registerOnGlobalParamsChange(dt='dt',model='model',th='threshold')
         self.activation.addChildren(field=self.field)
 
-        self.lat.registerOnGlobalParamsChange(wrap='wrap')
-        self.lat.addChildren(activation=self.activation)
+        self.lat.registerOnGlobalParamsChange(dt='dt',wrap='wrap')
+        self.lat.addChildren(act=self.activation)
 
         #Update args
         self.field.updateParams(self.globalParams)
 
+    def getMapsToDisplay(self):
+        return dict(aff=self.aff.getData(),field=self.field.getData(),lat=self.lat.getData(),act=self.activation.getData())
+
+    
+
     def run(self,timeEnd):
         simuTime = 0
-        self.lat
         while simuTime < timeEnd:
             nextTime = self.field.getSmallestNextUpdateTime()
             simuTime = nextTime
             self.field.update(simuTime)
 
-        plt.imshow(self.field.getData())
+        graphix.plotMaps(self.getMapsToDisplay())
         plt.show()
         
 if __name__ == "__main__":

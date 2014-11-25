@@ -23,7 +23,7 @@
 'pInh':0.5,
 'noiseI':0.01,
 'nbDistr':0,
-'iDistr':1,
+'iDistr':0,
 'wDistr':0.1,
 'N':20,
 'routing':'NSpike',
