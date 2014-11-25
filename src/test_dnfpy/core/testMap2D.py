@@ -155,6 +155,11 @@ class TestMap2D(TestCase):
             obtained = self.uut.getAttributesNames()
             expected = set(['time','size','dt','a','b'])
             self.assertEqual(expected,obtained,"result should be the same")
+        def test_children_cout(self):
+            self.assertEqual(2,self.uut_children.getChildrenCount())
+        def test_remove_children(self):
+            self.uut_children.removeChild('child2')
+            self.assertEqual(1,self.uut_children.getChildrenCount())
         
             
 

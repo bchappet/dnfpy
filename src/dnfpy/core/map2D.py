@@ -210,7 +210,6 @@ class Map2D(Computable):
             PostCondition: globalParams is unaltered
         """
         copyOfGlobalParams = dict(**globalParams)
-        print "copy dict : " + str(copyOfGlobalParams)
         self.__updateParams_recursif(copyOfGlobalParams)
     
     def addChildren(self,**kwards):
@@ -219,7 +218,6 @@ class Map2D(Computable):
             Add N children using dictionary
         """
         self.__children.update(**kwards)
-        self._setArg(**self.__children)
 
 
     def removeChild(self,childName):
@@ -228,7 +226,11 @@ class Map2D(Computable):
             Remove one child with the name childName
             Return: True if the argument was successfully removed
         """
-        self._rmArg(childName)
+        try:
+            del self.__children[childName]
+            return True
+        except KeyError:
+            return False
 
     def getChildrenCount(self):
         """
