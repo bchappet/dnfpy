@@ -15,20 +15,20 @@ def constantArray(shape,value):
 class TestLateralWeightsMap(unittest.TestCase):
         def setUp(self):
                 self.precision = 7
-                self.dt = LateralWeightsMap.DT_MAX
                 self.size = 21
-                self.uut = LateralWeightsMap(self.size,dt=self.dt,kernelType='gauss')
-                self.uut.registerOnGlobalParamsChange(wrap='wrap')
-                act = FuncMap2D(constantArray,self.size,dt=self.dt,value=1.,shape=((self.size,)*2))
+                self.uut = LateralWeightsMap(self.size,kernelType='gauss')
+                self.uut.registerOnGlobalParamsChange(dt='dt',wrap='wrap')
+                act = FuncMap2D(constantArray,self.size,value=1.,shape=((self.size,)*2))
+                act.registerOnGlobalParamsChange(dt='dt')
                 self.uut.addChildren(act=act)
                 
 
-                globalParams = dict(size=self.size,wrap=True,iExc=1.25,wExc=0.1,iInh=0.7,wInh=10.0,alpha=10.0,pExc =0.0043,pInh=0.5 )
+                globalParams = dict(size=self.size,wrap=True,iExc=1.25,wExc=0.1,iInh=0.7,wInh=10.0,alpha=10.0,pExc =0.0043,pInh=0.5,dt=0.1 )
                 self.uut.updateParams(globalParams)
 
 
         def test_gausiankernel(self):
-                self.uut.update(self.dt)
+                self.uut.update(0.1)
                 expected =[-0.25281909, -0.25303704, -0.25323221, -0.25340453, -0.25355393, -0.2536751, \
                              -0.25346395, -0.24620937, -0.18000329,  0.03420243,  0.19954646,  0.03420243,\
                              -0.18000329, -0.24620937, -0.25346395, -0.2536751,  -0.25355393, -0.25340453,\
@@ -39,7 +39,7 @@ class TestLateralWeightsMap(unittest.TestCase):
                 #plt.show()
 
         def test_convolution(self):
-                self.uut.update(self.dt)
+                self.uut.update(0.1)
                 expected =[-0.25281909, -0.25303704, -0.25323221, -0.25340453, -0.25355393, -0.2536751, \
                              -0.25346395, -0.24620937, -0.18000329,  0.03420243,  0.19954646,  0.03420243,\
                              -0.18000329, -0.24620937, -0.25346395, -0.2536751,  -0.25355393, -0.25340453,\

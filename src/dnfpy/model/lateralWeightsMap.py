@@ -4,29 +4,27 @@ from dnfpy.core.funcMap2D import FuncMap2D
 import cv2
 
 class LateralWeightsMap(Map2D):
-    DT_MAX = 1e30 #global constant for the static map: they will not be updated
     def __init__(self,size,kernelType,**kwargs):
         super(LateralWeightsMap,self).__init__(size,kernelType=kernelType,**kwargs)
         center = (size - 1)/2
-        
+        dt_max = 1e20 
         if kernelType == 'gauss':
-            kernelExc = FuncMap2D(utils.gauss2d,size,dt=LateralWeightsMap.DT_MAX,centerX=center,centerY=center)
+            kernelExc = FuncMap2D(utils.gauss2d,size,dt=dt_max,centerX=center,centerY=center)
             kernelExc.registerOnGlobalParamsChange(wrap='wrap',intensity='iExc',width='wExc')
-            kernelInh = FuncMap2D(utils.gauss2d,size,dt=LateralWeightsMap.DT_MAX,centerX=center,centerY=center)
+            kernelInh = FuncMap2D(utils.gauss2d,size,dt=dt_max,centerX=center,centerY=center)
             kernelInh.registerOnGlobalParamsChange(wrap='wrap',intensity='iInh',width='wInh')
         elif kernelType == 'exp':
-            kernelExc = FuncMap2D(utils.exp2d,size,dt=LateralWeightsMap.DT_MAX,centerX=center,centerY=center)
+            kernelExc = FuncMap2D(utils.exp2d,size,dt=dt_max,centerX=center,centerY=center)
             kernelExc.registerOnGlobalParamsChange(wrap='wrap',intensity='iExc',proba='pExc')
-            kernelInh = FuncMap2D(utils.exp2d,size,dt=LateralWeightsMap.DT_MAX,centerX=center,centerY=center)
+            kernelInh = FuncMap2D(utils.exp2d,size,dt=dt_max,centerX=center,centerY=center)
             kernelInh.registerOnGlobalParamsChange(wrap='wrap',intensity='iInh',proba='pInh')
         else:
                 print("Error bad kernel param %s"%kernelType)
         
-        kernel = FuncMap2D(utils.subArrays,size,dt=LateralWeightsMap.DT_MAX)
-        kernel.addChildren(a=kernelExc,b=kernelInh)
+        self.kernel = FuncMap2D(utils.subArrays,size,dt=dt_max)
+        self.kernel.addChildren(a=kernelExc,b=kernelInh)
 
-        self.addChildren(kernel=kernel)
-        self._setArg(dt=LateralWeightsMap.DT_MAX)
+        self.addChildren(kernel=self.kernel)
 
     def _compute(self,act,kernel,wrap):
         if wrap:
@@ -34,6 +32,9 @@ class LateralWeightsMap(Map2D):
         else:
             border = cv2.BORDER_DEFAULT
         self._data = cv2.filter2D(act,-1,cv2.flip(kernel,-1),anchor=(-1,-1),borderType=border)
+
+    def _onParamUpdate(self):
+        self.kernel.artificialRecursiveComputation()
 
     def _modifyParamsRecursively(self,params):
         size = params['size']

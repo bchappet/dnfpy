@@ -71,6 +71,22 @@ class Map2D(Computable):
             return minNUT
         else:
             return sys.maxint
+
+    def artificialRecursiveComputation(self):
+        """
+            Public
+            Perform an artificial coputation step for the childre
+            and self without updating dt
+        """
+        for child in self.__children.values():
+                child.artificialRecursiveComputation()
+        self.__computationStep()
+
+    def __computationStep(self):
+        self._setArg(**self._getChildrenStates())
+        self._compute_with_params()
+
+
     
         
     def update(self,simuTime):
@@ -93,9 +109,8 @@ class Map2D(Computable):
             if abs(self.__getNextUpdateTime() - simuTime) <= allowed_error :
                  self._setArg(time= round(simuTime,self.__precision))
 #                print("time %f : compute %s"%(self.time,self))
+                 self.__computationStep()
                  #Update self.__dictionary with children vals
-                 self._setArg(**self._getChildrenStates())
-                 self._compute_with_params()
 #                print("result : %s " %self._data)
             self.__lock = False
         else:
@@ -188,9 +203,9 @@ class Map2D(Computable):
         if not(self.__lock):
             self.__lock = True
             self._modifyParamsRecursively(params)#will alter param for self and the children
-            self.__updateParams(params) #will alter param for self and add them to self.__dictionary
             for child in self.__children.values():
                 child.__updateParams_recursif(params)
+            self.__updateParams(params) #will alter param for self and add them to self.__dictionary
             self.__lock = False
         else:
             pass
