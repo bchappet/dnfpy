@@ -7,13 +7,11 @@ from dnfpy.model.activationMap import ActivationMap
 from dnfpy.model.lateralWeightsMap import LateralWeightsMap
 import matplotlib.pyplot as plt
 import test_dnfpy.model.graphix as graphix
+from dnfpy.view.renderable import Renderable
+from dnfpy.model.model import Model
 
 
-
-class Model(object):
-    def __init__(self,globalParams):
-        self.globalParams = globalParams
-        self.initMaps()
+class ModelDNF(Model,Renderable):
 
     def initMaps(self):
         """We initiate the map and link them"""
@@ -39,26 +37,34 @@ class Model(object):
         #Update args
         self.field.updateParams(self.globalParams)
 
-    def getMapsToDisplay(self):
+        #return the root
+        return self.field
+
+    def getArraysDict(self):
         return dict(aff=self.aff.getData(),field=self.field.getData(),lat=self.lat.getData(),act=self.activation.getData())
 
     
+def run(model,timeEnd):
+    """Will be the controller"""
+    simuTime = 0
+    while simuTime < timeEnd:
+        nextTime = model.getSmallestNextUpdateTime()
+        simuTime = nextTime
+        model.update(simuTime)
+def plot(model):
+    """Will be the view"""
+    graphix.plotMaps(model.getMapsToDisplay())
+    plt.show()
+    
 
-    def run(self,timeEnd):
-        simuTime = 0
-        while simuTime < timeEnd:
-            nextTime = self.field.getSmallestNextUpdateTime()
-            simuTime = nextTime
-            self.field.update(simuTime)
-
-        graphix.plotMaps(self.getMapsToDisplay())
-        plt.show()
-        
 if __name__ == "__main__":
-    args = sys.argv[1]
-    params = eval(open(sys.argv[1],'r').read())
+    args = sys.argv[1] #name of the file containing the global argument dictionary
+    params = eval(open(sys.argv[1],'r').read()) #should separate args commandline, arg controler and arg view and arg model
     model = Model(params)
-    model.run(10)
+    run(model,params['time_end'])
+    plot(model)
+
+
 
 
         

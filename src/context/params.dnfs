@@ -21,7 +21,7 @@
 'lateralWKernel': 'gauss',
 'pExc':0.0043,
 'pInh':0.5,
-'noiseI':0.01,
+'noiseI':1.01,
 'nbDistr':0,
 'iDistr':0,
 'wDistr':0.1,
