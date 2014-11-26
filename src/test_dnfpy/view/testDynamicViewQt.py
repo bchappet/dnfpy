@@ -4,22 +4,34 @@ import sampleArrayGenerator as gen
 import sys
 import time
 import dnfpy.view.dynamicViewQt as view
+from dnfpy.view.renderable import Renderable
+
+class RenderableTest(Renderable):
+    def __init__(self,nbMap):
+            self.arrays = {}
+            for i in range(nbMap):
+                self.arrays.update({"test"+str(i):gen.getRandomMarquedArray(size)})
+
+
+    def update(self):
+            for name in self.arrays.keys():
+                    self.arrays.update({name:gen.getRandomMarquedArray(size)})
+    def getArraysDict(self):
+            return self.arrays
 
 
 class TestThread(QtCore.QThread):
     trigger = QtCore.pyqtSignal() 
-    def __init__(self,gui):
+    def __init__(self,renderable,view):
         super(TestThread,self).__init__()
-        self.gui = gui
-        self.trigger.connect(self.gui.update)
-        for i in range(nbMap):
-            gui.addMap(gen.getRandomMarquedArray(size))
+        self.view = view
+        self.renderable = renderable
+        self.trigger.connect(self.view.update)
        
 
     def run(self):
-        for i in range(1000):
-            for j in range(nbMap):
-                self.gui.addMapToUpdate(j,gen.getRandomMarquedArray(size))
+        for i in range(10000):
+            self.renderable.update()
             self.trigger.emit()
             time.sleep(0.01)
 
@@ -31,9 +43,10 @@ size = 150
 nbMap = 15
 def main():
     app = QtGui.QApplication(sys.argv)
-    ex = view.DisplayMapsQt(nbMap)
-    thread = TestThread(ex)
-    ex.show()
+    renderable = RenderableTest(nbMap)
+    view_ = view.DisplayMapsQt(renderable)
+    thread = TestThread(renderable,view_)
+    view_.show()
     thread.start()
     sys.exit(app.exec_())
 
