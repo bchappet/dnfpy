@@ -1,16 +1,13 @@
-import numpy as np
-import sys
 from dnfpy.core.funcMap2D import FuncMap2D
 from dnfpy.model.inputMap import InputMap
 from dnfpy.model.fieldMap import FieldMap
 from dnfpy.model.activationMap import ActivationMap
 from dnfpy.model.lateralWeightsMap import LateralWeightsMap
 from dnfpy.model.webcamMap import WebcamMap
-import matplotlib.pyplot as plt
-import test_dnfpy.model.graphix as graphix
 from dnfpy.view.renderable import Renderable
 from dnfpy.model.model import Model
 from dnfpy.model.imageColorSelection import ImageColorSelection
+from dnfpy.model.convolution import Convolution
 
 
 class ModelDNFCam(Model,Renderable):
@@ -24,7 +21,8 @@ class ModelDNFCam(Model,Renderable):
         self.color_select = ImageColorSelection(size)
         self.field = FieldMap(size)
         self.activation = ActivationMap(size)
-        self.lat = LateralWeightsMap(size,self.globalParams['lateralWKernel'])
+        self.kernel = LateralWeightsMap(size,self.globalParams['lateralWKernel'])
+        self.lat = Convolution(size)
         #Link maps
 
         self.webcam.registerOnGlobalParamsChange(dt='webcam_dt') 
@@ -39,11 +37,16 @@ class ModelDNFCam(Model,Renderable):
         self.activation.registerOnGlobalParamsChange(dt='dt',model='model',th='threshold')
         self.activation.addChildren(field=self.field)
 
+        self.kernel.registerOnGlobalParamsChange(dt='kernel_dt',wrap='wrap')
+
         self.lat.registerOnGlobalParamsChange(dt='dt',wrap='wrap')
-        self.lat.addChildren(act=self.activation)
+        self.lat.addChildren(source=self.activation,kernel = self.kernel)
 
         #Update args
         self.field.updateParams(self.globalParams)
+
+        #Compute kernel once and for all
+        self.kernel.artificialRecursiveComputation()
 
         #return the root
         return self.field
