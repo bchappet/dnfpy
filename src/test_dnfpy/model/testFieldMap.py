@@ -33,7 +33,7 @@ class TestFieldMap(unittest.TestCase):
                 self.uut.update(0.1)
                 self.uut.update(0.2)
                 obtained = self.uut.getData()
-                expected =  0.234375
+                expected =  1.375
                 self.assertEqual(obtained,expected)
 
 
