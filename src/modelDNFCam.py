@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import test_dnfpy.model.graphix as graphix
 from dnfpy.view.renderable import Renderable
 from dnfpy.model.model import Model
+from dnfpy.model.imageColorSelection import ImageColorSelection
 
 
 class ModelDNFCam(Model,Renderable):
@@ -18,13 +19,18 @@ class ModelDNFCam(Model,Renderable):
         """We initiate the map and link them"""
         #Create maps
         size = self.globalParams['size']
-        self.aff = WebcamMap(size)
+
+        self.webcam = WebcamMap(size)
+        self.color_select = ImageColorSelection(size)
         self.field = FieldMap(size)
         self.activation = ActivationMap(size)
         self.lat = LateralWeightsMap(size,self.globalParams['lateralWKernel'])
         #Link maps
 
-        self.aff.registerOnGlobalParamsChange(dt='webcam_dt')
+        self.webcam.registerOnGlobalParamsChange(dt='webcam_dt') 
+        self.color_select.registerOnGlobalParamsChange(dt='webcam_dt',color='color',reverseColors='reverseColors',color_threshold='color_threshold')
+        self.color_select.addChildren(image=self.webcam)
+        self.aff = self.color_select
 
 
         self.field.registerOnGlobalParamsChange(model='model',dt='dt',tau='tau',h='h',th='threshold')
@@ -43,5 +49,5 @@ class ModelDNFCam(Model,Renderable):
         return self.field
 
     def getArraysDict(self):
-        return dict(aff=self.aff.getData(),field=self.field.getData(),lat=self.lat.getData(),act=self.activation.getData())
+        return dict(webcam = self.webcam.getData(),aff=self.aff.getData(),field=self.field.getData(),lat=self.lat.getData(),act=self.activation.getData())
 
