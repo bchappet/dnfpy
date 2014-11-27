@@ -1,4 +1,6 @@
 from PyQt4 import QtCore
+from datetime import datetime
+import time
 
 class Runner(QtCore.QThread):
     """
@@ -19,7 +21,11 @@ class Runner(QtCore.QThread):
         self.view = view
         self.simuTime = 0
         self.timeEnd = timeEnd
+        self.timeRatio = 1 #
+        self.dt = 0.1 #time per computation (in sec)
         self.trigger.connect(self.view.update)
+        #timing
+        self.lastUpdateTime = datetime.now()
 
 
     def run(self):
@@ -28,4 +34,18 @@ class Runner(QtCore.QThread):
             self.simuTime = nextTime
             self.model.update(self.simuTime)
             self.trigger.emit()
+            self.__slowDown()
+    def __slowDown(self):
+        now = datetime.now()
+        
+        delta = now - self.lastUpdateTime
+        
+        timeIteration = self.timeRatio * self.dt * 1e6
+        if delta.microseconds < timeIteration:
+            val = self.timeRatio*1e6 - delta.microseconds
+            time.sleep((timeIteration - delta.microseconds)/1e6)
+        self.lastUpdateTime = now 
+        
+
+            
 
