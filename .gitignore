@@ -8,6 +8,7 @@
 *.swp
 __pycache__/
 *.py[cod]
+*.lprof
 
 # C extensions
 *.so
