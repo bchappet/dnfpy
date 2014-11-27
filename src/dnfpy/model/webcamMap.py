@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 class WebcamMap(Map2D):
     def __init__(self,size,**kwargs):
-        super(WebCamMap,self).__init__(size,**kwargs)
+        super(WebcamMap,self).__init__(size,**kwargs)
         self.capture = cv2.VideoCapture(0)
 
 
