@@ -29,7 +29,7 @@ def plotArray(data):
         """
             Plot a np.array, with egalised colorbar
         """
-        ret = plt.imshow(data,interpolation='nearest',cmap='RdYlBu_r',origin='lower')
+        ret = plt.imshow(data,interpolation='nearest',cmap='RdYlBu_r')
         if np.sum(data) != 0:
             bar = plt.colorbar(shrink=.92)
             __egaliseColorBar(data,bar)

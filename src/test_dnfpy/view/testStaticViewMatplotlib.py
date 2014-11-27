@@ -3,6 +3,7 @@ import sampleArrayGenerator
 import unittest
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy
 
 class TestStaticViewMatplotlib(unittest.TestCase):
     def setUp(self):
@@ -22,6 +23,13 @@ class TestStaticViewMatplotlib(unittest.TestCase):
         plt.show()
     def test_plotArrayVoid(self):
         staticViewMatplotlib.plotArray(np.zeros((self.size,self.size)))
+        plt.show()
+    def test_greyMap(self):
+        img = scipy.misc.lena()
+        staticViewMatplotlib.plotArray(img)
+        plt.show()
+
+
 
         
 
