@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.signal as signal
 
 
 #Utilitary functions 
@@ -44,3 +45,12 @@ def sumArrays(*varlist):
 def subArrays(a,b):
     """Return a - b"""
     return a-b
+
+def getAssymetricGaussian2D(size,intXY,stdXY):
+    x = signal.gaussian(size,stdXY[0]) * intXY[0]
+    y = signal.gaussian(size,stdXY[1]) * intXY[1]
+
+    x = x.reshape((1,size))
+    y = y.reshape((size,1))
+    return np.dot(y,x)
+
