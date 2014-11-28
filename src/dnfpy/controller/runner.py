@@ -21,13 +21,13 @@ class Runner(QtCore.QThread):
         self.view = view
         self.simuTime = 0
         self.timeEnd = timeEnd
-        self.timeRatio = 1 #
+        self.timeRatio = 0.1#
         self.dt = 0.1 #time per computation (in sec)
         self.trigger.connect(self.view.update)
         #timing
         self.lastUpdateTime = datetime.now()
 
-
+    @profile
     def run(self):
         while self.simuTime < self.timeEnd:
             nextTime = self.model.getSmallestNextUpdateTime()
@@ -44,6 +44,8 @@ class Runner(QtCore.QThread):
         if delta.microseconds < timeIteration:
             val = self.timeRatio*1e6 - delta.microseconds
             time.sleep((timeIteration - delta.microseconds)/1e6)
+
+            #print("to slow... delta ms %s and timeIteration %s"%(delta.microseconds,timeIteration))
         self.lastUpdateTime = now 
         
 
