@@ -52,5 +52,10 @@ class ModelDNFCam(Model,Renderable):
         return self.field
 
     def getArraysDict(self):
-        return dict(webcam = self.webcam.getData(),aff=self.aff.getData(),field=self.field.getData(),lat=self.lat.getData(),act=self.activation.getData())
+        return dict(
+                        webcam = self.webcam.getData(),
+                        colorSelect=self.aff.getData(),
+                        field=self.field.getData(),
+                        lat=self.lat.getData(),
+                        act=self.activation.getData())
 
