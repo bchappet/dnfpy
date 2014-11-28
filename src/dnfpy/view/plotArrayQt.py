@@ -21,8 +21,12 @@ def npToQImage(array):
         Transform the array into a qImage with color map
         return QImage
     """
-    max_a = max(abs(array.min()),array.max())
-    qImage = qimage2ndarray.gray2qimage(array,(-max_a,max_a))
-    qImage.setColorTable(__cm)
+    if len(array.shape) == 3:
+        qImage = qimage2ndarray.array2qimage(array).rgbSwapped()
+    else:
+
+        max_a = max(abs(np.min(array)),np.max(array))
+        qImage = qimage2ndarray.gray2qimage(array,(-max_a,max_a))
+        qImage.setColorTable(__cm)
     return qImage
 

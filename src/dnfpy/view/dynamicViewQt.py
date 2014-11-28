@@ -1,9 +1,30 @@
 #!/usr/bin/python
-from PyQt4 import QtGui
+from PyQt4 import QtGui,QtCore
 from PyQt4.QtCore import pyqtSlot
 import math
 import plotArrayQt
 from dnfpy.view.renderable import Renderable
+import numpy as np
+
+class ArrayLabel(QtGui.QLabel):
+        def __init__(self,array):
+                super(ArrayLabel,self).__init__()
+                self.updateArray(array)
+        def updateArray(self,array):
+                self.img = plotArrayQt.npToQImage(array)
+                self.shape = array.shape
+                self.min = np.min(array)
+                self.max = np.max(array)
+                w = self.width()
+                h = self.height()
+                #pixmap = QtGui.QPixmap.fromImage(self.img).scaled(w,h)
+                #self.setPixmap(pixmap)
+        def paintEvent(self,event):
+                qp = QtGui.QPainter(self)
+                qp.drawImage(event.rect(),self.img)
+                qp.drawText(event.rect(), QtCore.Qt.AlignTop, "%.2f"%self.max)   
+                qp.drawText(event.rect(), QtCore.Qt.AlignBottom, "%.2f"%self.min)   
+
 
 
 
@@ -18,10 +39,10 @@ class DisplayMapsQt(QtGui.QWidget):
         super(DisplayMapsQt, self).__init__()
         self.renderable = renderable
         size = len(self.renderable.getArraysDict())
+        self.simuTime = 0
 
         self.__initUI()
-        self.dictImg = {} #dict  of {name : QImage}
-        self.dictLabel = {} #list of labels
+        self.dictLabel = {} #dict of labels
 
         self.nbCols = int(math.ceil(math.sqrt(size))) #nb cols in the label matrix
         self.nbRows = int(math.ceil(size/float(self.nbCols))) #nb rows in the label matrix
@@ -37,9 +58,13 @@ class DisplayMapsQt(QtGui.QWidget):
         index = len(self.dictLabel)-1
         row = index / self.nbCols
         col = index % self.nbCols
-        self.grid.addWidget(label,row,col)
+        box = QtGui.QGroupBox(title)
+        vbox = QtGui.QVBoxLayout()
+        vbox.addWidget(label)
+        box.setLayout(vbox)
+        box.focusInEvent
+        self.grid.addWidget(box,row,col)
         label.setVisible(True)
-        return index
 
     def __initArrays(self):
         """
@@ -49,23 +74,24 @@ class DisplayMapsQt(QtGui.QWidget):
         for name in maps.keys():
             self.addMap(name,maps[name])
 
-
-    def addMap(self,name,map_):
+    def addMap(self,name,map):
         """
             Add a new map to the view
             return the index of the map
         """
-        img =plotArrayQt.npToQImage(map_)
-        self.dictImg.update({name:img})
-        label = QtGui.QLabel(self)
+        label = ArrayLabel(map)
         label.setScaledContents(True)
         self.dictLabel.update({name:label})
-        #Compute the position of the widget
+        self.__addLabel(label,name)
 
-        pixmap =QtGui.QPixmap(img)
-        label.setPixmap(pixmap)
-        
-        return self.__addLabel(label,name)
+    def __updateInfoMap(self,name,map_):
+        infoMap = InfoMap(map_.shape,np.min(map_),np.max(map_))
+        self.dictInfoMap.update({name:infoMap})
+
+
+            
+
+
 
     @pyqtSlot()
     def update(self):
@@ -76,29 +102,12 @@ class DisplayMapsQt(QtGui.QWidget):
         """
         maps = self.renderable.getArraysDict()
         for name in maps.keys():
-            self.updateGui(name,maps[name])
+            self.dictLabel[name].updateArray(maps[name])
 
         self.mapUpdate += 1
-
-    def paintEvent(self,event):
-        self.paintEventCount +=1
+        self.repaint()
 
 
-    
-    def updateGui(self,name,map_):
-        img = plotArrayQt.npToQImage(map_)
-        self.dictImg[name] = img
-        label  = self.dictLabel[name]
-        w = label.width()
-        h = label.height()
-        pixmap = QtGui.QPixmap.fromImage(img).scaled(w,h)
-        label.setPixmap(pixmap)
-
-    def resizeEvent(self, event):
-        for label in self.dictLabel.values():
-            w = label.width()
-            h = label.height()
-            label.setPixmap(label.pixmap().scaled(w,h))
 
         
     def __initUI(self):      

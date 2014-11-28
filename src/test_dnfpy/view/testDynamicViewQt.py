@@ -33,16 +33,16 @@ class TestThread(QtCore.QThread):
         for i in range(10000):
             self.renderable.update()
             self.trigger.emit()
-            time.sleep(0.01)
-
-    
-
-
+            time.sleep(0.05)
 
 size = 150
 nbMap = 15
 def main():
+    defaultQSS = "../../stylesheet/default.qss"
     app = QtGui.QApplication(sys.argv)
+    app.setStyleSheet(open(defaultQSS,'r').read())
+
+
     renderable = RenderableTest(nbMap)
     view_ = view.DisplayMapsQt(renderable)
     thread = TestThread(renderable,view_)
