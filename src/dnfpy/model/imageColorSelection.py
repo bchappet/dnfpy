@@ -13,7 +13,7 @@ class ImageColorSelection(Map2D):
  
     def _onParamUpdate(self):
         #HSV threshold
-        self.lowHSV = np.array([0,70,70])
+        self.lowHSV = np.array([150,50,50])
         self.highHSV  = np.array([20,255,255])
         color = self._getArg('color')
         thresh = self._getArg('color_threshold')
@@ -27,6 +27,10 @@ class ImageColorSelection(Map2D):
         elif color == 'green':
                 self.lowHSV[0] = 60-thresh
                 self.highHSV[0] = 60+thresh
+        elif color == 'pink':
+                self.lowHSV[0] = 120-thresh
+                self.highHSV[0] = 120+thresh
+                
         
         elif color == 'gray':
                 pass
@@ -34,33 +38,32 @@ class ImageColorSelection(Map2D):
                 raise ValueError("bad color : %s"%color)
  
 
-    def _compute(self,size,image,color,reverseColors):
+    def _compute(self,image,color,reverseColors):
         if color == 'gray':
-                array = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-                array = cv2.resize(array,(size,size))
+                gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
         else:
                 array = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
-                array = cv2.inRange(array,self.lowHSV,self.highHSV)
-
-        array = cv2.resize(array,(size,size))
+                mask = cv2.inRange(array,self.lowHSV,self.highHSV)
+                res = cv2.bitwise_and(array,array, mask= mask)
+                gray = res[:,:,2]
+                
         if reverseColors:
-                array = self.__invert(array)
-        self._data =  self.__normalize(array)
+                gray = 255 -  gray
+        self._data =  normalize(gray)
 
-    def __normalize(self,array):
+def normalize(array):
         """
             Normalize between 0-1
         """
-        array *= 1.0
-        deltaVal = np.max(array) - np.min(array)
+        array = array.astype(np.float32)
+        dmax = np.max(array)
+        dmin = np.min(array)
+        deltaVal = dmax - dmin
         if deltaVal != 0:
-                return (array-np.min(array))/deltaVal
-        elif np.max(array) != 0:
-                return array/np.max(array)
+                return (array-dmin)/deltaVal
+        elif dmax != 0:
+                return array/dmax
         else:
                 return array
-    def __invert(sel,array):
-        """
-            Invert the colors
-        """
-        return 255 - array
+
+
