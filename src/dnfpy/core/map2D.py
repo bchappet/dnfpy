@@ -78,9 +78,14 @@ class Map2D(Computable):
             Perform an artificial coputation step for the childre
             and self without updating dt
         """
-        for child in self.__children.values():
-                child.artificialRecursiveComputation()
-        self.__computationStep()
+        if not(self.__lock):
+                self.__lock = True
+                for child in self.__children.values():
+                        child.artificialRecursiveComputation()
+                self.__computationStep()
+                self.__lock = False
+        else:
+                pass
 
     def __computationStep(self):
         self._setArg(**self._getChildrenStates())
