@@ -3,9 +3,8 @@
 'tau': 0.64,
 'iInh': 0.7,
 'nb_tck': 2,
-'time_end': 100,
 'threshold': 0.75,
-'wInh': 10.0,
+'wInh': 1.0,
 'wrap': True,
 'alpha': 10.0,
 'dt': 0.1,
@@ -16,12 +15,12 @@
 'wStim': 0.1,
 'projSize': 1.0,
 'wExc': 0.1,
-'h': 0,
+'h': -0.8,
 'tck_radius': 0.3,
 'lateralWKernel': 'gauss',
 'pExc':0.0043,
 'pInh':0.5,
-'noiseI':1.01,
+'noiseI':0.01,
 'nbDistr':0,
 'iDistr':0,
 'wDistr':0.1,
@@ -30,7 +29,8 @@
 'input_dt':0.1,
 'distr_dt':0.1,
 'tck_dt':0.1,
-'noise_dt':0.1
+'noise_dt':0.1,
+'kernel_dt':1e8,
 
 
 }

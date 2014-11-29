@@ -16,7 +16,7 @@ class ModelDNF(Model,Renderable):
         self.aff = InputMap(size)
         self.field = FieldMap(size)
         self.activation = ActivationMap(size)
-        self.kernel = LateralWeightsMap(size,self.globalParams['lateralWKernel'])
+        self.kernel = LateralWeightsMap(size,self.globalParams['lateralWKernel'],'')
         self.lat = Convolution(size)
         #Link maps
         self.aff.registerOnGlobalParamsChange_ignoreCompute(dt='input_dt',nb_distr='nbDistr')
@@ -39,7 +39,7 @@ class ModelDNF(Model,Renderable):
 
         #return the root
         return self.field
-
+    #override Renderable
     def getArraysDict(self):
         return dict(aff=self.aff.getData(),field=self.field.getData(),lat=self.lat.getData(),act=self.activation.getData())
 

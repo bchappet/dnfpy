@@ -16,7 +16,7 @@ class TestLateralWeightsMapAndConvolution(unittest.TestCase):
         def setUp(self):
                 self.precision = 7
                 self.size = 21
-                self.kernel = LateralWeightsMap(self.size,kernelType='gauss')
+                self.kernel = LateralWeightsMap(self.size,kernelType='gauss',term='')
                 self.kernel.registerOnGlobalParamsChange(dt='kernel_dt',wrap='wrap')
                 act = FuncMap2D(constantArray,self.size,value=1.,shape=((self.size,)*2))
                 self.uut = Convolution(self.size)

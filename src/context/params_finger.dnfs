@@ -10,7 +10,7 @@
 'dt': 0.1,
 'iStim': 1,
 'model': 'spike',
-'size': 301,
+'size': 201,
 'iExc': 1.25,
 'wStim': 0.1,
 'projSize': 1.0,
@@ -27,7 +27,9 @@
 'kernel_dt':1e8,
 
 'webcam_dt':0.1,
-'color':'red',
-'reverseColors':False,
-'color_threshold' : 40
+'color':'gray',
+'reverseColors':True,
+'color_threshold' : 20
+
+
 }

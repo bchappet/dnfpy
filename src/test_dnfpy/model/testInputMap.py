@@ -3,8 +3,6 @@ import unittest
 from dnfpy.model.inputMap import InputMap
 import dnfpy.core.utils as utils
 import os
-import matplotlib.pyplot as plt
-import graphix
 
 
 
@@ -42,9 +40,6 @@ class TestInputMap(unittest.TestCase):
                    1.73002411e-11]
         obtained = np.diagonal(self.uut.getData())
         self.assertAlmostEqual(0,np.sum(expected-obtained),self.precision)
-        if self.gui:
-            graphix.plotArray(self.uut.getData())
-            plt.show()
     def test_updateTrack10(self):
         for time in np.arange(0,2,0.1):
                 self.uut.update(time)
@@ -60,9 +55,6 @@ class TestInputMap(unittest.TestCase):
                         
         obtained = np.diagonal(self.uut.getData())
         self.assertAlmostEqual(0,np.sum(expected-obtained),self.precision)
-        if self.gui:
-            graphix.plotArray(self.uut.getData())
-            plt.show()
 
     def test_updateDistr(self):
         self.uut.update(0.1)
@@ -80,9 +72,6 @@ class TestInputMap(unittest.TestCase):
         self.assertEqual(10,self.uut.get_nbDistr())
         self.uut.update(0.3)
         self.uut.update(0.4)
-        if self.gui:
-            graphix.plotArray(self.uut.getData())
-            plt.show()
         self.globalParams['nbDistr'] = 1
         self.uut.updateParams(self.globalParams)
         self.assertEqual(1,self.uut.get_nbDistr())
@@ -95,9 +84,6 @@ class TestInputMap(unittest.TestCase):
         self.uut.update(0.3)
         self.uut.update(0.4)
         obtained = np.around(self.uut.getData(),self.precision)
-        if self.gui:
-            graphix.plotArray(obtained)
-            plt.show()
 
 
 
