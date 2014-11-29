@@ -1,4 +1,5 @@
 from PyQt4 import QtCore
+from PyQt4.QtCore import pyqtSlot
 from datetime import datetime
 import time
 
@@ -14,38 +15,68 @@ class Runner(QtCore.QThread):
             model : Model
             view : View
     """
-    trigger = QtCore.pyqtSignal()
-    def __init__(self,model,view,timeEnd):
+    triggerUpdate = QtCore.pyqtSignal()
+    def __init__(self,model,view,timeEnd,paramsModelDict,timeRatio = 0.3):
         super(Runner,self).__init__()
         self.model = model
+        self.paramsModelDict = paramsModelDict
         self.view = view
-        self.simuTime = 0
+        self.simuTime = 0.
         self.timeEnd = timeEnd
-        self.timeRatio = 0.1#
-        self.dt = 0.1 #time per computation (in sec)
-        self.trigger.connect(self.view.update)
+        self.timeRatio = timeRatio
+        self.triggerUpdate.connect(self.view.update)
         #timing
         self.lastUpdateTime = datetime.now()
+        #Control
+        self.play = True
 
-    @profile
-    def run(self):
-        while self.simuTime < self.timeEnd:
+    def getTimeRatio(self):
+        return self.timeRatio
+
+
+    @pyqtSlot(float)
+    def setTimeRatio(self,timeRatio):
+        self.timeRatio = timeRatio
+    @pyqtSlot()
+    def playSlot(self):
+        self.play = not(self.play)
+
+
+    @pyqtSlot()
+    def updateParams(self):
+        """
+            View will send signal when  parameter will be changed
+            by the view
+        """
+        self.paramsModelDict.update(self.view.getParamsDict())
+        self.model.updateParams(self.paramsModelDict)
+    @pyqtSlot()
+    def stepSlot(self):
+            self.__step()
+    def __step(self):
             nextTime = self.model.getSmallestNextUpdateTime()
             self.simuTime = nextTime
             self.model.update(self.simuTime)
-            self.trigger.emit()
+            self.triggerUpdate.emit()
+    def run(self):
+        while self.simuTime < self.timeEnd:
+            while not(self.play):
+                time.sleep(0.1)
+            self.__step()
             self.__slowDown()
     def __slowDown(self):
+        """
+            Slow down computation to ensure that
+            simuTime = timeRatio * realTime
+        """
         now = datetime.now()
         
         delta = now - self.lastUpdateTime
-        
-        timeIteration = self.timeRatio * self.dt * 1e6
+        dt = self.paramsModelDict['dt']
+        timeIteration = self.timeRatio * dt * 1e6
         if delta.microseconds < timeIteration:
             val = self.timeRatio*1e6 - delta.microseconds
             time.sleep((timeIteration - delta.microseconds)/1e6)
-
-            #print("to slow... delta ms %s and timeIteration %s"%(delta.microseconds,timeIteration))
         self.lastUpdateTime = now 
         
 

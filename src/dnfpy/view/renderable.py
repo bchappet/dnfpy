@@ -5,3 +5,6 @@ class Renderable(object):
 
     def getArraysDict(self):
         pass
+
+    def getArrayValue(name,*coordArgs):
+        pass

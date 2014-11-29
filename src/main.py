@@ -1,10 +1,14 @@
 import sys
-from modelDNF import ModelDNF
-from modelDNFCam import ModelDNFCam
-from dnfpy.view.dynamicViewQt import DisplayMapsQt
+from dnfpy.view.dynamicViewQt import DisplayModelQt
 from dnfpy.controller.runner import Runner
 from PyQt4 import QtGui
 import parser
+import modelDNF
+import modelDNFCam
+import modelFingerDetection
+import modelWMCam
+
+defaultQSS = "stylesheet/default.qss"
 
 modelName = sys.argv[1]
 moduleName = modelName[0].lower() + modelName[1:]
@@ -20,9 +24,16 @@ params = eval(open(context,'r').read())
 
 
 app = QtGui.QApplication(sys.argv)
+app.setStyleSheet(open(defaultQSS,'r').read())
+
+
+
 model = clazz(params)
-view = DisplayMapsQt(model)
-runner = Runner(model,view,timeEnd)
+view = DisplayModelQt(model)
+#view.showMaximized()
+runner = Runner(model,view,timeEnd,params)
+view.setRunner(runner)
+
 
 
 view.show()
