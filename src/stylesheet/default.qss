@@ -10,3 +10,24 @@ QGroupBox::title {
      subcontrol-position: top center; /* position at the top center */
      padding: 0 2px;
  }
+
+
+
+ DisplayModelQt{
+        background-color : white;
+ }
+
+ GlobalParams{
+        max-height : 40;
+
+ }
+
+ArrayLabel{
+    padding: 0px;
+    border: 0px;
+    margin: 0px;
+
+
+}
+
+
