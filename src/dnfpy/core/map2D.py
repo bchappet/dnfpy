@@ -8,7 +8,7 @@ class Map2D(Computable):
     """
     The Map2D will be updated when simuTime = self.time + self.dt
     The allowed precision for the time values is 1e-10
-    
+
     Construction arguments:
         'size':   the data will be np.array of shape (size,size)
                 or a double if size = 1
@@ -25,7 +25,7 @@ class Map2D(Computable):
     def __init__(self,size,**kwargs):
         super(Map2D,self).__init__(size=size,**kwargs)
         """Init a 2D numpy array of shape (size,size) dtype float32"""
-        
+
         self._setArg(time=0.0) #last simulation time (in seconds) : it is updated just befor compute() call
         self.reset() #init self._data
         self.__precision = 7 #allowed precision
@@ -36,26 +36,26 @@ class Map2D(Computable):
         self.__lock =False #True when method already called
 
 
-        
-    
+
+
     def _compute(self):
         """
             Abstract
             Update self._data using all parameter of self.__dictionary
         """
         return None
-        
-        
+
+
     def __getNextUpdateTime(self):
         """
             Return self.time + self.dt
         """
         return self._getArg('time') + self._getArg('dt')
-        
+
     def getSmallestNextUpdateTime(self):
         """
             Return the smallest NUT of self and the children(recursive)
-            This should be call before each update to know 
+            This should be call before each update to know
             the global minimal NUT
             Recursif
         """
@@ -66,7 +66,7 @@ class Map2D(Computable):
                     childNUT = child.getSmallestNextUpdateTime()
                     if childNUT < minNUT:
                             minNUT = childNUT
-        
+
             self.__lock = False
             return minNUT
         else:
@@ -92,8 +92,8 @@ class Map2D(Computable):
         self._compute_with_params()
 
 
-    
-        
+
+
     def update(self,simuTime):
         """
             Public, Final, Recursif
@@ -107,7 +107,7 @@ class Map2D(Computable):
             allowed_error = math.pow(10,-self.__precision)
             assert( simuTime - selfNUT <= allowed_error), \
                 "Simulation problem: %r has not been updated. %r < %r" % (self,selfNUT,simuTime)
-            
+
             for child in self.__children.values():
                  child.update(simuTime)
 
@@ -138,30 +138,30 @@ class Map2D(Computable):
             the children are not considered as attributes
         """
         return  self._getDictionaryNames() - self.getChildrenNames()
-        
 
 
-                        
+
+
     def getTime(self):
         """Accessor return self.time"""
         return self._getArg('time')
-        
+
     def getData(self):
         """Accessor return self._data"""
         return self._data
 
     def _modifyParams(self,params,globalParams):
         """
-            Abstract Optional : 
+            Abstract Optional :
             Mofify the params using params and  globalParams
             Their final value will be added to self.__dictionary
         """
 
     def _modifyParamsRecursively(self,params):
         """
-            Protected,  Absract, Optional 
+            Protected,  Absract, Optional
             Define modification on params.
-            This modification are definitive and will be 
+            This modification are definitive and will be
             transmitted to the children
 
             Thus this modifications are prioritary over self._modifyParams
@@ -212,12 +212,12 @@ class Map2D(Computable):
         else:
             pass
         return None
-        
+
     def updateParams(self,globalParams):
         """
             Public, Final, Recursif (cons dict globalParams)
             Update self and recursively children with the globalParams
-            It means that if self used registerOnGlobalParamsChange 
+            It means that if self used registerOnGlobalParamsChange
             the parameters stated in this function will be updated
 
             But they can also be transformed:
@@ -228,10 +228,10 @@ class Map2D(Computable):
         """
         copyOfGlobalParams = dict(**globalParams)
         self.__updateParams_recursif(copyOfGlobalParams)
-    
+
     def addChildren(self,**kwards):
         """
-            Public 
+            Public
             Add N children using dictionary
         """
         self.__children.update(**kwards)
@@ -269,7 +269,7 @@ class Map2D(Computable):
         """
         newDict = dict((k,bDict[aDict[k]]) for k in aDict.keys()   )
         return newDict
-        
-        
-     
+
+
+
 
