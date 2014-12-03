@@ -32,7 +32,21 @@ class Runner(QtCore.QThread):
 
     def getTimeRatio(self):
         return self.timeRatio
-
+    @pyqtSlot()
+    def saveFigSlot(self):
+            import  dnfpy.view.staticViewMatplotlib as mtpl
+            import matplotlib.pyplot as plt
+            dic = self.model.getArraysDict()
+            for key in dic:
+                mtpl.plotArray(dic[key])
+                plt.savefig(key+".png",dpi=300)
+                plt.close()
+    @pyqtSlot()
+    def saveArrSlot(self):
+            import numpy as np
+            dic = self.model.getArraysDict()
+            for key in dic:
+                np.savetxt(key+".csv",dic[key],delimiter = ",")
 
     @pyqtSlot(float)
     def setTimeRatio(self,timeRatio):

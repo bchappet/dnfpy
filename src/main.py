@@ -8,6 +8,8 @@ import modelDNFCam
 import modelFingerDetection
 import modelWMCam
 
+
+
 defaultQSS = "stylesheet/default.qss"
 
 modelName = sys.argv[1]

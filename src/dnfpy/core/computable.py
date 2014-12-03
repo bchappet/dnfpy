@@ -4,12 +4,12 @@ import inspect
 class Computable(object):
     """
         The Computables are object designed to compute a result
-        by mapping a dictionary of arguments given on 
+        by mapping a dictionary of arguments given on
         the construction to the set of argument expected
         by the compute method.
         The compute method is to implement
 
-        Children class can modify the dictionary of 
+        Children class can modify the dictionary of
         argument by calling self.update(var:value,...)
 
 
@@ -60,11 +60,11 @@ class Computable(object):
         except KeyError:
             return False
 
-               
+
 
     def _compute_with_params(self):
         """ Protected:
-            call get the subdict of compute argument from 
+            call get the subdict of compute argument from
             self.dictionary and gives cal compute with it
         """
         args = self._subDictionary(self._computeArgs)
@@ -78,7 +78,7 @@ class Computable(object):
             return the set of self._dictionary names
         """
         return set(self.__dictionary.viewkeys())
-            
+
 
     def _subDictionary(self,keys):
         """

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source ../install_tmp.sh
+
 EXEC="python"
 modules="core model"
 

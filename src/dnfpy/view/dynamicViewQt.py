@@ -1,59 +1,68 @@
-from PyQt4 import QtGui,QtCore
+from PyQt4 import QtGui,  QtCore
 from PyQt4.QtCore import pyqtSlot
 import math
 import plotArrayQt
-from dnfpy.view.renderable import Renderable
 import numpy as np
 from dnfpy.view.view import View
 
+
 class ArrayLabel(QtGui.QLabel):
-        def __init__(self,name,array):
-                super(ArrayLabel,self).__init__()
+        def __init__(self,  name,  array):
+                super(ArrayLabel,  self).__init__()
                 self.name = name
                 self.updateArray(array)
-                
-        def updateArray(self,array):
+
+        def updateArray(self, array):
                 self.array = array
                 self.img = plotArrayQt.npToQImage(array)
                 self.shape = array.shape
                 self.min = np.min(array)
                 self.max = np.max(array)
-        def paintEvent(self,event):
+
+        def paintEvent(self, event):
                 qp = QtGui.QPainter(self)
-                qp.drawImage(event.rect(),self.img)
-                qp.drawText(event.rect(), QtCore.Qt.AlignTop, "%.2f"%self.max)   
-                qp.drawText(event.rect(), QtCore.Qt.AlignBottom, "%.2f"%self.min)   
-        def mousePressEvent(self, event):
-                labXY = np.array([event.x(),event.y()],dtype=np.float32)
+                qp.drawImage(event.rect(), self.img)
+                qp.drawText(event.rect(),  QtCore.Qt.AlignTop,  "%.2f" %
+                            self.max)
+                qp.drawText(event.rect(),  QtCore.Qt.AlignBottom,  "%.2f" %
+                            self.min)
+
+        def mousePressEvent(self,  event):
+                labXY = np.array([event.x(), event.y()], dtype=np.float32)
                 size = self.rect().size()
-                labWH = np.array([size.width(),size.height()]) - 1
-                shapeWH = np.array([self.array.shape[0],self.array.shape[1]]) -1
+                labWH = np.array([size.width(), size.height()]) - 1
+                shapeWH = np.array([self.array.shape[0],
+                                    self.array.shape[1]]) - 1
                 arrXY = (labXY / labWH) * shapeWH
                 arrXY = np.round(arrXY)
-                value = self.array[arrXY[1],arrXY[0]]
+                value = self.array[arrXY[1], arrXY[0]]
                 print value
-                
-        def __labelToArrayCoord(self,):
-                """Return the corresponding array coords"""
-                arrW = self.shape[0]
-                arrH = self.shape[1]
-                x = labX/float(w) * arrW 
-                y = labY/float(h) * arrH 
-                return (x,y)
-                    
 
+        def getParameterWidget(self):
+            """
+            Will return the parameter display and  controlers specific of this
+            map
+            """
+            layout = QtGui.QBoxLayout()
+            lShape = QtGui.QLabel("Shape: " + str(self.shape))
+            layout.addWidget(lShape)
 
+            return layout
 
 
 class GlobalParams(QtGui.QWidget):
         """
             Global parameter of the runner
         """
-        def __init__(self,runner):
-            super(GlobalParams,self).__init__()
-            
+        def __init__(self, runner):
+            super(GlobalParams, self).__init__()
+
             self.runner = runner
             layout = QtGui.QHBoxLayout(self)
+            bSaveFig = QtGui.QPushButton("Save Figures")
+            bSaveFig.clicked.connect(runner.saveFigSlot)
+            bSaveArr = QtGui.QPushButton("Save Data")
+            bSaveArr.clicked.connect(runner.saveArrSlot)
             bPlay = QtGui.QPushButton("Play/Pause")
             bPlay.clicked.connect(runner.playSlot)
             bStep = QtGui.QPushButton("Step")
@@ -66,29 +75,32 @@ class GlobalParams(QtGui.QWidget):
             spinSpeedRatio.setDecimals(1)
             spinSpeedRatio.valueChanged.connect(runner.setTimeRatio)
             spinSpeedRatio.setPrefix("Speed : ")
+
+            layout.addWidget(bSaveFig)
+            layout.addWidget(bSaveArr)
             layout.addWidget(bPlay)
             layout.addWidget(bStep)
             layout.addWidget(spinSpeedRatio)
 
-            
-class DisplayModelQt(QtGui.QWidget,View):
+
+class DisplayModelQt(QtGui.QWidget, View):
     triggerParamsUpdate = QtCore.pyqtSignal()#Will be triggered on parmas modification
-    def __init__(self,renderable):
-        super(DisplayModelQt, self).__init__()
+    def __init__(self, renderable):
+        super(DisplayModelQt,  self).__init__()
         self.__paramDict = {} #copy of the global parameter dict
         self.layout = QtGui.QVBoxLayout(self)
         self.displayMaps = DisplayMapsQt(renderable)
         self.layout.addWidget(self.displayMaps)
 
-        self.setGeometry(400, 0, 700, 700)
+        self.setGeometry(400,  0,  700,  700)
     #Override View
     def getParamsDict(self):
         return self.__paramDict
     #Override View
-    def updateParamsDict(self,paramsDict):
+    def updateParamsDict(self, paramsDict):
         self.__paramDict.update(paramsDict)
     #Override View
-    def setRunner(self,runner):
+    def setRunner(self, runner):
         self.runner = runner
         self.globalParams = GlobalParams(self.runner)
         self.triggerParamsUpdate.connect(runner.updateParams)
@@ -99,11 +111,11 @@ class DisplayModelQt(QtGui.QWidget,View):
     def update(self):
         self.displayMaps.update()
         self.repaint()
-        
 
 
 
-        
+
+
 
 
 
@@ -113,9 +125,9 @@ class DisplayMapsQt(QtGui.QWidget):
         TODO add parameter file
 
     """
-    
-    def __init__(self,renderable):
-        super(DisplayMapsQt, self).__init__()
+
+    def __init__(self, renderable):
+        super(DisplayMapsQt,  self).__init__()
         self.renderable = renderable
         size = len(self.renderable.getArraysDict())
         self.simuTime = 0
@@ -130,9 +142,9 @@ class DisplayMapsQt(QtGui.QWidget):
         self.mapUpdate = 0
 
         self.__initArrays()
-        
 
-    def __addLabel(self,label,title):
+
+    def __addLabel(self, label, title):
         index = len(self.dictLabel)-1
         row = index / self.nbCols
         col = index % self.nbCols
@@ -141,7 +153,7 @@ class DisplayMapsQt(QtGui.QWidget):
         vbox.addWidget(label)
         box.setLayout(vbox)
         box.focusInEvent
-        self.grid.addWidget(box,row,col)
+        self.grid.addWidget(box, row, col)
         label.setVisible(True)
 
     def __initArrays(self):
@@ -150,20 +162,20 @@ class DisplayMapsQt(QtGui.QWidget):
         """
         maps = self.renderable.getArraysDict()
         for name in maps.keys():
-            self.addMap(name,maps[name])
+            self.addMap(name, maps[name])
 
-    def addMap(self,name,array):
+    def addMap(self, name, array):
         """
             Add a new map to the view
             return the index of the map
         """
-        label = ArrayLabel(name,array)
+        label = ArrayLabel(name, array)
         label.setScaledContents(True)
         self.dictLabel.update({name:label})
-        self.__addLabel(label,name)
+        self.__addLabel(label, name)
 
-    def __updateInfoMap(self,name,map_):
-        infoMap = InfoMap(map_.shape,np.min(map_),np.max(map_))
+    def __updateInfoMap(self, name, map_):
+        infoMap = InfoMap(map_.shape, np.min(map_), np.max(map_))
         self.dictInfoMap.update({name:infoMap})
 
 
@@ -181,4 +193,4 @@ class DisplayMapsQt(QtGui.QWidget):
 
 
 
-        
+

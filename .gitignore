@@ -5,6 +5,16 @@
 #
 
 
+#ignore Model and params for now
+model*.py
+src/context/*
+
+.ropeproject/
+
+#Ignore images and data saved
+*.csv
+*.png
+
 *~
 *.swp
 __pycache__/

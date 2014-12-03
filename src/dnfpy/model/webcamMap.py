@@ -7,9 +7,9 @@ class WebcamMap(Map2D):
    """
        Capture image from webcam
    """
-   def __init__(self,size,**kwargs):
+   def __init__(self,size,numDevice=0,**kwargs):
         super(WebcamMap,self).__init__(size,**kwargs)
-        self.capture = cv2.VideoCapture(0)
+        self.capture = cv2.VideoCapture(numDevice)
 
 
    def _compute(self,size):
