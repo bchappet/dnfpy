@@ -1,5 +1,3 @@
-import unittest
-import copy
 import inspect
 class Computable(object):
     """
@@ -23,34 +21,37 @@ class Computable(object):
         self.__dictionary = dict(**kwargs)
         self._computeArgs = inspect.getargspec(self._compute)[0]
         self._computeArgs.remove('self')
+        self._updateParamsArgs = inspect.getargspec(self._onParamsUpdate)[0]
+        self._updateParamsArgs.remove('self')
         #Debug utilities
         self.nb_computation = 0
         self.last_computation_args = {}
         self.last_computation_dictionary = {}
 
-    def _setArg(self,**kwargs):
+    def setArg(self,**kwargs):
         """
-            Protected:
+        Public:
             To add or change parameters in self.dictionary
         """
         self.__dictionary.update(**kwargs)
+        self.__update_params(**kwargs)
 
-    def _getArg(self,key):
+    def getArg(self,key):
         """
-            Protected:
+        Public:
             Access the state of an argument
         """
         return self.__dictionary[key]
-    def _getArgs(self,*keys):
+    def getArgs(self,*keys):
         """
-            Protected:
+        Public:
             Return a subDictionary of self.__dictionary
         """
-        return self._subDictionary(list(*keys))
+        return self._subDictionary(list(keys))
 
-    def _rmArg(self,key):
+    def rmArg(self,key):
         """
-            Protected, Final
+        Public:
             Remove the argument given by key
             Return: True if the argument was successfully removed
         """
@@ -59,6 +60,20 @@ class Computable(object):
             return True
         except KeyError:
             return False
+
+    def __update_params(self,**kwargs):
+        """
+        Update the dictionary with modified version of the params
+        stated in self._onParamsUpdate
+        """
+        updatedArgSet = set(self._updateParamsArgs) & kwargs.viewkeys()
+        if len(updatedArgSet) > 0:
+            args = self._subDictionary(self._updateParamsArgs)
+            newArgs = self._onParamsUpdate(**args)
+            updatedArgs = {k : newArgs[k] for k in updatedArgSet}
+            self.__dictionary.update(updatedArgs)
+
+
 
 
 

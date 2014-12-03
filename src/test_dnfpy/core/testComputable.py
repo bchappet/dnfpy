@@ -1,4 +1,3 @@
-import inspect
 import unittest
 from dnfpy.core.computable import Computable
 
@@ -6,24 +5,23 @@ class Computable2(Computable):
     def __init__(self,**kwargs):
         super(Computable2,self).__init__(**kwargs)
         self.data = 0 #a pure attribute is not accessible in compute args
-        self._setArg(time=0.0) #define like that the attribute/param will be accessible in compute args
+        self.setArg(time=0.0) #define like that the attribute/param will be accessible in compute args
 
     def getData(self):
         return self.data
 
     def updateData(self,compTime):
-        self._setArg(time=compTime) 
+        self.setArg(time=compTime)
         self._compute_with_params()
 
     def _compute(self,a,b,c,time):
         self.data = a +b *c + time
-    def getArg(self,key):
-        return self._getArg(key)
-    def rmArg(self,key):
-        return self._rmArg(key)
 
-    def getArgs(self,*keys):
-        return self._getArgs(keys)
+    def _onParamsUpdate(self,a,b,d):
+        a = 2*a + b
+        d = b + 19
+        return dict(a=a,b=b,d=d)
+
     def getDictionaryNames(self):
         return self._getDictionaryNames()
     def subDictionary(self,keys):
@@ -33,7 +31,7 @@ class Computable2(Computable):
 
 class TestComputable(unittest.TestCase):
     def setUp(self):
-        self.uut = Computable2(a=1,b=2,c=3)
+        self.uut = Computable2(a=1,b=2,c=3,d=4)
     def test_init_args(self):
         self.uut.updateData(0.0)
         obtained = self.uut.getData()
@@ -82,18 +80,43 @@ class TestComputable(unittest.TestCase):
         self.assertEqual(expected,obtained,"shoud be equal")
     def test_getArgs_keyError(self):
         with self.assertRaises(KeyError):
-            obtained = self.uut.getArgs('d','b')
+            obtained = self.uut.getArgs('e','b')
     def test_get_dictionary_names(self):
         obtained = self.uut.getDictionaryNames()
-        expected = set(['a','b','c','time'])
+        expected = set(['a','b','c','d','time'])
         self.assertEqual(expected,obtained,"shoud be equal")
     def test_sub_dictionary(self):
         obtained = self.uut.subDictionary(set(['a','b']))
         expected = dict(a=1,b=2)
         self.assertEqual(expected,obtained,"shoud be equal")
-        
+
+    def test_onParamsUpdate_all_params_method(self):
+        self.uut.setArg(a=2,b=3,d=1)
+        expected = dict(a=7,d=22,b=3,c=3)
+        obtained = self.uut.getArgs('a','b','c','d')
+        self.assertEqual(expected,obtained)
+
+    def test_onParamsUpdate_1_params(self):
+        self.uut.setArg(a=2)
+        expected = dict(a=6,d=4,b=2,c=3)
+        obtained = self.uut.getArgs('a','b','c','d')
+        self.assertEqual(expected,obtained)
+
+    def test_onParamsUpdate_mix(self):
+        self.uut.setArg(a=2,b=3,d=1,c=200)
+        expected = dict(a=7,d=22,b=3,c=200)
+        obtained = self.uut.getArgs('a','b','c','d')
+        self.assertEqual(expected,obtained)
+
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
-        
+
 
