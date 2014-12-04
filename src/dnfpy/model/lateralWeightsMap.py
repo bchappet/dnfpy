@@ -1,42 +1,27 @@
 import dnfpy.core.utils as utils
 from dnfpy.core.funcMap2D import FuncMap2D
-from dnfpy.core.map2D import Map2D
-import cv2
 
 class LateralWeightsMap(FuncMap2D):
-    """
-        Return a gaussian or exponential kernel
-    """
-    def __init__(self,size,kernelType='gauss',term='',**kwargs):
-        super(LateralWeightsMap,self).__init__(utils.subArrays,size,kernelType=kernelType,**kwargs)
+
+    def __init__(self,size,globalSize,dt=0.1,wrap=True,
+                 iExc=1.25,iInh=0.7,wExc=0.1,wInh=10,alpha=10,**kwargs):
+        super(LateralWeightsMap,self).__init__(
+            utils.subArrays,size,globalSize=globalSize,dt=dt,wrap=wrap,iExc=iExc,
+            iInh=iInh,wExc=wExc,wInh=wInh,alpha=alpha,**kwargs)
         center = (size - 1)/2
-        self.term = term #self.terminaison of the parameters
-        if kernelType == 'gauss':
-            kernelExc = FuncMap2D(utils.gauss2d,size,centerX=center,centerY=center)
-            kernelExc.registerOnGlobalParamsChange(wrap='wrap'+self.term,intensity='iExc'+self.term,width='wExc'+self.term,dt='kernel_dt')
-            kernelInh = FuncMap2D(utils.gauss2d,size,centerX=center,centerY=center)
-            kernelInh.registerOnGlobalParamsChange(wrap='wrap'+self.term,intensity='iInh'+self.term,width='wInh'+self.term,dt='kernel_dt')
-        elif kernelType == 'exp':
-            kernelExc = FuncMap2D(utils.exp2d,size,centerX=center,centerY=center)
-            kernelExc.registerOnGlobalParamsChange(wrap='wrap'+self.term,intensity='iExc'+self.term,proba='pExc'+self.term,dt='kernel_dt')
-            kernelInh = FuncMap2D(utils.exp2d,size,centerX=center,centerY=center)
-            kernelInh.registerOnGlobalParamsChange(wrap='wrap'+self.term,intensity='iInh'+self.term,proba='pInh'+self.term,dt='kernel_dt')
-        else:
-                print("Error bad kernel param %s"%kernelType)
-        
-        self.addChildren(a=kernelExc,b=kernelInh)
+        self.kernelExc = FuncMap2D(utils.gauss2d,size,dt=dt,centerX=center,
+                              centerY=center,wrap=wrap,intensity=iExc,width=wExc)
+        self.kernelInh = FuncMap2D(utils.gauss2d,size,dt=dt,centerX=center,
+                              centerY=center,wrap=wrap,intensity=iInh,width=wInh)
+        self.addChildren(a=self.kernelExc,b=self.kernelInh)
 
-    def _modifyParamsRecursively(self,params):
-        size = params['size'] #relatively to general size
-        params['wInh'+self.term] *= size
-        params['wExc'+self.term] *= size
+    def _onParamsUpdate(self,globalSize,alpha,iExc,iInh,wExc,wInh):
+        wExc = wExc*globalSize
+        wInh = wInh*globalSize
+        iExc = iExc/(globalSize**2) * (40**2)/alpha
+        iInh = iInh/(globalSize**2) * (40**2)/alpha
+        return dict(wExc=wExc,wInh=wInh,iExc=iExc,iInh=iInh)
 
-        alpha = params['alpha'+self.term]
-
-        params['iExc'+self.term] = params['iExc'+self.term]/(size**2) * (40**2)/alpha
-        params['iInh'+self.term] = params['iInh'+self.term]/(size**2) * (40**2)/alpha
-
-        params['pExc'+self.term] = params['pExc'+self.term]**(1./size)
-        params['pInh'+self.term] = params['pInh'+self.term]**(1./size)
-
-
+    def _childrenParamsUpdate(self,iExc,iInh,wExc,wInh):
+        self.kernelExc.setArg(intensity=iExc,width=wExc)
+        self.kernelInh.setArg(intensity=iInh,width=wInh)

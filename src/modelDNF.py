@@ -1,4 +1,3 @@
-from dnfpy.core.funcMap2D import FuncMap2D
 from dnfpy.model.inputMap import InputMap
 from dnfpy.model.fieldMap import FieldMap
 from dnfpy.model.activationMap import ActivationMap
@@ -8,39 +7,35 @@ from dnfpy.model.model import Model
 from dnfpy.model.convolution import Convolution
 
 
+class MapDNF(FieldMap):
+    def __init__(self,size,**kwargs):
+        super(MapDNF,self).__init__(size=size,**kwargs)
+        self.act = ActivationMap(size)
+        self.lat =Convolution(size)
+        self.kernel = LateralWeightsMap(size,size)
+        self.act.addChildren(field=self)
+        self.addChildren(lat=self.lat)
+        self.lat.addChildren(source=self.act,kernel=self.kernel)
+        self.kernel.compute()
+
+    def getArraysDict(self):
+        return dict(Activation=self.act.getData(),
+                    LateralInteractions=self.lat.getData(),
+                    Kernel=self.kernel.getData())
+
+
+
 class ModelDNF(Model,Renderable):
-    def initMaps(self):
+    def initMaps(self,size):
         """We initiate the map and link them"""
         #Create maps
-        size = self.globalParams['size']
         self.aff = InputMap(size)
-        self.field = FieldMap(size)
-        self.activation = ActivationMap(size)
-        self.kernel = LateralWeightsMap(size,self.globalParams['lateralWKernel'],'')
-        self.lat = Convolution(size)
-        #Link maps
-        self.aff.registerOnGlobalParamsChange_ignoreCompute(dt='input_dt',nb_distr='nbDistr')
-
-
-        self.field.registerOnGlobalParamsChange(model='model',dt='dt',tau='tau',h='h',th='threshold')
-        self.field.addChildren(aff=self.aff,lat=self.lat)
-
-        self.activation.registerOnGlobalParamsChange(dt='dt',model='model',th='threshold')
-        self.activation.addChildren(field=self.field)
-
-        self.kernel.registerOnGlobalParamsChange(dt = 'kernel_dt')
-        self.lat.registerOnGlobalParamsChange(dt='dt',wrap='wrap')
-        self.lat.addChildren(source=self.activation,kernel = self.kernel)
-
-        #Update args
-        self.field.updateParams(self.globalParams)
-        #Update once and for all the kernel
-        self.kernel.artificialRecursiveComputation()
-
+        self.field = MapDNF(size)
+        self.field.addChildren(aff=self.aff)
         #return the root
         return self.field
     #override Renderable
     def getArraysDict(self):
-        return dict(aff=self.aff.getData(),field=self.field.getData(),lat=self.lat.getData(),act=self.activation.getData())
-
-
+        ret =  dict(aff=self.aff.getData(),field=self.field.getData())
+        ret.update(self.field.getArraysDict())
+        return ret

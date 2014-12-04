@@ -17,7 +17,7 @@ class ModelDNFCam(Model,Renderable):
         #Create maps
         size = self.globalParams['size']
 
-        self.webcam = WebcamMap(size)
+        self.webcam = WebcamMap(size,numDevice=1)
         self.color_select = ImageColorSelection(size)
         self.field = FieldMap(size)
         self.activation = ActivationMap(size)
@@ -25,8 +25,8 @@ class ModelDNFCam(Model,Renderable):
         self.lat = Convolution(size)
         #Link maps
 
-        self.webcam.registerOnGlobalParamsChange(dt='webcam_dt') 
-        self.color_select.registerOnGlobalParamsChange(dt='webcam_dt',color='color',reverseColors='reverseColors',color_threshold='color_threshold')
+        self.webcam.registerOnGlobalParamsChange(dt='dt') 
+        self.color_select.registerOnGlobalParamsChange(dt='dt',color='color',reverseColors='reverseColors',color_threshold='color_threshold')
         self.color_select.addChildren(image=self.webcam)
         self.aff = self.color_select
 

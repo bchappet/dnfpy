@@ -1,15 +1,12 @@
 import unittest
 from dnfpy.model.webcamMap import WebcamMap
-import dnfpy.view.staticViewMatplotlib as view
-import matplotlib.pyplot as plt
-import cv2
 
 
 
 class TestWebcamMap(unittest.TestCase):
         def test_cam1(self):
                 uut = WebcamMap(512)
-                uut.artificialRecursiveComputation()
+                uut.compute()
                 #view.plotArray(uut.getData())
                 #plt.show()
 #        def test_cam100(self):

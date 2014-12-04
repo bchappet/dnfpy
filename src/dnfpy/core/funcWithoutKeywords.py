@@ -3,25 +3,20 @@ from funcMap2D import FuncMap2D
 
 class FuncWithoutKeywords(FuncMap2D):
     """To use with a function taking an undifined amount of args
-    It can takes only children args or a constant list"""
+    It can takes only children args
+    To put constant arg: use addComputeArgs
+    """
+
     def __init__(self,func,size,**kwargs):
         super(FuncWithoutKeywords,self).__init__(func,size,**kwargs)
-        self._computeArgs += kwargs.keys()
 
-    def registerOnGlobalParamsChange(self,**kwargs):
-        super(FuncWithoutKeywords,self).registerOnGlobalParamsChange(**kwargs)
-        self._computeArgs += kwargs.keys()
-
-    def registerOnGlobalParamsChange_ignoreCompute(self,**kwargs):
-        super(FuncWithoutKeywords,self).registerOnGlobalParamsChange(**kwargs)
-
-    def ignoreComputeArgs(self,*args):
+    def addComputeArgs(self,*args):
         """
             Public
-            remove some arguments from the compute list
+            add some arguments from to compute list
         """
         for k in args:
-                self._computeArgs.remove(k)
+                self._computeArgs.append(k)
 
 
 

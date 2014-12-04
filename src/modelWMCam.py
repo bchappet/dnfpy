@@ -44,10 +44,10 @@ class ModelWMCam(Model,Renderable):
         self.activation = ActivationMap(size)
         self.kernel =  LateralWeightsMap(size,self.globalParams['lateralWKernel'])
         self.lat = Convolution(size)
-        
+
         #Link maps
 
-        self.webcam.registerOnGlobalParamsChange(dt='webcam_dt') 
+        self.webcam.registerOnGlobalParamsChange(dt='webcam_dt')
         self.color_select.registerOnGlobalParamsChange(dt='webcam_dt',color='color',reverseColors='reverseColors',color_threshold='color_threshold')
         self.color_select.addChildren(image=self.webcam)
         self.aff = self.color_select

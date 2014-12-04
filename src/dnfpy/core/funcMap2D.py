@@ -11,8 +11,9 @@ class FuncMap2D(Map2D):
             self._computeArgs.remove('self')
 
 
-        
+
 
     def _compute(self,**args):
         """Call the func with the good arguments"""
         self._data = self._func(**args)
+

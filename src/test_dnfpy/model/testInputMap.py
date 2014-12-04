@@ -3,6 +3,7 @@ import unittest
 from dnfpy.model.inputMap import InputMap
 import dnfpy.core.utils as utils
 import os
+import matplotlib.pyplot as plt
 
 
 
@@ -13,22 +14,22 @@ class TestInputMap(unittest.TestCase):
         self.precision = 7
 
         self.globalParams = \
-                {'dt':0.1,'size':21,'wrap':True,'iStim':1.,'wStim':0.1,'iDistr':1,'wDistr':0.1, \
+                {'dt':0.1,'size':21,'wrap':True,'iStim':1.,'wStim':0.1,'iDistr':1,
+                 'wDistr':0.1,
                 'nbDistr':0,'distr_dt':0.4,'tck_dt':0.2,'noise_dt':0.1,'noiseI':0., \
                 'tck_radius':0.3,'input_dt':0.1}
-        self.dt = 0.1
-
-        self.uut = InputMap(self.globalParams['size'])
-        self.uut.registerOnGlobalParamsChange_ignoreCompute(dt='input_dt',nb_distr='nbDistr')
-        self.uut.updateParams(self.globalParams)
+        self.uut = InputMap(**self.globalParams)
 
     def test_init(self):
         self.uut.update(0.1)
-        self.assertEqual(0,np.sum(self.uut.getData()),"The noise is 0, the data should be 0")
+        self.assertEqual(0,np.sum(self.uut.getData()))
 
     def test_updateTrack(self):
         self.uut.update(0.1)
         self.uut.update(0.2)
+        plt.imshow(self.uut.getChildren()['track1'].getData())
+        plt.show()
+
         #s/\n/,\r/g
         #s/\(\d\)\s\s\s/\1,/g
         expected = [
@@ -52,7 +53,7 @@ class TestInputMap(unittest.TestCase):
    2.69535836e-02,1.02181666e-01,1.56390980e-01,9.66345742e-02,
    2.41065789e-02,2.42784224e-03,9.87159801e-05,1.62045319e-06,
    1.07678311e-08]
-                        
+
         obtained = np.diagonal(self.uut.getData())
         self.assertAlmostEqual(0,np.sum(expected-obtained),self.precision)
 
@@ -67,16 +68,14 @@ class TestInputMap(unittest.TestCase):
         self.uut.update(0.1)
         self.uut.update(0.2)
         self.assertEqual(0,self.uut.get_nbDistr())
-        self.globalParams['nbDistr'] = 10
-        self.uut.updateParams(self.globalParams)
+        self.uut.setArgRec(nbDistr=10)
         self.assertEqual(10,self.uut.get_nbDistr())
         self.uut.update(0.3)
         self.uut.update(0.4)
-        self.globalParams['nbDistr'] = 1
-        self.uut.updateParams(self.globalParams)
+        self.uut.setArgRec(nbDistr=1)
         self.assertEqual(1,self.uut.get_nbDistr())
 
-        
+
 
     def test_updateDistr(self):
         self.uut.update(0.1)
@@ -90,4 +89,4 @@ class TestInputMap(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    
+

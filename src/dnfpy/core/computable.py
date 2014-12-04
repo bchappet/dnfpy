@@ -18,11 +18,12 @@ class Computable(object):
             the inspection store the arguments expected by
             compute in self.computeArgs
         """
-        self.__dictionary = dict(**kwargs)
+        self.__dictionary = dict()
         self._computeArgs = inspect.getargspec(self._compute)[0]
         self._computeArgs.remove('self')
         self._updateParamsArgs = inspect.getargspec(self._onParamsUpdate)[0]
         self._updateParamsArgs.remove('self')
+        self.setArg(**kwargs)
         #Debug utilities
         self.nb_computation = 0
         self.last_computation_args = {}
@@ -70,9 +71,19 @@ class Computable(object):
         if len(updatedArgSet) > 0:
             args = self._subDictionary(self._updateParamsArgs)
             newArgs = self._onParamsUpdate(**args)
-            updatedArgs = {k : newArgs[k] for k in updatedArgSet}
-            self.__dictionary.update(updatedArgs)
+            updatedArgs =dict()
+            for k in updatedArgSet:
+                try:
+                    updatedArgs[k] = newArgs[k]
+                except:
+                    pass
 
+            self.__dictionary.update(updatedArgs)
+        else:
+            pass
+
+    def _onParamsUpdate(self):
+        return {}
 
 
 

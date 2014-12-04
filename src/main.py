@@ -21,8 +21,9 @@ clazz = getattr(baz,modelName)
 
 context = sys.argv[2] #arguments of the model
 timeEnd = sys.argv[3] # simulation end
+size= eval(sys.argv[4])
 
-params = eval(open(context,'r').read()) 
+params = eval(open(context,'r').read())
 
 
 app = QtGui.QApplication(sys.argv)
@@ -30,7 +31,7 @@ app.setStyleSheet(open(defaultQSS,'r').read())
 
 
 
-model = clazz(params)
+model = clazz(size)
 view = DisplayModelQt(model)
 #view.showMaximized()
 runner = Runner(model,view,timeEnd,params)

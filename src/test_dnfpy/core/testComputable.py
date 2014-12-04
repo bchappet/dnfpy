@@ -17,15 +17,19 @@ class Computable2(Computable):
     def _compute(self,a,b,c,time):
         self.data = a +b *c + time
 
-    def _onParamsUpdate(self,a,b,d):
-        a = 2*a + b
-        d = b + 19
-        return dict(a=a,b=b,d=d)
 
     def getDictionaryNames(self):
         return self._getDictionaryNames()
     def subDictionary(self,keys):
         return self._subDictionary(keys)
+
+class Computable3(Computable2):
+    def __init__(self,**kwargs):
+        super(Computable3,self).__init__(**kwargs)
+    def _onParamsUpdate(self,a,b,d):
+        a = 2*a + b
+        d = b + 19
+        return dict(a=a,b=b,d=d)
 
 
 
@@ -90,23 +94,41 @@ class TestComputable(unittest.TestCase):
         expected = dict(a=1,b=2)
         self.assertEqual(expected,obtained,"shoud be equal")
 
+    def test_onParamUpdate_onInit(self):
+        uut = Computable3(a=0.25,b=0.5,c=3,d=4)
+        expected = dict(a=1,d=19.5,b=0.5,c=3)
+        obtained = uut.getArgs('a','b','c','d')
+        self.assertEqual(expected,obtained)
+
+
     def test_onParamsUpdate_all_params_method(self):
-        self.uut.setArg(a=2,b=3,d=1)
+        uut = Computable3(a=1,b=2,c=3,d=4)
+        uut.setArg(a=2,b=3,d=1)
         expected = dict(a=7,d=22,b=3,c=3)
-        obtained = self.uut.getArgs('a','b','c','d')
+        obtained = uut.getArgs('a','b','c','d')
         self.assertEqual(expected,obtained)
 
     def test_onParamsUpdate_1_params(self):
-        self.uut.setArg(a=2)
-        expected = dict(a=6,d=4,b=2,c=3)
-        obtained = self.uut.getArgs('a','b','c','d')
+        uut = Computable3(a=1,b=2,c=3,d=4)
+        uut.setArg(a=2)
+        expected = dict(a=6,d=21,b=2,c=3)
+        obtained = uut.getArgs('a','b','c','d')
         self.assertEqual(expected,obtained)
 
     def test_onParamsUpdate_mix(self):
-        self.uut.setArg(a=2,b=3,d=1,c=200)
+        uut = Computable3(a=1,b=2,c=3,d=4)
+        uut.setArg(a=2,b=3,d=1,c=200)
         expected = dict(a=7,d=22,b=3,c=200)
-        obtained = self.uut.getArgs('a','b','c','d')
+        obtained = uut.getArgs('a','b','c','d')
         self.assertEqual(expected,obtained)
+
+    def test_onParamUpdate_noparam(self):
+        uut = Computable3(a=1,b=2,c=3,d=4)
+        expected = dict(a=4,d=21,b=2,c=3)
+        uut.setArg()
+        obtained = uut.getArgs('a','b','c','d')
+        self.assertEqual(expected,obtained)
+
 
 
 

@@ -5,7 +5,6 @@ import numpy as np
 import os
 
 class TestFuncMap2D(unittest.TestCase):
-    
     def setUp(self):
         path =  os.path.dirname(os.path.realpath(__file__))
         self.testDir =path +  "/testFiles/"
@@ -13,21 +12,14 @@ class TestFuncMap2D(unittest.TestCase):
 
         self.size = 10
         self.dt = 0.1
-        self.globalParams = {'size':10,'wrap':True,'iA':10,'wA':4,'cX':7,'cY':1}
-        self.argNamesDict = {'size':'size','wrap':'wrap','intensity':'iA','width':'wA','centerX':'cX','centerY':'cY'}
         self.func = utils.gauss2d
 
-        self.uut = FuncMap2D(self.func,self.size,dt=self.dt)
-        self.uut.registerOnGlobalParamsChange(**self.argNamesDict)
-        self.uut.updateParams(self.globalParams)
+        self.uut = FuncMap2D(self.func,self.size,dt=self.dt,wrap=True,
+                             intensity=10,width=4,centerX=7,centerY=1)
 
-        #Another one
-        globalParams2 = {'c':0.2,'r':0.1,'p':10,'ph':0.2}
-        argNamesDict2 = {'center':'c','radius':'r','period':'p','phase':'ph'}
         func2 = utils.cosTraj
-        self.uut2 = FuncMap2D(func2,1,dt=0.1)
-        self.uut2.registerOnGlobalParamsChange(**argNamesDict2)
-        self.uut2.updateParams(globalParams2)
+        self.uut2 = FuncMap2D(func2,1,dt=0.1,center=0.2,
+                              radius=0.1,period=10,phase=0.2)
 
     def test_computeGauss2d(self):
         """Method: compute
@@ -35,17 +27,16 @@ class TestFuncMap2D(unittest.TestCase):
         self.uut.update(0.1)
         expected1 = np.loadtxt(self.testDir+"testGauss2DWrap.csv",dtype=np.float32,delimiter=",")
         obtained1 = self.uut.getData()
-        self.assertTrue((expected1==obtained1).all(),"the result should be the same") 
+        self.assertTrue((expected1==obtained1).all(),"the result should be the same")
 
     def test_changeParams(self):
         """Method updateParams
         scenario: we update the params"""
-        self.globalParams['wrap'] = False
-        self.uut.updateParams(self.globalParams)
+        self.uut.setArg(wrap=False)
         self.uut.update(0.1)
         expected = np.loadtxt(self.testDir+"testGauss2DWrap.csv",dtype=np.float32,delimiter=",")
         obtained = self.uut.getData()
-        self.assertFalse((expected==obtained).all(),"we changed the params, the results should be different") 
+        self.assertFalse((expected==obtained).all(),"we changed the params, the results should be different")
 
     def test_funcWithAttributeParamsT01(self):
         """Method mapAttributesToFunc
@@ -94,11 +85,7 @@ class TestFuncMap2D(unittest.TestCase):
 
     def test_constantArgs_attribute_andGlobalArgs(self):
         func2 = utils.cosTraj
-        globalArg = {'c' : 0.2}
-        globalKeyDict = {'center':'c'}
-        self.uut2 = FuncMap2D(func2,1,dt=0.1,radius=0.1,period=10,phase=0.2)
-        self.uut2.registerOnGlobalParamsChange(**globalKeyDict)
-        self.uut2.updateParams(globalArg)
+        self.uut2 = FuncMap2D(func2,1,dt=0.1,radius=0.1,period=10,phase=0.2,center=0.2)
 
         self.uut2.update(0.1)
 
@@ -109,20 +96,14 @@ class TestFuncMap2D(unittest.TestCase):
     def test_constantArgs_attribute_andGlobalArgs_changeArgs(self):
         """Scenario : change args after 1 computation"""
         func2 = utils.cosTraj
-        globalArg = {'c' : 0.2}
-        globalKeyDict = {'center':'c'}
-        self.uut2 = FuncMap2D(func2,1,dt=0.1,radius=0.1,period=10,phase=0.2)
-        self.uut2.registerOnGlobalParamsChange(**globalKeyDict)
-        self.uut2.updateParams(globalArg)
-
+        self.uut2 = FuncMap2D(func2,1,dt=0.1,radius=0.1,period=10,phase=0.2,center=0.2)
         self.uut2.update(0.1)
-        self.uut2.updateParams({'c':0.3})
+        self.uut2.setArg(center=0.3)
         self.uut2.update(0.2)
-
         expected = 0.34257792915650725
         obtained = self.uut2.getData()
-        self.assertAlmostEqual(expected,obtained,self.precision,"The computation of  should be as expected")
-    
+        self.assertAlmostEqual(expected,obtained)
+
 if __name__ == '__main__':
     unittest.main()
 

@@ -1,14 +1,13 @@
 from dnfpy.core.map2D import Map2D
 import numpy as np
 import cv2
-import matplotlib.pyplot as plt
 
 class WebcamMap(Map2D):
    """
        Capture image from webcam
    """
    def __init__(self,size,numDevice=0,**kwargs):
-        super(WebcamMap,self).__init__(size,**kwargs)
+        super(WebcamMap,self).__init__(size,numDevice=numDevice,**kwargs)
         self.capture = cv2.VideoCapture(numDevice)
 
 

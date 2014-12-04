@@ -2,6 +2,7 @@ import numpy as np
 import sys
 import math
 from computable import Computable
+import inspect
 
 
 class Map2D(Computable):
@@ -9,16 +10,28 @@ class Map2D(Computable):
     The Map2D will be updated when simuTime = self.time + self.dt
     The allowed precision for the time values is 1e-10
 
-    Construction arguments:
-        'size':   the data will be np.array of shape (size,size)
-                or a double if size = 1
-
     Attributes:
         'size': the data is of shape (size,size)
         'dt':  the update will be done every dt (second)
         'time': simulation time
         self._data: data accessible with self.getData()
 
+    Methods:
+        _compute: abstract define the beahaviour of the map here.
+            Use any attribute or child in the method parameter
+            Set self._data to finalize the computation
+
+        _onParamUpdate: abstract called whenever self.setArg is called
+            Use any attribute in the method parameters
+
+        compute: compute the children state and the self state without updating
+            self.time
+
+        update(compTime): update the children a then self
+            if compTime = self.__getNextUpdateTime
+
+        getSmallestNextUpdateTime: get the smallest self.time + self.dt whithin
+        self and the children
 
     """
 
@@ -26,14 +39,17 @@ class Map2D(Computable):
         super(Map2D,self).__init__(size=size,**kwargs)
         """Init a 2D numpy array of shape (size,size) dtype float32"""
 
-        self._setArg(time=0.0) #last simulation time (in seconds) : it is updated just befor compute() call
+        self.setArg(time=0.0) #last simulation time (in seconds) : it is updated just befor compute() call
         self.reset() #init self._data
         self.__precision = 7 #allowed precision
         self.__children = {} #dict of str:Map2D: the children are computed before self
-        self.__paramDict = {} #association compute keyword, global params key words
 
         #To avoid recursivity
         self.__lock =False #True when method already called
+
+        self.__childrenParamsUpdateArgs = inspect.getargspec(\
+                        self._childrenParamsUpdate)[0]
+        self.__childrenParamsUpdateArgs.remove('self')
 
 
 
@@ -50,7 +66,7 @@ class Map2D(Computable):
         """
             Return self.time + self.dt
         """
-        return self._getArg('time') + self._getArg('dt')
+        return self.getArg('time') + self.getArg('dt')
 
     def getSmallestNextUpdateTime(self):
         """
@@ -72,7 +88,7 @@ class Map2D(Computable):
         else:
             return sys.maxint
 
-    def artificialRecursiveComputation(self):
+    def compute(self):
         """
             Public
             Perform an artificial coputation step for the childre
@@ -81,14 +97,14 @@ class Map2D(Computable):
         if not(self.__lock):
                 self.__lock = True
                 for child in self.__children.values():
-                        child.artificialRecursiveComputation()
+                        child.compute()
                 self.__computationStep()
                 self.__lock = False
         else:
                 pass
 
     def __computationStep(self):
-        self._setArg(**self._getChildrenStates())
+        self.setArg(**self._getChildrenStates())
         self._compute_with_params()
 
 
@@ -112,7 +128,7 @@ class Map2D(Computable):
                  child.update(simuTime)
 
             if abs(self.__getNextUpdateTime() - simuTime) <= allowed_error :
-                 self._setArg(time= round(simuTime,self.__precision))
+                 self.setArg(time= round(simuTime,self.__precision))
                  self.__computationStep()
             self.__lock = False
         else:
@@ -131,6 +147,8 @@ class Map2D(Computable):
             Return the children name set
         """
         return set(self.__children.viewkeys())
+    def getChildren(self):
+        return self.__children
     def getAttributesNames(self):
         """
             Public
@@ -144,97 +162,32 @@ class Map2D(Computable):
 
     def getTime(self):
         """Accessor return self.time"""
-        return self._getArg('time')
+        return self.getArg('time')
 
     def getData(self):
         """Accessor return self._data"""
         return self._data
 
-    def _modifyParams(self,params,globalParams):
-        """
-            Abstract Optional :
-            Mofify the params using params and  globalParams
-            Their final value will be added to self.__dictionary
-        """
-
-    def _modifyParamsRecursively(self,params):
-        """
-            Protected,  Absract, Optional
-            Define modification on params.
-            This modification are definitive and will be
-            transmitted to the children
-
-            Thus this modifications are prioritary over self._modifyParams
-
-
-            parameter at the same level without redifining
-            _modifyParams for every Map2D
-        """
-        pass
-
-    def registerOnGlobalParamsChange(self,**kwargs):
-        """
-            Public
-            Init the self.__paramDict with **kwargs
-            But does not add them to self.__dictionary
-            One has to call self.updateParams for that
-
-        """
-        self.__paramDict = dict(**kwargs)
-
-    def __updateParams(self,globalParams):
-        """
-            Private
-            update self.__dictionary with a modification
-            of the globalParams chosen by self.__paramDict
-        """
-        params = Map2D.__associateDict(self.__paramDict,globalParams)
-        subdict = self._subDictionary(self.getAttributesNames())
-        subdict.update(params)
-        self._modifyParams(subdict,globalParams)
-        self._setArg(**subdict)
-        self._onParamUpdate()
-    def _onParamUpdate(self):
-        """
-            Protected Abstract
-            To be overiden to react on param update
-        """
-
-
-    def __updateParams_recursif(self,params):
-        if not(self.__lock):
-            self.__lock = True
-            self._modifyParamsRecursively(params)#will alter param for self and the children
-            for child in self.__children.values():
-                child.__updateParams_recursif(params)
-            self.__updateParams(params) #will alter param for self and add them to self.__dictionary
-            self.__lock = False
-        else:
-            pass
-        return None
-
-    def updateParams(self,globalParams):
-        """
-            Public, Final, Recursif (cons dict globalParams)
-            Update self and recursively children with the globalParams
-            It means that if self used registerOnGlobalParamsChange
-            the parameters stated in this function will be updated
-
-            But they can also be transformed:
-                If there is a behaviour in self._modifyParams
-                If one of the parent or self defines a self._modifyParamsRecursively method:
-                    the globalParams will be transformed by it (after copy)
-            PostCondition: globalParams is unaltered
-        """
-        copyOfGlobalParams = dict(**globalParams)
-        self.__updateParams_recursif(copyOfGlobalParams)
-
-    def addChildren(self,**kwards):
+    def addChildren(self,**kwargs):
         """
             Public
             Add N children using dictionary
         """
-        self.__children.update(**kwards)
+        self.__children.update(**kwargs)
+        self.childrenParamsUpdate()
+
+
+    def childrenParamsUpdate(self):
+            args =  self._subDictionary(self.__childrenParamsUpdateArgs)
+            self._childrenParamsUpdate(**args)
+
+    def setArgRec(self,**kwargs):
+        self.setArg(**kwargs)
+        if len(self.__children) > 0:
+            self.childrenParamsUpdate()
+
+    def _childrenParamsUpdate(self):
+        pass
 
 
     def removeChild(self,childName):
@@ -257,7 +210,7 @@ class Map2D(Computable):
         return len(self.__children)
     def reset(self):
         """Reset the data to 0"""
-        size = self._getArg('size')
+        size = self.getArg('size')
         if size == 1:
             self._data = 0.
         else:

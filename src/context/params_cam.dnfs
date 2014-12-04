@@ -7,10 +7,10 @@
 'wInh': 5.0,
 'wrap': True,
 'alpha': 10.0,
-'dt': 0.1,
+'dt': 0.6,
 'iStim': 1,
 'model': 'spike',
-'size': 301,
+'size': 201,
 'iExc': 1.25,
 'wStim': 0.1,
 'projSize': 1.0,
@@ -26,8 +26,7 @@
 'wDistr':0.1,
 'kernel_dt':1e8,
 
-'webcam_dt':0.1,
 'color':'red',
 'reverseColors':False,
-'color_threshold' : 40
+'color_threshold' : 10
 }
