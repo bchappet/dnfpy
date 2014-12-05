@@ -1,10 +1,10 @@
 class Renderable(object):
     """
-        Interface to render a dictionar of array
+        Interface to render a dictionar of map
     """
 
-    def getArraysDict(self):
-        pass
-
-    def getArrayValue(name,*coordArgs):
+    def getArrays(self):
+        """
+        return a dict of name-> map
+        """
         pass

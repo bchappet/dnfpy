@@ -35,12 +35,13 @@ class Map2D(Computable):
 
     """
 
-    def __init__(self,size,**kwargs):
+    def __init__(self,name,size,**kwargs):
         super(Map2D,self).__init__(size=size,**kwargs)
         """Init a 2D numpy array of shape (size,size) dtype float32"""
 
         self.setArg(time=0.0) #last simulation time (in seconds) : it is updated just befor compute() call
         self.reset() #init self._data
+        self.name = name
         self.__precision = 7 #allowed precision
         self.__children = {} #dict of str:Map2D: the children are computed before self
 
@@ -52,6 +53,8 @@ class Map2D(Computable):
         self.__childrenParamsUpdateArgs.remove('self')
 
 
+    def getName(self):
+        return self.name
 
 
     def _compute(self):
@@ -181,8 +184,8 @@ class Map2D(Computable):
             args =  self._subDictionary(self.__childrenParamsUpdateArgs)
             self._childrenParamsUpdate(**args)
 
-    def setArgRec(self,**kwargs):
-        self.setArg(**kwargs)
+    def setParamsRec(self,**kwargs):
+        self.setParams(**kwargs)
         if len(self.__children) > 0:
             self.childrenParamsUpdate()
 

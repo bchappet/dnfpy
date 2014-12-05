@@ -16,7 +16,7 @@ class TestLateralWeightsMapAndConvolution(unittest.TestCase):
                 self.precision = 7
                 self.size = 21
                 self.kernel = LateralWeightsMap( \
-                    21,21, 10e8, True, 1.25, 0.7, 0.1, 10.0, alpha=10)
+                    21,1, 10e8, True, 1.25, 0.7, 0.1, 10.0, alpha=10)
                 act = FuncMap2D(constantArray,self.size,dt=0.1,value=1.,
                                 shape=((self.size,)*2))
                 self.uut = Convolution(self.size,dt=0.1,wrap=True)
@@ -42,16 +42,25 @@ class TestLateralWeightsMapAndConvolution(unittest.TestCase):
                              -0.25323221, -0.25303704, -0.25281909]
                 obtained =np.diagonal( self.uut.getData())
                 self.assertAlmostEqual(np.sum(expected-obtained),0,self.precision)
+        def test_gausiankernel_smaller(self):
+                self.kernel = LateralWeightsMap( \
+                    21,0.5, 10e8, True, 1.25, 0.7, 0.1, 10.0, alpha=10)
+                self.kernel.compute()
+                obtained =np.diagonal( self.kernel.getData())
+                self.assertEqual(len(obtained),11)
 
-
-
-
+        def test_gausiankernel_smaller_ensure_odd(self):
+                self.kernel = LateralWeightsMap( \
+                    21,0.3, 10e8, True, 1.25, 0.7, 0.1, 10.0, alpha=10)
+                self.kernel.compute()
+                obtained =np.diagonal( self.kernel.getData())
+                self.assertEqual(len(obtained),7)
+        def test_gausiankernel_ensure_odd(self):
+                self.kernel = LateralWeightsMap( \
+                    21,1., 10e8, True, 1.25, 0.7, 0.1, 10.0, alpha=10)
+                self.kernel.compute()
+                obtained =np.diagonal( self.kernel.getData())
+                self.assertEqual(len(obtained),21)
 
 if __name__ == '__main__':
         unittest.main()
-
-
-
-
-
-

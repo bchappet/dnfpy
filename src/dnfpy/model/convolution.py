@@ -9,8 +9,9 @@ class Convolution(Map2D):
             kernel
             wrap
     """
-    def __init__(self,size,dt=0.1,wrap=True,**kwargs):
-        super(Convolution,self).__init__(size=size,dt=dt,wrap=wrap,**kwargs)
+    def __init__(self,name,size,dt=0.1,wrap=True,**kwargs):
+        super(Convolution,self).__init__(name,size=size,dt=dt,wrap=wrap,**kwargs)
+
     def _compute(self,source,kernel,wrap):
         if wrap:
             border = cv2.BORDER_WRAP

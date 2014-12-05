@@ -2,7 +2,7 @@ import numpy as np
 import scipy.signal as signal
 
 
-#Utilitary functions 
+#Utilitary functions
 #TODO try with cython
 
 
@@ -13,7 +13,7 @@ def __generateWrappedDistance(size,centerX,centerY,wrap):
     Y = X[:,np.newaxis]
     distX = abs(X-centerX)
     distY = abs(Y-centerY)
-     
+
     if wrap:
             distX = np.minimum(distX,abs(X-(centerX+size)))
             distY = np.minimum(distY,abs(Y-(centerY+size)))
@@ -36,7 +36,7 @@ def cosTraj(time,center,radius,period,phase):
 
 def sumArrays(*varlist):
     """Sum n arrays"""
-    res = 0 
+    res = 0
     for i in range(len(varlist)):
         res = np.add(res, varlist[i])
 

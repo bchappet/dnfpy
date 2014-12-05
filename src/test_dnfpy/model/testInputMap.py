@@ -68,11 +68,11 @@ class TestInputMap(unittest.TestCase):
         self.uut.update(0.1)
         self.uut.update(0.2)
         self.assertEqual(0,self.uut.get_nbDistr())
-        self.uut.setArgRec(nbDistr=10)
+        self.uut.setParamsRec(nbDistr=10)
         self.assertEqual(10,self.uut.get_nbDistr())
         self.uut.update(0.3)
         self.uut.update(0.4)
-        self.uut.setArgRec(nbDistr=1)
+        self.uut.setParamsRec(nbDistr=1)
         self.assertEqual(1,self.uut.get_nbDistr())
 
 

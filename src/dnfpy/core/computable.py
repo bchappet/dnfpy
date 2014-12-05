@@ -23,7 +23,7 @@ class Computable(object):
         self._computeArgs.remove('self')
         self._updateParamsArgs = inspect.getargspec(self._onParamsUpdate)[0]
         self._updateParamsArgs.remove('self')
-        self.setArg(**kwargs)
+        self.setParams(**kwargs)
         #Debug utilities
         self.nb_computation = 0
         self.last_computation_args = {}
@@ -35,6 +35,9 @@ class Computable(object):
             To add or change parameters in self.dictionary
         """
         self.__dictionary.update(**kwargs)
+
+    def setParams(self,**kwargs):
+        self.setArg(**kwargs)
         self.__update_params(**kwargs)
 
     def getArg(self,key):
@@ -112,5 +115,8 @@ class Computable(object):
             return the subductionary of self.__dictionary using the keys (must be itarable)
         """
         return {k :self.__dictionary[k] for k in keys}
+
+    def hasArg(self,name):
+        return name in self.__dictionary.keys()
 
 

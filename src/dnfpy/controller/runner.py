@@ -32,6 +32,28 @@ class Runner(QtCore.QThread):
 
     def getTimeRatio(self):
         return self.timeRatio
+
+    @pyqtSlot(str,str,int)
+    def onParamIntChange(self,mapName,name,value):
+        self.model.updateParam(mapName,name,value)
+
+    @pyqtSlot(str,str,float)
+    def onParamFloatChange(self,mapName,name,value):
+        self.model.updateParam(mapName,name,value)
+    @pyqtSlot(str)
+    def onSpinIntValueChange(self,val):
+        name = self.sender().prefix()[:-2]
+        self.trigInt.emit(self.map.getName(),name,val)
+
+    @pyqtSlot(str,str,str)
+    def onParamStrChange(self,mapName,name,value):
+        print("On param in t change in \"%s\" :  %s = %s "%(mapName,name,value))
+        self.model.updateParam(mapName,name,value)
+
+    @pyqtSlot(int,int)
+    def onClick(self,x,y):
+        self.model.onClick(x,y)
+
     @pyqtSlot()
     def saveFigSlot(self):
             import  dnfpy.view.staticViewMatplotlib as mtpl
@@ -54,6 +76,8 @@ class Runner(QtCore.QThread):
     @pyqtSlot()
     def playSlot(self):
         self.play = not(self.play)
+
+
 
 
     @pyqtSlot()
@@ -84,15 +108,15 @@ class Runner(QtCore.QThread):
             simuTime = timeRatio * realTime
         """
         now = datetime.now()
-        
+
         delta = now - self.lastUpdateTime
         dt = self.paramsModelDict['dt']
         timeIteration = self.timeRatio * dt * 1e6
         if delta.microseconds < timeIteration:
             val = self.timeRatio*1e6 - delta.microseconds
             time.sleep((timeIteration - delta.microseconds)/1e6)
-        self.lastUpdateTime = now 
-        
+        self.lastUpdateTime = now
 
-            
+
+
 

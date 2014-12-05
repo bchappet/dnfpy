@@ -7,8 +7,8 @@ class FuncWithoutKeywords(FuncMap2D):
     To put constant arg: use addComputeArgs
     """
 
-    def __init__(self,func,size,**kwargs):
-        super(FuncWithoutKeywords,self).__init__(func,size,**kwargs)
+    def __init__(self,func,name,size,**kwargs):
+        super(FuncWithoutKeywords,self).__init__(func,name,size,**kwargs)
 
     def addComputeArgs(self,*args):
         """

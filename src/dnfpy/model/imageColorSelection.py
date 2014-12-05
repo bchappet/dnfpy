@@ -7,9 +7,15 @@ class ImageColorSelection(Map2D):
         dt  : real
         image : (size,size,3) array in BGR
         color : string in ('red','green','blue','gray')
-        reverseColors : boolean
+        reverse : boolean
 
     """
+    def __init__(self,name,size,dt=0.1,color='red',thresh=10,reverse=False,
+                 lowHSV=np.array([150,50,50]),highHSV  = np.array([20,255,255]),
+                 **kwargs):
+        super(ImageColorSelection,self).__init__(name,
+            size=size,dt=dt,color=color,thresh=thresh,reverse=reverse,
+            lowHSV=lowHSV,highHSV=highHSV,**kwargs)
 
     def _onParamsUpdate(self,color,thresh,lowHSV,highHSV):
         #HSV threshold
@@ -32,10 +38,11 @@ class ImageColorSelection(Map2D):
                 pass
         else:
                 raise ValueError("bad color : %s"%color)
+        print lowHSV
         return dict(lowHSV=lowHSV,highHSV=highHSV)
 
 
-    def _compute(self,image,color,reverseColors,lowHSV,highHSV):
+    def _compute(self,image,color,reverse,lowHSV,highHSV):
         if color == 'gray':
                 gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
         else:
@@ -44,7 +51,7 @@ class ImageColorSelection(Map2D):
                 res = cv2.bitwise_and(array,array, mask= mask)
                 gray = res[:,:,2]
 
-        if reverseColors:
+        if reverse:
                 gray = 255 -  gray
         self._data =  normalize(gray)
 

@@ -15,20 +15,23 @@ def randomNormal(scale,size_):
 
 class InputMap(FuncWithoutKeywords):
     """The input are defined here"""
-    def __init__(self,size,dt=0.1,wrap=True,distr_dt=0.1,noise_dt=0.1,noiseI=0.01,
+    def __init__(self,name,size,dt=0.1,wrap=True,distr_dt=0.1,noise_dt=0.1,noiseI=0.01,
                  tck_dt=0.1,iStim=1,wStim=0.1,nbDistr=0,iDistr=1,tck_radius=0.3,
                  wDistr=0.1,**kwargs):
-        super(InputMap,self).__init__(utils.sumArrays,size,dt=dt,
+        super(InputMap,self).__init__(utils.sumArrays,name,size,dt=dt,
                 wrap=wrap,distr_dt=distr_dt,noise_dt=noise_dt,noiseI=noiseI,
                 tck_dt = tck_dt,iStim = iStim ,wStim = wStim ,wDistr=wDistr,
                 nbDistr = nbDistr ,iDistr=iDistr,tck_radius = tck_radius,**kwargs)
-        self.distrs = FuncWithoutKeywords(utils.sumArrays,size,dt=distr_dt)
+        self.__currentDistId = 0 #name the distr incrementally
+
+        self.distrs = FuncWithoutKeywords(utils.sumArrays,name+"_distracters",
+                                          size,dt=distr_dt)
 
         self.traj = []
         self.track1 = self.newTrack(0,size,tck_dt,wrap,iStim,wStim,tck_radius)
         self.track2 = self.newTrack(1,size,tck_dt,wrap,iStim,wStim,tck_radius)
 
-        self.noise = FuncMap2D(randomNormal,size,
+        self.noise = FuncMap2D(randomNormal,name+"_noise",size,
                          dt=noise_dt,scale=noiseI,size_=(size,size))
 
         self.addChildren(track1=self.track1,track2=self.track2,
@@ -45,33 +48,38 @@ class InputMap(FuncWithoutKeywords):
         return dict(wStim=wStim,wDistr=wDistr,tck_radius=tck_radius)
 
     def _childrenParamsUpdate(self,size,distr_dt,tck_dt,wrap,iDistr,wDistr,nbDistr,
-                              wStim,tck_radius,iStim):
+                              wStim,tck_radius,iStim,noise_dt,noiseI):
         distrChildren = self.distrs.getChildren()
         for distr in distrChildren:
-            distrChildren[distr].setArg(dt=distr_dt,wrap=wrap,iDistr=iDistr,wDistr=wDistr)
-        self.track1.setArg(wrap=wrap,dt=tck_dt,intensity=iStim,
+            distrChildren[distr].setParams(dt=distr_dt,wrap=wrap,iDistr=iDistr,wDistr=wDistr)
+
+        self.track1.setParams(wrap=wrap,dt=tck_dt,intensity=iStim,
                            width=wStim)
-        self.track2.setArg(wrap=wrap,dt=tck_dt,intensity=iStim,
+        self.track2.setParams(wrap=wrap,dt=tck_dt,intensity=iStim,
                            width=wStim)
         for t in self.traj:
-            t.setArg(radius=tck_radius)
+            t.setParams(radius=tck_radius)
+        self.noise.setParams(dt=noise_dt,scale=noiseI)
 
         self.updateNbDistr(nbDistr,size,distr_dt,wrap,iDistr,wDistr)
 
 
     def newTrack(self,index,size,tck_dt,wrap,iStim,wStim,tck_radius):
+        name = self.getName() +  "_track"+str(index)
         period  = 36
-        track = FuncMap2D(utils.gauss2d,size,dt=tck_dt,wrap=wrap,
+        track = FuncMap2D(utils.gauss2d,name,
+                          size,dt=tck_dt,wrap=wrap,
                           intensity=iStim,width=wStim)
 
         center = (size-1)/2
 
         phase = index/2. + 0
-        cX = FuncMap2D(utils.cosTraj,1,center=center,period=period,phase=phase,
+        cX = FuncMap2D(utils.cosTraj,name+"_cX",1
+                       ,center=center,period=period,phase=phase,
             dt=tck_dt,radius=tck_radius)
 
         phase = index/2. + 0.25
-        cY = FuncMap2D(utils.cosTraj,1,center=center,period=period,phase=phase,
+        cY = FuncMap2D(utils.cosTraj,name+"_cY",1,center=center,period=period,phase=phase,
             dt=tck_dt,radius=tck_radius)
 
 
@@ -81,10 +89,11 @@ class InputMap(FuncWithoutKeywords):
         return track
 
     def newDistr(self,size,distr_dt,wrap,iDistr,wDistr):
-        distr = FuncMap2D(utils.gauss2d,size,dt=distr_dt,
+        name = self.getName() +  "_distr"+str(self.__currentDistId)
+        distr = FuncMap2D(utils.gauss2d,name,size,dt=distr_dt,
                           wrap=wrap,intensity=iDistr,width=wDistr)
-        cX = FuncMap2D(random.uniform,1,dt=distr_dt,a=0,b=size)
-        cY = FuncMap2D(random.uniform,1,dt=distr_dt,a=0,b=size)
+        cX = FuncMap2D(random.uniform,name+"_cX",1,dt=distr_dt,a=0,b=size)
+        cY = FuncMap2D(random.uniform,name+"_cY",1,dt=distr_dt,a=0,b=size)
         distr.addChildren(centerX=cX,centerY=cY)
         return distr
 

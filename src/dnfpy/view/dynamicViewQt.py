@@ -1,53 +1,10 @@
 from PyQt4 import QtGui,  QtCore
 from PyQt4.QtCore import pyqtSlot
 import math
-import plotArrayQt
 import numpy as np
-from dnfpy.view.view import View
-
-
-class ArrayLabel(QtGui.QLabel):
-        def __init__(self,  name,  array):
-                super(ArrayLabel,  self).__init__()
-                self.name = name
-                self.updateArray(array)
-
-        def updateArray(self, array):
-                self.array = array
-                self.img = plotArrayQt.npToQImage(array)
-                self.shape = array.shape
-                self.min = np.min(array)
-                self.max = np.max(array)
-
-        def paintEvent(self, event):
-                qp = QtGui.QPainter(self)
-                qp.drawImage(event.rect(), self.img)
-                qp.drawText(event.rect(),  QtCore.Qt.AlignTop,  "%.2f" %
-                            self.max)
-                qp.drawText(event.rect(),  QtCore.Qt.AlignBottom,  "%.2f" %
-                            self.min)
-
-        def mousePressEvent(self,  event):
-                labXY = np.array([event.x(), event.y()], dtype=np.float32)
-                size = self.rect().size()
-                labWH = np.array([size.width(), size.height()]) - 1
-                shapeWH = np.array([self.array.shape[0],
-                                    self.array.shape[1]]) - 1
-                arrXY = (labXY / labWH) * shapeWH
-                arrXY = np.round(arrXY)
-                value = self.array[arrXY[1], arrXY[0]]
-                print value
-
-        def getParameterWidget(self):
-            """
-            Will return the parameter display and  controlers specific of this
-            map
-            """
-            layout = QtGui.QBoxLayout()
-            lShape = QtGui.QLabel("Shape: " + str(self.shape))
-            layout.addWidget(lShape)
-
-            return layout
+from view import View
+from parametersView import ParametersView
+from mapView import ArrayWidget
 
 
 class GlobalParams(QtGui.QWidget):
@@ -88,9 +45,11 @@ class DisplayModelQt(QtGui.QWidget, View):
     def __init__(self, renderable):
         super(DisplayModelQt,  self).__init__()
         self.__paramDict = {} #copy of the global parameter dict
-        self.layout = QtGui.QVBoxLayout(self)
-        self.displayMaps = DisplayMapsQt(renderable)
-        self.layout.addWidget(self.displayMaps)
+        self.widgetV = QtGui.QWidget()
+        self.layoutV = QtGui.QVBoxLayout(self.widgetV)
+
+        self.layoutH = QtGui.QHBoxLayout(self)
+        self.renderable = renderable
 
         self.setGeometry(400,  0,  700,  700)
     #Override View
@@ -103,8 +62,14 @@ class DisplayModelQt(QtGui.QWidget, View):
     def setRunner(self, runner):
         self.runner = runner
         self.globalParams = GlobalParams(self.runner)
+        self.rightPanel = ParametersView(self.runner)
         self.triggerParamsUpdate.connect(runner.updateParams)
-        self.layout.addWidget(self.globalParams)
+        self.displayMaps = DisplayMapsQt(self.renderable,self.runner,self.rightPanel)
+        self.layoutV.addWidget(self.displayMaps)
+        self.layoutV.addWidget(self.globalParams)
+
+        self.layoutH.addWidget(self.widgetV)
+        self.layoutH.addWidget(self.rightPanel)
 
     #Override View
     @pyqtSlot()
@@ -126,13 +91,15 @@ class DisplayMapsQt(QtGui.QWidget):
 
     """
 
-    def __init__(self, renderable):
+    def __init__(self, renderable, runner,parametersView):
         super(DisplayMapsQt,  self).__init__()
         self.renderable = renderable
-        size = len(self.renderable.getArraysDict())
+        self.parametersView = parametersView
+        self.runner = runner
+        size = len(self.renderable.getArrays())
         self.simuTime = 0
 
-        self.dictLabel = {} #dict of labels
+        self.listLabels= []
         self.nbCols = int(math.ceil(math.sqrt(size))) #nb cols in the label matrix
         self.nbRows = int(math.ceil(size/float(self.nbCols))) #nb rows in the label matrix
         self.grid = QtGui.QGridLayout(self)
@@ -144,35 +111,27 @@ class DisplayMapsQt(QtGui.QWidget):
         self.__initArrays()
 
 
-    def __addLabel(self, label, title):
-        index = len(self.dictLabel)-1
-        row = index / self.nbCols
-        col = index % self.nbCols
-        box = QtGui.QGroupBox(title)
-        vbox = QtGui.QVBoxLayout()
-        vbox.addWidget(label)
-        box.setLayout(vbox)
-        box.focusInEvent
-        self.grid.addWidget(box, row, col)
-        label.setVisible(True)
 
     def __initArrays(self):
         """
             Add all arrays of renderable
         """
-        maps = self.renderable.getArraysDict()
-        for name in maps.keys():
-            self.addMap(name, maps[name])
+        maps = self.renderable.getArrays()
+        for map in maps:
+            self.addMap( map)
 
-    def addMap(self, name, array):
+    def addMap(self,  map_):
         """
             Add a new map to the view
             return the index of the map
         """
-        label = ArrayLabel(name, array)
-        label.setScaledContents(True)
-        self.dictLabel.update({name:label})
-        self.__addLabel(label, name)
+        label = ArrayWidget(map_,self.runner,self.parametersView)
+        self.listLabels.append(label)
+        index = len(self.listLabels)-1
+        row = index / self.nbCols
+        col = index % self.nbCols
+        self.grid.addWidget(label, row, col)
+        label.setVisible(True)
 
     def __updateInfoMap(self, name, map_):
         infoMap = InfoMap(map_.shape, np.min(map_), np.max(map_))
@@ -185,9 +144,9 @@ class DisplayMapsQt(QtGui.QWidget):
             The map ids to update will be stored in idsToUpdate
             The map itself will be in mapToUpdate in the same order
         """
-        maps = self.renderable.getArraysDict()
-        for name in maps.keys():
-            self.dictLabel[name].updateArray(maps[name])
+        maps = self.renderable.getArrays()
+        for i in range(len(maps)):
+            self.listLabels[i].updateArray(maps[i])
 
         self.mapUpdate += 1
 

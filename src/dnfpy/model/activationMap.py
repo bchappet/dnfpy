@@ -2,8 +2,8 @@ import numpy as np
 from dnfpy.core.map2D import Map2D
 
 class ActivationMap(Map2D):
-    def __init__(self,size,dt=0.1,model='cnft',th=0.75,**kwargs):
-        super(ActivationMap,self).__init__(
+    def __init__(self,name,size,dt=0.1,model='cnft',th=0.75,**kwargs):
+        super(ActivationMap,self).__init__(name,
             size=size,dt=dt,model=model,th=th,**kwargs)
     def _compute(self,model,field,th):
         if model == 'cnft':

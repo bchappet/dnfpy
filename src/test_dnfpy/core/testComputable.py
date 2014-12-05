@@ -103,21 +103,21 @@ class TestComputable(unittest.TestCase):
 
     def test_onParamsUpdate_all_params_method(self):
         uut = Computable3(a=1,b=2,c=3,d=4)
-        uut.setArg(a=2,b=3,d=1)
+        uut.setParams(a=2,b=3,d=1)
         expected = dict(a=7,d=22,b=3,c=3)
         obtained = uut.getArgs('a','b','c','d')
         self.assertEqual(expected,obtained)
 
     def test_onParamsUpdate_1_params(self):
         uut = Computable3(a=1,b=2,c=3,d=4)
-        uut.setArg(a=2)
+        uut.setParams(a=2)
         expected = dict(a=6,d=21,b=2,c=3)
         obtained = uut.getArgs('a','b','c','d')
         self.assertEqual(expected,obtained)
 
     def test_onParamsUpdate_mix(self):
         uut = Computable3(a=1,b=2,c=3,d=4)
-        uut.setArg(a=2,b=3,d=1,c=200)
+        uut.setParams(a=2,b=3,d=1,c=200)
         expected = dict(a=7,d=22,b=3,c=200)
         obtained = uut.getArgs('a','b','c','d')
         self.assertEqual(expected,obtained)
@@ -125,7 +125,7 @@ class TestComputable(unittest.TestCase):
     def test_onParamUpdate_noparam(self):
         uut = Computable3(a=1,b=2,c=3,d=4)
         expected = dict(a=4,d=21,b=2,c=3)
-        uut.setArg()
+        uut.setParams()
         obtained = uut.getArgs('a','b','c','d')
         self.assertEqual(expected,obtained)
 
