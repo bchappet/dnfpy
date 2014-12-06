@@ -11,11 +11,11 @@ class ImageColorSelection(Map2D):
 
     """
     def __init__(self,name,size,dt=0.1,color='manu',thresh=10,reverse=False,
-                 satLow=0,satHigh=255,colorVal=0,
+                 satLow=0,satHigh=255,colorVal=0,valLow=0,valHigh=255,
                  **kwargs):
         super(ImageColorSelection,self).__init__(name=name,
             size=size,dt=dt,color=color,thresh=thresh,reverse=reverse,
-            satLow=satLow,satHigh=satHigh,colorVal=colorVal,
+            satLow=satLow,satHigh=satHigh,colorVal=colorVal,valLow=valLow,valHigh=valHigh,
             **kwargs)
 
     def _onParamsUpdate(self,color,colorVal):
@@ -41,12 +41,12 @@ class ImageColorSelection(Map2D):
         return dict(colorVal=colorVal)
 
 
-    def _compute(self,image,color,reverse,colorVal,thresh,satLow,satHigh):
+    def _compute(self,image,color,reverse,colorVal,thresh,satLow,satHigh,valHigh,valLow):
         if color == 'gray':
                 gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
         else:
-		lowHSV = np.array([colorVal-thresh,satLow,0])
-		highHSV = np.array([colorVal+thresh,satHigh,255])
+		lowHSV = np.array([colorVal-thresh,satLow,valLow])
+		highHSV = np.array([colorVal+thresh,satHigh,valHigh])
                 array = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
                 mask = cv2.inRange(array,lowHSV,highHSV)
                 res = cv2.bitwise_and(array,array, mask= mask)
