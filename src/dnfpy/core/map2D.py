@@ -124,8 +124,8 @@ class Map2D(Computable):
             self.__lock = True
             selfNUT = self.__getNextUpdateTime()
             allowed_error = math.pow(10,-self.__precision)
-            assert( simuTime - selfNUT <= allowed_error), \
-                "Simulation problem: %r has not been updated. %r < %r" % (self,selfNUT,simuTime)
+            #assert( simuTime - selfNUT <= allowed_error), \
+            #    "Simulation problem: %r has not been updated. %r < %r" % (self,selfNUT,simuTime)
 
             for child in self.__children.values():
                  child.update(simuTime)
