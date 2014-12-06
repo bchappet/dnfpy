@@ -6,46 +6,47 @@ class ImageColorSelection(Map2D):
     Parameter:
         dt  : real
         image : (size,size,3) array in BGR
-        color : string in ('red','green','blue','gray')
+        color : string in ('red','green','blue','gray','manu')
         reverse : boolean
 
     """
-    def __init__(self,name,size,dt=0.1,color='red',thresh=10,reverse=False,
-                 lowHSV=np.array([150,50,50]),highHSV  = np.array([20,255,255]),
+    def __init__(self,name,size,dt=0.1,color='manu',thresh=10,reverse=False,
+                 satLow=0,satHigh=255,colorVal=0,
                  **kwargs):
-        super(ImageColorSelection,self).__init__(name,
+        super(ImageColorSelection,self).__init__(name=name,
             size=size,dt=dt,color=color,thresh=thresh,reverse=reverse,
-            lowHSV=lowHSV,highHSV=highHSV,**kwargs)
+            satLow=satLow,satHigh=satHigh,colorVal=colorVal,
+            **kwargs)
 
-    def _onParamsUpdate(self,color,thresh,lowHSV,highHSV):
+    def _onParamsUpdate(self,color,colorVal):
         #HSV threshold
 
         if color == 'red':
-                lowHSV[0] = 0 - thresh
-                highHSV[0] = 0 + thresh
+		colorVal = 0
         elif color == 'blue':
-                lowHSV[0] = 120 - thresh
-                highHSV[0] = 120 + thresh
+		colorVal = 120
         elif color == 'green':
-                lowHSV[0] = 60-thresh
-                highHSV[0] = 60+thresh
+		colorVal = 60
         elif color == 'pink':
-                lowHSV[0] = 120-thresh
-                highHSV[0] = 120+thresh
-
-
+		colorVal = 150
+	elif color == 'manu':
+		pass
         elif color == 'gray':
                 pass
         else:
                 raise ValueError("bad color : %s"%color)
-        print lowHSV
-        return dict(lowHSV=lowHSV,highHSV=highHSV)
 
 
-    def _compute(self,image,color,reverse,lowHSV,highHSV):
+
+        return dict(colorVal=colorVal)
+
+
+    def _compute(self,image,color,reverse,colorVal,thresh,satLow,satHigh):
         if color == 'gray':
                 gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
         else:
+		lowHSV = np.array([colorVal-thresh,satLow,0])
+		highHSV = np.array([colorVal+thresh,satHigh,255])
                 array = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
                 mask = cv2.inRange(array,lowHSV,highHSV)
                 res = cv2.bitwise_and(array,array, mask= mask)
