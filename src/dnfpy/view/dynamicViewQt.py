@@ -51,7 +51,7 @@ class DisplayModelQt(QtGui.QWidget, View):
         self.layoutH = QtGui.QHBoxLayout(self)
         self.renderable = renderable
 
-        self.setGeometry(300,  0,  1000,  700)
+        self.setGeometry(0,  0,  1000,  700)
     #Override View
     def getParamsDict(self):
         return self.__paramDict
