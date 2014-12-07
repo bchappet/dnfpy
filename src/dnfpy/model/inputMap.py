@@ -1,17 +1,14 @@
 from dnfpy.core.funcMap2D import FuncMap2D
+from noiseMap import NoiseMap
+from distrMap import DistrMap
 from dnfpy.core.funcWithoutKeywords import FuncWithoutKeywords
 import dnfpy.core.utils as utils
 import random
 import numpy as np
+import copy
 
 
 
-def randomNormal(scale,size_):
-    """because np.random.normal does not support scale = 0"""
-    if scale == 0:
-        return np.zeros(size_,dtype=np.float32)
-    else:
-        return np.random.normal(scale=scale,size=size_)
 
 class InputMap(FuncWithoutKeywords):
     """The input are defined here"""
@@ -24,17 +21,15 @@ class InputMap(FuncWithoutKeywords):
                 nbDistr = nbDistr ,iDistr=iDistr,tck_radius = tck_radius,
                 wStim_=wStim_,wDist_=wDistr_,tck_radius_=tck_radius_,
                 **kwargs)
-        self.__currentDistId = 0 #name the distr incrementally
+        self.distrs = DistrMap("Distracters",size,dt=distr_dt,wrap=wrap,
+                        intensity=iDistr,width=wDistr_,number=nbDistr)
 
-        self.distrs = FuncWithoutKeywords(utils.sumArrays,name+"_distracters",
-                                          size,dt=distr_dt)
 
         self.traj = []
         self.track1 = self.newTrack(0,size,tck_dt,wrap,iStim,wStim_,tck_radius_)
         self.track2 = self.newTrack(1,size,tck_dt,wrap,iStim,wStim_,tck_radius_)
 
-        self.noise = FuncMap2D(randomNormal,name+"_noise",size,
-                         dt=noise_dt,scale=noiseI,size_=(size,size))
+        self.noise = NoiseMap("noise",size,dt=noise_dt,intensity=noiseI)
 
         self.addChildren(track1=self.track1,track2=self.track2,
                          noise=self.noise,distrs=self.distrs)
@@ -51,9 +46,6 @@ class InputMap(FuncWithoutKeywords):
 
     def _childrenParamsUpdate(self,size,distr_dt,tck_dt,wrap,iDistr,wDistr_,nbDistr,
                               wStim_,tck_radius_,iStim,noise_dt,noiseI):
-        distrChildren = self.distrs.getChildren()
-        for distr in distrChildren:
-            distrChildren[distr].setParams(dt=distr_dt,wrap=wrap,intensity=iDistr,width=wDistr_)
 
         self.track1.setParams(wrap=wrap,dt=tck_dt,intensity=iStim,
                            width=wStim_)
@@ -62,8 +54,9 @@ class InputMap(FuncWithoutKeywords):
         for t in self.traj:
             t.setParams(radius=tck_radius_)
         self.noise.setParams(dt=noise_dt,scale=noiseI)
+        self.distrs.setParams(dt=distr_dt,wrap=wrap,intensity=iDistr,width=wDistr_,
+                        number=nbDistr)
 
-        self.updateNbDistr(nbDistr,size,distr_dt,wrap,iDistr,wDistr_)
 
 
     def newTrack(self,index,size,tck_dt,wrap,iStim,wStim_,tck_radius_):
@@ -89,20 +82,3 @@ class InputMap(FuncWithoutKeywords):
         self.traj.append(cY)
         track.addChildren(centerX=cX,centerY=cY)
         return track
-
-    def newDistr(self,size,distr_dt,wrap,iDistr,wDistr_):
-        name = self.getName() +  "_distr"+str(self.__currentDistId)
-        distr = FuncMap2D(utils.gauss2d,name,size,dt=distr_dt,
-                          wrap=wrap,intensity=iDistr,width=wDistr_)
-        cX = FuncMap2D(random.uniform,name+"_cX",1,dt=distr_dt,a=0,b=size)
-        cY = FuncMap2D(random.uniform,name+"_cY",1,dt=distr_dt,a=0,b=size)
-        distr.addChildren(centerX=cX,centerY=cY)
-        return distr
-
-    def updateNbDistr(self,nb,size,distr_dt,wrap,iDistr,wDistr_):
-        while self.distrs.getChildrenCount() > nb:
-            self.distrs.removeChild('distr'+str(self.distrs.getChildrenCount()-1))
-
-        while self.distrs.getChildrenCount() < nb:
-            distr = self.newDistr(size,distr_dt,wrap,iDistr,wDistr_)
-            self.distrs.addChildren(**{'distr'+str(self.distrs.getChildrenCount()):distr})

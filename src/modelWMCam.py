@@ -93,4 +93,7 @@ class ModelWMCam(Model,Renderable):
         #ret.extend(self.field.getArrays())
         return ret
 
+    def onlick(self,x,y):
+        pass
+
 
