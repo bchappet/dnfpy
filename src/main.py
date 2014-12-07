@@ -4,6 +4,7 @@ from dnfpy.controller.runner import Runner
 from PyQt4 import QtGui
 import parser
 import modelDNF
+import modelDNFdual
 import modelDNFCam
 import modelFingerDetection
 import modelWMCam

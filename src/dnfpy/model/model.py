@@ -20,19 +20,40 @@ class Model(object):
 
 
     def update(self,simuTime):
-        self.root.update(simuTime)
+        if isinstance(self.root,list):
+            for root_i in self.root:
+                root_i.update(simuTime)
+        else:
+            self.root.update(simuTime)
 
     def getSmallestNextUpdateTime(self):
-        return self.root.getSmallestNextUpdateTime()
+        if isinstance(self.root,list):
+            minTime = self.root[0].getSmallestNextUpdateTime()
+            for root_i in self.root:
+                if minTime > root_i.getSmallestNextUpdateTime():
+                    minTime = root_i.getSmallestNextUpdateTime()
+        else:
+            minTime = self.root.getSmallestNextUpdateTime()
+        return minTime
 
     def onclick(self,mapName,x,y):
         pass
 
-    def __addMapsToDict(self,map):
-        if not(map.getName() in self.mapDict.keys()):
-            self.mapDict.update({map.getName():map})
+    def __addMapsToDict(self,rootmap):
+        if isinstance(rootmap,list):
+            for root_i in rootmap:
+                if not(root_i.getName() in self.mapDict.keys()):
+                    self.mapDict.update({root_i.getName():root_i})
+                else:
+                    return
+                childDic = root_i.getChildren()
+                for child in childDic:
+                    self.__addMapsToDict(childDic[child])
         else:
-            return
-        childDic = map.getChildren()
-        for child in childDic:
-            self.__addMapsToDict(childDic[child])
+            if not(rootmap.getName() in self.mapDict.keys()):
+                self.mapDict.update({rootmap.getName():rootmap})
+            else:
+                return
+            childDic = rootmap.getChildren()
+            for child in childDic:
+                self.__addMapsToDict(childDic[child])

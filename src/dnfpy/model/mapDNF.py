@@ -32,7 +32,6 @@ class MapDNF(FieldMap):
         return [
             self.act,
             self.lat,
-            self.kernel,
         ]
 
 
