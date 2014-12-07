@@ -6,7 +6,6 @@
 
 
 #ignore Model and params for now
-model*.py
 src/context/*
 
 .ropeproject/
