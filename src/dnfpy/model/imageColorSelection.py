@@ -45,8 +45,8 @@ class ImageColorSelection(Map2D):
         if color == 'gray':
                 gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
         else:
-		lowHSV = np.array([colorVal-thresh,satLow,valLow])
-		highHSV = np.array([colorVal+thresh,satHigh,valHigh])
+                lowHSV = np.array([colorVal-thresh,satLow,valLow])
+                highHSV = np.array([colorVal+thresh,satHigh,valHigh])
                 array = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
                 mask = cv2.inRange(array,lowHSV,highHSV)
                 res = cv2.bitwise_and(array,array, mask= mask)

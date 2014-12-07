@@ -1,4 +1,5 @@
 import math
+import sip
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 import plotArrayQt
@@ -45,6 +46,11 @@ class ArrayWidget(QtGui.QGroupBox):
             self.parametersView.addWidget(name,self.box)
         else:
             self.paramsDisplayed = False
+            sip.delete(self.paramDict)
+            self.paramDict = None
+            sip.delete(self.box)
+            self.box = None
+
             self.parametersView.removeWidget(name)
             #del self.box
             #del self.layoutB

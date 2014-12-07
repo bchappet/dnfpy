@@ -1,4 +1,5 @@
 from PyQt4 import QtGui
+import sip
 
 class ParametersView(QtGui.QWidget):
     def __init__(self,runner):
@@ -17,12 +18,11 @@ class ParametersView(QtGui.QWidget):
 
     def removeWidget(self,name):
         widg = self.widgetDict[name]
-        self.layout.removeWidget(widg)
+        #self.layout.removeWidget(widg)
         self.__nbWidg -= 1
     	if self.__nbWidg == 0:
 	    	self.setMaximumWidth(0)
-        del self.widgetDict[name]
-        self.update()
+
 
 
 
