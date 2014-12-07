@@ -124,13 +124,12 @@ class ParamsView(QtGui.QScrollArea):
                 self.timeLabel.setText("time: " + str(self.map.getArg('time')))
 
         def onParamUpdate(self):
-                print "on Param Update"
                 for p in self.spinnerList:
-                    name = p.getPrefix()[-2]
-                    p.setValue(self.map.getArg(name))
+                    name = unicode(p.prefix())[:-2]
+                    p.setValue(self.map.getArg(unicode(name)))
                 for p in self.labelList:
-                    name = p.getText()[-2]
-                    p.setText(name + ": " +self.map.getArg(name))
+                    name = unicode(p.text().split(": ")[0])
+                    p.setText(name + ": " +unicode(self.map.getArg(name)))
 
 
 

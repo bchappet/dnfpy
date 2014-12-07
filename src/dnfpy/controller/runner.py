@@ -16,6 +16,7 @@ class Runner(QtCore.QThread):
             view : View
     """
     triggerUpdate = QtCore.pyqtSignal()
+    triggerParamsUpdate = QtCore.pyqtSignal(str)
     def __init__(self,model,view,timeEnd,paramsModelDict,timeRatio = 0.3):
         super(Runner,self).__init__()
         self.model = model
@@ -25,6 +26,7 @@ class Runner(QtCore.QThread):
         self.timeEnd = timeEnd
         self.timeRatio = timeRatio
         self.triggerUpdate.connect(self.view.update)
+        self.triggerParamsUpdate.connect(self.view.updateParams)
         #timing
         self.lastUpdateTime = datetime.now()
         #Control
@@ -52,7 +54,10 @@ class Runner(QtCore.QThread):
 
     @pyqtSlot(str,int,int)
     def onClick(self,mapName,x,y):
-        self.model.onClick(mapName,x,y)
+        mapToUpdate = self.model.onClick(mapName,x,y)
+        if mapToUpdate:
+            self.triggerParamsUpdate.emit(mapToUpdate)
+
 
     @pyqtSlot()
     def saveFigSlot(self):
@@ -78,16 +83,6 @@ class Runner(QtCore.QThread):
         self.play = not(self.play)
 
 
-
-
-    @pyqtSlot()
-    def updateParams(self):
-        """
-            View will send signal when  parameter will be changed
-            by the view
-        """
-        self.paramsModelDict.update(self.view.getParamsDict())
-        self.model.updateParams(self.paramsModelDict)
     @pyqtSlot()
     def stepSlot(self):
             self.__step()

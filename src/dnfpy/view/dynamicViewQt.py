@@ -41,10 +41,8 @@ class GlobalParams(QtGui.QWidget):
 
 
 class DisplayModelQt(QtGui.QWidget, View):
-    triggerParamsUpdate = QtCore.pyqtSignal()#Will be triggered on parmas modification
     def __init__(self, renderable):
         super(DisplayModelQt,  self).__init__()
-        self.__paramDict = {} #copy of the global parameter dict
         self.widgetV = QtGui.QWidget()
         self.layoutV = QtGui.QVBoxLayout(self.widgetV)
 
@@ -52,18 +50,13 @@ class DisplayModelQt(QtGui.QWidget, View):
         self.renderable = renderable
 
         self.setGeometry(0,  0,  1000,  700)
-    #Override View
-    def getParamsDict(self):
-        return self.__paramDict
-    #Override View
-    def updateParamsDict(self, paramsDict):
-        self.__paramDict.update(paramsDict)
+
+
     #Override View
     def setRunner(self, runner):
         self.runner = runner
         self.globalParams = GlobalParams(self.runner)
         self.rightPanel = ParametersView(self.runner)
-        self.triggerParamsUpdate.connect(runner.updateParams)
         self.displayMaps = DisplayMapsQt(self.renderable,self.runner,self.rightPanel)
         self.layoutV.addWidget(self.displayMaps)
         self.layoutV.addWidget(self.globalParams)
@@ -78,9 +71,10 @@ class DisplayModelQt(QtGui.QWidget, View):
         self.repaint()
 
 
-
-
-
+    #Override View
+    @pyqtSlot(str)
+    def updateParams(self,mapName):
+        self.displayMaps.updateParams(mapName)
 
 
 
@@ -99,7 +93,8 @@ class DisplayMapsQt(QtGui.QWidget):
         size = len(self.renderable.getArrays())
         self.simuTime = 0
 
-        self.listLabels= []
+        self.listLabels= {}
+        self.dictInfoMap = {}
         self.nbCols = int(math.ceil(math.sqrt(size))) #nb cols in the label matrix
         self.nbRows = int(math.ceil(size/float(self.nbCols))) #nb rows in the label matrix
         self.grid = QtGui.QGridLayout(self)
@@ -126,7 +121,7 @@ class DisplayMapsQt(QtGui.QWidget):
             return the index of the map
         """
         label = ArrayWidget(map_,self.runner,self.parametersView)
-        self.listLabels.append(label)
+        self.listLabels.update({map_.getName():label})
         index = len(self.listLabels)-1
         row = index / self.nbCols
         col = index % self.nbCols
@@ -145,11 +140,12 @@ class DisplayMapsQt(QtGui.QWidget):
             The map itself will be in mapToUpdate in the same order
         """
         maps = self.renderable.getArrays()
+        labels = self.listLabels.values()
         for i in range(len(maps)):
-            self.listLabels[i].updateArray(maps[i])
+            labels[i].updateArray(maps[i])
 
         self.mapUpdate += 1
 
-
-
-
+    def updateParams(self,mapName):
+            label = self.listLabels[unicode(mapName)]
+            label.onParamsChanged()

@@ -2,10 +2,6 @@
     Interface view
 """
 class View():
-        def getParamsDict(self):
-                pass
-        def updateParamsDict(self,paramsDict):
-                pass
         def setRunner(self,runner):
                 """
                 Set runner
@@ -16,4 +12,7 @@ class View():
                 """Signal that the model changed"""
                 pass
 
+        def updateParams(self,mapName):
+                """Signal that the params of the map changed"""
+                pass
 

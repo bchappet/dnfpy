@@ -120,7 +120,6 @@ class ArrayLabel(QtGui.QLabel):
     def __init__(self,  name,  array, runner,mapView):
         super(ArrayLabel,  self).__init__()
         self.mapName = name
-        print("name : %s " % name)
         self.updateArray(array)
         self.runner = runner
         self.triggerOnClick.connect(runner.onClick)
