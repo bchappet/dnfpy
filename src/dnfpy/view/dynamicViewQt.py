@@ -141,8 +141,8 @@ class DisplayMapsQt(QtGui.QWidget):
         """
         maps = self.renderable.getArrays()
         labels = self.listLabels.values()
-        for i in range(len(maps)):
-            labels[i].updateArray(maps[i])
+        for map in maps:
+            self.listLabels[map.getName()].updateArray(map)
 
         self.mapUpdate += 1
 

@@ -7,6 +7,7 @@ import numpy as np
 from PyQt4.QtCore import pyqtSlot
 from paramsView import ParamsView
 class ArrayWidget(QtGui.QGroupBox):
+
     def __init__(self,map,runner,parametersView):
         super(ArrayWidget,self).__init__(title=map.getName())
         self.map = map
@@ -54,38 +55,6 @@ class ArrayWidget(QtGui.QGroupBox):
             self.parametersView.removeWidget(name)
             #del self.box
             #del self.layoutB
-
-class ParamsDict(QtGui.QScrollArea):
-    """
-    Make a scrolable widget to display an set params dict
-    """
-    trigInt = QtCore.pyqtSignal(str,str,int)#Will be triggered on parmas modification
-    trigFloat = QtCore.pyqtSignal(str,str,float)
-    trigStr = QtCore.pyqtSignal(str,str,str)
-    def __init__(self,map,runner):
-        super(ParamsDict,self).__init__()
-        self.map = map
-        widget = QtGui.QWidget()
-        layout = QtGui.QVBoxLayout(widget)
-
-        self.trigInt.connect(runner.onParamIntChange)
-        self.trigFloat.connect(runner.onParamFloatChange)
-        self.trigStr.connect(runner.onParamStrChange)
-
-        self.paramsList = []
-        self.setWidgetResizable(True)
-
-        for name in map.getAttributesNames():
-            param = self.getParamWidg(name)
-            self.connectToSlot(param)
-            self.paramsList.append(param)
-            layout.addWidget(param)
-
-        self.setWidget(widget)
-
-
-
-
 
 
 
