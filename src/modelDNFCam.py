@@ -1,4 +1,5 @@
 from dnfpy.model.webcamMap import WebcamMap
+from dnfpy.model.playCamMap import PlayCamMap
 from dnfpy.view.renderable import Renderable
 from dnfpy.model.model import Model
 from dnfpy.model.imageColorSelection import ImageColorSelection
@@ -15,10 +16,13 @@ class ModelDNFCam(Model,Renderable):
         dt = 0.5
         #Create maps
         self.webcam = WebcamMap("Webcam",size,dt=dt,numDevice=0)
+        self.webcam.compute()
+        self.playcam = PlayCamMap("PlayCam",size)
+        self.playcam.addChildren(image=self.webcam)
         self.color_select = ImageColorSelection("ColorSelect",size,dt=dt)
         self.field = MapDNF("DNF",size,model='spike',dt=dt)
         #Link maps
-        self.color_select.addChildren(image=self.webcam)
+        self.color_select.addChildren(image=self.playcam)
         self.aff = self.color_select
         self.field.addChildren(aff=self.aff)
         #return the root
@@ -26,7 +30,7 @@ class ModelDNFCam(Model,Renderable):
 
     def getArrays(self):
         ret =  [
-                self.webcam,
+                self.playcam,
                 self.aff,
                 self.field
         ]

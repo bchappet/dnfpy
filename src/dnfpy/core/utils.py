@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.signal as signal
+from dnfpy.model.webcamMap import WebcamMap
 
 
 #Utilitary functions
@@ -41,6 +42,30 @@ def sumArrays(*varlist):
         res = np.add(res, varlist[i])
 
     return res
+
+def sumImageArrays(*varlist):
+    """Sum n arrays to each color component of an image"""
+    k=len(varlist)
+    for i in range(len(varlist)):
+        if len(varlist[i].shape)==3:
+            k = i
+    im = varlist[k]
+    perturb = 0
+    for i in range(len(varlist)):
+        if i!=k:
+            perturb = perturb + varlist[i]
+    im[:,:,0] = perturbe(im[:,:,0], perturb)
+    im[:,:,1] = perturbe(im[:,:,1], perturb)
+    im[:,:,2] = perturbe(im[:,:,2], perturb)
+
+    return im
+
+def perturbe(pixels,perturb):
+    """pixel_modif = perturbe * (255-pixel) + (1-perturbe) * pixel"""
+    # normalisation perturbation
+    perturb = np.abs(perturb)
+    perturb = np.minimum(perturb,1)
+    return np.add(np.multiply(perturb,255-pixels),np.multiply(1-perturb,pixels))
 
 def subArrays(a,b):
     """Return a - b"""
