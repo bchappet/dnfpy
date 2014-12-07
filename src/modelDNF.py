@@ -17,3 +17,6 @@ class ModelDNF(Model,Renderable):
         ret =  [self.aff,self.field]
         ret.extend(self.field.getArrays())
         return ret
+
+    def onClick(self,mapName,x,y):
+        print("clicked on %s, at coord %s,%s"%(unicode(mapName),x,y))

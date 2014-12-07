@@ -4,43 +4,50 @@ from PyQt4 import QtCore
 import plotArrayQt
 import numpy as np
 from PyQt4.QtCore import pyqtSlot
+from paramsView import ParamsView
 class ArrayWidget(QtGui.QGroupBox):
     def __init__(self,map,runner,parametersView):
         super(ArrayWidget,self).__init__(title=map.getName())
         self.map = map
         self.runner = runner
         self.parametersView = parametersView
-        self.label = ArrayLabel(self.title,map.getData(),runner,parametersView)
+        self.label = ArrayLabel(self.map.getName(),map.getData(),runner,self)
         self.label.setScaledContents(True)
         params = ArrayButtons(self)
         self.layout = QtGui.QVBoxLayout(self)
         self.layout.addWidget(self.label)
         self.layout.addWidget(params)
         self.paramsDisplayed = False
+        self.paramDict = None
 
     def updateArray(self, array):
         self.label.updateArray(array.getData())
-        if self.paramsDisplayed:
-            pass
-            #self.arrayParam.onMapUpdate()
+        if self.paramDict:
+            self.paramDict.onMapUpdate()
+    @pyqtSlot()
+    def onParamsChanged(self):
+        if self.paramDict:
+            self.paramDict.onParamUpdate()
+        
 
     @pyqtSlot()
     def displayParams(self):
+        name = self.map.getName()
         if not (self.paramsDisplayed) :
-            box = QtGui.QGroupBox(self.map.getName())
+            self.box = QtGui.QGroupBox(name)
             self.paramsDisplayed = True
             #self.arrayParam = ArrayParams(self.map)
-            self.paramDict = ParamsDict(self.map,self.runner)
-            layout = QtGui.QVBoxLayout(box)
+            self.paramDict = ParamsView(self.map,self.runner)
+            self.layoutB = QtGui.QVBoxLayout(self.box)
             #layout.addWidget(self.arrayParam)
-            layout.addWidget(self.paramDict)
+            self.layoutB.addWidget(self.paramDict)
 
-            self.parametersView.addWidget(box)
-
-
+            self.parametersView.addWidget(name,self.box)
         else:
-            #TODO Destroy
-            pass
+            self.paramsDisplayed = False
+            self.parametersView.removeWidget(name)
+            #del self.box
+            #del self.layoutB
 
 class ParamsDict(QtGui.QScrollArea):
     """
@@ -59,7 +66,6 @@ class ParamsDict(QtGui.QScrollArea):
         self.trigFloat.connect(runner.onParamFloatChange)
         self.trigStr.connect(runner.onParamStrChange)
 
-
         self.paramsList = []
         self.setWidgetResizable(True)
 
@@ -70,75 +76,6 @@ class ParamsDict(QtGui.QScrollArea):
             layout.addWidget(param)
 
         self.setWidget(widget)
-
-
-    def connectToSlot(self,widg):
-        if isinstance(widg,QtGui.QSpinBox):
-            widg.valueChanged.connect(self.onSpinIntValueChange)
-        elif isinstance(widg,QtGui.QDoubleSpinBox):
-            widg.valueChanged.connect(self.onSpinFloatValueChange)
-        else:
-            pass
-
-    @pyqtSlot(str)
-    def onSpinIntValueChange(self,val):
-        name = self.sender().prefix()[:-2]
-        self.trigInt.emit(self.map.getName(),name,val)
-
-    @pyqtSlot(str)
-    def onSpinFloatValueChange(self,val):
-        name = self.sender().prefix()[:-2]
-        self.trigFloat.emit(self.map.getName(),name,val)
-
-
-
-
-
-
-
-    def getParamWidg(self,name):
-        arg = self.map.getArg(name)
-
-        if isinstance(arg,int):
-            widg = QtGui.QSpinBox()
-            if arg != 0:
-                widg.setMaximum(100*arg)
-            widg.setPrefix(name+": ")
-            widg.setValue(arg)
-        elif isinstance(arg,float):
-            widg = QtGui.QDoubleSpinBox()
-            if arg != 0:
-                widg.setMaximum(100*arg)
-            pointPrecision = (int(math.log10(arg))+1)
-            if pointPrecision < 0:
-                sst = 10.**(pointPrecision-1)
-                widg.setSingleStep(sst)
-
-            widg.setPrefix(name+": ")
-            widg.setValue(arg)
-
-        elif isinstance(arg,str):
-            if arg in ('cnft','spike'):
-                widg = QtGui.QComboBox()
-                widg.addItem(arg)
-                if arg == 'cnft':widg.addItem('spike')
-                else: widg.addItem('cnft')
-            else:
-                print("unknow type of %s " % arg)
-                widg = None
-
-        else:
-            print("unknow type of %s " % arg)
-            widg = None
-        if widg:
-            widg.setMaximumWidth(120)
-
-        return widg
-
-    def onParamUpdate(self):
-        for p in self.paramsList:
-            name = p.getPrefix()[-2]
-            p.setValue(self.map.getArg(name))
 
 
 
@@ -177,14 +114,17 @@ class ArrayButtons(QtGui.QWidget):
 
 
 class ArrayLabel(QtGui.QLabel):
-    triggerOnClick = QtCore.pyqtSignal(int,int)#Will be triggered on click
-    def __init__(self,  name,  array, runner,parametersView):
+    triggerOnClick = QtCore.pyqtSignal(str,int,int)#Will be triggered on click
+    triggerOnParamChanged = QtCore.pyqtSignal()
+    #map name coord x y
+    def __init__(self,  name,  array, runner,mapView):
         super(ArrayLabel,  self).__init__()
-        self.name = name
+        self.mapName = name
+        print("name : %s " % name)
         self.updateArray(array)
         self.runner = runner
         self.triggerOnClick.connect(runner.onClick)
-        self.parametersView = parametersView
+        self.triggerOnParamChanged.connect(mapView.onParamsChanged)
 
     def updateArray(self, array):
         self.array = array
@@ -212,7 +152,8 @@ class ArrayLabel(QtGui.QLabel):
         value = self.array[arrXY[1], arrXY[0]]
         print arrXY
         print value
-        self.triggerOnClick.emit(arrXY[0],arrXY[1])
+        self.triggerOnClick.emit(self.mapName,arrXY[0],arrXY[1])
+        self.triggerOnParamChanged.emit()#TDOD dirty
 
 
 

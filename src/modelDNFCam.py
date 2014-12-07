@@ -27,3 +27,14 @@ class ModelDNFCam(Model,Renderable):
         ]
         ret.extend(self.field.getArrays())
         return ret
+
+    def onClick(self,mapName,x,y):
+        print("clicked on %s, at coord %s,%s"%(unicode(mapName),x,y))
+        if mapName == "Webcam":
+            hsv = self.webcam.getData()[y,x]
+            colorVal = hsv[0]
+            satuVal = hsv[1]
+            satLow = satuVal - 60
+            satHigh = satuVal + 60
+            self.color_select.setArg(colorVal=colorVal,satLow=satLow,satHigh=satHigh)
+

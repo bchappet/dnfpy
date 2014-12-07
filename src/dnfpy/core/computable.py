@@ -81,7 +81,7 @@ class Computable(object):
                 except:
                     pass
 
-            self.__dictionary.update(updatedArgs)
+            self.__dictionary.update(newArgs)
         else:
             pass
 

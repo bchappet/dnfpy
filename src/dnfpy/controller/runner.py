@@ -50,9 +50,9 @@ class Runner(QtCore.QThread):
         print("On param in t change in \"%s\" :  %s = %s "%(mapName,name,value))
         self.model.updateParam(mapName,name,value)
 
-    @pyqtSlot(int,int)
-    def onClick(self,x,y):
-        self.model.onClick(x,y)
+    @pyqtSlot(str,int,int)
+    def onClick(self,mapName,x,y):
+        self.model.onClick(mapName,x,y)
 
     @pyqtSlot()
     def saveFigSlot(self):

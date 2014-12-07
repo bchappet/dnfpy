@@ -185,6 +185,7 @@ class Map2D(Computable):
             self._childrenParamsUpdate(**args)
 
     def setParamsRec(self,**kwargs):
+        print("setParamRec : %s"%kwargs)
         self.setParams(**kwargs)
         if len(self.__children) > 0:
             self.childrenParamsUpdate()

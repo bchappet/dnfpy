@@ -10,9 +10,9 @@ class TestMap2D(TestCase):
             self.size= 20
             self.dt =0.1
             #Without children
-            self.uut = Map2D(size=self.size,dt=self.dt,a=1,b=2)
+            self.uut = Map2D("map",size=self.size,dt=self.dt,a=1,b=2)
             #with children
-            self.uut_children = Map2D(size=self.size,dt=self.dt*3,c=3,d=4)
+            self.uut_children = Map2D("map",size=self.size,dt=self.dt*3,c=3,d=4)
             self.uut_children.addChildren(child1=self.uut,child2=copy.deepcopy(self.uut))
 
         def test_init(self):
@@ -45,12 +45,6 @@ class TestMap2D(TestCase):
                         0,
                         self.uut.nb_computation,
                         "The nb computation should be 0")
-
-        def test_update_to_big1(self):
-                """Method: update
-                Scenario: the simuTime is to big, an AssertionError is throw"""
-                with self.assertRaises(AssertionError):
-                        self.uut.update(1)
 
 
         def test_update2(self):
@@ -108,7 +102,7 @@ class TestMap2D(TestCase):
         def test_init_size1(self):
             """Init
             With a size 1. data should be a real"""
-            test = Map2D(size=1,dt=self.dt)
+            test = Map2D("name",size=1,dt=self.dt)
             self.assertEqual(0.,test.getData(),"When initiated with a size == 1, the data should be a real")
         def test_arg_init(self):
             self.uut.update(0.1)

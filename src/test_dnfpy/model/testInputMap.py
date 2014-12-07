@@ -14,7 +14,7 @@ class TestInputMap(unittest.TestCase):
         self.precision = 7
 
         self.globalParams = \
-                {'dt':0.1,'size':21,'wrap':True,'iStim':1.,'wStim':0.1,'iDistr':1,
+                        {'name':"map",'dt':0.1,'size':21,'wrap':True,'iStim':1.,'wStim':0.1,'iDistr':1,
                  'wDistr':0.1,
                 'nbDistr':0,'distr_dt':0.4,'tck_dt':0.2,'noise_dt':0.1,'noiseI':0., \
                 'tck_radius':0.3,'input_dt':0.1}
@@ -89,4 +89,3 @@ class TestInputMap(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

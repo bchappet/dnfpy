@@ -25,7 +25,7 @@ class Model(object):
     def getSmallestNextUpdateTime(self):
         return self.root.getSmallestNextUpdateTime()
 
-    def onclick(self,x,y):
+    def onclick(self,mapName,x,y):
         pass
 
     def __addMapsToDict(self,map):

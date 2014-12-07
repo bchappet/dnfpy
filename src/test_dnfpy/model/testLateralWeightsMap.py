@@ -15,11 +15,12 @@ class TestLateralWeightsMapAndConvolution(unittest.TestCase):
         def setUp(self):
                 self.precision = 7
                 self.size = 21
-                self.kernel = LateralWeightsMap( \
-                    21,1, 10e8, True, 1.25, 0.7, 0.1, 10.0, alpha=10)
-                act = FuncMap2D(constantArray,self.size,dt=0.1,value=1.,
+                self.kernel = LateralWeightsMap( "kernel",21,1,
+                   10e8, True, 1.25, 0.7, 0.1, 10.0, alpha=10)
+                act = FuncMap2D(constantArray,"act",self.size,dt=0.1,value=1.,
                                 shape=((self.size,)*2))
-                self.uut = Convolution(self.size,dt=0.1,wrap=True)
+                self.uut = Convolution("Conv",self.size,dt=0.1,wrap=True)
+                self.kernel.setParams(wExc_=12)
                 self.uut.addChildren(source=act,kernel=self.kernel)
                 self.kernel.compute()
 
@@ -43,24 +44,33 @@ class TestLateralWeightsMapAndConvolution(unittest.TestCase):
                 obtained =np.diagonal( self.uut.getData())
                 self.assertAlmostEqual(np.sum(expected-obtained),0,self.precision)
         def test_gausiankernel_smaller(self):
-                self.kernel = LateralWeightsMap( \
+                self.kernel = LateralWeightsMap( "kernel",
                     21,0.5, 10e8, True, 1.25, 0.7, 0.1, 10.0, alpha=10)
                 self.kernel.compute()
                 obtained =np.diagonal( self.kernel.getData())
                 self.assertEqual(len(obtained),11)
 
         def test_gausiankernel_smaller_ensure_odd(self):
-                self.kernel = LateralWeightsMap( \
+                self.kernel = LateralWeightsMap( "kernel",\
                     21,0.3, 10e8, True, 1.25, 0.7, 0.1, 10.0, alpha=10)
                 self.kernel.compute()
                 obtained =np.diagonal( self.kernel.getData())
                 self.assertEqual(len(obtained),7)
         def test_gausiankernel_ensure_odd(self):
-                self.kernel = LateralWeightsMap( \
+                self.kernel = LateralWeightsMap( "kernel",
                     21,1., 10e8, True, 1.25, 0.7, 0.1, 10.0, alpha=10)
                 self.kernel.compute()
                 obtained =np.diagonal( self.kernel.getData())
                 self.assertEqual(len(obtained),21)
+        def test_change_args(self):
+                self.kernel = LateralWeightsMap( "kernel",
+                    21,1., 10e8, True, 1.25, 0.7, 0.1, 10.0, alpha=10)
+                self.kernel.setParamsRec(wExc=1.)
+                self.kernel.compute()
+                self.assertEqual(1,self.kernel.getArg('wExc'))
+                self.assertEqual(21,self.kernel.getArg('wExc_'))
+
+
 
 if __name__ == '__main__':
         unittest.main()
