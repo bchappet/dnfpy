@@ -1,4 +1,5 @@
 from dnfpy.model.webcamMap import WebcamMap
+from dnfpy.model.opticalFlowToBGR import OpticalFlowToBGR
 from dnfpy.model.playCamMap import PlayCamMap
 from dnfpy.view.renderable import Renderable
 from dnfpy.model.model import Model
@@ -32,43 +33,51 @@ class ModelDNFDualCam(Model,Renderable):
         self.flow1 = OpticalFlowMap("OpticalFlow1",size,dt=dt)
         self.flow2 = OpticalFlowMap("OpticalFlow2",size,dt=dt)
 
-        self.dir = FlowDirectionSelect("SelectDir",size=1,dt=dt,globalSize=size,
+        self.ofBGR1 = OpticalFlowToBGR("OFtoBGR",size=size,dt=dt)
+        self.ofBGR2 = OpticalFlowToBGR("OFtoBGR",size=size,dt=dt)
+
+        self.ofColor = FlowDirectionSelect("SelectDir",size=1,dt=dt,globalSize=size,
                                                 sampleSize=0.07)
+        self.color_select2 = ImageColorSelection("OptFlowColorSelect",size,dt=dt,color='manu')
         #Link maps
+        self.playcam1.addChildren(image=self.webcam1)
         self.color_select.addChildren(image=self.playcam1)
         self.field1.addChildren(aff=self.color_select)
 
-        
-        self.playcam1.addChildren(image=self.webcam1)
-        self.playcam2.addChildren(image=self.webcam2)
-       
         self.flow1.addChildren(img=self.playcam1)
+        self.ofBGR1.addChildren(opticalFlow=self.flow1)
+
+        self.ofColor.addChildren(flowBGR=self.ofBGR1,colorDNFAct=self.field1.getActivation())
+
+        
+        self.playcam2.addChildren(image=self.webcam2)
         self.flow2.addChildren(img=self.playcam2)
+        self.ofBGR2.addChildren(opticalFlow=self.flow2)
+        self.color_select2.addChildren(image=self.ofBGR2,colorVal=self.ofColor)
 
-        self.chan1.addChildren(map=self.flow1)
-        self.chan2.addChildren(map=self.flow2)
-
-        self.field2.addChildren(aff=self.chan2)
+        self.field2.addChildren(aff=self.color_select2)
         #compute the playCam to avoid some problems TODO fix
         self.playcam1.compute()
         self.playcam2.compute()
 
-        self.dir.addChildren(flow=self.flow1,colorDNFAct=self.field1.getActivation())
-
 
         #return the roots
-        fields = [self.field1,self.dir,self.chan1]
+        root = self.field2
 
-        return fields
+        return root
 
     def getArrays(self):
         ret =  [
                 self.playcam1,
                 self.color_select,
                 self.field1,
+                self.ofBGR1,
+
+                self.ofColor,
+
                 self.playcam2,
-                self.chan1,
-                self.chan2,
+                self.ofBGR2,
+                self.color_select2,
                 self.field2
         ]
         return ret
