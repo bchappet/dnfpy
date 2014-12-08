@@ -16,21 +16,17 @@ class ModelDNFCamFlow(Model,Renderable):
         dt = 0.5
         #Create maps
         self.webcam = WebcamMap("Webcam",size,dt=dt,numDevice=0)
-        self.color_select = ImageColorSelection("ColorSelect",size,dt=dt,color='gray')
         self.flow = OpticalFlowMap("OpticalFlow",size,dt=dt)
         self.field = MapDNF("DNF",size,model='spike',dt=dt)
         #Link maps
-        self.color_select.addChildren(image=self.webcam)
         self.flow.addChildren(img_gray=self.webcam)
-        self.aff = self.flow
-        self.field.addChildren(aff=self.aff)
+        self.field.addChildren(aff=self.flow)
         #return the root
         return self.field
 
     def getArrays(self):
         ret =  [
                 self.webcam,
-                self.color_select,
                 self.flow,
                 self.field
         ]

@@ -15,7 +15,7 @@ class ModelDNFCam(Model,Renderable):
         self.size = size
         dt = 0.5
         #Create maps
-        self.webcam = WebcamMap("Webcam",size,dt=dt,numDevice=0)
+        self.webcam = WebcamMap("Webcam",size,dt=dt,numDevice=1)
         self.webcam.compute()
         self.playcam = PlayCamMap("PlayCam",size)
         self.playcam.addChildren(image=self.webcam)
@@ -39,8 +39,8 @@ class ModelDNFCam(Model,Renderable):
 
     def onClick(self,mapName,x,y):
         print("clicked on %s, at coord %s,%s"%(unicode(mapName),x,y))
-        if mapName == "Webcam":
-            bgr = self.webcam.getData()
+        if mapName == "PlayCam":
+            bgr = self.playcam.getData()
             
             sizeROI = self.size/10.
             s2 = round(sizeROI/2.)
