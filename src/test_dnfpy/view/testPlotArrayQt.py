@@ -1,6 +1,6 @@
 import unittest
 from PyQt4 import  QtCore,QtGui
-import plotArrayQt as uut
+import dnfpy.view.plotArrayQt as uut
 import sampleArrayGenerator as gen
 import sys
 import time

@@ -24,7 +24,13 @@ class FlowDirectionSelect(Map2D):
         halfSample = round((sampleSize * globalSize )/2.)
         flowBGR_ROI = flowBGR[cx-halfSample:cx+halfSample,
                         cy-halfSample:cy+halfSample,:]
-        averageOpticalFlowColor = np.mean(flowBGR_ROI,axis=(0,1))
+        #averageOpticalFlowColor = np.mean(flowBGR_ROI,axis=(0,1))
+        averageOpticalFlowColor = np.zeros((3))
+        averageOpticalFlowColor[0] = np.mean(flowBGR_ROI[:,:,0])
+        averageOpticalFlowColor[1] = np.mean(flowBGR_ROI[:,:,1])
+        averageOpticalFlowColor[2] = np.mean(flowBGR_ROI[:,:,2])
+        #averageOpticalFlowColor = np.mean(flowBGR_ROI,axis=(0,1))
+
 
 
         #set self._data

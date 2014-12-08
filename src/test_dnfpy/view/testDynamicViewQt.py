@@ -38,7 +38,7 @@ class TestThread(QtCore.QThread):
 size = 150
 nbMap = 15
 def main():
-    defaultQSS = "../../stylesheet/default.qss"
+    defaultQSS = "stylesheet/default.qss"
     app = QtGui.QApplication(sys.argv)
     app.setStyleSheet(open(defaultQSS,'r').read())
 

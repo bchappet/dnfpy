@@ -86,12 +86,12 @@ class ArrayLabel(QtGui.QLabel):
         self.max = np.max(self.array)
         if self.array.shape == (1,1,3):
             #assume hsv
-            self.img = QtGui.QImage()
+            self.img = QtGui.QImage(1,1,QtGui.QImage.Format_RGB32)
             hsv = [self.array[0,0,0],self.array[0,0,1],self.array[0,0,2]]
             print("hsv : %s"%hsv)
             rgbCol = QtGui.QColor.fromHsv(hsv[0],hsv[1],hsv[2])
             print("rgb : %s,%s,%s "%(rgbCol.red(),rgbCol.green(),rgbCol.blue()))
-            self.img.fill(QtGui.QColor(255,255,255))
+            self.img.fill(rgbCol)
         else:
             self.img = plotArrayQt.npToQImage(self.array)
 
