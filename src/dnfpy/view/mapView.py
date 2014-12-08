@@ -91,7 +91,7 @@ class ArrayLabel(QtGui.QLabel):
             print("hsv : %s"%hsv)
             rgbCol = QtGui.QColor.fromHsv(hsv[0],hsv[1],hsv[2])
             print("rgb : %s,%s,%s "%(rgbCol.red(),rgbCol.green(),rgbCol.blue()))
-            self.img.fill(rgbCol)
+            self.img.fill(QtGui.QColor(255,255,255))
         else:
             self.img = plotArrayQt.npToQImage(self.array)
 
