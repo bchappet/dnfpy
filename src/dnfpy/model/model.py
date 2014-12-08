@@ -18,6 +18,11 @@ class Model(object):
         nameStr = unicode(name)
         map.setParamsRec(**{nameStr:value})
 
+    def getMap(self,mapName):
+        map = self.mapDict[mapName]
+        return map
+
+
 
     def update(self,simuTime):
         if isinstance(self.root,list):

@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.signal as signal
 from dnfpy.model.webcamMap import WebcamMap
+import copy
 
 
 #Utilitary functions
@@ -49,7 +50,7 @@ def sumImageArrays(*varlist):
     for i in range(len(varlist)):
         if len(varlist[i].shape)==3:
             k = i
-    im = varlist[k]
+    im = copy.copy(varlist[k])
     perturb = 0
     for i in range(len(varlist)):
         if i!=k:
@@ -78,4 +79,7 @@ def getAssymetricGaussian2D(size,intXY,stdXY):
     x = x.reshape((1,size))
     y = y.reshape((size,1))
     return np.dot(y,x)
+
+def abs(x):
+        return np.abs(x)
 

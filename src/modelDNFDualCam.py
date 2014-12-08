@@ -8,6 +8,8 @@ from dnfpy.model.opticalFlowMap import OpticalFlowMap
 import colorsys
 import  numpy as np
 import cv2
+from dnfpy.model.channelSelect import ChannelSelect
+from dnfpy.model.flowDirectionSelect import FlowDirectionSelect
 
 
 class ModelDNFDualCam(Model,Renderable):
@@ -17,48 +19,64 @@ class ModelDNFDualCam(Model,Renderable):
         dt = 0.5
         #Create maps
         self.webcam1 = WebcamMap("Webcam1",size,dt=dt,numDevice=0)
-        self.webcam1.compute()
         self.playcam1 = PlayCamMap("PlayCam1",size)
-        self.playcam1.addChildren(image=self.webcam1)
-        self.webcam2 = WebcamMap("Webcam2",size,dt=dt,numDevice=1)
-        self.webcam2.compute()
+        self.webcam2 = WebcamMap("Webcam2",size,dt=dt,numDevice=0)
         self.playcam2 = PlayCamMap("PlayCam2",size)
-        self.playcam2.addChildren(image=self.webcam2)
         self.color_select = ImageColorSelection("ColorSelect",size,dt=dt)
         self.field1 = MapDNF("DNF1",size,model='spike',dt=dt)
         self.field2 = MapDNF("DNF2",size,model='spike',dt=dt)
+
+        self.chan1 = ChannelSelect("chan1",size,dt=dt,channel=0)
+        self.chan2 = ChannelSelect("chan2",size,dt=dt,channel=0)
+
         self.flow1 = OpticalFlowMap("OpticalFlow1",size,dt=dt)
         self.flow2 = OpticalFlowMap("OpticalFlow2",size,dt=dt)
+
+        self.dir = FlowDirectionSelect("SelectDir",size=1,dt=dt,globalSize=size,
+                                                sampleSize=0.07)
         #Link maps
         self.color_select.addChildren(image=self.playcam1)
         self.field1.addChildren(aff=self.color_select)
+
+        
+        self.playcam1.addChildren(image=self.webcam1)
+        self.playcam2.addChildren(image=self.webcam2)
        
-        self.flow1.addChildren(img_gray=self.webcam1)
-        self.flow2.addChildren(img_gray=self.webcam2)
-        self.field2.addChildren(aff=self.flow)
+        self.flow1.addChildren(img=self.playcam1)
+        self.flow2.addChildren(img=self.playcam2)
+
+        self.chan1.addChildren(map=self.flow1)
+        self.chan2.addChildren(map=self.flow2)
+
+        self.field2.addChildren(aff=self.chan2)
+        #compute the playCam to avoid some problems TODO fix
+        self.playcam1.compute()
+        self.playcam2.compute()
+
+        self.dir.addChildren(flow=self.flow1,colorDNFAct=self.field1.getActivation())
+
+
         #return the roots
-        fields = [self.field1,self.field2]
+        fields = [self.field1,self.dir,self.chan1]
 
         return fields
 
     def getArrays(self):
-        ret =  [self.webcam1,
+        ret =  [
                 self.playcam1,
                 self.color_select,
                 self.field1,
-                self.webcam2,
                 self.playcam2,
-                self.flow,
+                self.chan1,
+                self.chan2,
                 self.field2
         ]
-        ret.extend(self.field1.getArrays())
-        ret.extend(self.field2.getArrays())
         return ret
 
     def onClick(self,mapName,x,y):
-        print("clicked on %s, at coord %s,%s"%(unicode(mapName),x,y))
-        if mapName == "Webcam1":
-            bgr = self.webcam1.getData()
+        print mapName.__class__
+        if mapName == "PlayCam1":
+            bgr = self.playcam1.getData()
             
             sizeROI = self.size/10.
             s2 = round(sizeROI/2.)

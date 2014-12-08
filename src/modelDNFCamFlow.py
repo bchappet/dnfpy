@@ -7,6 +7,10 @@ import colorsys
 import  numpy as np
 import cv2
 from dnfpy.model.opticalFlowMap import OpticalFlowMap
+from dnfpy.model.channelSelect import ChannelSelect
+from dnfpy.core.funcMap2D import FuncMap2D
+import dnfpy.core.utils as utils
+from dnfpy.model.opticalFlowToBGR import OpticalFlowToBGR
 
 
 class ModelDNFCamFlow(Model,Renderable):
@@ -17,18 +21,27 @@ class ModelDNFCamFlow(Model,Renderable):
         #Create maps
         self.webcam = WebcamMap("Webcam",size,dt=dt,numDevice=0)
         self.flow = OpticalFlowMap("OpticalFlow",size,dt=dt)
+        self.channel = ChannelSelect("OFNorm",size,dt=dt,channel=0)
+        self.abs = FuncMap2D(utils.abs,"OFIntensity",size,dt=dt)
         self.field = MapDNF("DNF",size,model='spike',dt=dt)
+        self.test = OpticalFlowToBGR("test",size=size,dt=dt)
         #Link maps
-        self.flow.addChildren(img_gray=self.webcam)
-        self.field.addChildren(aff=self.flow)
+        self.flow.addChildren(img=self.webcam)
+        self.channel.addChildren(map=self.flow)
+        self.abs.addChildren(x=self.channel)
+
+        self.field.addChildren(aff=self.abs)
+
+        self.test.addChildren(opticalFlow=self.flow)
         #return the root
-        return self.field
+        return [self.field,self.test]
 
     def getArrays(self):
         ret =  [
                 self.webcam,
-                self.flow,
-                self.field
+                self.abs,
+                self.field,
+                self.test,
         ]
         ret.extend(self.field.getArrays())
         return ret

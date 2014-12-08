@@ -54,6 +54,7 @@ class Runner(QtCore.QThread):
 
     @pyqtSlot(str,int,int)
     def onClick(self,mapName,x,y):
+        mapName = str(mapName)
         mapToUpdate = self.model.onClick(mapName,x,y)
         if mapToUpdate:
             self.triggerParamsUpdate.emit(mapToUpdate)

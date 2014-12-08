@@ -14,10 +14,9 @@ class OpticalFlowMap(Map2D):
                 self.__prev = np.zeros((size,size))
 
 
-        def _compute(self,img_gray):
-                #img_255 = np.round(img_gray * 255)
-                img_255 = cv2.cvtColor(img_gray,cv2.COLOR_BGR2GRAY)
+        def _compute(self,img):
+                img_255 = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
                 flow = cv2.calcOpticalFlowFarneback(self.__prev,img_255,
                                 0.5, 3, 15, 3, 5, 1.2, 0)
                 self.__prev = img_255
-                self._data=np.abs(flow[...,0])
+                self._data=flow

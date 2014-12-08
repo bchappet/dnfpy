@@ -10,7 +10,9 @@ class ParamsView(QtGui.QScrollArea):
         trigInt = QtCore.pyqtSignal(str,str,int)#Will be triggered on parmas modification
         trigFloat = QtCore.pyqtSignal(str,str,float)
         trigStr = QtCore.pyqtSignal(str,str,str)
-        def __init__(self,map,runner):
+        trigAddChildren = QtCore.pyqtSignal(str)
+        
+        def __init__(self,map,runner,view):
                 super(ParamsView,self).__init__()
                 self.map = map
                 widget = QtGui.QWidget()
@@ -18,6 +20,7 @@ class ParamsView(QtGui.QScrollArea):
                 self.trigInt.connect(runner.onParamIntChange)
                 self.trigFloat.connect(runner.onParamFloatChange)
                 self.trigStr.connect(runner.onParamStrChange)
+                self.trigAddChildren.connect(view.addChildrenMap)
 
                 self.spinnerList = []
                 self.labelList = []
@@ -27,6 +30,10 @@ class ParamsView(QtGui.QScrollArea):
                         param = self.getParamWidg(name)
                         self.connectToSlot(param)
                         layout.addWidget(param)
+                for child in map.getChildren().values():
+                        button = QtGui.QPushButton(child.getName())
+                        button.clicked.connect(self.onChildrenButtonClicked)
+                        layout.addWidget(button)
                 self.setWidget(widget)
 
         def connectToSlot(self,widg):
@@ -37,6 +44,11 @@ class ParamsView(QtGui.QScrollArea):
                 else:
                     #TODO string
                     pass
+
+        @pyqtSlot()
+        def onChildrenButtonClicked(self):
+                name = self.sender().text()
+                self.trigAddChildren.emit(name)
 
         @pyqtSlot(str)
         def onSpinIntValueChange(self,val):
