@@ -17,16 +17,19 @@ __cm = __getColorMap()
 
 
 def npToQImage(array):
-    """
-        Transform the array into a qImage with color map
-        return QImage
-    """
-    if len(array.shape) == 3:
-        qImage = qimage2ndarray.array2qimage(array).rgbSwapped()
-    else:
+        """
+                Transform the array into a qImage with color map
+                return QImage
+        """
+        if len(array.shape) == 3:
+            qImage = qimage2ndarray.array2qimage(array).rgbSwapped()
+        else:
+            max_a = max(abs(np.min(array)),np.max(array))
+            qImage = qimage2ndarray.gray2qimage(array,(-max_a,max_a))
+            qImage.setColorTable(__cm)
 
-        max_a = max(abs(np.min(array)),np.max(array))
-        qImage = qimage2ndarray.gray2qimage(array,(-max_a,max_a))
-        qImage.setColorTable(__cm)
-    return qImage
+
+
+
+        return qImage
 

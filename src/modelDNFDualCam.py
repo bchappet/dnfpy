@@ -33,12 +33,12 @@ class ModelDNFDualCam(Model,Renderable):
         self.flow1 = OpticalFlowMap("OpticalFlow1",size,dt=dt)
         self.flow2 = OpticalFlowMap("OpticalFlow2",size,dt=dt)
 
-        self.ofBGR1 = OpticalFlowToBGR("OFtoBGR",size=size,dt=dt)
-        self.ofBGR2 = OpticalFlowToBGR("OFtoBGR",size=size,dt=dt)
+        self.ofBGR1 = OpticalFlowToBGR("OFtoBGR1",size=size,dt=dt)
+        self.ofBGR2 = OpticalFlowToBGR("OFtoBGR2",size=size,dt=dt)
 
         self.ofColor = FlowDirectionSelect("SelectDir",size=1,dt=dt,globalSize=size,
                                                 sampleSize=0.07)
-        self.color_select2 = ImageColorSelection("OptFlowColorSelect",size,dt=dt,color='manu')
+        self.color_select2 =  ImageColorSelection("OptFlowColorSelect",size,dt=dt,color='fullManu')
         #Link maps
         self.playcam1.addChildren(image=self.webcam1)
         self.color_select.addChildren(image=self.playcam1)
