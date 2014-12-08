@@ -19,11 +19,13 @@ class FlowDirectionSelect(Map2D):
         itemIndex = np.where(colorDNFAct==max)
         cx = itemIndex[0][0]
         cy = itemIndex[1][0]
-
         #average the optical flow direction 
         halfSample = round((sampleSize * globalSize )/2.)
-        flowBGR_ROI = flowBGR[cx-halfSample:cx+halfSample,
-                        cy-halfSample:cy+halfSample,:]
+        cxm = 0 if (cx-halfSample<0) else cx-halfSample
+        cxp = globalSize-1 if (cx+halfSample>globalSize-1) else cx+halfSample
+        cym = 0 if (cy-halfSample<0) else cy-halfSample
+        cyp = globalSize-1 if (cy+halfSample>globalSize-1) else cy+halfSample
+        flowBGR_ROI = flowBGR[cxm:cxp,cym:cyp,:]
         #averageOpticalFlowColor = np.mean(flowBGR_ROI,axis=(0,1))
         averageOpticalFlowColor = np.zeros((3))
         averageOpticalFlowColor[0] = np.mean(flowBGR_ROI[:,:,0])
