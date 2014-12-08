@@ -53,7 +53,7 @@ class ModelDNFDualCam(Model,Renderable):
         self.playcam2.addChildren(image=self.webcam2)
         self.flow2.addChildren(img=self.playcam2)
         self.ofBGR2.addChildren(opticalFlow=self.flow2)
-        self.color_select2.addChildren(image=self.ofBGR2,colorVal=self.ofColor)
+        self.color_select2.addChildren(image=self.ofBGR2,hsv=self.ofColor)
 
         self.field2.addChildren(aff=self.color_select2)
         #compute the playCam to avoid some problems TODO fix

@@ -1,3 +1,4 @@
+import numpy as np
 from dnfpy.core.map2D import Map2D
 import cv2
 
@@ -14,4 +15,9 @@ class WebcamMap(Map2D):
         ret,frame = self.capture.read()
         array = cv2.resize(frame,(size,size))
         self._data =  array
+
+        
+   def reset(self):
+    size = self.getArg('size')
+    self._data = np.zeros((size,size,3),dtype=np.uint8)
 

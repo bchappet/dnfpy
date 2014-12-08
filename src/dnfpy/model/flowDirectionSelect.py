@@ -32,14 +32,15 @@ class FlowDirectionSelect(Map2D):
         averageOpticalFlowColor[1] = np.mean(flowBGR_ROI[:,:,1])
         averageOpticalFlowColor[2] = np.mean(flowBGR_ROI[:,:,2])
         #averageOpticalFlowColor = np.mean(flowBGR_ROI,axis=(0,1))
+        #averageOpticalFlowColor = flowBGR[cx,cy,:]
 
 
 
         #set self._data
-        print averageOpticalFlowColor
         #transform in hsv
         mat = np.array([[averageOpticalFlowColor]],dtype=np.uint8)
         hsv = cv2.cvtColor(mat,cv2.COLOR_BGR2HSV)
+        bgr2 = cv2.cvtColor(hsv,cv2.COLOR_HSV2BGR)
         self._data = hsv
 
 

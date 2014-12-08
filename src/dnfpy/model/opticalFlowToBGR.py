@@ -21,4 +21,6 @@ class OpticalFlowToBGR(Map2D):
             bgr = cv2.cvtColor(self.hsv,cv2.COLOR_HSV2BGR)
             self._data = bgr
 
-
+        def reset(self):
+            size = self.getArg('size')
+            self._data = np.zeros((size,size,3),dtype=np.uint8)

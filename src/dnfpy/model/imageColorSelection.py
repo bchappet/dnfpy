@@ -34,7 +34,7 @@ class ImageColorSelection(Map2D):
         elif color == 'manu':
             pass
         elif color == 'fullManu':
-            colorVal = hsv[0]
+            pass
         elif color == 'gray':
             pass
         else:
@@ -50,8 +50,11 @@ class ImageColorSelection(Map2D):
                 gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
         else:
                 if color == 'fullManu':
-                    lowHSV = hsv - thresh
-                    highHSV = hsv + thresh
+                    hsvVal = hsv[0,0,:]
+                    lowHSV = hsvVal - thresh
+                    highHSV = hsvVal + thresh
+                    lowHSV[1] = 0
+                    highHSV[1] = 255
                 else:        
                     lowHSV = np.array([colorVal-thresh,satLow,valLow])
                     highHSV = np.array([colorVal+thresh,satHigh,valHigh])
