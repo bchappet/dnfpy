@@ -87,7 +87,7 @@ class ArrayLabel(QtGui.QLabel):
         if self.array.shape == (1,1,3):
             #assume hsv
             self.img = QtGui.QImage(1,1,QtGui.QImage.Format_RGB32)
-            hsv = [self.array[0,0,0],self.array[0,0,1],self.array[0,0,2]]
+            hsv = [self.array[0,0,0]*2,self.array[0,0,1],self.array[0,0,2]]
             rgbCol = QtGui.QColor.fromHsv(*hsv)
             self.img.fill(rgbCol)
         else:

@@ -51,8 +51,17 @@ class ImageColorSelection(Map2D):
         else:
                 if color == 'fullManu':
                     hsvVal = hsv[0,0,:]
-                    lowHSV = hsvVal - thresh
-                    highHSV = hsvVal + thresh
+		    hHigh = hsvVal[0] + thresh if hsvVal[0] + thresh < 180 else 180
+		    hLow = hsvVal[0] - thresh if hsvVal[0] - thresh >= 0 else 0
+
+		    sHigh = hsvVal[1] + thresh if hsvVal[1] + thresh < 255 else 255
+		    sLow = hsvVal[1] - thresh if hsvVal[1] - thresh >= 0 else 0
+
+		    vHigh = hsvVal[2] + thresh if hsvVal[2] + thresh < 255 else 255
+		    vLow = hsvVal[2] - thresh if hsvVal[2] - thresh >= 0 else 0
+		
+                    lowHSV = np.array([hLow,sLow,vLow])
+                    highHSV = np.array([hHigh,sHigh,vHigh])
                     lowHSV[1] = 0
                     highHSV[1] = 255
 		    print("hsvLow : %s"%lowHSV)
