@@ -55,6 +55,8 @@ class ImageColorSelection(Map2D):
                     highHSV = hsvVal + thresh
                     lowHSV[1] = 0
                     highHSV[1] = 255
+		    print("hsvLow : %s"%lowHSV)
+		    print("hsvHigh : %s"%highHSV)
                 else:        
                     lowHSV = np.array([colorVal-thresh,satLow,valLow])
                     highHSV = np.array([colorVal+thresh,satHigh,valHigh])

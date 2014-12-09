@@ -13,7 +13,7 @@ class ModelDNFCam(Model,Renderable):
 
     def initMaps(self,size):
         self.size = size
-        dt = 0.5
+        dt = 0.6
         #Create maps
         self.webcam = WebcamMap("Webcam",size,dt=dt,numDevice=0)
         self.webcam.compute()

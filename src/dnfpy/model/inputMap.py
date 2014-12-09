@@ -13,8 +13,8 @@ import copy
 class InputMap(FuncWithoutKeywords):
     """The input are defined here"""
     def __init__(self,name,size,dt=0.1,wrap=True,distr_dt=0.1,noise_dt=0.1,noiseI=0.01,
-                 tck_dt=0.1,iStim=1,wStim=0.1,nbDistr=0,iDistr=1,tck_radius=0.3,
-                 wDistr=0.1,wStim_=1,wDistr_=1,tck_radius_=1,**kwargs):
+                 tck_dt=0.1,iStim=0.99,wStim=0.1,nbDistr=0,iDistr=0.99,tck_radius=0.3,
+                 wDistr=0.1,wStim_=1.0,wDistr_=1.0,tck_radius_=1,**kwargs):
         super(InputMap,self).__init__(utils.sumArrays,name,size,dt=dt,
                 wrap=wrap,distr_dt=distr_dt,noise_dt=noise_dt,noiseI=noiseI,
                 tck_dt = tck_dt,iStim = iStim ,wStim = wStim ,wDistr=wDistr,
