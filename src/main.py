@@ -1,27 +1,18 @@
 import sys
+import imp
 from dnfpy.view.dynamicViewQt import DisplayModelQt
 from dnfpy.controller.runner import Runner
 from PyQt4 import QtGui
 import parser
-import modelDNF
-import modelDNFdual
-import modelDNFCam
-import modelFingerDetection
-import modelWMCam
-import modelDNFDualCam
-import modelDNFDualCam_BG
-import modelDNFDualCam2
-import modelDNFCamFlow
-
 
 
 defaultQSS = "stylesheet/default.qss"
 
 modelName = sys.argv[1]
 moduleName = modelName[0].lower() + modelName[1:]
-baz = sys.modules[moduleName]
-clazz = getattr(baz,modelName)
-
+fp, pathname, description = imp.find_module(moduleName)
+module = imp.load_module(moduleName, fp, pathname, description)
+clazz = getattr(module,modelName)
 
 
 context = sys.argv[2] #arguments of the model
@@ -47,9 +38,3 @@ view.setRunner(runner)
 view.show()
 runner.start()
 sys.exit(app.exec_())
-
-
-
-
-
-
