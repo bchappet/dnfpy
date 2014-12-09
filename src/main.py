@@ -9,6 +9,7 @@ import modelDNFCam
 import modelFingerDetection
 import modelWMCam
 import modelDNFDualCam
+import modelDNFDualCam2
 import modelDNFCamFlow
 
 

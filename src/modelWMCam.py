@@ -1,3 +1,5 @@
+import cv2
+import numpy as np
 from dnfpy.core.funcMap2D import FuncMap2D
 from dnfpy.model.inputMap import InputMap
 from dnfpy.model.fieldMap import FieldMap
@@ -15,25 +17,25 @@ from dnfpy.core.funcWithoutKeywords import FuncWithoutKeywords
 
 class ModelWMCam(Model,Renderable):
 
-    def onClick(self,x,y):
-        self.gauss.setParams(centerX=x,centerY=y,intensity=1.)
 
 
     def initMaps(self,size):
         model = 'spike'
+	self.size = size
         dt = 0.6
         wrap = True
+	model_ = 'spike'
         #Input
         self.webcam = WebcamMap("Webcam",size,dt=dt,numDevice=0)
         self.color_select = ImageColorSelection("Color Select",size,dt=dt,thresh=5)
 
         mapSize = 0.3
         #Excitatory Memory
-        self.fieldE = MapDNF("ExcitatoryField",size,dt=dt,mapSize=mapSize,model=model,
+        self.fieldE = MapDNF("ExcitatoryField",size,dt=dt,mapSize=mapSize,model='spike',
                              iExc=2.2,iInh=1.5,
                              wExc=0.1/2.,wInh=0.2/2.)
         #Inhibition memory
-        self.fieldI = MapDNF("InhibitoryField",size,dt=dt,mapSize=mapSize,model=model,
+        self.fieldI = MapDNF("InhibitoryField",size,dt=dt,mapSize=mapSize,model='spike',
                              iExc=2.2,iInh=1.5,
                              wExc=0.1/2.,wInh=0.2/2.,
                              h=-0.6)
@@ -54,7 +56,7 @@ class ModelWMCam(Model,Renderable):
         self.substract = FuncMap2D(utils.subArrays,"Exc - Inh",size,dt=0.1)
 
         #Neural field selection
-        self.field = MapDNF("DNF",size)
+        self.field = MapDNF("DNF",size,model='spike')
 
         #Link maps
 
@@ -84,16 +86,31 @@ class ModelWMCam(Model,Renderable):
                         self.substract,
                         self.gauss,
                         self.add_gauss_and_input,
-                        self.fieldI,
-                        self.fieldE,
-                        self.field,
+                        self.fieldI.getActivation(),
+                        self.fieldE.getActivation(),
+                        self.field.getActivation(),
         ]
-        ret.extend(self.fieldI.getArrays())
-        #ret.extend(self.fieldE.getArrays())
-        #ret.extend(self.field.getArrays())
         return ret
 
-    def onlick(self,x,y):
-        pass
+    def onClick(self,mapName,x,y):
+        print mapName.__class__
+        if mapName == "Webcam":
+            bgr = self.webcam.getData()
+            
+            sizeROI = self.size/10.
+            s2 = round(sizeROI/2.)
+            roi = bgr[y-s2:y+s2,x-s2:x+s2,:]
+            hsv = cv2.cvtColor(roi,cv2.COLOR_BGR2HSV)
+            colorVal = np.median(hsv[:,:,0])
+            satHigh = np.max(hsv[:,:,1])
+            satLow = np.min(hsv[:,:,1])
+            valHigh = np.max(hsv[:,:,2])
+            valLow = np.min(hsv[:,:,2])
+
+            self.color_select.setArg(colorVal=colorVal,satLow=satLow,satHigh=satHigh)
+            return "Color Select"
+	if mapName == "ArtificialOnClickGaussian":
+       	    self.gauss.setParams(centerX=x,centerY=y,intensity=1.)
+
 
 

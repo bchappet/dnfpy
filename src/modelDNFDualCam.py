@@ -17,7 +17,7 @@ class ModelDNFDualCam(Model,Renderable):
 
     def initMaps(self,size):
         self.size = size
-        dt = 0.5
+        dt = 0.6
         #Create maps
         self.webcam1 = WebcamMap("Webcam1",size,dt=dt,numDevice=0)
         self.playcam1 = PlayCamMap("PlayCam1",size)
@@ -70,7 +70,7 @@ class ModelDNFDualCam(Model,Renderable):
         ret =  [
                 self.playcam1,
                 self.color_select,
-                self.field1,
+                self.field1.getActivation(),
                 self.ofBGR1,
 
                 self.ofColor,

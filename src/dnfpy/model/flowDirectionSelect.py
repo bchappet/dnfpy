@@ -14,34 +14,24 @@ class FlowDirectionSelect(Map2D):
         2)GetMaxCoord map -> cx,cy
     """
     def _compute(self,globalSize,flowBGR,colorDNFAct,sampleSize):
-        #find the center of the activity bubble (max for now, TODO barycenter
-        max = np.max(colorDNFAct)
-        itemIndex = np.where(colorDNFAct==max)
-        cx = itemIndex[0][0]
-        cy = itemIndex[1][0]
-        #average the optical flow direction 
-        halfSample = round((sampleSize * globalSize )/2.)
-        cxm = 0 if (cx-halfSample<0) else cx-halfSample
-        cxp = globalSize-1 if (cx+halfSample>globalSize-1) else cx+halfSample
-        cym = 0 if (cy-halfSample<0) else cy-halfSample
-        cyp = globalSize-1 if (cy+halfSample>globalSize-1) else cy+halfSample
-        flowBGR_ROI = flowBGR[cxm:cxp,cym:cyp,:]
-        #averageOpticalFlowColor = np.mean(flowBGR_ROI,axis=(0,1))
-        averageOpticalFlowColor = np.zeros((3))
-        averageOpticalFlowColor[0] = np.mean(flowBGR_ROI[:,:,0])
-        averageOpticalFlowColor[1] = np.mean(flowBGR_ROI[:,:,1])
-        averageOpticalFlowColor[2] = np.mean(flowBGR_ROI[:,:,2])
-        #averageOpticalFlowColor = np.mean(flowBGR_ROI,axis=(0,1))
-        #averageOpticalFlowColor = flowBGR[cx,cy,:]
+        nbAct = np.sum(colorDNFAct)
+	self.reset()
+	if nbAct > 0:
+		mult0 = np.multiply(flowBGR[:,:,0],colorDNFAct)
+		mult1 = np.multiply(flowBGR[:,:,1],colorDNFAct)
+		mult2 = np.multiply(flowBGR[:,:,2],colorDNFAct)
+		sum0 = np.sum(mult0)
+		sum1 = np.sum(mult1)
+		sum2 = np.sum(mult2)
+		averageOpticalFlowColor = np.zeros((3))
+		averageOpticalFlowColor = np.array([sum0/nbAct,sum1/nbAct,sum2/nbAct])
 
-
-
-        #set self._data
-        #transform in hsv
-        mat = np.array([[averageOpticalFlowColor]],dtype=np.uint8)
-        hsv = cv2.cvtColor(mat,cv2.COLOR_BGR2HSV)
-        bgr2 = cv2.cvtColor(hsv,cv2.COLOR_HSV2BGR)
-        self._data = hsv
+		#set self._data
+		#transform in hsv
+		mat = np.array([[averageOpticalFlowColor]],dtype=np.uint8)
+		hsv = cv2.cvtColor(mat,cv2.COLOR_BGR2HSV)
+		bgr2 = cv2.cvtColor(hsv,cv2.COLOR_HSV2BGR)
+		self._data = hsv
 
 
     def reset(self):
