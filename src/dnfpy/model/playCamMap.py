@@ -9,8 +9,8 @@ import copy
 
 class PlayCamMap(FuncWithoutKeywords):
     """The input are defined here"""
-    def __init__(self,name,size,dt=0.1,wrap=True,distr_dt=0.1,noise_dt=0.1,noiseI=0.01,
-                 tck_dt=0.1,iStim=1,wStim=0.1,nbDistr=0,iDistr=1,tck_radius=0.3,
+    def __init__(self,name,size,dt=0.1,wrap=True,distr_dt=1.0,noise_dt=0.2,noiseI=0.01,
+                 tck_dt=0.1,iStim=1.0,wStim=0.1,nbDistr=0,iDistr=1.0,tck_radius=0.3,
                  wDistr=0.1,wStim_=1,wDistr_=1,tck_radius_=1,**kwargs):
         super(PlayCamMap,self).__init__(utils.sumImageArrays,name,size,dt=dt,
                 wrap=wrap,distr_dt=distr_dt,noise_dt=noise_dt,noiseI=noiseI,
