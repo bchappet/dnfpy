@@ -13,7 +13,25 @@ from dnfpy.model.convolution import Convolution
 import dnfpy.core.utils as utils
 from dnfpy.model.mapDNF import MapDNF
 from dnfpy.core.funcWithoutKeywords import FuncWithoutKeywords
+from dnfpy.core.map2D import Map2D
 
+class ShortStim(Map2D):
+        def __init__(self,name,size,dt=0.1,timeout=0,wrap=True,
+                        intensity=1.0,width=0.1,
+                        centerX=1.,centerY=1.,width_=1,**kwargs):
+                super(ShortStim,self).__init__(name,size,wrap=wrap,
+                                dt=dt,timeout=timeout,centerX=centerX,
+                                centerY=centerY,intensity=intensity,width=width,
+                                width_=width_,**kwargs)
+        def _compute(self,time,timeout,size,wrap,intensity,width_,centerX,centerY):
+                self._data = utils.gauss2d(size,wrap,intensity,width_,centerX,centerY)
+                if time >= timeout:
+                    self.setArg(intensity=intensity*0.5)
+        def _onParamsUpdate(self,size,width):
+                width_ = width * size
+                return dict(width_=width_)
+
+                
 
 class ModelWMCam(Model,Renderable):
 
@@ -21,12 +39,12 @@ class ModelWMCam(Model,Renderable):
 
     def initMaps(self,size):
         model = 'spike'
-	self.size = size
+        self.size = size
         dt = 0.6
         wrap = True
-	model_ = 'spike'
+        model_ = 'spike'
         #Input
-        self.webcam = WebcamMap("Webcam",size,dt=dt,numDevice=0)
+        self.webcam = WebcamMap("Webcam",size=size,dt=dt,numDevice=0)
         self.color_select = ImageColorSelection("Color Select",size,dt=dt,thresh=5)
 
         mapSize = 0.3
@@ -41,9 +59,7 @@ class ModelWMCam(Model,Renderable):
                              h=-0.6)
         #artificial gaussian to bost inhbitory
         center = (size-1)/2
-        self.gauss = FuncMap2D(utils.gauss2d,"ArtificialOnClickGaussian",
-                               size=size,dt=dt,wrap=wrap,
-                        intensity=0.,width=0.1*size,centerX=center,centerY=center)
+        self.gauss = ShortStim("ArtificialOnClickGaussian",size=size,dt=dt,wrap=wrap,timeout=0,intensity=0.,width=0.1,centerX=center,centerY=center)
         #TODO add unlimited amount of input to field
         self.add_gauss_and_input = FuncWithoutKeywords(utils.sumArrays,
                     "InputAndArtificialGaussian",size=size,dt=dt)
@@ -84,7 +100,6 @@ class ModelWMCam(Model,Renderable):
                         self.webcam,
                         self.aff,
                         self.substract,
-                        self.gauss,
                         self.add_gauss_and_input,
                         self.fieldI.getActivation(),
                         self.fieldE.getActivation(),
@@ -93,24 +108,23 @@ class ModelWMCam(Model,Renderable):
         return ret
 
     def onClick(self,mapName,x,y):
-        print mapName.__class__
-        if mapName == "Webcam":
-            bgr = self.webcam.getData()
-            
-            sizeROI = self.size/10.
-            s2 = round(sizeROI/2.)
-            roi = bgr[y-s2:y+s2,x-s2:x+s2,:]
-            hsv = cv2.cvtColor(roi,cv2.COLOR_BGR2HSV)
-            colorVal = np.median(hsv[:,:,0])
-            satHigh = np.max(hsv[:,:,1])
-            satLow = np.min(hsv[:,:,1])
-            valHigh = np.max(hsv[:,:,2])
-            valLow = np.min(hsv[:,:,2])
-
-            self.color_select.setArg(colorVal=colorVal,satLow=satLow,satHigh=satHigh)
-            return "Color Select"
-	if mapName == "ArtificialOnClickGaussian":
-       	    self.gauss.setParams(centerX=x,centerY=y,intensity=1.)
+        f mapName == "Webcam":
+                bgr = self.webcam.getData()
+                
+                sizeROI = self.size/10.
+                s2 = round(sizeROI/2.)
+                roi = bgr[y-s2:y+s2,x-s2:x+s2,:]
+                hsv = cv2.cvtColor(roi,cv2.COLOR_BGR2HSV)
+                colorVal = np.median(hsv[:,:,0])
+                satHigh = np.max(hsv[:,:,1])
+                satLow = np.min(hsv[:,:,1])
+                valHigh = np.max(hsv[:,:,2])
+                valLow = np.min(hsv[:,:,2])
+                self.color_select.setArg(colorVal=colorVal,satLow=satLow,satHigh=satHigh)
+                return "Color Select"
+        elif mapName == "InputAndArtificialGaussian":
+                time = self.gauss.getArg('time')
+                self.gauss.setParams(centerX=x,centerY=y,intensity=1.,timeout=time+1)
 
 
 
