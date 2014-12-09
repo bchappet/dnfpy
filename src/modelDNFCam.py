@@ -15,7 +15,7 @@ class ModelDNFCam(Model,Renderable):
         self.size = size
         dt = 0.5
         #Create maps
-        self.webcam = WebcamMap("Webcam",size,dt=dt,numDevice=1)
+        self.webcam = WebcamMap("Webcam",size,dt=dt,numDevice=0)
         self.webcam.compute()
         self.playcam = PlayCamMap("PlayCam",size)
         self.playcam.addChildren(image=self.webcam)
@@ -54,5 +54,3 @@ class ModelDNFCam(Model,Renderable):
 
             self.color_select.setArg(colorVal=colorVal,satLow=satLow,satHigh=satHigh)
             return "ColorSelect"
-
-

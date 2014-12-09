@@ -30,7 +30,7 @@ class Runner(QtCore.QThread):
         #timing
         self.lastUpdateTime = datetime.now()
         #Control
-        self.play = True
+        self.play = False
 
     def getTimeRatio(self):
         return self.timeRatio
