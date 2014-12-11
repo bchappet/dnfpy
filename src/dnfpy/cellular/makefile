@@ -1,12 +1,12 @@
 CC=gcc
-CFLAGS=-W -Wall -ansi -pedantic
+CFLAGS=-W -g -Wall -ansi -pedantic
 LDFLAGS=
 EXEC=test
 
 all: $(EXEC)
 
 
-test: test_array3uint.o array3uint.o
+test: test_array_uint.o array_uint.o
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 
