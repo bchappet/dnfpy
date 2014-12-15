@@ -6,7 +6,7 @@ EXEC=test
 all: $(EXEC)
 
 
-test: test_array_uint.o array_uint.o
+test: test_array_uchar.o array_uchar.o
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 

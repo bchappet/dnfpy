@@ -80,3 +80,25 @@ void deep_copy_array_uchar(uchar** source,uchar** dest,int size){
             *dest[i] = *source[i];
      }
 }
+
+
+/**
+ * Return an array of uchar* initialized with value
+ */
+uchar** new_array_uchar(int size,uchar value){
+    uchar** array;
+    array = shallow_allocation_array_uchar(size);
+    deep_allocation_array_uchar(array,size);
+    init_array_uchar(array,size,value);
+    return array;
+}
+
+/**
+ * completly free an array (check if deep freing is necessary) 
+*/
+void free_array_uchar(uchar **arr,int size){
+    deep_free_array_uchar(arr,size);
+    shallow_free_array_uchar(arr);
+}
+
+

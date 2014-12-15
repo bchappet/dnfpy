@@ -1,16 +1,13 @@
 import numpy as np
 import qimage2ndarray #http://kogs-www.informatik.uni-hamburg.de/~meine/software/qimage2ndarray/doc/#converting-ndarrays-into-qimages
-import pylab
-from PyQt4 import QtGui
+import json
 
 def __getColorMap(nameCm='RdYlBu_r'):
-    cm=[]
-    pylabCm =  pylab.cm.get_cmap(nameCm)
-    for i in range(256):
-        r,g,b,a =  pylabCm(i)
-        qrgb = QtGui.qRgb(round(r*255),round(g*255),round(b*255))
-        cm.append(qrgb)
-    return cm
+        folder = 'stylesheet/'
+        f = file(folder+nameCm+'.cm','r')
+        array = json.load(f)
+        return array
+
 
 __cm = __getColorMap()
 

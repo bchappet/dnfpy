@@ -37,4 +37,14 @@ void deep_allocation_array_uchar(uchar ** array,int size);
  * Allocate an array of uchar*.
  */
 uchar **shallow_allocation_array_uchar(int size);
+
+/**
+ * Return an array of uchar* initialized with value
+ */
+uchar** new_array_uchar(int size,uchar value);
+
+/**
+ * completly free an array (check if deep freing is necessary) 
+*/
+void free_array_uchar(uchar **arr,int size);
 #endif
