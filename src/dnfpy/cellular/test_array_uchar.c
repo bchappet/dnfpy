@@ -1,4 +1,4 @@
-#include "array_uint.h"
+#include "array_uchar.h"
 #include <stdio.h>
 #include <assert.h>
 #include<stdlib.h>

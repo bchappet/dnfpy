@@ -1,7 +1,7 @@
 /*Utility for array 3d unsigned char*/
 
 #include<stdlib.h>
-#include"array_uint.h"
+#include"array_uchar.h"
 #include<stdio.h>
 
 
@@ -13,7 +13,6 @@ void deep_allocation_array_uchar(uchar ** array,int size){
     for(i = 0 ; i < size ; i++){
         array[i] = (uchar *)malloc((size_t) sizeof(uchar));
     }
-
 }
 
 uchar **shallow_allocation_array_uchar(int size){
@@ -100,5 +99,6 @@ void free_array_uchar(uchar **arr,int size){
     deep_free_array_uchar(arr,size);
     shallow_free_array_uchar(arr);
 }
+
 
 
