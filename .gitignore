@@ -3,6 +3,8 @@
 #
 #
 #
+#
+*.o
 
 
 #ignore Model and params for now
@@ -33,7 +35,6 @@ develop-eggs/
 dist/
 downloads/
 eggs/
-lib/
 lib64/
 parts/
 sdist/
