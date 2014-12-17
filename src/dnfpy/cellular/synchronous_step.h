@@ -2,7 +2,7 @@
 #define SYNCHRONOUS_STEP_H
 
 typedef unsigned char uchar;
-typedef void (*cell_comp_cb)(uchar *newCell,uchar **neighs);
+typedef void (*cell_comp_cb)(uchar **newCell,uchar **neighs);
 
 
 /**

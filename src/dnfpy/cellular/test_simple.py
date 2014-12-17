@@ -3,10 +3,10 @@ from ctypes import *
 import numpy.ctypeslib as npct
 libac = npct.load_library("libac", "lib/")
 
-
-CELL_FUNC = CFUNCTYPE(None, POINTER(c_ubyte), POINTER(POINTER(c_ubyte)))
+PP_UBYTE = POINTER(POINTER(c_ubyte))
+CELL_FUNC = CFUNCTYPE(None, PP_UBYTE, PP_UBYTE)
 cell_fun_c = libac.compute_cell_gol
-cell_fun_c.argtypes = [POINTER(c_ubyte),POINTER(POINTER(c_ubyte))]
+cell_fun_c.argtypes = [PP_UBYTE,PP_UBYTE]
 
 def game_life_func(data,neighs):
     cell_fun_c(data,neighs)

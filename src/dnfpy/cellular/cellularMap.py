@@ -12,10 +12,11 @@ class CellularMap(Map2D):
             super(CellularMap,self).__init__(name=name,
                                             size=size,depth=depth,
                                             **kwargs)
-            CELL_FUNC = CFUNCTYPE(None, POINTER(c_ubyte), POINTER(POINTER(c_ubyte)))
+            PP_UBYTE = POINTER(POINTER(c_ubyte))
+            CELL_FUNC = CFUNCTYPE(None, PP_UBYTE, PP_UBYTE)
             self.c_func = c_func
-            self.c_func.argtypes = [POINTER(c_ubyte),POINTER(POINTER(c_ubyte))]
-            self.func = libac.synchronous_step
+            self.c_func.argtypes = [PP_UBYTE,PP_UBYTE]
+            self.func = libac.synchronous_step_moore
             self.func.argtypes = [
                             np.ctypeslib.ndpointer(dtype=np.uint8,ndim=3,flags='C_CONTIGUOUS'),
                             np.ctypeslib.ndpointer(dtype=np.uint8,ndim=3,flags='C_CONTIGUOUS'),

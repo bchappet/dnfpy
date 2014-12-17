@@ -13,4 +13,4 @@ typedef unsigned char uchar;
 /**
  * Interface for cell computation
  */
-void compute_cell(uchar *newCell,uchar **neighs);
+void compute_cell(uchar **newNeighs,uchar **neighs);
