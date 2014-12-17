@@ -29,8 +29,10 @@ class Runner(QtCore.QThread):
         self.triggerParamsUpdate.connect(self.view.updateParams)
         #timing
         self.lastUpdateTime = datetime.now()
+        self.simuTime = 0.
+        self.lastSimuTime = 0.
         #Control
-        self.play = True
+        self.play = False
 
     def getTimeRatio(self):
         return self.timeRatio
@@ -89,6 +91,7 @@ class Runner(QtCore.QThread):
             self.__step()
     def __step(self):
             nextTime = self.model.getSmallestNextUpdateTime()
+            self.lastSimuTime = self.simuTime
             self.simuTime = nextTime
             self.model.update(self.simuTime)
             self.triggerUpdate.emit()
@@ -106,11 +109,11 @@ class Runner(QtCore.QThread):
         now = datetime.now()
 
         delta = now - self.lastUpdateTime
-        dt = self.paramsModelDict['dt']
-        timeIteration = self.timeRatio * dt * 1e6
+        deltaModel = self.simuTime - self.lastSimuTime
+        timeIteration = self.timeRatio * deltaModel * 1e6
         if delta.microseconds < timeIteration:
-            val = self.timeRatio*1e6 - delta.microseconds
-            time.sleep((timeIteration - delta.microseconds)/1e6)
+            val = (timeIteration - delta.microseconds)/1e6
+            time.sleep(val)
         self.lastUpdateTime = now
 
 

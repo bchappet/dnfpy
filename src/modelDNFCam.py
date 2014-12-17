@@ -15,7 +15,7 @@ class ModelDNFCam(Model,Renderable):
         self.size = size
         dt = 0.6
         #Create maps
-        self.webcam = WebcamMap("Webcam",size,dt=dt,numDevice=1)
+        self.webcam = WebcamMap("Webcam",size,dt=dt,numDevice=0)
         self.webcam.compute()
         self.playcam = PlayCamMap("PlayCam",size)
         self.playcam.addChildren(image=self.webcam)
