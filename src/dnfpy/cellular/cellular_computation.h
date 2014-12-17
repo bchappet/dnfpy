@@ -3,6 +3,7 @@
 
 #include "array_uchar.h"
 
+typedef void (*cell_comp_cb)(uchar *newCell,uchar **neighs);
 
 struct CellularArray
 {
@@ -12,6 +13,8 @@ struct CellularArray
     int m;
     int depth;
     int nb_buffer;
+    cell_comp_cb cell_computation;
+    
 };
 typedef struct CellularArray cellular_array;
 
@@ -38,7 +41,8 @@ void update_cellular_array(cellular_array *ca);
  *  1) data is initialized
  *  2) result is deeply allocated
  */
-void synchronous_step(uchar *data,uchar *result,int m,int n,int depth);
+void synchronous_step(uchar *data,uchar *result,int m,int n,int depth,
+     cell_comp_cb);
 
 
 

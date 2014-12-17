@@ -3,40 +3,12 @@
 #include "cellular_computation.h"
 #include <stdlib.h>
 #define NB_MOORE 9
-#define CELL 4
-#define N 1
-#define S 7
-#define E 5
-#define W 3
-#define NE 2
-#define SE 8
-#define NW 0
-#define SW 6
 
 
-void compute_cell(uchar *newCell,uchar **neighs);
 
-/**
- * Cell computation the new state will be set in newCell
- * We access the cell and neighbours previous state in neighs 
- */
-void compute_cell(uchar *newCell,uchar **neighs){
-    uchar sum;
-    uchar cell;
-    sum = neighs[N][0] + neighs[S][0] + neighs[E][0] + neighs[W][0] + \
-          neighs[NE][0] + neighs[NW][0] + neighs[SE][0] + neighs[SW][0];
-    cell = neighs[CELL][0];
-    if(cell == 0){
-        if(sum == 3) *newCell =  1;
-        else *newCell = 0;
-    }else{
-        if(sum < 2 || sum > 3){
-                *newCell = 0;
-        }else{
-                *newCell = 1;
-        }
-    }
-}
+extern void compute_cell(uchar *newCell,uchar **neighs);
+
+
 
 
 /**
@@ -60,6 +32,7 @@ cellular_array *new_cellular_array(int m,int n,int depth){
         ca->m = m;
         ca->depth = depth;
         ca->nb_buffer = nb_buffer;
+        ca->cell_computation = compute_cell;
         return ca;
 }
 
@@ -83,7 +56,7 @@ void delete_cellular_array(cellular_array *ca){
 void update_cellular_array(cellular_array *ca){
     int next;
     next = (ca->current + 1) % ca->nb_buffer;
-    synchronous_step(ca->buffers[ca->current],ca->buffers[next],ca->n,ca->m,ca->depth);
+    synchronous_step(ca->buffers[ca->current],ca->buffers[next],ca->n,ca->m,ca->depth,ca->cell_computation);
     ca->current = next;
 }
 
@@ -99,7 +72,8 @@ void update_cellular_array(cellular_array *ca){
  *  1) data is initialized
  *  2) result is initialized
  */
-void synchronous_step(uchar *data,uchar *result,int m,int n,int depth){
+void synchronous_step(uchar *data,uchar *result,int m,int n,int depth,
+                cell_comp_cb cell_computation){
         int i,j,a,b;
  uchar *data_neighs[NB_MOORE];/**The data are not modifiable**/
         int neigh_index;
@@ -115,7 +89,7 @@ void synchronous_step(uchar *data,uchar *result,int m,int n,int depth){
                         }
                     }
                     /*Set the new value for cell*/
-                    compute_cell(result +(i*n*depth+j*depth),data_neighs);
+                    cell_computation(result +(i*n*depth+j*depth),data_neighs);
             }
         }
 }
