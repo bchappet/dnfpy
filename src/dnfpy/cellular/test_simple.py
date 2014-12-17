@@ -18,7 +18,7 @@ if __name__ == "__main__":
         buffs = [ np.zeros((size,size,1),dtype=np.uint8),
                  np.zeros((size,size,1),dtype=np.uint8)]
         current = 0
-        fun = libac.synchronous_step
+        fun = libac.synchronous_step_moore
 
 
         buffs[current][5,5] = 1

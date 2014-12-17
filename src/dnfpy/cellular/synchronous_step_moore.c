@@ -11,7 +11,7 @@
  *  1) data is initialized
  *  2) result is initialized
  */
-void synchronous_step(uchar *data,uchar *result,int m,int n,int depth,
+void synchronous_step_moore(uchar *data,uchar *result,int m,int n,int depth,
                 cell_comp_cb cell_computation){
         int i,j,a,b;
  uchar *data_neighs[NB_MOORE];/**The data are not modifiable**/

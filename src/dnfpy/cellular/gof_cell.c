@@ -20,6 +20,3 @@ void compute_cell_gol(uchar *newCell,uchar **neighs){
         }
     }
 }
-
-
-
