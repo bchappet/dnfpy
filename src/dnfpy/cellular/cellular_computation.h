@@ -35,15 +35,6 @@ void delete_cellular_array(cellular_array *ca);
  */
 void update_cellular_array(cellular_array *ca);
 
-/**
- * Perform a cellular computation on data and return the result in result
- * @precondition: 
- *  1) data is initialized
- *  2) result is deeply allocated
- */
-void synchronous_step(uchar *data,uchar *result,int m,int n,int depth,
-     cell_comp_cb);
-
 
 
 void print_ca(cellular_array *ca);

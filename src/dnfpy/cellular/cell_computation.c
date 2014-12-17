@@ -1,9 +1,9 @@
 #include "cell_computation.h"
 /**
- * Cell computation the new state will be set in newCell
+ * Cell computation the new state will be set in newCell game of life
  * We access the cell and neighbours previous state in neighs 
  */
-void compute_cell(uchar *newCell,uchar **neighs){
+void compute_cell_gol(uchar *newCell,uchar **neighs){
     uchar sum;
     uchar cell;
     sum = neighs[N][0] + neighs[S][0] + neighs[E][0] + neighs[W][0] + \
@@ -20,3 +20,6 @@ void compute_cell(uchar *newCell,uchar **neighs){
         }
     }
 }
+
+
+

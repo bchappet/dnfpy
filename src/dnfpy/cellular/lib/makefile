@@ -5,7 +5,7 @@ INCDIRS=-I../
 
 
 
-libac.so: cellular_computation.o array_uchar.o cell_computation.o
+libac.so:  array_uchar.o cell_computation.o synchronous_step.o
 	$(CC) ${INCDIRS} -shared -o $@ $?
 
 %.o: ../%.c
