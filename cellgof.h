@@ -8,6 +8,7 @@ class CellGof : public Module
 {
 public:
     enum CellGofRegister { STATE} ;
+
     CellGof(bool state=false);
     virtual void computeState() override;
 };

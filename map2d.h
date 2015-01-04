@@ -4,6 +4,7 @@
 #include "connecter.h"
 #include <typeinfo>
 #include <iostream>
+#include <string>
 
 
 class Map2D : public Module
@@ -23,6 +24,7 @@ public:
      */
     template <class M>
     void initCellArray(){
+        std::cout << "init cell of size " << this->heigth <<"," << this->width << std::endl;
         for(int i = 0 ; i < this->heigth ; i++){
             for(int j = 0 ; j < this->width ; j++){
                 this->cellArray[i][j] = new M();
@@ -62,19 +64,14 @@ public:
      * @return
      */
     template <typename T>
-    T** getArrayState(int index){
-        T ** array;
-        array = new T*[this->heigth];
-        for(int i = 0 ; i < this->heigth ; i++){
-            array[i] = new T[this->width];
-        }
+    void getArrayState(int index,T** array){
+
 
         for(int i = 0 ; i < this->heigth ; i++){
             for(int j = 0 ; j < this->width ; j++){
                 array[i][j] = this->cellArray[i][j]->getRegState<T>(index);
             }
         }
-        return array;
     }
 
     /**
@@ -87,6 +84,42 @@ public:
         for(int i = 0 ; i < this->heigth ; i++){
             for(int j = 0 ; j < this->width ; j++){
                 this->cellArray[i][j]->setRegState<T>(index,arrayVal[i][j]);
+            }
+        }
+    }
+
+    /**
+     * @brief setParamArray set param off every cell of the array
+     * @param index
+     * @param value
+     */
+    template<typename T>
+    void setParamArray(int index,T value){
+        for(int i = 0 ; i < this->heigth ; i++){
+            for(int j = 0 ; j < this->width ; j++){
+                this->cellArray[i][j]->setParam(index,value);
+            }
+        }
+    }
+
+    /**
+     * @brief setParamArrayPath to set params deeper in the modules
+     * @param index
+     * @param value
+     * @param path TODO "submoduleIndex/subModuleIndex" ..
+     * for instance "0..1/1
+     * of 1/\* etc
+     * FOR NOW it is only working for \*
+     */
+    template<typename T>
+    void setParamArrayPath(int index,T value,std::string path){
+        if(path.compare("*") != 0){
+            std::cout << "onl y * available for now" << std::endl;
+        }
+        for(int i = 0 ; i < this->heigth ; i++){
+            for(int j = 0 ; j < this->width ; j++){
+                for(Module* child : this->cellArray[i][j]->getSubModules())
+                    child->setParam<T>(index,value);
             }
         }
     }

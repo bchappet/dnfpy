@@ -7,10 +7,11 @@ class Router : public Module
 {
 public:
     enum RouterRegister { BUFFER,SPIKE_OUT} ;
+    enum CellRsdnf_Params {NB_SPIKE,PROBA};
     Router();
     virtual void computeState() override;
-protected:
-    const int NB_SPIKE = 20;
+
+
 };
 
 #endif // ROUTER_H

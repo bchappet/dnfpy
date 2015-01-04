@@ -42,3 +42,5 @@ void Register<T>::set(T val){
 template class Register<int>;
 
 template class Register<bool>;
+
+template class Register<float>;

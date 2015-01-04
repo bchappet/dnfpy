@@ -8,7 +8,9 @@
 class HardSimu
 {
 public:
-    HardSimu(){}
+    HardSimu(){
+
+    }
     /**
      * @brief step Perform one step of siimulation
      */
@@ -19,14 +21,26 @@ public:
      * @param code
      * @return
      */
-    virtual int **getArrayInt(std::string code) = 0;
-    /**
-     * @brief setArrayInt will give an integer to each cell.
+    virtual void getArrayInt(int index,int** array) =0;
+
+    virtual void getArrayBool(int index,bool ** array) =0;
+
+    virtual void getArrayFloat(int index,float ** array) =0;
+
+     /** @brief setArrayInt will give an integer to each cell.
      * The cell will deal with it according to the code
      * @param array
      * @param code
      */
-    virtual void setArrayInt(int** array,std::string code) = 0;
+    virtual void setArrayInt(int index, int** array) = 0;
+
+    virtual void setArrayBool(int index, bool** array) = 0;
+
+    virtual void setArrayFloat(int index, float** array) = 0;
+
+    virtual void setCellInt(int x,int y,int index,int val) = 0;
+    virtual void setCellBool(int x,int y,int index,bool val) = 0;
+    virtual void setCellFloat(int x,int y,int index,float val) = 0;
 
     /**
      * @brief nstep perform n step of simulation
@@ -38,6 +52,9 @@ public:
             this->step();
         }
     }
+
+
+
 };
 
 #endif // HARDSIMU_H

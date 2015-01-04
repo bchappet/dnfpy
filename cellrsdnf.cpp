@@ -4,13 +4,16 @@
 
 CellRsdnf::CellRsdnf() : Module()
 {
+
     for(int i = 0 ; i < 4 ;i ++){
         Router* r = new Router();
-        r->addInput(this); //ACTIVATED
+        r->addInput(this); //SPIKE_OUT
         this->subModules.push_back(r);
     }
     this->regs.push_back(new Register<int>(0)); //POTNETIEL
     this->regs.push_back(new Register<bool>(false)); //activated_out
+
+   // std::cout << "constructing cellrsdnf " << std::endl;
 }
 
 void CellRsdnf::computeState(){

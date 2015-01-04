@@ -4,7 +4,8 @@
 class CellRsdnf : public Module
 {
 public:
-    enum RouterRegister { POTENTIAL,ACTIVATED_OUT} ;
+    enum CellRsdnf_Register { POTENTIAL,ACTIVATED_OUT} ;
+
     CellRsdnf();
     virtual void computeState() override;
 };

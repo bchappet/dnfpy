@@ -2,10 +2,12 @@
 #define CELL_H
 #include "register.h"
 #include <vector>
+#include "param.h"
 
 class Module
 {
 public:
+
     Module(){}
 
     virtual void compute(){
@@ -50,8 +52,24 @@ public:
         return this->subModules.at(index);
     }
 
+    std::vector<Module*> getSubModules(){
+        return this->subModules;
+    }
+
     Module* getInput(int index){
         return this->inputs.at(index);
+    }
+
+    template<typename T>
+    void setParam(int index, T value){
+        Param<T>* param = (Param<T>*) (this->params.at(index));
+        param->val = value;
+    }
+
+    template<typename T>
+    T getParam(int index){
+        Param<T>* param = (Param<T>*) (this->params.at(index));
+        return param->val;
     }
 
 protected:
@@ -59,10 +77,12 @@ protected:
     std::vector<Module*> inputs;
     std::vector<Module*> subModules;
 
+    std::vector<IParam*> params;//parameters of the module for experimentation
+
 private:
     template <typename T>
     Register<T>* getReg(int index){
-        return static_cast<Register<T>*>(this->regs.at(index));
+        return (Register<T>*)(this->regs.at(index));
     }
 
 };
