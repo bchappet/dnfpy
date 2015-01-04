@@ -63,14 +63,14 @@ T** construct_array(int width,int height){
 
 void test_soft_simu(int size)
 {
-    SoftSimu simu(size,size,"cellrsdnf","rsdnfconnecter");
+    initSimu(size,size,"cellrsdnf","rsdnfconnecter");
     int** stateInt = construct_array<int>(size,size);
-    simu.setCellBool(5,5,CellRsdnf::ACTIVATED_OUT,true);
+    setCellBool(5,5,CellRsdnf::ACTIVATED_OUT,true);
     //simu.map.synch();
     for(int i = 0 ; i < 20 ; i++){
-        simu.step();
+        step();
     }
-    simu.getArrayInt(CellRsdnf::POTENTIAL,stateInt);
+    getArrayInt(CellRsdnf::POTENTIAL,stateInt);
     print_2D_array<int>(stateInt,size,size);
 
 
