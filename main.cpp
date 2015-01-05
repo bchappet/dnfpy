@@ -7,7 +7,6 @@
 #include "mooreconnecter.h"
 #include "cellrsdnf.h"
 #include "rsdnfconnecter.h"
-#include "test.h"
 #include "router.h"
 #include "cellrsdnf.h"
 #include <ctime>
@@ -42,29 +41,26 @@ int main()
 }
 
 template <typename T>
-void print_2D_array(T** array,int width,int height){
+void print_2D_array(T* array,int width,int height){
     for(int i = 0 ; i < height ; i++){
         for(int j = 0 ; j < width ; j++){
-            cout << array[i][j] << ",";
+            cout << array[i*width + j] << ",";
         }
         cout << endl;
     }
 }
 
 template <typename T>
-T** construct_array(int width,int height){
-    T ** array;
-    array = new T*[height];
-    for(int i = 0 ; i < height; i++){
-        array[i] = new T[width];
-    }
+T* construct_array(int width,int height){
+    T * array;
+    array = new T[height*width];
     return array;
 }
 
 void test_soft_simu(int size)
 {
     initSimu(size,size,"cellrsdnf","rsdnfconnecter");
-    int** stateInt = construct_array<int>(size,size);
+    int* stateInt = construct_array<int>(size,size);
     setCellBool(5,5,CellRsdnf::ACTIVATED_OUT,true);
     //simu.map.synch();
     for(int i = 0 ; i < 20 ; i++){
@@ -112,14 +108,14 @@ void test_rsdnf_map(int size){
 
     map2d.setCellState<bool>(5,5,CellRsdnf::ACTIVATED_OUT,true);
     map2d.synch();
-    bool** state = construct_array<bool>(size,size);
+    bool* state = construct_array<bool>(size,size);
     map2d.getArrayState<bool>(CellRsdnf::ACTIVATED_OUT,state);
     print_2D_array<bool>(state,size,size);
     cout << endl;
 
     map2d.compute();
     map2d.synch();
-    int** stateInt = construct_array<int>(size,size);
+    int* stateInt = construct_array<int>(size,size);
     map2d.getArrayState<int>(CellRsdnf::POTENTIAL,stateInt);
     print_2D_array<int>(stateInt,size,size);
     cout << endl;
@@ -143,22 +139,22 @@ void test_neumann_connecter(int size){
     Map2D map2d(size,size);
     map2d.initCellArray<CellGof>();
     map2d.connect(c);
-    bool** new_state = construct_array<bool>(size,size);
+    bool* new_state = construct_array<bool>(size,size);
       for(int i = 0 ; i < size ; i++){
         for(int j = 0 ; j < size ; j++){
-            new_state[i][j] = false;
+            new_state[i*size+j] = false;
         }
     }
-    new_state[3][3] = true;
-    new_state[3][4] = true;
-    new_state[3][5] = true;
-    new_state[4][3] = true;
-    new_state[4][4] = true;
-    new_state[4][2] = true;
+    new_state[3*size+3] = true;
+    new_state[3*size+4] = true;
+    new_state[3*size+5] = true;
+    new_state[4*size+3] = true;
+    new_state[4*size+4] = true;
+    new_state[4*size+2] = true;
 
     map2d.setArrayState<bool>(0,new_state);
     map2d.synch();
-    bool** state = construct_array<bool>(size,size);
+    bool* state = construct_array<bool>(size,size);
     map2d.getArrayState<bool>(0,state);
     print_2D_array<bool>(state,size,size);
     cout << endl;
@@ -183,7 +179,7 @@ void test_neumann_connecter(int size){
 void test_Map2D(int size){
     Map2D map2d(size,size);
     map2d.initCellArray<CellGof>();
-    bool** state = construct_array<bool>(size,size);
+    bool* state = construct_array<bool>(size,size);
     map2d.getArrayState<bool>(0,state);
 
     print_2D_array<bool>(state,size,size);
@@ -195,16 +191,14 @@ void test_Map2D(int size){
     cout << endl;
     assert(map2d.getCellState<bool>(3,3,0));
 
-    bool** new_state;
-    new_state = new bool*[size];
-    for(int i = 0 ; i < size ;i ++)
-        new_state[i] = new bool[size];
-    new_state[3][3] = true;
-    new_state[3][4] = true;
-    new_state[3][5] = true;
-    new_state[4][3] = true;
-    new_state[4][4] = true;
-    new_state[4][2] = true;
+    bool* new_state;
+    new_state = construct_array<bool>(size,size);
+    new_state[3*size+3] = true;
+    new_state[3*size+4] = true;
+    new_state[3*size+5] = true;
+    new_state[4*size+3] = true;
+    new_state[4*size+4] = true;
+    new_state[4*size+2] = true;
 
     map2d.setArrayState<bool>(0,new_state);
     map2d.synch();

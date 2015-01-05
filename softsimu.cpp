@@ -22,32 +22,42 @@ void initSimu(int width,int height,char* cellName,char* connecterName)
     connecterFromName(mapSimu,connecterName);
 }
 
+void synch(){
+    mapSimu->synch();
+}
+
 void step(){
     mapSimu->compute();
     mapSimu->synch();
 }
+void nstep(int n){
+    for(int i = 0 ; i < n ; i++){
+        step();
+    }
+}
 
-void getArrayInt(int index,int ** array){
+
+void getArrayInt(int index,int * array){
     mapSimu->getArrayState<int>(index,array);
 }
 
-void getArrayBool(int index,bool** array){
+void getArrayBool(int index,bool* array){
     mapSimu->getArrayState<bool>(index,array);
 }
 
-void getArrayFloat(int index,float ** array){
+void getArrayFloat(int index,float* array){
     mapSimu->getArrayState<float>(index,array);
 }
 
-void setArrayInt(int index,int** array){
+void setArrayInt(int index,int* array){
     return mapSimu->setArrayState<int>(index,array);
 }
 
-void setArrayBool(int index,bool** array){
+void setArrayBool(int index,bool* array){
     return mapSimu->setArrayState<bool>(index,array);
 }
 
-void setArrayFloat(int index,float** array){
+void setArrayFloat(int index,float* array){
     return mapSimu->setArrayState<float>(index,array);
 }
 

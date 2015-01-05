@@ -24,7 +24,7 @@ public:
      */
     template <class M>
     void initCellArray(){
-        std::cout << "init cell of size " << this->heigth <<"," << this->width << std::endl;
+        //std::cout << "init cell of size " << this->heigth <<"," << this->width << std::endl;
         for(int i = 0 ; i < this->heigth ; i++){
             for(int j = 0 ; j < this->width ; j++){
                 this->cellArray[i][j] = new M();
@@ -64,12 +64,12 @@ public:
      * @return
      */
     template <typename T>
-    void getArrayState(int index,T** array){
+    void getArrayState(int index,T* array){
 
 
         for(int i = 0 ; i < this->heigth ; i++){
             for(int j = 0 ; j < this->width ; j++){
-                array[i][j] = this->cellArray[i][j]->getRegState<T>(index);
+                array[i*this->width + j] = this->cellArray[i][j]->getRegState<T>(index);
             }
         }
     }
@@ -80,10 +80,10 @@ public:
      * @param val
      */
     template <typename T>
-    void setArrayState(int index,T** arrayVal){
+    void setArrayState(int index,T* array){
         for(int i = 0 ; i < this->heigth ; i++){
             for(int j = 0 ; j < this->width ; j++){
-                this->cellArray[i][j]->setRegState<T>(index,arrayVal[i][j]);
+                this->cellArray[i][j]->setRegState<T>(index,array[i*this->width + j]);
             }
         }
     }
@@ -135,8 +135,8 @@ public:
     }
 
 
-
 protected:
+
     int width;
     int heigth;
     Module*** cellArray;
