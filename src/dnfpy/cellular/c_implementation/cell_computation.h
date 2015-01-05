@@ -9,8 +9,14 @@
 #define NW 0
 #define SW 6
 typedef unsigned char uchar;
+struct CellArgs{
+    
+};
+typedef struct CellArgs cell_args;
+
+
 
 /**
  * Interface for cell computation
  */
-void compute_cell(uchar **newNeighs,uchar **neighs);
+void compute_cell(uchar **newNeighs,uchar **neighs,cell_args args);

@@ -3,13 +3,16 @@ from ctypes import *
 import numpy.ctypeslib as npct
 libac = npct.load_library("libac", "lib/")
 
-PP_UBYTE = POINTER(POINTER(c_ubyte))
-CELL_FUNC = CFUNCTYPE(None, PP_UBYTE, PP_UBYTE)
-cell_fun_c = libac.compute_cell_gol
-cell_fun_c.argtypes = [PP_UBYTE,PP_UBYTE]
+class CellArgs(Structure):
+    _fields_ = []
 
-def game_life_func(data,neighs):
-    cell_fun_c(data,neighs)
+PP_UBYTE = POINTER(POINTER(c_ubyte))
+CELL_FUNC = CFUNCTYPE(None, PP_UBYTE, PP_UBYTE,CellArgs)
+cell_fun_c = libac.compute_cell_gof
+cell_fun_c.argtypes = [PP_UBYTE,PP_UBYTE,CellArgs]
+
+def game_life_func(data,neighs,args):
+    cell_fun_c(data,neighs,args)
 
 cell_fun = CELL_FUNC(game_life_func)
 
@@ -34,11 +37,11 @@ if __name__ == "__main__":
         fun.argtypes = [
                         np.ctypeslib.ndpointer(dtype=np.uint8,ndim=3,flags='C_CONTIGUOUS'),
                         np.ctypeslib.ndpointer(dtype=np.uint8,ndim=3,flags='C_CONTIGUOUS'),
-                        c_int,c_int,c_int,CELL_FUNC]
+                        c_int,c_int,c_int,CELL_FUNC,CellArgs]
         for i in range(10):
             nextB = (current+1) % 2
             print("nextB %s"%nextB)
-            fun(buffs[current],buffs[nextB],size,size,1,cell_fun)
+            fun(buffs[current],buffs[nextB],size,size,1,cell_fun,CellArgs())
             result = buffs[nextB]
             current = nextB
             print("After")

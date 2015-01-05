@@ -1,8 +1,12 @@
 #ifndef SYNCHRONOUS_STEP_H
 #define SYNCHRONOUS_STEP_H
 
-typedef unsigned char uchar;
-typedef void (*cell_comp_cb)(uchar **newCell,uchar **neighs);
+#include "array_uchar.h"
+struct CellArgs{
+    
+};
+typedef struct CellArgs cell_args;
+typedef void (*cell_comp_cb)(uchar **newCell,uchar **neighs,cell_args);
 
 
 /**
@@ -16,7 +20,7 @@ typedef void (*cell_comp_cb)(uchar **newCell,uchar **neighs);
  *  2) result is initialized
  */
 void synchronous_step(uchar *data,uchar *result,int m,int n,int depth,
-                cell_comp_cb cell_computation);
+                cell_comp_cb cell_computation,cell_args args);
  
 
 #endif

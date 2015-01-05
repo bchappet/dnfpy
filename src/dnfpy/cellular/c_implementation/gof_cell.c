@@ -3,7 +3,7 @@
  * Cell computation the new state will be set in newCell game of life
  * We access the cell and neighbours previous state in neighs 
  */
-void compute_cell_gol(uchar **newNeighs,uchar **neighs){
+void compute_cell_gof(uchar **newNeighs,uchar **neighs,cell_args args){
     uchar sum;
     uchar cell;
 
