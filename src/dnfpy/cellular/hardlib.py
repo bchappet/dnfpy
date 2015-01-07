@@ -13,6 +13,10 @@ ffi.cdef("""
     void setMapParamBool(int index,bool value,char* path);
     void setMapParamFloat(int index,float value,char* path);
 
+    int getMapParamInt(int index,char* path);
+    bool getMapParamBool(int index,char* path);
+    float getMapParamFloat(int index,char* path);
+
     void getCellAttribute(int x,int y,int index,void* value);
     void setCellAttribute(int x,int y,int index, void* value);
 
@@ -54,7 +58,20 @@ class HardLib:
     def nstep(self,n):
         self.C.nstep();
 
-    def setMapParams(self,idParam,val,path="."):
+    def getMapParam(self,idParam,dtype,path="."):
+        if dtype == int:
+            return self.C.getMapParamInt(idParam,path)
+        elif dtype == bool:
+            return self.C.getMapParamBool(idParam,path)
+        elif dtype == float:
+            return self.C.getMapParamFloat(idParam,path)
+        else:
+            raise AttributeError("Expecting int bool or float as dtype")
+
+
+
+
+    def setMapParam(self,idParam,val,path="."):
         dtype = type(val)
         if dtype == int:
             self.C.setMapParamInt(idParam,val,path)
