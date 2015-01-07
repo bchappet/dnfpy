@@ -29,12 +29,12 @@ void Router::computeState(){
 
     int buffer = this->getRegState<int>(BUFFER);
     int nbInput = 0;
-    for(unsigned int i = 1 ; i < this->inputs.size();i++){
-        Module* mod = this->getInput(i);
+    for(unsigned int i = 1 ; i < this->neighbours.size();i++){
+        Module* mod = this->getNeighbour(i);
         nbInput += mod->getRegState<bool>(SPIKE_OUT);
     }
 
-    bool activated = this->getInput(0)->getRegState<bool>(CellRsdnf::ACTIVATED_OUT);
+    bool activated = this->getNeighbour(0)->getRegState<bool>(CellRsdnf::ACTIVATED_OUT);
 
 //    if(nbInput > 0){
 //        std::cout << "nbInput : " << nbInput << std::endl;

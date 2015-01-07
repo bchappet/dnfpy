@@ -37,6 +37,38 @@ public:
     virtual void synch() override;
 
     /**
+     * @brief getCellAttribute to access attribute of cells
+     * @param x
+     * @param y
+     * @param index
+     * @param value
+     */
+    void getCellAttribute(int x,int y,int index,void* value);
+
+    void setCellAttribute(int x,int y,int index, void* value);
+
+
+    template <typename T>
+    void getArrayAttribute(int index, T* array){
+        for(int i = 0 ; i < this->heigth ; i++){
+            for(int j = 0 ; j < this->width ; j++){
+                this->cellArray[i][j]->getAttribute(index,array +(i*this->width + j));
+               // std::cout << "(" << i << "," << j << "):" << *(int*)(array +(i*this->width + j)) <<  std::endl;
+            }
+        }
+    }
+    template <typename T>
+    void setArrayAttribute(int index, T* array){
+        for(int i = 0 ; i < this->heigth ; i++){
+            for(int j = 0 ; j < this->width ; j++){
+                this->cellArray[i][j]->setAttribute(index,array +(i*this->width + j));
+            }
+        }
+    }
+
+
+
+    /**
      * @brief getCellState return the state of a cell at x,y
      * @param x
      * @param y
@@ -132,6 +164,10 @@ public:
      */
     void connect(const Connecter& c){
         c.connect(this->width,this->heigth,this->cellArray);
+    }
+
+    Module* getCell(int x,int y){
+        return this->cellArray[y][x];
     }
 
 

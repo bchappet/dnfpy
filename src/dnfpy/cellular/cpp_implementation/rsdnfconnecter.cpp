@@ -5,24 +5,24 @@ void RsdnfConnecter::cellConnection(Module* cell,Module* neighCell,int dir)const
     if(neighCell != nullptr){
         switch(dir){
         case N:
-            cell->addInput(neighCell->getSubModule(S));//we need it for potential computation
-            cell->getSubModule(S)->addInput(neighCell->getSubModule(S));
-            cell->getSubModule(E)->addInput(neighCell->getSubModule(S));
-            cell->getSubModule(W)->addInput(neighCell->getSubModule(S));
+            cell->addNeighbour(neighCell->getSubModule(S));//we need it for potential computation
+            cell->getSubModule(S)->addNeighbour(neighCell->getSubModule(S));
+            cell->getSubModule(E)->addNeighbour(neighCell->getSubModule(S));
+            cell->getSubModule(W)->addNeighbour(neighCell->getSubModule(S));
             break;
         case S:
-            cell->addInput(neighCell->getSubModule(N));//we need it for potential computation
-            cell->getSubModule(N)->addInput(neighCell->getSubModule(N));
-            cell->getSubModule(E)->addInput(neighCell->getSubModule(N));
-            cell->getSubModule(W)->addInput(neighCell->getSubModule(N));
+            cell->addNeighbour(neighCell->getSubModule(N));//we need it for potential computation
+            cell->getSubModule(N)->addNeighbour(neighCell->getSubModule(N));
+            cell->getSubModule(E)->addNeighbour(neighCell->getSubModule(N));
+            cell->getSubModule(W)->addNeighbour(neighCell->getSubModule(N));
             break;
         case E:
-            cell->addInput(neighCell->getSubModule(W));//we need it for potential computation
-            cell->getSubModule(W)->addInput(neighCell->getSubModule(W));
+            cell->addNeighbour(neighCell->getSubModule(W));//we need it for potential computation
+            cell->getSubModule(W)->addNeighbour(neighCell->getSubModule(W));
             break;
         case W:
-            cell->addInput(neighCell->getSubModule(E));//we need it for potential computation
-            cell->getSubModule(E)->addInput(neighCell->getSubModule(E));
+            cell->addNeighbour(neighCell->getSubModule(E));//we need it for potential computation
+            cell->getSubModule(E)->addNeighbour(neighCell->getSubModule(E));
             break;
         }
     }

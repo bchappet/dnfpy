@@ -19,12 +19,12 @@ public:
 
     virtual void computeState(){}
 
-    void addInputs(std::vector<Module*> new_inputs){
-        this->inputs.insert(this->inputs.end(),new_inputs.begin(),new_inputs.end());
+    void addNeighbours(std::vector<Module*> new_neighbours){
+        this->neighbours.insert(this->neighbours.end(),new_neighbours.begin(),new_neighbours.end());
     }
 
-    void addInput(Module* input){
-        this->inputs.push_back(input);
+    void addNeighbour(Module* input){
+        this->neighbours.push_back(input);
     }
 
     template <typename T>
@@ -36,6 +36,10 @@ public:
     T getRegState(int index){
         return this->getReg<T>(index)->get();
     }
+
+    virtual void getAttribute(int index,void* value){}
+
+    virtual void setAttribute(int index, void* value){}
 
 
     virtual void synch(){
@@ -56,8 +60,8 @@ public:
         return this->subModules;
     }
 
-    Module* getInput(int index){
-        return this->inputs.at(index);
+    Module* getNeighbour(int index){
+        return this->neighbours.at(index);
     }
 
     template<typename T>
@@ -74,7 +78,7 @@ public:
 
 protected:
     std::vector<IRegister*> regs;//inner state of the module
-    std::vector<Module*> inputs;
+    std::vector<Module*> neighbours;
     std::vector<Module*> subModules;
 
     std::vector<IParam*> params;//parameters of the module for experimentation

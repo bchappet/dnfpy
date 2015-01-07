@@ -7,7 +7,7 @@ CellRsdnf::CellRsdnf() : Module()
 
     for(int i = 0 ; i < 4 ;i ++){
         Router* r = new Router();
-        r->addInput(this); //SPIKE_OUT
+        r->addNeighbour(this); //SPIKE_OUT
         this->subModules.push_back(r);
     }
     this->regs.push_back(new Register<int>(0)); //POTNETIEL
@@ -18,7 +18,7 @@ CellRsdnf::CellRsdnf() : Module()
 
 void CellRsdnf::computeState(){
     int nbSpikeReceived = 0;
-    for(Module* in:this->inputs){
+    for(Module* in:this->neighbours){
         nbSpikeReceived += in->getRegState<bool>(Router::SPIKE_OUT);
     }
 //    if(nbSpikeReceived > 0){

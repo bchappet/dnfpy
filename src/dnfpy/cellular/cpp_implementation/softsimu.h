@@ -3,6 +3,7 @@
 
 #include "map2d.h"
 extern "C" {
+  // typedef struct module ModuleC;
     extern Map2D* mapSimu;
 
     void initSimu(int width,int height,char* cellName,char* connecterName);
@@ -10,6 +11,24 @@ extern "C" {
     void step();
     void nstep(int n);
     void synch();
+
+   // ModuleC* getCell(int x,int y);
+
+    void setMapParamInt(int index,int value,char* path);
+    void setMapParamBool(int index,bool value,char* path);
+    void setMapParamFloat(int index,float value,char* path);
+
+
+    void getCellAttribute(int x,int y,int index,void* value);
+    void setCellAttribute(int x,int y,int index, void* value);
+
+    void getArrayAttributeInt(int index, int* array);
+    void getArrayAttributeBool(int index, bool* array);
+    void getArrayAttributeFloat(int index, float* array);
+
+    void setArrayAttributeInt(int index, int* array);
+    void setArrayAttributeBool(int index, bool* array);
+    void setArrayAttributeFloat(int index, float* array);
 
     void getArrayInt(int index,int* array);
     void getArrayBool(int index,bool * array);

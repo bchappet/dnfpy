@@ -5,9 +5,11 @@
 
 #include "cellgof.h"
 #include "cellrsdnf.h"
+#include "cellnspike.h"
 #include "mooreconnecter.h"
 #include "neumannconnecter.h"
 #include "rsdnfconnecter.h"
+#include "nspikeconnecter.h"
 #include "connecter.h"
 #include <string.h>
 
@@ -15,6 +17,19 @@ Map2D* mapSimu;
 void initCellArrayFromName(Map2D* mapSimu,char* name);
 void connecterFromName(Map2D* mapSimu,char* name);
 
+void setMapParamInt(int index,int value,char* path){
+    mapSimu->setParamArrayPath<int>(index,value,path);
+}
+
+void setMapParamBool(int index,bool value,char* path){
+    mapSimu->setParamArrayPath<bool>(index,value,path);
+}
+
+void setMapParamFloat(int index,float value,char* path){
+    mapSimu->setParamArrayPath<float>(index,value,path);
+}
+
+//ModuleC* convertModuleToC(Module* mod);
 void initSimu(int width,int height,char* cellName,char* connecterName)
 {
     mapSimu = new Map2D(width,height);
@@ -34,6 +49,47 @@ void nstep(int n){
     for(int i = 0 ; i < n ; i++){
         step();
     }
+}
+
+//ModuleC* getCell(int x,int y){
+//    return convertModuleToC(mapSimu->getCell(x,y));
+//}
+
+//ModuleC* convertModuleToC(Module* mod){
+//    //TODO
+//    return new ModuleC;
+//}
+
+void getCellAttribute(int x,int y,int index,void* value){
+    return mapSimu->getCellAttribute(x,y,index,value);
+}
+
+void setCellAttribute(int x,int y,int index, void* value){
+    return mapSimu->setCellAttribute(x,y,index,value);
+}
+
+void getArrayAttributeInt(int index, int* array){
+    return mapSimu->getArrayAttribute<int>(index,array);
+}
+
+void getArrayAttributeBool(int index, bool* array){
+    return mapSimu->getArrayAttribute<bool>(index,array);
+}
+
+void getArrayAttributeFloat(int index, float* array){
+    return mapSimu->getArrayAttribute<float>(index,array);
+}
+
+void setArrayAttributeInt(int index, int* array){
+    return mapSimu->setArrayAttribute<int>(index,array);
+}
+
+void setArrayAttributeBool(int index, bool* array){
+    return mapSimu->setArrayAttribute<bool>(index,array);
+}
+
+void setArrayAttributeFloat(int index, float* array){
+    return mapSimu->setArrayAttribute<float>(index,array);
 }
 
 
@@ -83,6 +139,8 @@ void initCellArrayFromName(Map2D* map,char* name){
         map->initCellArray<CellGof>();
     }else if(strcmp(name,"cellrsdnf")==0){
         map->initCellArray<CellRsdnf>();
+    }else if(strcmp(name,"cellnspike")==0){
+        map->initCellArray<CellNSpike>();
     }else{
         std::cerr << "unvalid cell name " << name << std::endl;
     }
@@ -98,6 +156,9 @@ void connecterFromName(Map2D* map,char* name){
         map->connect(c);
     }else if(strcmp(name,"rsdnfconnecter")==0){
         RsdnfConnecter c;
+        map->connect(c);
+    }else if(strcmp(name,"nspikeconnecter")==0){
+        NSpikeConnecter c;
         map->connect(c);
     }else{
         std::cerr << "unvalid connecter name " << name << std::endl;

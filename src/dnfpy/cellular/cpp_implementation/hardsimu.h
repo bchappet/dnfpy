@@ -16,15 +16,14 @@ public:
      */
     virtual void step() = 0;
 
+
     /**
      * @brief getArrayInt return an 2D array of int using the cells of the map
      * @param code
      * @return
      */
     virtual void getArrayInt(int index,int** array) =0;
-
     virtual void getArrayBool(int index,bool ** array) =0;
-
     virtual void getArrayFloat(int index,float ** array) =0;
 
      /** @brief setArrayInt will give an integer to each cell.
@@ -33,9 +32,7 @@ public:
      * @param code
      */
     virtual void setArrayInt(int index, int** array) = 0;
-
     virtual void setArrayBool(int index, bool** array) = 0;
-
     virtual void setArrayFloat(int index, float** array) = 0;
 
     virtual void setCellInt(int x,int y,int index,int val) = 0;

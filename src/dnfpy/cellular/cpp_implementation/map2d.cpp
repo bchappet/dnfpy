@@ -1,6 +1,6 @@
 #include "map2d.h"
 
-
+#include <iostream>
 
 Map2D::Map2D(int width,int height) : Module()
 {
@@ -12,6 +12,15 @@ Map2D::Map2D(int width,int height) : Module()
         this->cellArray[i] = new Module*[this->width];
     }
 }
+
+void Map2D::getCellAttribute(int x,int y,int index,void* value){
+    return this->cellArray[y][x]->getAttribute(index,value);
+}
+void Map2D::setCellAttribute(int x,int y,int index,void* value){
+    return this->cellArray[y][x]->setAttribute(index,value);
+}
+
+
 
 
 

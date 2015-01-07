@@ -11,6 +11,8 @@
 #include "cellrsdnf.h"
 #include <ctime>
 #include "softsimu.h"
+#include "cellnspike.h"
+#include "nspikeconnecter.h"
 using namespace std;
 
 void test_register();
@@ -20,6 +22,8 @@ void test_neumann_connecter(int size);
 void test_rsdnf_map(int size);
 void test_rsdnf_cell();
 void test_soft_simu(int size);
+void test_cell_nspike();
+void test_map_nspike(int size);
 int main()
 {
     cout << "Hello World!" << endl;
@@ -35,6 +39,11 @@ int main()
     cout << "test router passed" << endl;
     test_rsdnf_map(11);
     cout << "test rsdnf map passed" << endl;
+
+    test_cell_nspike();
+    cout<< "test cell n spike passed" << endl;
+    test_map_nspike(11);
+    cout << "test map nspike passed" << endl;
     test_soft_simu(11);
     cout<< "test soft simu passed" <<endl;
     return 0;
@@ -57,6 +66,88 @@ T* construct_array(int width,int height){
     return array;
 }
 
+void test_map_nspike(int size){
+    NSpikeConnecter c;
+    Map2D map2d(size,size);
+    map2d.initCellArray<CellNSpike>();
+    map2d.connect(c);
+    bool activated = true;
+    map2d.setCellAttribute(size/2,size/2,CellNSpike::ACTIVATED,&activated);
+    map2d.compute();
+    int* nb_sp = construct_array<int>(size,size);
+
+    map2d.getArrayAttribute<int>(CellNSpike::NB_SPIKE_RECEIVED,nb_sp);
+    print_2D_array<int>(nb_sp,size,size);
+
+    cout << endl;
+
+    map2d.setParamArray<float>(CellNSpike::PROBA_N,0.5);
+    map2d.setParamArray<float>(CellNSpike::PROBA_S,0.5);
+    map2d.setParamArray<float>(CellNSpike::PROBA_E,0.5);
+    map2d.setParamArray<float>(CellNSpike::PROBA_W,0.5);
+    float probaN = map2d.getCell(0,0)->getParam<float>(CellNSpike::PROBA_N);
+    cout << "probaN : " << probaN << endl;
+    assert(probaN == 0.5);
+
+    map2d.setCellAttribute(size/2,size/2,CellNSpike::ACTIVATED,&activated);
+    map2d.compute();
+    map2d.getArrayAttribute<int>(CellNSpike::NB_SPIKE_RECEIVED,nb_sp);
+    print_2D_array<int>(nb_sp,size,size);
+
+
+
+}
+
+void test_cell_nspike(){
+    CellNSpike* cell = new CellNSpike();
+    int nb = 10;
+
+    cell->setAttribute(CellNSpike::NB_SPIKE_RECEIVED,&nb);
+    int res;
+    cell->getAttribute(CellNSpike::NB_SPIKE_RECEIVED,&res);
+    assert(res == 10);
+    nb = 2;
+    cell->getAttribute(CellNSpike::NB_SPIKE_RECEIVED,&res);
+    assert(res == 10);
+
+    bool act = true;
+    bool dead = true;
+    cell->setAttribute(CellNSpike::ACTIVATED,&act);
+    cell->setAttribute(CellNSpike::DEAD,&dead);
+    cell->compute();
+
+    CellNSpike* cn,*cs,*ce,*cw;
+    cn = new CellNSpike();
+    cs = new CellNSpike();
+    ce = new CellNSpike();
+    cw = new CellNSpike();
+    cell->addNeighbour(cn);cn->setAttribute(CellNSpike::DEAD,&dead);
+    cell->addNeighbour(cs);cs->setAttribute(CellNSpike::DEAD,&dead);
+    cell->addNeighbour(ce);ce->setAttribute(CellNSpike::DEAD,&dead);
+    cell->addNeighbour(cw);cw->setAttribute(CellNSpike::DEAD,&dead);
+
+    dead = false;
+    int nb_spike = 100;
+    cell->setAttribute(CellNSpike::DEAD,&dead);
+    cell->setAttribute(CellNSpike::ACTIVATED,&act);
+    cell->setParam<int>(CellNSpike::NB_SPIKE,nb_spike);
+    cell->setParam<float>(CellNSpike::PROBA_E,0.);
+    cell->setParam<float>(CellNSpike::PROBA_S,0.5);
+    cell->compute();
+    int nb_spike_received = -99;
+    cn->getAttribute(CellNSpike::NB_SPIKE_RECEIVED,&nb_spike_received);
+    assert(nb_spike_received == nb_spike);
+    cs->getAttribute(CellNSpike::NB_SPIKE_RECEIVED,&nb_spike_received);
+    cout << "nb spike received : " << nb_spike_received << endl;
+    //assert(nb_spike_received == nb_spike);
+    ce->getAttribute(CellNSpike::NB_SPIKE_RECEIVED,&nb_spike_received);
+    assert(nb_spike_received == 0);
+    cw->getAttribute(CellNSpike::NB_SPIKE_RECEIVED,&nb_spike_received);
+    assert(nb_spike_received == nb_spike);
+
+
+}
+
 void test_soft_simu(int size)
 {
     initSimu(size,size,"cellrsdnf","rsdnfconnecter");
@@ -69,6 +160,14 @@ void test_soft_simu(int size)
     getArrayInt(CellRsdnf::POTENTIAL,stateInt);
     print_2D_array<int>(stateInt,size,size);
 
+    initSimu(size,size,"cellnspike","nspikeconnecter");
+    int i = 10;
+    setCellAttribute(0,0,0,&i);
+    int res = 0;
+    getCellAttribute(0,0,0,&res);
+    assert(res = 10);
+
+
 
 
 }
@@ -78,8 +177,8 @@ void test_rsdnf_cell(){
     CellRsdnf* neigh;
     cell = new CellRsdnf();
     neigh = new CellRsdnf();
-    cell->getSubModule(0)->addInput(neigh->getSubModule(0));
-    cell->addInput(neigh->getSubModule(0));
+    cell->getSubModule(0)->addNeighbour(neigh->getSubModule(0));
+    cell->addNeighbour(neigh->getSubModule(0));
 
     neigh->setRegState<bool>(CellRsdnf::ACTIVATED_OUT,true);
     neigh->synch();
@@ -237,14 +336,14 @@ void test_cellgof(){
     neighs.push_back(&cell1);
     neighs.push_back(&cell2);
 
-    cell.addInputs(neighs);
+    cell.addNeighbours(neighs);
     cell.compute();
     cell.synch();
     assert(!cell.getRegState<bool>(0));//2 neigh is not enough to be alive
 
     neighs.clear();
     neighs.push_back(&cell3);
-    cell.addInputs(neighs);
+    cell.addNeighbours(neighs);
     cell.compute();
     cell.synch();
     assert(cell.getRegState<bool>(0));//3 neigh is  enough to be alive

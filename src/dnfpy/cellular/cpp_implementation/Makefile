@@ -3,7 +3,7 @@ CFLAGS = -Wall -std=c++11 -fPIC
 EXEC_NAME = test_lib
 INCLUDES =
 LIBS =
-OBJ_FILES = cellgof.o cellrsdnf.o register.o map2d.o mooreconnecter.o neumannconnecter.o rsdnfconnecter.o softsimu.o router.o param.o
+OBJ_FILES = cellgof.o cellrsdnf.o register.o map2d.o mooreconnecter.o neumannconnecter.o rsdnfconnecter.o softsimu.o  cellnspike.o nspikeconnecter.o router.o param.o
 
 INSTALL_DIR = /usr/bin
 

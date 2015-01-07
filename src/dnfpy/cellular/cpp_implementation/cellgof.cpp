@@ -10,7 +10,7 @@ CellGof::CellGof(bool state): Module()
 void CellGof::computeState(){
     bool alive = this->getRegState<bool>(STATE);
     int nbNeighAlive = 0;
-    for(Module* in:this->inputs){
+    for(Module* in:this->neighbours){
         nbNeighAlive += in->getRegState<bool>(STATE);
     }
     //std::cout << "nbInput : " << this->inputs.size() << std::endl;

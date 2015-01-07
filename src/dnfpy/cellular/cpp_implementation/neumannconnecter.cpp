@@ -2,7 +2,7 @@
 
 void NeumannConnecter::cellConnection(Module* cell,Module* neighCell,int dir)const{
     if(neighCell!=nullptr){
-        cell->addInput(neighCell);
+        cell->addNeighbour(neighCell);
     }
 }
 
