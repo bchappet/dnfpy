@@ -12,6 +12,11 @@ public:
      */
     virtual void synch() override{}
 
+    /**
+    * @brief reset WARNING : does not reset "dead"
+    */
+    virtual void reset() override;
+
     virtual void getAttribute(int index,void* value) override{
         switch(index){
         case NB_SPIKE_RECEIVED:

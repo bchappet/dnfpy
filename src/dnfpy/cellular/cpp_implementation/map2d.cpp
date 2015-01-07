@@ -22,7 +22,14 @@ void Map2D::setCellAttribute(int x,int y,int index,void* value){
 
 
 
-
+void Map2D::reset(){
+    Module::reset();
+    for(int i = 0 ; i < this->heigth ; i++){
+        for(int j = 0 ; j < this->width ; j++){
+            this->cellArray[i][j]->reset();
+        }
+    }
+}
 
 void Map2D::compute(){
     Module::compute();

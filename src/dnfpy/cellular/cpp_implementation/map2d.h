@@ -36,6 +36,8 @@ public:
 
     virtual void synch() override;
 
+    virtual void reset() override;
+
     /**
      * @brief getCellAttribute to access attribute of cells
      * @param x

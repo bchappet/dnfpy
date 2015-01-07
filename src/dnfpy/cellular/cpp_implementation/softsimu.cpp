@@ -51,6 +51,10 @@ void initSimu(int width,int height,char* cellName,char* connecterName)
     connecterFromName(mapSimu,connecterName);
 }
 
+void reset(){
+    mapSimu->reset();
+}
+
 void synch(){
     mapSimu->synch();
 }

@@ -76,6 +76,19 @@ public:
         return param->val;
     }
 
+    /**
+     * @brief reset the register and the submodules
+     */
+    virtual void reset(){
+        for(Module* mod : this->subModules){
+            mod->reset();
+        }
+        for(IRegister* reg:this->regs){
+            reg->reset();
+        }
+
+    }
+
 protected:
     std::vector<IRegister*> regs;//inner state of the module
     std::vector<Module*> neighbours;

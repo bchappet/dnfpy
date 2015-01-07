@@ -9,6 +9,13 @@ template <typename T>
 Register<T>::Register(const T& val){
     this->state = val;
     this->nextState = val;
+    this->initState = val;
+}
+
+template <typename T>
+void Register<T>::reset(){
+    this->state = initState;
+    this->nextState = initState;
 }
 
 /**

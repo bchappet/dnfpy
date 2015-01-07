@@ -6,7 +6,7 @@ class IRegister
 {
 public:
     virtual void synch() = 0;
-
+    virtual void reset() = 0;
 
 
 };
@@ -24,7 +24,7 @@ public:
     /**
      * @brief synch state = nextState
      */
-    void synch();
+    virtual void synch() override;
     /**
      * @brief get the state
      * @return
@@ -38,7 +38,13 @@ public:
      * @param val
      */
     void set(T val);
+
+    /**
+     * @brief reset get back to initState
+     */
+    virtual void reset() override;
 private:
+    T initState;
     T nextState;
     T state;
 };

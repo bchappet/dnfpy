@@ -22,6 +22,11 @@ CellNSpike::CellNSpike()
     this->dead = false;
 }
 
+void CellNSpike::reset(){
+    this->nbSpikeReceived = 0;
+    this->activated = false;
+}
+
 void CellNSpike::computeState(){
     if(this->activated && !this->dead){
         //emmit NB_SPIKE to the 4 neigbours

@@ -11,6 +11,8 @@ extern "C" {
     void step();
     void nstep(int n);
     void synch();
+    void reset();
+
 
    // ModuleC* getCell(int x,int y);
 
