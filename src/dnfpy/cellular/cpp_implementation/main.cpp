@@ -81,10 +81,10 @@ void test_map_nspike(int size){
 
     cout << endl;
 
-    map2d.setParamArray<float>(CellNSpike::PROBA_N,0.5);
-    map2d.setParamArray<float>(CellNSpike::PROBA_S,0.5);
-    map2d.setParamArray<float>(CellNSpike::PROBA_E,0.5);
-    map2d.setParamArray<float>(CellNSpike::PROBA_W,0.5);
+    map2d.setMapParam<float>(CellNSpike::PROBA_N,0.5);
+    map2d.setMapParam<float>(CellNSpike::PROBA_S,0.5);
+    map2d.setMapParam<float>(CellNSpike::PROBA_E,0.5);
+    map2d.setMapParam<float>(CellNSpike::PROBA_W,0.5);
     float probaN = map2d.getCell(0,0)->getParam<float>(CellNSpike::PROBA_N);
     cout << "probaN : " << probaN << endl;
     assert(probaN == 0.5);
@@ -202,7 +202,7 @@ void test_rsdnf_map(int size){
     Map2D map2d(size,size);
     map2d.initCellArray<CellRsdnf>();
     map2d.connect(c);
-    map2d.setParamArrayPath<float>(Router::PROBA,0.9,"*");
+    map2d.setMapParam<float>(Router::PROBA,0.9,"./*");
 
 
     map2d.setCellState<bool>(5,5,CellRsdnf::ACTIVATED_OUT,true);

@@ -120,18 +120,18 @@ public:
         }
     }
 
-    /**
-     * @brief setParamArray set param off every cell of the array
-     * @param index
-     * @param value
-     */
-    template<typename T>
-    void setParamArray(int index,T value){
-        for(int i = 0 ; i < this->heigth ; i++){
-            for(int j = 0 ; j < this->width ; j++){
-                this->cellArray[i][j]->setParam(index,value);
-            }
+
+    std::vector<Module*> getModulesFromPath(Module* cell,std::string path){
+        std::vector<Module*> modules;
+        if(path.compare(".") == 0){
+            modules.push_back(cell);
+        }else if(path.compare("./*") == 0){
+            for(Module* child : cell->getSubModules())
+                modules.push_back(child);
+        }else{
+            std::cout << "onl y \".\" and \"./*\"  available for now" << std::endl;
         }
+        return modules;
     }
 
     /**
@@ -144,16 +144,25 @@ public:
      * FOR NOW it is only working for \*
      */
     template<typename T>
-    void setParamArrayPath(int index,T value,std::string path){
-        if(path.compare("*") != 0){
-            std::cout << "onl y * available for now" << std::endl;
-        }
+    void setMapParam(int index,T value,std::string path="."){
         for(int i = 0 ; i < this->heigth ; i++){
             for(int j = 0 ; j < this->width ; j++){
-                for(Module* child : this->cellArray[i][j]->getSubModules())
-                    child->setParam<T>(index,value);
+                for(Module* mod : this->getModulesFromPath(this->cellArray[i][j],path))
+                    mod->setParam<T>(index,value);
             }
         }
+    }
+
+    /**
+     * @brief getMapParam return the param using path for first cell.
+     * As all the param should be the same, it is relevant
+     * @param index
+     * @param path
+     */
+    template<typename T>
+    T getMapParam(int index,std::string path="."){
+        Module* mod = this->getModulesFromPath(this->cellArray[0][0],path).at(0);
+        return mod->getParam<T>(index);
     }
 
     /**

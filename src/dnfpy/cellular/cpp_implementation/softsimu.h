@@ -14,10 +14,19 @@ extern "C" {
 
    // ModuleC* getCell(int x,int y);
 
+    /**
+     * @brief setMapParamInt even if stored localy parameters should be global
+     * @param index
+     * @param value
+     * @param path
+     */
     void setMapParamInt(int index,int value,char* path);
     void setMapParamBool(int index,bool value,char* path);
     void setMapParamFloat(int index,float value,char* path);
 
+    int getMapParamInt(int index,char* path);
+    bool getMapParamBool(int index,char* path);
+    float getMapParamFloat(int index,char* path);
 
     void getCellAttribute(int x,int y,int index,void* value);
     void setCellAttribute(int x,int y,int index, void* value);

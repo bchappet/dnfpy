@@ -18,16 +18,30 @@ void initCellArrayFromName(Map2D* mapSimu,char* name);
 void connecterFromName(Map2D* mapSimu,char* name);
 
 void setMapParamInt(int index,int value,char* path){
-    mapSimu->setParamArrayPath<int>(index,value,path);
+    mapSimu->setMapParam<int>(index,value,path);
 }
 
 void setMapParamBool(int index,bool value,char* path){
-    mapSimu->setParamArrayPath<bool>(index,value,path);
+    mapSimu->setMapParam<bool>(index,value,path);
 }
 
 void setMapParamFloat(int index,float value,char* path){
-    mapSimu->setParamArrayPath<float>(index,value,path);
+    mapSimu->setMapParam<float>(index,value,path);
 }
+
+int getMapParamInt(int index,char* path){
+    return mapSimu->getMapParam<int>(index,path);
+}
+
+
+bool getMapParamBool(int index,char* path){
+    return mapSimu->getMapParam<bool>(index,path);
+}
+
+float getMapParamFloat(int index,char* path){
+    return mapSimu->getMapParam<float>(index,path);
+}
+
 
 //ModuleC* convertModuleToC(Module* mod);
 void initSimu(int width,int height,char* cellName,char* connecterName)
