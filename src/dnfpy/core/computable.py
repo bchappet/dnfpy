@@ -86,6 +86,12 @@ class Computable(object):
             pass
 
     def _onParamsUpdate(self):
+        """
+        Can choose the params
+        To react on param update
+        return a dict with new arg
+        generaly the new args are hidden with _nameArg
+        """
         return {}
 
 
