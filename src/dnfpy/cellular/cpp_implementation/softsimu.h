@@ -4,9 +4,26 @@
 #include "map2d.h"
 extern "C" {
   // typedef struct module ModuleC;
-    extern Map2D* mapSimu;
 
-    void initSimu(int width,int height,char* cellName,char* connecterName);
+
+
+
+/**
+     * @brief initSimu init a new map and give the index of it. Should use int useMap(int idMap) before using the map.
+     * @param width
+     * @param height
+     * @param cellName
+     * @param connecterName
+     * @return
+     */
+    int initSimu(int width,int height,char* cellName,char* connecterName);
+
+    /**
+     * @brief useMap to use the specified map
+     * @param idMap
+     * @return
+     */
+    int useMap(int idMap);
 
     void step();
     void nstep(int n);

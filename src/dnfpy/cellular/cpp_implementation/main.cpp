@@ -150,7 +150,8 @@ void test_cell_nspike(){
 
 void test_soft_simu(int size)
 {
-    initSimu(size,size,"cellrsdnf","rsdnfconnecter");
+    int idMap = initSimu(size,size,"cellrsdnf","rsdnfconnecter");
+    useMap(idMap);
     int* stateInt = construct_array<int>(size,size);
     setCellBool(5,5,CellRsdnf::ACTIVATED_OUT,true);
     //simu.map.synch();

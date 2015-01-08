@@ -2,8 +2,11 @@
 
 #include <iostream>
 
-Map2D::Map2D(int width,int height) : Module()
-{
+Map2D::Map2D() : Module(){
+
+}
+
+void Map2D::initMemory(int width, int height){
     this->width = width;
     this->heigth = height;
 
@@ -11,6 +14,11 @@ Map2D::Map2D(int width,int height) : Module()
     for(int i = 0 ; i < this->heigth ; i++){
         this->cellArray[i] = new Module*[this->width];
     }
+}
+
+Map2D::Map2D(int width,int height) : Module()
+{
+   this->initMemory(width,height);
 }
 
 void Map2D::getCellAttribute(int x,int y,int index,void* value){

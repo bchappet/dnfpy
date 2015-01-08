@@ -13,9 +13,16 @@
 #include "connecter.h"
 #include <string.h>
 
+std::vector<Map2D*> mapSimuVec;
 Map2D* mapSimu;
+
 void initCellArrayFromName(Map2D* mapSimu,char* name);
 void connecterFromName(Map2D* mapSimu,char* name);
+
+int useMap(int idMap_){
+    mapSimu = mapSimuVec[idMap_];
+    return 0;
+}
 
 void setMapParamInt(int index,int value,char* path){
     mapSimu->setMapParam<int>(index,value,path);
@@ -44,11 +51,13 @@ float getMapParamFloat(int index,char* path){
 
 
 //ModuleC* convertModuleToC(Module* mod);
-void initSimu(int width,int height,char* cellName,char* connecterName)
+int initSimu(int width,int height,char* cellName,char* connecterName)
 {
-    mapSimu = new Map2D(width,height);
-    initCellArrayFromName(mapSimu,cellName);
-    connecterFromName(mapSimu,connecterName);
+    Map2D* theNewMap = new Map2D(width,height);
+    initCellArrayFromName(theNewMap,cellName);
+    connecterFromName(theNewMap,connecterName);
+    mapSimuVec.push_back(theNewMap);
+    return mapSimuVec.size()-1;
 }
 
 void reset(){

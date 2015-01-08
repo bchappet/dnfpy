@@ -11,6 +11,7 @@ class Map2D : public Module
 {
 public:
 
+    Map2D();
     /**
      * @brief Map construct a width*heigth map of module
      * @param width
@@ -18,6 +19,7 @@ public:
      */
     Map2D(int width,int height);
 
+    void initMemory(int width,int height);
 
     /**
      * @brief initCellArray : init cell array with given module
