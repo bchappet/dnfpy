@@ -40,6 +40,8 @@ class Map2D(Computable):
         """Init a 2D numpy array of shape (size,size) dtype float32"""
 
         self.setArg(time=0.0) #last simulation time (in seconds) : it is updated just befor compute() call
+        if not(self.hasArg('dtype')):
+            self.setArg(dtype=np.float32)
         self.reset() #init self._data
         self.name = name
         self.__precision = 7 #allowed precision
@@ -177,6 +179,7 @@ class Map2D(Computable):
             Add N children using dictionary
         """
         self.__children.update(**kwargs)
+        self._onAddChildren(**kwargs)
         self.childrenParamsUpdate()
 
 
@@ -184,8 +187,15 @@ class Map2D(Computable):
             args =  self._subDictionary(self.__childrenParamsUpdateArgs)
             self._childrenParamsUpdate(**args)
 
+    def _onAddChildren(self,**kwargs):
+        """
+        Called when children are added via add children
+        kwargs contains the dictionary of children
+        typical use is to add the given children to other children
+        """
+        pass
+
     def setParamsRec(self,**kwargs):
-        print("setParamRec : %s"%kwargs)
         self.setParams(**kwargs)
         if len(self.__children) > 0:
             self.childrenParamsUpdate()
@@ -215,10 +225,11 @@ class Map2D(Computable):
     def reset(self):
         """Reset the data to 0"""
         size = self.getArg('size')
+        dtype = self.getArg('dtype')
         if size == 1:
             self._data = 0.
         else:
-            self._data = np.zeros((size,size))
+            self._data = np.zeros((size,size),dtype=dtype)
     @staticmethod
     def __associateDict(aDict,bDict):
         """Association beteween aDict and bDict:
