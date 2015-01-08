@@ -15,11 +15,11 @@ def __egaliseColorBar(data,bar):
                 egal = max(abs(maximum),abs(minimum))
                 plt.clim(-egal,+egal)
                 bar.set_ticks([__roundUp(-egal),0,__roundDown(+egal)])
-                
+
 def __roundDown(x):
-        return math.floor(x*100)/100
+        return math.floor(x*10000)/10000
 def __roundUp(x):
-        return math.ceil(x*100)/100
+        return math.ceil(x*10000)/10000
 def __finalize():
         plt.xticks([])
         plt.yticks([])
@@ -35,7 +35,7 @@ def plotArray(data):
             __egaliseColorBar(data,bar)
         __finalize()
         return ret
-                                
+
 
 def plotArrays(name_array_dict):
         """Expect a dictionary {name->array}"""
@@ -47,9 +47,9 @@ def plotArrays(name_array_dict):
         gs = gridspec.GridSpec(height, width)
         for name in name_array_dict:
                 if( i == size-1): #last fig
-                        ax = plt.subplot(gs[i/width,i%width :])         
+                        ax = plt.subplot(gs[i/width,i%width :])
                 else:
-                        ax = plt.subplot(gs[i/width,i%width])           
+                        ax = plt.subplot(gs[i/width,i%width])
                 array = name_array_dict[name]
                 if len(array.shape) == 1:
                     plotArray(array)
@@ -58,8 +58,10 @@ def plotArrays(name_array_dict):
                 ax.set_title(name)
                 i+=1
 
-        
-        
-                
-        
+def show():
+    plt.show()
+
+
+
+
 
