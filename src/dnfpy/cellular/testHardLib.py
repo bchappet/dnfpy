@@ -7,11 +7,6 @@ class TestHardLib(unittest.TestCase):
         self.size = 11
         self.lib = HardLib(self.size,self.size,"cellrsdnf","rsdnfconnecter")
 
-    def test_set_get_cell_attribute(self):
-        self.lib.setCellAttribute(0,0,0,10)
-        attr = self.lib.getCellAttribute(0,0,0,int)
-        self.assertTrue(attr == 10)
-
     def test_get_reg_array_int(self):
         array = np.ones((self.size,self.size),dtype=np.intc)
         self.lib.getRegArray(0,array)

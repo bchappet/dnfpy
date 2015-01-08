@@ -3,11 +3,13 @@ from cffi import FFI
 
 ffi = FFI()
 ffi.cdef("""
-    void initSimu(int width,int height,char* cellName,char* connecterName);
+    int initSimu(int width,int height,char* cellName,char* connecterName);
+    int useMap(int idMap);
 
     void step();
     void nstep(int n);
     void synch();
+    void reset();
 
     void setMapParamInt(int index,int value,char* path);
     void setMapParamBool(int index,bool value,char* path);
@@ -46,19 +48,30 @@ ffi.cdef("""
 
 class HardLib:
     def __init__(self,sizeX,sizeY,cellType,connecterType):
-        self.C = ffi.dlopen("./cpp_implementation/libhardsimu.so")
-        self.C.initSimu(sizeX,sizeY,cellType,connecterType)
+        self.C = ffi.dlopen("libhardsimu.so")
+        self.__idMap = self.C.initSimu(sizeX,sizeY,cellType,connecterType)
+
+    def __useMap(self):
+        self.C.useMap(self.__idMap)
 
     def synch(self):
+        self.__useMap()
         self.C.synch();
 
     def step(self):
+        self.__useMap()
         self.C.step();
 
     def nstep(self,n):
+        self.__useMap()
         self.C.nstep();
 
+    def reset(self):
+        self.__useMap()
+        self.C.reset()
+
     def getMapParam(self,idParam,dtype,path="."):
+        self.__useMap()
         if dtype == int:
             return self.C.getMapParamInt(idParam,path)
         elif dtype == bool:
@@ -66,12 +79,13 @@ class HardLib:
         elif dtype == float:
             return self.C.getMapParamFloat(idParam,path)
         else:
-            raise AttributeError("Expecting int bool or float as dtype")
+            raise AttributeError("Expecting int bool or float as dtype. Was %s"%dtype)
 
 
 
 
     def setMapParam(self,idParam,val,path="."):
+        self.__useMap()
         dtype = type(val)
         if dtype == int:
             self.C.setMapParamInt(idParam,val,path)
@@ -80,10 +94,11 @@ class HardLib:
         elif dtype == float:
             self.C.setMapParamFloat(idParam,val,path)
         else:
-            raise AttributeError("Expecting int bool or float as dtype")
+            raise AttributeError("Expecting int bool or float as dtype. Was %s"%dtype)
 
 
     def setCellAttribute(self,x,y,idAttribute,val):
+        self.__useMap()
         dtype = type(val)
         if dtype == int:
             point = ffi.new("int *",val)
@@ -92,36 +107,38 @@ class HardLib:
         elif dtype == float:
             point = ffi.new("float *",val)
         else:
-            raise AttributeError("Expecting int bool or float as dtype")
+            raise AttributeError("Expecting int bool or float as dtype. Was %s"%dtype)
 
         self.C.setCellAttribute(x,y,idAttribute,point)
 
     def setArrayAttribute(self,idAttribute,npArray):
+        self.__useMap()
         dtype = npArray.dtype
         if dtype == np.intc:
-            self.C.setArrayAttributeInt(0,ffi.cast("int *",npArray.ctypes.data))
+            self.C.setArrayAttributeInt(idAttribute,ffi.cast("int *",npArray.ctypes.data))
         elif dtype == np.float:
-            self.C.setArrayAttributeFloat(0,ffi.cast("float *",npArray.ctypes.data))
+            self.C.setArrayAttributeFloat(idAttribute,ffi.cast("float *",npArray.ctypes.data))
         elif dtype == np.bool:
-            self.C.setArrayAttributeBool(0,ffi.cast("bool *",npArray.ctypes.data))
+            self.C.setArrayAttributeBool(idAttribute,ffi.cast("bool *",npArray.ctypes.data))
         else:
-            raise AttributeError("Expecting int bool or float as dtype")
+            raise AttributeError("Expecting int bool or float as dtype. Was %s"%dtype)
 
     def getArrayAttribute(self,idAttribute,npArray):
+        self.__useMap()
         dtype = npArray.dtype
         if dtype == np.intc:
-            self.C.getArrayAttributeInt(0,ffi.cast("int *",npArray.ctypes.data))
+            self.C.getArrayAttributeInt(idAttribute,ffi.cast("int *",npArray.ctypes.data))
         elif dtype == np.float:
-            self.C.getArrayAttributeFloat(0,ffi.cast("float *",npArray.ctypes.data))
+            self.C.getArrayAttributeFloat(idAttribute,ffi.cast("float *",npArray.ctypes.data))
         elif dtype == np.bool:
-            self.C.getArrayAttributeBool(0,ffi.cast("bool *",npArray.ctypes.data))
+            self.C.getArrayAttributeBool(idAttribute,ffi.cast("bool *",npArray.ctypes.data))
         else:
-            raise AttributeError("Expecting int bool or float as dtype")
+            raise AttributeError("Expecting int bool or float as dtype. Was %s"%dtype)
 
 
 
     def getCellAttribute(self,x,y,idAttribute,dtype):
-
+        self.__useMap()
         if dtype == int:
             point = ffi.new("int *")
         elif dtype == bool:
@@ -129,11 +146,12 @@ class HardLib:
         elif dtype == float:
             point = ffi.new("float *")
         else:
-            raise AttributeError("Expecting int bool or float as dtype")
+            raise AttributeError("Expecting int bool or float as dtype. Was %s"%dtype)
         self.C.getCellAttribute(x,y,idAttribute,point)
         return point[0]
 
     def setRegCell(self,x,y,regIndex,val):
+        self.__useMap()
         ty = type(val)
         if ty == int:
             self.C.setCellInt(x,y,regIndex,val)
@@ -142,17 +160,18 @@ class HardLib:
         elif ty == float:
             self.C.setCellFloat(x,y,regIndex,val)
         else:
-            raise AttributeError("Expecting int bool or float as dtype")
+            raise AttributeError("Expecting int bool or float as dtype. Was %s"%dtype)
 
 
 
     def getRegArray(self,regIndex,npArray):
+        self.__useMap()
         dtype = npArray.dtype
         if dtype == np.intc:
-            self.C.getArrayInt(0,ffi.cast("int *",npArray.ctypes.data))
+            self.C.getArrayInt(regIndex,ffi.cast("int *",npArray.ctypes.data))
         elif dtype == np.float:
-            self.C.getArrayFloat(0,ffi.cast("float *",npArray.ctypes.data))
+            self.C.getArrayFloat(regIndex,ffi.cast("float *",npArray.ctypes.data))
         elif dtype == np.bool:
-            self.C.getArrayBool(0,ffi.cast("bool *",npArray.ctypes.data))
+            self.C.getArrayBool(regIndex,ffi.cast("bool *",npArray.ctypes.data))
         else:
-            raise AttributeError("Expecting int bool or float as dtype")
+            raise AttributeError("Expecting int bool or float as dtype. Was %s"%dtype)
