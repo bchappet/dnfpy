@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -std=c++11 -fPIC
+CFLAGS = -Wall -std=c++11 -fPIC -O2 -s
 EXEC_NAME = test_lib
 INCLUDES =
 LIBS =
@@ -10,7 +10,7 @@ INSTALL_DIR = /usr/bin
 test : $(EXEC_NAME)
 
 lib : $(OBJ_FILES)
-	$(CC) -o libhardsimu.so $? -shared
+	$(CC)  -o libhardsimu.so $? -shared
 
 clean :
 	  rm $(EXEC_NAME) $(OBJ_FILES)
