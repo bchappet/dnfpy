@@ -12,6 +12,8 @@
 #include "nspikeconnecter.h"
 #include "connecter.h"
 #include <string.h>
+#include "cellbsrsdnf.h"
+
 
 std::vector<Map2D*> mapSimuVec;
 Map2D* mapSimu;
@@ -168,6 +170,8 @@ void initCellArrayFromName(Map2D* map,char* name){
         map->initCellArray<CellRsdnf>();
     }else if(strcmp(name,"cellnspike")==0){
         map->initCellArray<CellNSpike>();
+    }else if(strcmp(name,"cellbsrsdnf")==0){
+        map->initCellArray<CellBsRsdnf>();
     }else{
         std::cerr << "unvalid cell name " << name << std::endl;
     }

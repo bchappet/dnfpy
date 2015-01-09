@@ -3,6 +3,8 @@
 #include "register.h"
 #include <vector>
 #include "param.h"
+#include <assert.h>
+#include <iostream>
 
 class Module
 {
@@ -18,6 +20,23 @@ public:
     }
 
     virtual void computeState(){}
+
+    /**
+     * @brief linkParam will link the param of target with this param
+     * Which means that
+     *  1) target param value will be the same as this
+     *  2) Every modification on any side will be transmitted to the other
+     * @param indexParam
+     * @param indexParamTarget
+     * @param target
+     */
+    void linkParam(int indexParam,int indexParamTarget,Module* target){
+        target->params[indexParamTarget] = this->params[indexParam];
+//        this->setParam<float>(indexParam,0.01);
+//        std::cout << "param :target" << target->getParam<float>(indexParamTarget) << std::endl;
+//        assert(target->getParam<float>(indexParamTarget) < 0.01);
+    }
+
 
     void addNeighbours(std::vector<Module*> new_neighbours){
         this->neighbours.insert(this->neighbours.end(),new_neighbours.begin(),new_neighbours.end());
@@ -51,6 +70,7 @@ public:
         }
 
     }
+
 
     Module* getSubModule(int index){
         return this->subModules.at(index);

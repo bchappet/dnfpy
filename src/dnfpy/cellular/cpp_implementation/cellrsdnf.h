@@ -1,13 +1,36 @@
 #ifndef CELLRSDNF_H
 #define CELLRSDNF_H
 #include "module.h"
+
 class CellRsdnf : public Module
 {
 public:
-    enum CellRsdnf_Register { POTENTIAL,ACTIVATED_OUT} ;
-
     CellRsdnf();
     virtual void computeState() override;
+
+    virtual void initRouters();
+
+    enum CellRsdnf_Attributes{NB_BIT_RECEIVED,ACTIVATED,DEAD};
+
+
+    virtual void getAttribute(int index,void* value) override;
+
+
+    virtual void setAttribute(int index, void* value) override;
+
+protected:
+    /**
+     * @brief nbBitReceived nb bit received since last reset
+     */
+    int nbBitReceived;
+    /**
+     * @brief activated if true the cell will emmit NB_SPIKE spikes and will set this.activated at false
+     */
+    bool activated;
+    /**
+     * @brief dead if true, the cell will do nothing on spike reception
+     */
+    bool dead;
 };
 
 #endif // CELLRSDNF_H

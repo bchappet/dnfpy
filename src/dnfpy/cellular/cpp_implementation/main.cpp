@@ -13,7 +13,12 @@
 #include "softsimu.h"
 #include "cellnspike.h"
 #include "nspikeconnecter.h"
+#include "cellbsrsdnf.h"
+#include "bsrouter.h"
 using namespace std;
+#define PRECISION 1000000
+
+
 
 void test_register();
 void test_cellgof();
@@ -24,6 +29,10 @@ void test_rsdnf_cell();
 void test_soft_simu(int size);
 void test_cell_nspike();
 void test_map_nspike(int size);
+void test_stochastic_rsdnf_map(int size);
+void test_stochastic_rsdnf_map2(int size);
+void test_stochastic_rsdnf();
+
 int main()
 {
     cout << "Hello World!" << endl;
@@ -36,7 +45,7 @@ int main()
     test_neumann_connecter(10);
     cout << "test neumann connecter passed" << endl;
     test_rsdnf_cell();
-    cout << "test router passed" << endl;
+    cout << "test rsdnf passed" << endl;
     test_rsdnf_map(11);
     cout << "test rsdnf map passed" << endl;
 
@@ -46,6 +55,10 @@ int main()
     cout << "test map nspike passed" << endl;
     test_soft_simu(11);
     cout<< "test soft simu passed" <<endl;
+    test_stochastic_rsdnf_map2(11);
+    cout << "test stochastic rsdnf map passed" << endl;
+    test_stochastic_rsdnf();
+    cout << "test stochastic rsdnf passed" << endl;
     return 0;
 }
 
@@ -66,6 +79,190 @@ T* construct_array(int width,int height){
     return array;
 }
 
+void assertAlmostEquals(float a,float b){
+    assert( a-b <= 1/PRECISION);
+}
+
+
+void test_stochastic_rsdnf(){
+    CellBsRsdnf *cell = new CellBsRsdnf();
+    CellBsRsdnf *rn,*rs,*re,*rw;
+    RsdnfConnecter c;
+    rn = new CellBsRsdnf();
+    rs = new CellBsRsdnf();
+    re = new CellBsRsdnf();
+    rw = new CellBsRsdnf();
+
+    c.cellConnection(cell,rn,c.N);
+    c.cellConnection(cell,rs,c.S);
+    c.cellConnection(cell,re,c.E);
+    c.cellConnection(cell,rw,c.W);
+
+    c.cellConnection(rn,cell,c.S);
+    c.cellConnection(rs,cell,c.N);
+    c.cellConnection(re,cell,c.W);
+    c.cellConnection(rw,cell,c.E);
+    cell->setParam<float>(CellBsRsdnf::PROBA_SYNAPSE,0.9);
+    assertAlmostEquals(cell->getSubModule(0)->getParam<float>(BSRouter::PROBA_SYNAPSE),0.9);
+
+    bool activated = true;
+    cell->setAttribute(CellBsRsdnf::ACTIVATED,&activated);
+
+    cell->compute();
+    cell->synch();
+    assert(cell->getRegState<bool>(CellBsRsdnf::SPIKE_BS)==1);
+
+    cell->compute();
+    cell->synch();
+    assert(cell->getSubModule(0)->getRegState<bool>(BSRouter::BS_OUT)==1);
+    assert(cell->getSubModule(1)->getRegState<bool>(BSRouter::BS_OUT)==1);
+
+    cell->compute();
+    rn->compute();
+    cell->synch();
+    rn->synch();
+    int nbB;
+    rn->getAttribute(CellBsRsdnf::NB_BIT_RECEIVED,&nbB);
+    assert(nbB == 1);
+    assert(rn->getSubModule(0)->getRegState<bool>(BSRouter::BS_OUT)==1);
+    assert(rn->getSubModule(2)->getRegState<bool>(BSRouter::BS_OUT)==1);
+
+}
+
+void test_stochastic_rsdnf_map2(int size){
+    RsdnfConnecter c;
+    Map2D map2d(size,size);
+    map2d.initCellArray<CellBsRsdnf>();
+    map2d.connect(c);
+
+    int hSize = size/2;
+    map2d.compute();
+    map2d.synch();
+    int* nb_sp = construct_array<int>(size,size);
+
+    map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
+    print_2D_array<int>(nb_sp,size,size);
+    assert(nb_sp[0] == 0 && nb_sp[size] == 0);
+
+    bool activate = true;
+    map2d.setCellAttribute(hSize,hSize,CellBsRsdnf::ACTIVATED,&activate);
+    map2d.setCellAttribute(hSize+2,hSize+2,CellBsRsdnf::ACTIVATED,&activate);
+     map2d.setCellAttribute(hSize-2,hSize,CellBsRsdnf::ACTIVATED,&activate);
+
+    cout << "compute" << endl;
+    map2d.compute();
+    map2d.synch();
+    map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
+    print_2D_array<int>(nb_sp,size,size);
+    assert(nb_sp[0] == 0 && nb_sp[size] == 0);
+//    assert(map2d.getCellState<bool>(hSize,hSize,CellBsRsdnf::SPIKE_BS) == 1);
+    cout << "compute" << endl;
+    map2d.compute();
+    map2d.synch();
+    map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
+    print_2D_array<int>(nb_sp,size,size);
+    cout << "compute" << endl;
+    map2d.compute();
+    map2d.synch();
+    map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
+    print_2D_array<int>(nb_sp,size,size);
+//    assert(nb_sp[hSize*size+hSize-1]==1);
+//    assert(nb_sp[hSize*size+hSize+1]==1);
+//    assert(nb_sp[(hSize+1)*size+hSize]==1);
+//    assert(nb_sp[(hSize-1)*size+hSize]==1);
+    cout << "compute" << endl;
+    map2d.compute();
+    map2d.synch();
+    map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
+    print_2D_array<int>(nb_sp,size,size);
+//    assert(nb_sp[hSize*size+hSize-1]==2);
+//    assert(nb_sp[hSize*size+hSize+1]==2);
+//    assert(nb_sp[(hSize+1)*size+hSize]==2);
+//    assert(nb_sp[(hSize-1)*size+hSize]==2);
+
+
+
+    for(int i = 0 ; i < 10 ; i ++){
+        cout << "compute" << endl;
+
+
+        map2d.compute();
+        map2d.synch();
+        map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
+        print_2D_array<int>(nb_sp,size,size);
+    }
+//    assert(nb_sp[0]==20);
+//    assert(nb_sp[size]==20);
+
+
+
+}
+
+
+void test_stochastic_rsdnf_map(int size){
+    RsdnfConnecter c;
+    Map2D map2d(size,size);
+    map2d.initCellArray<CellBsRsdnf>();
+    map2d.connect(c);
+
+    int hSize = size/2;
+    map2d.compute();
+    map2d.synch();
+    int* nb_sp = construct_array<int>(size,size);
+
+    map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
+    print_2D_array<int>(nb_sp,size,size);
+    assert(nb_sp[0] == 0 && nb_sp[size] == 0);
+
+    bool activate = true;
+    map2d.setCellAttribute(hSize,hSize,CellBsRsdnf::ACTIVATED,&activate);
+
+    cout << "compute" << endl;
+    map2d.compute();
+    map2d.synch();
+    map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
+    print_2D_array<int>(nb_sp,size,size);
+    assert(nb_sp[0] == 0 && nb_sp[size] == 0);
+    assert(map2d.getCellState<bool>(hSize,hSize,CellBsRsdnf::SPIKE_BS) == 1);
+    cout << "compute" << endl;
+    map2d.compute();
+    map2d.synch();
+    map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
+    print_2D_array<int>(nb_sp,size,size);
+    cout << "compute" << endl;
+    map2d.compute();
+    map2d.synch();
+    map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
+    print_2D_array<int>(nb_sp,size,size);
+    assert(nb_sp[hSize*size+hSize-1]==1);
+    assert(nb_sp[hSize*size+hSize+1]==1);
+    assert(nb_sp[(hSize+1)*size+hSize]==1);
+    assert(nb_sp[(hSize-1)*size+hSize]==1);
+    cout << "compute" << endl;
+    map2d.compute();
+    map2d.synch();
+    map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
+    print_2D_array<int>(nb_sp,size,size);
+    assert(nb_sp[hSize*size+hSize-1]==2);
+    assert(nb_sp[hSize*size+hSize+1]==2);
+    assert(nb_sp[(hSize+1)*size+hSize]==2);
+    assert(nb_sp[(hSize-1)*size+hSize]==2);
+
+
+
+    for(int i = 0 ; i < 30 ; i ++){
+        map2d.compute();
+        map2d.synch();
+        map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
+        print_2D_array<int>(nb_sp,size,size);
+    }
+    assert(nb_sp[0]==20);
+    assert(nb_sp[size]==20);
+
+
+
+}
+
 void test_map_nspike(int size){
     NSpikeConnecter c;
     Map2D map2d(size,size);
@@ -76,7 +273,7 @@ void test_map_nspike(int size){
     map2d.compute();
     int* nb_sp = construct_array<int>(size,size);
 
-    map2d.getArrayAttribute<int>(CellNSpike::NB_SPIKE_RECEIVED,nb_sp);
+    map2d.getArrayAttribute<int>(CellNSpike::NB_BIT_RECEIVED,nb_sp);
     print_2D_array<int>(nb_sp,size,size);
 
     cout << endl;
@@ -91,8 +288,21 @@ void test_map_nspike(int size){
 
     map2d.setCellAttribute(size/2,size/2,CellNSpike::ACTIVATED,&activated);
     map2d.compute();
-    map2d.getArrayAttribute<int>(CellNSpike::NB_SPIKE_RECEIVED,nb_sp);
+    map2d.getArrayAttribute<int>(CellNSpike::NB_BIT_RECEIVED,nb_sp);
     print_2D_array<int>(nb_sp,size,size);
+    float proba = 0.99;
+    map2d.setMapParam<float>(CellNSpike::PROBA_N,proba);
+    map2d.setMapParam<float>(CellNSpike::PROBA_S,proba);
+    map2d.setMapParam<float>(CellNSpike::PROBA_E,proba);
+    map2d.setMapParam<float>(CellNSpike::PROBA_W,proba);
+    for(int i = 0 ; i < 5 ; i++){
+        map2d.setCellAttribute(size/2,size/2,CellNSpike::ACTIVATED,&activated);
+        map2d.compute();
+        map2d.getArrayAttribute<int>(CellNSpike::NB_BIT_RECEIVED,nb_sp);
+        map2d.reset();
+        print_2D_array<int>(nb_sp,size,size);
+
+    }
 
 
 
@@ -102,12 +312,12 @@ void test_cell_nspike(){
     CellNSpike* cell = new CellNSpike();
     int nb = 10;
 
-    cell->setAttribute(CellNSpike::NB_SPIKE_RECEIVED,&nb);
+    cell->setAttribute(CellNSpike::NB_BIT_RECEIVED,&nb);
     int res;
-    cell->getAttribute(CellNSpike::NB_SPIKE_RECEIVED,&res);
+    cell->getAttribute(CellNSpike::NB_BIT_RECEIVED,&res);
     assert(res == 10);
     nb = 2;
-    cell->getAttribute(CellNSpike::NB_SPIKE_RECEIVED,&res);
+    cell->getAttribute(CellNSpike::NB_BIT_RECEIVED,&res);
     assert(res == 10);
 
     bool act = true;
@@ -134,16 +344,16 @@ void test_cell_nspike(){
     cell->setParam<float>(CellNSpike::PROBA_E,0.);
     cell->setParam<float>(CellNSpike::PROBA_S,0.5);
     cell->compute();
-    int nb_spike_received = -99;
-    cn->getAttribute(CellNSpike::NB_SPIKE_RECEIVED,&nb_spike_received);
-    assert(nb_spike_received == nb_spike);
-    cs->getAttribute(CellNSpike::NB_SPIKE_RECEIVED,&nb_spike_received);
-    cout << "nb spike received : " << nb_spike_received << endl;
-    //assert(nb_spike_received == nb_spike);
-    ce->getAttribute(CellNSpike::NB_SPIKE_RECEIVED,&nb_spike_received);
-    assert(nb_spike_received == 0);
-    cw->getAttribute(CellNSpike::NB_SPIKE_RECEIVED,&nb_spike_received);
-    assert(nb_spike_received == nb_spike);
+    int NB_BIT_RECEIVED = -99;
+    cn->getAttribute(CellNSpike::NB_BIT_RECEIVED,&NB_BIT_RECEIVED);
+    assert(NB_BIT_RECEIVED == nb_spike);
+    cs->getAttribute(CellNSpike::NB_BIT_RECEIVED,&NB_BIT_RECEIVED);
+    cout << "nb spike received : " << NB_BIT_RECEIVED << endl;
+    //assert(NB_BIT_RECEIVED == nb_spike);
+    ce->getAttribute(CellNSpike::NB_BIT_RECEIVED,&NB_BIT_RECEIVED);
+    assert(NB_BIT_RECEIVED == 0);
+    cw->getAttribute(CellNSpike::NB_BIT_RECEIVED,&NB_BIT_RECEIVED);
+    assert(NB_BIT_RECEIVED == nb_spike);
 
 
 }
@@ -153,12 +363,13 @@ void test_soft_simu(int size)
     int idMap = initSimu(size,size,"cellrsdnf","rsdnfconnecter");
     useMap(idMap);
     int* stateInt = construct_array<int>(size,size);
-    setCellBool(5,5,CellRsdnf::ACTIVATED_OUT,true);
+    bool act = true;
+    setCellAttribute(5,5,CellRsdnf::ACTIVATED,&act);
     //simu.map.synch();
     for(int i = 0 ; i < 20 ; i++){
         step();
     }
-    getArrayInt(CellRsdnf::POTENTIAL,stateInt);
+    getArrayAttributeInt(CellRsdnf::NB_BIT_RECEIVED,stateInt);
     print_2D_array<int>(stateInt,size,size);
 
     initSimu(size,size,"cellnspike","nspikeconnecter");
@@ -180,10 +391,11 @@ void test_rsdnf_cell(){
     neigh = new CellRsdnf();
     cell->getSubModule(0)->addNeighbour(neigh->getSubModule(0));
     cell->addNeighbour(neigh->getSubModule(0));
-
-    neigh->setRegState<bool>(CellRsdnf::ACTIVATED_OUT,true);
-    neigh->synch();
-    assert(neigh->getRegState<bool>(CellRsdnf::ACTIVATED_OUT));
+    bool activated = true;
+    neigh->setAttribute(CellRsdnf::ACTIVATED,&activated);
+    bool resB;
+    neigh->getAttribute(CellRsdnf::ACTIVATED,&resB);
+    assert(resB);
 
     neigh->compute();
     neigh->synch();
@@ -193,7 +405,9 @@ void test_rsdnf_cell(){
     cell->compute();
     cell->synch();
     assert(cell->getSubModule(0)->getRegState<bool>(Router::SPIKE_OUT));
-    assert(cell->getRegState<int>(CellRsdnf::POTENTIAL) == 1);
+    int resI;
+    cell->getAttribute(CellRsdnf::NB_BIT_RECEIVED,&resI);
+    assert(resI == 1);
 
 
 }
@@ -205,29 +419,29 @@ void test_rsdnf_map(int size){
     map2d.connect(c);
     map2d.setMapParam<float>(Router::PROBA,0.9,"./*");
 
+    bool activated = true;
+    map2d.setCellAttribute(5,5,CellRsdnf::ACTIVATED,&activated);
 
-    map2d.setCellState<bool>(5,5,CellRsdnf::ACTIVATED_OUT,true);
-    map2d.synch();
     bool* state = construct_array<bool>(size,size);
-    map2d.getArrayState<bool>(CellRsdnf::ACTIVATED_OUT,state);
+    map2d.getArrayAttribute<bool>(CellRsdnf::ACTIVATED,state);
     print_2D_array<bool>(state,size,size);
     cout << endl;
 
     map2d.compute();
     map2d.synch();
     int* stateInt = construct_array<int>(size,size);
-    map2d.getArrayState<int>(CellRsdnf::POTENTIAL,stateInt);
+    map2d.getArrayAttribute<int>(CellRsdnf::NB_BIT_RECEIVED,stateInt);
     print_2D_array<int>(stateInt,size,size);
     cout << endl;
 
 
     time_t before = time(0);
-    for(int i = 0 ; i < 200 ; i ++){
+    for(int i = 0 ; i < 10 ; i ++){
         map2d.compute();
         map2d.synch();
     }
     time_t after = time(0);
-    map2d.getArrayState<int>(CellRsdnf::POTENTIAL,stateInt);
+    map2d.getArrayAttribute<int>(CellRsdnf::NB_BIT_RECEIVED,stateInt);
     print_2D_array<int>(stateInt,size,size);
     cout <<"time diff : " << difftime(after,before)/200 << endl;
 

@@ -2,9 +2,7 @@
 #include "cellrsdnf.h"
 #include <iostream>
 #include "param.h"
-#include <stdlib.h>     /* srand, rand */
-
-#define PRECISION_RAND 1000000
+#include "bitstreamutils.h"
 
 Router::Router()
 {
@@ -17,12 +15,10 @@ Router::Router()
 
 }
 
-bool randomTest(float proba){
-    int randInt = rand() % PRECISION_RAND;
-//    std::cout << "rand int : " << randInt << std::endl;
-//    std::cout << "proba : " << proba << std::endl;
-//    std::cout << "proba int : " << proba * PRECISION_RAND << std::endl;
-    return randInt <= (proba * PRECISION_RAND);
+
+
+void Router::setActivated(bool isActivated){
+    this->activated = isActivated;
 }
 
 void Router::computeState(){
@@ -34,22 +30,22 @@ void Router::computeState(){
         nbInput += mod->getRegState<bool>(SPIKE_OUT);
     }
 
-    bool activated = this->getNeighbour(0)->getRegState<bool>(CellRsdnf::ACTIVATED_OUT);
+    bool activated = this->activated;
 
 //    if(nbInput > 0){
 //        std::cout << "nbInput : " << nbInput << std::endl;
 //    }
 
     if(buffer > 0 || nbInput > 0 || activated){
-        if(randomTest(this->getParam<float>(PROBA))){
+        if(generateStochasticBit(this->getParam<float>(PROBA))){
             this->setRegState<bool>(SPIKE_OUT,true);
         }else{
             this->setRegState<bool>(SPIKE_OUT,false);
         }
         int toAdd = buffer+nbInput-1;
         if(activated){
-
             toAdd += this->getParam<int>(NB_SPIKE);
+
             //std::cout << "Activated to add : " << toAdd <<  std::endl;
         }
         this->setRegState<int>(BUFFER,toAdd);

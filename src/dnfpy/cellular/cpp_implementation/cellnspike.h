@@ -19,8 +19,8 @@ public:
 
     virtual void getAttribute(int index,void* value) override{
         switch(index){
-        case NB_SPIKE_RECEIVED:
-            *((int*)value) = this->nbSpikeReceived;
+        case NB_BIT_RECEIVED:
+            *((int*)value) = this->nbBitReceived;
             //std::cout << "val : "<< *((int*)value) << std::endl;
             return;
         case ACTIVATED:*((bool*)value) = this->activated;return;
@@ -31,7 +31,7 @@ public:
 
     virtual void setAttribute(int index, void* value) override{
         switch(index){
-        case NB_SPIKE_RECEIVED:this->nbSpikeReceived = *((int*)value);return;
+        case NB_BIT_RECEIVED:this->nbBitReceived = *((int*)value);return;
         case ACTIVATED:this->activated = *((bool*)value);return;
         case DEAD:this->dead=*((bool*)value);return;
         }
@@ -40,7 +40,7 @@ public:
      * @brief The CellNSpike_Params enum, nb spike emmited on exitation and proba for every direction
      */
     enum CellNSpike_Params {NB_SPIKE,PROBA_N,PROBA_S,PROBA_E,PROBA_W};
-    enum CellNSpike_Attributes{NB_SPIKE_RECEIVED,ACTIVATED,DEAD};
+    enum CellNSpike_Attributes{NB_BIT_RECEIVED,ACTIVATED,DEAD};
 
     void setDead(bool isDead);
 
@@ -48,9 +48,9 @@ protected:
     void emmit(int nbSpike,int toDirection);
     void receive(int nbSpike,int toDirection);
     /**
-     * @brief nbSpikeReceived nb spike received since last reset
+     * @brief nbBitReceived nb bit received since last reset
      */
-    int nbSpikeReceived;
+    int nbBitReceived;
     /**
      * @brief activated if true the cell will emmit NB_SPIKE spikes and will set this.activated at false
      */

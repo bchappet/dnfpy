@@ -17,13 +17,13 @@ CellNSpike::CellNSpike()
     this->params.push_back(new Param<float>(1.0));//PROBA_E
     this->params.push_back(new Param<float>(1.0));//PROBA_W
     //attribute
-    this->nbSpikeReceived = 0;
+    this->nbBitReceived = 0;
     this->activated = false;
     this->dead = false;
 }
 
 void CellNSpike::reset(){
-    this->nbSpikeReceived = 0;
+    this->nbBitReceived = 0;
     this->activated = false;
 }
 
@@ -54,7 +54,7 @@ void CellNSpike::emmit(int nbSpike,int toDirection){
  * @param fromDirection
  */
 void CellNSpike::receive(int nbSpike, int toDirection){
-    this->nbSpikeReceived += nbSpike;
+    this->nbBitReceived += nbSpike;
     if(!this->dead){
         switch(toDirection){
         case NeumannConnecter::N:
