@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
 from dnfpy.cellular.bsRsdnfMap import BsRsdnfMap
+import dnfpy.view.staticViewMatplotlib as view
 
 class TestBsRsdnfMap(unittest.TestCase):
     def setUp(self):
@@ -41,8 +42,10 @@ class TestBsRsdnfMap(unittest.TestCase):
         self.assertEquals(res[5][5],2)
 
     def test_proba_0(self):
-        self.uut.setParams(proba=0.)
+        self.uut.setParams(probaSynapse=0.)
         self.activation[2][5] = 1
+        self.uut.compute()
+        self.uut.compute()
         self.uut.compute()
         res = self.uut.getData()
         self.assertEquals(res[2][5],0)
@@ -83,6 +86,26 @@ class TestBsRsdnfMap(unittest.TestCase):
         self.assertEquals(res[0,0] ,20)
         self.assertEquals(res[0,1] ,20)
         self.assertEquals(res[self.size-1,1] ,20)
+
+    def test_100_computation_visual(self):
+        self.size = 101
+        self.activation = np.zeros((self.size,self.size),np.intc)
+        self.uut = BsRsdnfMap("uut",self.size,activation=self.activation)
+        self.uut.setParams(probaSpike=0.01)
+        self.uut.setParams(sizeStream=1000)
+        self.uut.setParams(probaSynapse=0.99)
+        for i in range(-1,2,1):
+            for j in range(-1,2,1):
+                self.activation[self.size/2+i][self.size/2+j] = 1;
+        self.uut.compute()
+        self.activation = np.zeros((self.size,self.size),np.intc)
+        for i in range(1000):
+            self.uut.compute()
+
+        res = self.uut.getData()
+        print res
+        view.plotArray(res)
+        view.show()
 
 
 if __name__ == "__main__":
