@@ -17,10 +17,9 @@ class Runner(QtCore.QThread):
     """
     triggerUpdate = QtCore.pyqtSignal()
     triggerParamsUpdate = QtCore.pyqtSignal(str)
-    def __init__(self,model,view,timeEnd,paramsModelDict,timeRatio = 0.3):
+    def __init__(self,model,view,timeEnd,timeRatio = 0.3):
         super(Runner,self).__init__()
         self.model = model
-        self.paramsModelDict = paramsModelDict
         self.view = view
         self.simuTime = 0.
         self.timeEnd = timeEnd

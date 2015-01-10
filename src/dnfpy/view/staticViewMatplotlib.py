@@ -8,7 +8,7 @@ import matplotlib.gridspec as gridspec
     TODO configuration file with dpi, color map, size of plot etc...
 """
 
-
+PRECISION = 10000000
 def __egaliseColorBar(data,bar):
                 maximum = np.amax(data)
                 minimum = np.amin(data)
@@ -17,9 +17,9 @@ def __egaliseColorBar(data,bar):
                 bar.set_ticks([__roundUp(-egal),0,__roundDown(+egal)])
 
 def __roundDown(x):
-        return math.floor(x*10000)/10000
+        return math.floor(x*PRECISION)/PRECISION
 def __roundUp(x):
-        return math.ceil(x*10000)/10000
+        return math.ceil(x*PRECISION)/PRECISION
 def __finalize():
         plt.xticks([])
         plt.yticks([])
