@@ -40,6 +40,7 @@ class BsRsdnfMap(Map2D):
                                             probaSpike=probaSpike,
                                             probaSynapse=probaSynapse,
                                             **kwargs)
+            self.lib.initSeed()
 
         def _compute(self,size,activation):
             self.lib.setArrayAttribute(self.Attributes.ACTIVATED,activation)

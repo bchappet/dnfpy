@@ -10,6 +10,7 @@ ffi.cdef("""
     void nstep(int n);
     void synch();
     void reset();
+    void initMapSeed();
 
     void setMapParamInt(int index,int value,char* path);
     void setMapParamBool(int index,bool value,char* path);
@@ -69,6 +70,10 @@ class HardLib:
     def reset(self):
         self.__useMap()
         self.C.reset()
+
+    def initSeed(self):
+        self.__useMap()
+        self.C.initMapSeed()
 
     def getMapParam(self,idParam,dtype,path="."):
         self.__useMap()
