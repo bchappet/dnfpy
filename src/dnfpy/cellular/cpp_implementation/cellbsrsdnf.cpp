@@ -1,14 +1,11 @@
 #include "cellbsrsdnf.h"
 #include "bsrouter.h"
-#include "muxbsrouter.h"
 #include "bitstreamutils.h"
 #include <iostream>
 
 
 Module* getRouter(std::string typeRouter){
     if(typeRouter.compare("routerAdditionOr") == 0){
-        return new BSRouter();
-    }else if(typeRouter.compare("routerMuxOr") == 0){
         return new BSRouter();
     }
     return nullptr;
