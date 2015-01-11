@@ -1,12 +1,24 @@
 #include "cellbsrsdnf.h"
 #include "bsrouter.h"
+#include "muxbsrouter.h"
 #include "bitstreamutils.h"
 #include <iostream>
 
-CellBsRsdnf::CellBsRsdnf() :Module(){
+
+Module* getRouter(std::string typeRouter){
+    if(typeRouter.compare("routerAdditionOr") == 0){
+        return new BSRouter();
+    }else if(typeRouter.compare("routerMuxOr") == 0){
+        return new BSRouter();
+    }
+    return nullptr;
+}
+
+CellBsRsdnf::CellBsRsdnf(std::string typeRouter) :Module(){
+
 
     for(int i = 0 ; i < 4 ;i ++){
-        BSRouter* r = new BSRouter();
+        Module* r = getRouter(typeRouter);
         r->addNeighbour(this);
         this->subModules.push_back(r);
     }

@@ -3,6 +3,7 @@
 
 
 extern "C" {
+    void initSeed();
     bool generateStochasticBit(float proba);
 }
 

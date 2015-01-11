@@ -80,6 +80,10 @@ void nstep(int n){
     }
 }
 
+void initMapSeed(){
+    mapSimu->initMapSeed();
+}
+
 //ModuleC* getCell(int x,int y){
 //    return convertModuleToC(mapSimu->getCell(x,y));
 //}

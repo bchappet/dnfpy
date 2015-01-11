@@ -104,7 +104,7 @@ void test_stochastic_rsdnf(){
     c.cellConnection(rw,cell,c.E);
     cell->setParam<float>(CellBsRsdnf::PROBA_SYNAPSE,0.9);
     assertAlmostEquals(cell->getSubModule(0)->getParam<float>(BSRouter::PROBA_SYNAPSE),0.9);
-
+    cell->setParam<float>(CellBsRsdnf::PROBA_SYNAPSE,1.);
     bool activated = true;
     cell->setAttribute(CellBsRsdnf::ACTIVATED,&activated);
 

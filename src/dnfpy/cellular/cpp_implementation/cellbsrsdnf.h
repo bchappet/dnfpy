@@ -1,11 +1,12 @@
 #ifndef CellBsRsdnf_H
 #define CellBsRsdnf_H
 #include "module.h"
+#include <string>
 class CellBsRsdnf : public Module
 {
 public:
 
-    CellBsRsdnf();
+    CellBsRsdnf(std::string typeRouter="routerAdditionOr");
 
 
 

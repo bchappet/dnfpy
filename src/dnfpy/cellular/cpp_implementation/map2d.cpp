@@ -1,9 +1,13 @@
 #include "map2d.h"
 
 #include <iostream>
-
+#include "bitstreamutils.h"
 Map2D::Map2D() : Module(){
 
+}
+
+void Map2D::initMapSeed(){
+    initSeed();
 }
 
 void Map2D::initMemory(int width, int height){

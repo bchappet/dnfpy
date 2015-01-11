@@ -29,6 +29,7 @@ extern "C" {
     void nstep(int n);
     void synch();
     void reset();
+    void initMapSeed();
 
 
    // ModuleC* getCell(int x,int y);

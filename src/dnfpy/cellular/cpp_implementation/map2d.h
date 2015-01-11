@@ -40,6 +40,8 @@ public:
 
     virtual void reset() override;
 
+    void initMapSeed();
+
     /**
      * @brief getCellAttribute to access attribute of cells
      * @param x
