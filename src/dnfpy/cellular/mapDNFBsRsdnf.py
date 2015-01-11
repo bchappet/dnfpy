@@ -6,7 +6,7 @@ from dnfpy.cellular.bsRsdnfConvolution import BsRsdnfConvolution
 class MapDNFBsRsdnf(FieldMap):
     def __init__(self,name,size,dt=0.1,wrap=True,
                  tau=0.64,h=0,
-                 th=0.75,sizeStream=100,pSpike=0.1,
+                 th=0.75,sizeStream=1000,pSpike=0.01,
                  iExc=1.25,iInh=0.7,pExc=0.0043,pInh=0.5,alpha=10,
                  **kwargs):
         super(MapDNFBsRsdnf,self).__init__(name,size,dt=dt,wrap=wrap,
