@@ -14,11 +14,11 @@ void BSRouter::computeState(){
     //multiplication per synaptic weight
     bool synaptiWeightBS = generateStochasticBit(this->getParam<float>(BSRouter_Parameters::PROBA_SYNAPSE));
     if(synaptiWeightBS){
-        int i = 0;
+        //int i = 0;
         for(Module* mod:this->neighbours){
             res |= mod->getRegState<bool>(0);//rough addition of inputs
            // std::cout << "i: " << i << " res : " << res << std::endl;
-            i++;
+           // i++;
 
         }
     }

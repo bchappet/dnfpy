@@ -19,6 +19,13 @@ using namespace std;
 #define PRECISION 1000000
 
 
+template <typename T>
+void print_2D_array(T* array,int width,int height);
+
+template <typename T>
+T* construct_array(int width,int height);
+
+void assertAlmostEquals(float a,float b);
 
 void test_register();
 void test_cellgof();
@@ -32,57 +39,109 @@ void test_map_nspike(int size);
 void test_stochastic_rsdnf_map(int size);
 void test_stochastic_rsdnf_map2(int size);
 void test_stochastic_rsdnf();
+void test_stochastic_rsdnf_map_carry_router(int size);
 
 int main()
 {
-    cout << "Hello World!" << endl;
-    test_register();
-    cout << "test register passed" << endl;
-    test_cellgof();
-    cout << "test cell gof passed" << endl;
-    test_Map2D(10);
-    cout << "test Map2D passed" << endl;
-    test_neumann_connecter(10);
-    cout << "test neumann connecter passed" << endl;
-    test_rsdnf_cell();
-    cout << "test rsdnf passed" << endl;
-    test_rsdnf_map(11);
-    cout << "test rsdnf map passed" << endl;
+//    cout << "Hello World!" << endl;
+//    test_register();
+//    cout << "test register passed" << endl;
+//    test_cellgof();
+//    cout << "test cell gof passed" << endl;
+//    test_Map2D(10);
+//    cout << "test Map2D passed" << endl;
+//    test_neumann_connecter(10);
+//    cout << "test neumann connecter passed" << endl;
+//    test_rsdnf_cell();
+//    cout << "test rsdnf passed" << endl;
+//    test_rsdnf_map(11);
+//    cout << "test rsdnf map passed" << endl;
 
-    test_cell_nspike();
-    cout<< "test cell n spike passed" << endl;
-    test_map_nspike(11);
-    cout << "test map nspike passed" << endl;
-    test_soft_simu(11);
-    cout<< "test soft simu passed" <<endl;
-    test_stochastic_rsdnf_map2(11);
-    cout << "test stochastic rsdnf map passed" << endl;
-    test_stochastic_rsdnf();
-    cout << "test stochastic rsdnf passed" << endl;
+//    test_cell_nspike();
+//    cout<< "test cell n spike passed" << endl;
+//    test_map_nspike(11);
+//    cout << "test map nspike passed" << endl;
+//    test_soft_simu(11);
+//    cout<< "test soft simu passed" <<endl;
+//    test_stochastic_rsdnf_map2(11);
+//    cout << "test stochastic rsdnf map passed" << endl;
+//    test_stochastic_rsdnf();
+//    cout << "test stochastic rsdnf passed" << endl;
+    test_stochastic_rsdnf_map_carry_router(11);
+    cout << "test stochastic rsdnf map carry router passed" << endl;
     return 0;
 }
 
-template <typename T>
-void print_2D_array(T* array,int width,int height){
-    for(int i = 0 ; i < height ; i++){
-        for(int j = 0 ; j < width ; j++){
-            cout << array[i*width + j] << ",";
-        }
-        cout << endl;
+void test_stochastic_rsdnf_map_carry_router(int size){
+    RsdnfConnecter c;
+    Map2D map2d(size,size);
+    map2d.initCellArray<CellBsRsdnf>("carryRouter");
+    map2d.connect(c);
+
+
+    map2d.initMapSeed();
+
+    int hSize = size/2;
+    map2d.compute();
+    map2d.synch();
+    int* nb_sp = construct_array<int>(size,size);
+
+    map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
+    print_2D_array<int>(nb_sp,size,size);
+    assert(nb_sp[0] == 0 && nb_sp[size] == 0);
+
+    bool activate = true;
+    map2d.setCellAttribute(hSize,hSize,CellBsRsdnf::ACTIVATED,&activate);
+    map2d.setCellAttribute(hSize+2,hSize+2,CellBsRsdnf::ACTIVATED,&activate);
+    map2d.setCellAttribute(hSize-2,hSize,CellBsRsdnf::ACTIVATED,&activate);
+
+    cout << "compute" << endl;
+    map2d.compute();
+    map2d.synch();
+    map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
+    print_2D_array<int>(nb_sp,size,size);
+    assert(nb_sp[0] == 0 && nb_sp[size] == 0);
+//    assert(map2d.getCellState<bool>(hSize,hSize,CellBsRsdnf::SPIKE_BS) == 1);
+    cout << "compute" << endl;
+    map2d.compute();
+    map2d.synch();
+    map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
+    print_2D_array<int>(nb_sp,size,size);
+    cout << "compute" << endl;
+    map2d.compute();
+    map2d.synch();
+    map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
+    print_2D_array<int>(nb_sp,size,size);
+//    assert(nb_sp[hSize*size+hSize-1]==1);
+//    assert(nb_sp[hSize*size+hSize+1]==1);
+//    assert(nb_sp[(hSize+1)*size+hSize]==1);
+//    assert(nb_sp[(hSize-1)*size+hSize]==1);
+    cout << "compute" << endl;
+    map2d.compute();
+    map2d.synch();
+    map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
+    print_2D_array<int>(nb_sp,size,size);
+//    assert(nb_sp[hSize*size+hSize-1]==2);
+//    assert(nb_sp[hSize*size+hSize+1]==2);
+//    assert(nb_sp[(hSize+1)*size+hSize]==2);
+//    assert(nb_sp[(hSize-1)*size+hSize]==2);
+
+
+
+    for(int i = 0 ; i < 10 ; i ++){
+        cout << "compute" << endl;
+
+
+        map2d.compute();
+        map2d.synch();
+        map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
+        print_2D_array<int>(nb_sp,size,size);
     }
-}
+//    assert(nb_sp[0]==20);
+//    assert(nb_sp[size]==20);
 
-template <typename T>
-T* construct_array(int width,int height){
-    T * array;
-    array = new T[height*width];
-    return array;
-}
 
-void assertAlmostEquals(float a,float b){
-    assert( a-b <= 1/PRECISION);
 }
-
 
 void test_stochastic_rsdnf(){
     CellBsRsdnf *cell = new CellBsRsdnf();
@@ -134,6 +193,9 @@ void test_stochastic_rsdnf_map2(int size){
     Map2D map2d(size,size);
     map2d.initCellArray<CellBsRsdnf>();
     map2d.connect(c);
+
+
+    map2d.initMapSeed();
 
     int hSize = size/2;
     map2d.compute();
@@ -563,5 +625,27 @@ void test_cellgof(){
     cell.synch();
     assert(cell.getRegState<bool>(0));//3 neigh is  enough to be alive
 
+}
+
+
+template <typename T>
+void print_2D_array(T* array,int width,int height){
+    for(int i = 0 ; i < height ; i++){
+        for(int j = 0 ; j < width ; j++){
+            cout << array[i*width + j] << ",";
+        }
+        cout << endl;
+    }
+}
+
+template <typename T>
+T* construct_array(int width,int height){
+    T * array;
+    array = new T[height*width];
+    return array;
+}
+
+void assertAlmostEquals(float a,float b){
+    assert( a-b <= 1/PRECISION);
 }
 

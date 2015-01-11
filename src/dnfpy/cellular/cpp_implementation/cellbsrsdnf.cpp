@@ -1,12 +1,15 @@
 #include "cellbsrsdnf.h"
 #include "bsrouter.h"
+#include "carrybsrouter.h"
 #include "bitstreamutils.h"
 #include <iostream>
 
 
 Module* getRouter(std::string typeRouter){
-    if(typeRouter.compare("routerAdditionOr") == 0){
+    if(typeRouter.compare("orRouter") == 0){
         return new BSRouter();
+    }else if(typeRouter.compare("carryRouter") == 0){
+        return new CarryBsRouter();
     }
     return nullptr;
 }

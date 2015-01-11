@@ -19,6 +19,7 @@ std::vector<Map2D*> mapSimuVec;
 Map2D* mapSimu;
 
 void initCellArrayFromName(Map2D* mapSimu,char* name);
+void initCellArrayFromNameWithParam(Map2D* map,char* name,char* param);
 void connecterFromName(Map2D* mapSimu,char* name);
 
 int useMap(int idMap_){
@@ -61,6 +62,15 @@ int initSimu(int width,int height,char* cellName,char* connecterName)
     mapSimuVec.push_back(theNewMap);
     return mapSimuVec.size()-1;
 }
+
+int initSimuParam(int width,int height,char* cellName,char* connecterName,char* param){
+    Map2D* theNewMap = new Map2D(width,height);
+    initCellArrayFromNameWithParam(theNewMap,cellName,param);
+    connecterFromName(theNewMap,connecterName);
+    mapSimuVec.push_back(theNewMap);
+    return mapSimuVec.size()-1;
+}
+
 
 void reset(){
     mapSimu->reset();
@@ -164,6 +174,13 @@ void setCellFloat(int x,int y,int index,float val){
 
 
 
+void initCellArrayFromNameWithParam(Map2D* map,char* name,char* param){
+    if(strcmp(name,"cellbsrsdnf")==0){
+        map->initCellArray<CellBsRsdnf>(param);
+    }else{
+        std::cerr << "unvalid cell name " << name << std::endl;
+    }
+}
 
 
 

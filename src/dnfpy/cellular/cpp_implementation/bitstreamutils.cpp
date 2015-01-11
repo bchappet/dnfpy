@@ -14,7 +14,6 @@ bool generateStochasticBit(float proba){
 }
 
 void initSeed(){
-    std::cout << "seed count " << seedCount << std::endl;
     srand (seedCount);
     seedCount ++;
 }

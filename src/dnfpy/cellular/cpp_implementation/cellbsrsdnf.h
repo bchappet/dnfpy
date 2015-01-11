@@ -6,7 +6,7 @@ class CellBsRsdnf : public Module
 {
 public:
 
-    CellBsRsdnf(std::string typeRouter="routerAdditionOr");
+    CellBsRsdnf(std::string typeRouter="orRouter");
 
 
 

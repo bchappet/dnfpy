@@ -34,6 +34,19 @@ public:
         }
     }
 
+    /**
+     * @brief initCellArray : init cell array with given module and a given parameter
+     */
+    template <class M>
+    void initCellArray(std::string param){
+        //std::cout << "init cell of size " << this->heigth <<"," << this->width << std::endl;
+        for(int i = 0 ; i < this->heigth ; i++){
+            for(int j = 0 ; j < this->width ; j++){
+                this->cellArray[i][j] = new M(param);
+            }
+        }
+    }
+
     virtual void compute() override;
 
     virtual void synch() override;

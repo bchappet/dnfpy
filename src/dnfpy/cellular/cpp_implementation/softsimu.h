@@ -19,6 +19,18 @@ extern "C" {
     int initSimu(int width,int height,char* cellName,char* connecterName);
 
     /**
+     * @brief initSimu
+     * @param width
+     * @param height
+     * @param cellName
+     * @param connecterName
+     * @param param will be given on construction of cell
+     * @return
+     */
+    int initSimuParam(int width,int height,char* cellName,char* connecterName,char* param);
+
+
+    /**
      * @brief useMap to use the specified map
      * @param idMap
      * @return
