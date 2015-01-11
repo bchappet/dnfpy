@@ -21,8 +21,9 @@ class TestBsRsdnfConvolutionMap(unittest.TestCase):
 
     def test_update_act(self):
         self.uut.setParamsRec(pSpike=0.01)
-        self.uut.setParamsRec(sizeStream=100)
+        self.uut.setParamsRec(sizeStream=1000)
         self.uut.setParamsRec(pInh=0.1)
+        self.uut.setParamsRec(pExc=0.01)
         for i in range(-1,2,1):
             for j in range(-1,2,1):
                 self.activation[self.size/2+i][self.size/2+j] = 1;

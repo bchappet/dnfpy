@@ -99,7 +99,7 @@ class TestBsRsdnfMap(unittest.TestCase):
                 self.activation[self.size/2+i][self.size/2+j] = 1;
         self.uut.compute()
         self.activation = np.zeros((self.size,self.size),np.intc)
-        for i in range(1000):
+        for i in range(100):
             self.uut.compute()
 
         res = self.uut.getData()
