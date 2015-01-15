@@ -5,7 +5,9 @@
 #
 #
 *.o
+*.py.swn
 
+src/dnfpy/cellular/cpp_implementation/test_lib
 
 #ignore Model and params for now
 src/context/*
