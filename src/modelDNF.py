@@ -2,20 +2,27 @@ from dnfpy.model.inputMap import InputMap
 from dnfpy.view.renderable import Renderable
 from dnfpy.model.model import Model
 from dnfpy.model.mapDNF import MapDNF
+from dnfpy.stats.statsList import StatsList
 
 class ModelDNF(Model,Renderable):
     def initMaps(self,size):
         """We initiate the map and link them"""
         #Create maps
         self.aff = InputMap("Inputs",size)
-        self.field = MapDNF("DNF",size)
+        self.field = MapDNF("DNF",size,model="spike")
         self.field.addChildren(aff=self.aff)
-        #return the root
-        return self.field
+        #stats
+        self.stats = StatsList(size,self.aff,self.field.getActivation())
+        #return the roots
+        roots =  [self.field]
+        roots.extend(self.stats.getRoots())
+        return roots
+
     #override Renderable
     def getArrays(self):
         ret =  [self.aff,self.field]
         ret.extend(self.field.getArrays())
+        ret.extend(self.stats.getArrays())
         return ret
 
     def onClick(self,mapName,x,y):
