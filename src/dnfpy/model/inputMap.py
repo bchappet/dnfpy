@@ -38,6 +38,9 @@ class InputMap(FuncWithoutKeywords):
     def get_nbDistr(self):
         return self.distrs.getChildrenCount()
 
+    def getTracks(self):
+        return [self.track1,self.track2]
+
     def _onParamsUpdate(self,size,nbDistr,wStim,wDistr,tck_radius):
         wStim_ = wStim * size
         wDistr_ = wDistr *size

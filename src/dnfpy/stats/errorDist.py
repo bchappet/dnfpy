@@ -10,6 +10,7 @@ class ErrorDist(Map2D):
                 canSwitch=canSwitch,distMax=distMax,
                 coherencyTime=coherencyTime,**kwargs)
         self.meanErrorSave = []
+        self.setArg(mean=0.0)
 
     def _compute(self,sizeArray,trackedTarget,clusterMap):
         error = []
