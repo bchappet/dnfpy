@@ -6,18 +6,18 @@ class BsRsdnfConvolution(Map2D):
     """
     Children needed: "activation" with map of 0 and 1
     """
-    def __init__(self,name,size,dt=0.1,sizeStream=20,pSpike=1.,
+    def __init__(self,name,size,dt=0.1,sizeStream=20,pSpike=1.,routerType="orRouter",
                  iExc=1.25,iInh=0.7,pExc=0.0043,pInh=0.4,alpha=10,
                  iExc_=1.,iInh_=1.,pInh_=0.,pExc_=0.,
                  **kwargs):
         super(BsRsdnfConvolution,self).__init__(name,size,dt=dt,
-                sizeStream=sizeStream,pSpike=pSpike,
+                sizeStream=sizeStream,pSpike=pSpike,routerType=routerType,
                 iExc=iExc,iInh=iInh,pExc=pExc,pInh=pInh,alpha=alpha,
                  iExc_=iExc_,iInh_=iInh_,pInh_=pInh_,pExc_=pExc_,
                                                **kwargs)
-        self.inh = BsRsdnfMap(name+"_inh",size,dt=dt,
+        self.inh = BsRsdnfMap(name+"_inh",size,dt=dt,routerType=routerType,
                     sizeStream=sizeStream,probaSpike=pSpike,probaSynapse=pInh_)
-        self.exc = BsRsdnfMap(name+"_exc",size,dt=dt,
+        self.exc = BsRsdnfMap(name+"_exc",size,dt=dt,routerType=routerType,
                     probaSpike=pSpike,sizeStream=sizeStream,probaSynapse=pExc_)
 
         self.addChildren(inhMap = self.inh,excMap = self.exc)

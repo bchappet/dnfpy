@@ -4,6 +4,7 @@ from cffi import FFI
 ffi = FFI()
 ffi.cdef("""
     int initSimu(int width,int height,char* cellName,char* connecterName);
+    int initSimuParam(int width,int height,char* cellName,char* connecterName,char* param);
     int useMap(int idMap);
 
     void step();
@@ -48,9 +49,12 @@ ffi.cdef("""
 
 
 class HardLib:
-    def __init__(self,sizeX,sizeY,cellType,connecterType):
+    def __init__(self,sizeX,sizeY,cellType,connecterType,param=None):
         self.C = ffi.dlopen("libhardsimu.so")
-        self.__idMap = self.C.initSimu(sizeX,sizeY,cellType,connecterType)
+        if param:
+            self.__idMap = self.C.initSimuParam(sizeX,sizeY,cellType,connecterType,param)
+        else:
+            self.__idMap = self.C.initSimu(sizeX,sizeY,cellType,connecterType)
 
     def __useMap(self):
         self.C.useMap(self.__idMap)

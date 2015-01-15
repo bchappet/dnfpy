@@ -88,18 +88,23 @@ class TestBsRsdnfMap(unittest.TestCase):
         self.assertEquals(res[self.size-1,1] ,20)
 
     def test_100_computation_visual(self):
+        sizeStream = 200
         self.size = 101
         self.activation = np.zeros((self.size,self.size),np.intc)
-        self.uut = BsRsdnfMap("uut",self.size,activation=self.activation)
-        self.uut.setParams(probaSpike=0.01)
-        self.uut.setParams(sizeStream=1000)
+        self.uut = BsRsdnfMap("uut",self.size,activation=self.activation,routerType="carryRouter")
+        self.uut.setParams(probaSpike=0.05)
+        self.uut.setParams(sizeStream=sizeStream)
         self.uut.setParams(probaSynapse=0.99)
-        for i in range(-1,2,1):
-            for j in range(-1,2,1):
+
+        sizePatch = 2
+        for i in range(-1,sizePatch,1):
+            for j in range(-1,sizePatch,1):
                 self.activation[self.size/2+i][self.size/2+j] = 1;
         self.uut.compute()
-        self.activation = np.zeros((self.size,self.size),np.intc)
-        for i in range(100):
+        for i in range(-1,sizePatch,1):
+            for j in range(-1,sizePatch,1):
+                self.activation[self.size/2+i][self.size/2+j] = 0;
+        for i in range(sizeStream+self.size):
             self.uut.compute()
 
         res = self.uut.getData()

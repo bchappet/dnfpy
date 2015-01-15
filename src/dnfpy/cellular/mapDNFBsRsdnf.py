@@ -5,7 +5,7 @@ from dnfpy.cellular.bsRsdnfConvolution import BsRsdnfConvolution
 
 class MapDNFBsRsdnf(FieldMap):
     def __init__(self,name,size,dt=0.1,wrap=True,
-                 tau=0.64,h=0,
+                 tau=0.64,h=0,routerType="orRouter",
                  th=0.75,sizeStream=1000,pSpike=0.01,
                  iExc=1.25,iInh=0.7,pExc=0.0043,pInh=0.5,alpha=10,
                  **kwargs):
@@ -18,6 +18,7 @@ class MapDNFBsRsdnf(FieldMap):
                                  dtype=np.intc,th=th)
         self.lat = BsRsdnfConvolution(name+"_spikePropag.",size,dt=dt,
                                       sizeStream=sizeStream,pSpike=pSpike,
+                                      routerType=routerType,
                                         pExc=pExc,pInh=pInh,iExc=iExc,
                                         iInh=iInh,alpha=alpha)
         self.act.addChildren(field=self)

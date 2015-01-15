@@ -33,12 +33,13 @@ class BsRsdnfMap(Map2D):
             DEAD=2
 
         def __init__(self,name,size,dt=0.1,sizeStream=20,probaSpike=1.,
-                     probaSynapse=1.,**kwargs):
-            self.lib = HardLib(size,size,"cellbsrsdnf","rsdnfconnecter")
+                     probaSynapse=1.,routerType="orRouter",**kwargs):
+            self.lib = HardLib(size,size,"cellbsrsdnf","rsdnfconnecter",routerType)
             super(BsRsdnfMap,self).__init__(name=name,size=size,dt=dt,
                                            sizeStream=sizeStream,
                                             probaSpike=probaSpike,
                                             probaSynapse=probaSynapse,
+                                            routerType=routerType,
                                             **kwargs)
             self.lib.initSeed()
 
