@@ -31,7 +31,7 @@ class Runner(QtCore.QThread):
         self.simuTime = 0.
         self.lastSimuTime = 0.
         #Control
-        self.play = False
+        self.play = True
 
     def getTimeRatio(self):
         return self.timeRatio
@@ -88,18 +88,22 @@ class Runner(QtCore.QThread):
     @pyqtSlot()
     def stepSlot(self):
             self.__step()
+
     def __step(self):
             nextTime = self.model.getSmallestNextUpdateTime()
             self.lastSimuTime = self.simuTime
             self.simuTime = nextTime
             self.model.update(self.simuTime)
             self.triggerUpdate.emit()
+
+    @profile
     def run(self):
         while self.simuTime < self.timeEnd:
             while not(self.play):
                 time.sleep(0.1)
             self.__step()
             self.__slowDown()
+
     def __slowDown(self):
         """
             Slow down computation to ensure that

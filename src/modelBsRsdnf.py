@@ -6,11 +6,13 @@ from dnfpy.cellular.mapDNFBsRsdnf import MapDNFBsRsdnf
 class ModelBsRsdnf(Model,Renderable):
     def initMaps(self,size):
         """We initiate the map and link them"""
-        dt = 0.001
+        dt = 0.01
 
         #Create maps
         self.aff = InputMap("Inputs",size,dt=dt)
-        self.field = MapDNFBsRsdnf("DNF",size,dt=dt)
+        #WM
+        #self.field = MapDNFBsRsdnf("DNF",size,dt=dt,sizeStream=100,iExc=0.9,pInh=0.02)
+        self.field = MapDNFBsRsdnf("DNF",size,dt=dt,sizeStream=100)
         self.field.addChildren(aff=self.aff)
         #return the root
         return self.field
