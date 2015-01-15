@@ -40,6 +40,7 @@ void test_stochastic_rsdnf_map(int size);
 void test_stochastic_rsdnf_map2(int size);
 void test_stochastic_rsdnf();
 void test_stochastic_rsdnf_map_carry_router(int size);
+void test_stochastic_rsdnf_carry_router();
 
 int main()
 {
@@ -69,15 +70,62 @@ int main()
 //    cout << "test stochastic rsdnf passed" << endl;
     test_stochastic_rsdnf_map_carry_router(11);
     cout << "test stochastic rsdnf map carry router passed" << endl;
+   // test_stochastic_rsdnf_carry_router();
+   // cout << "test stochastic rsdnf carry router passed" << endl;
     return 0;
 }
+
+void test_stochastic_rsdnf_carry_router(){
+    CellBsRsdnf *cell = new CellBsRsdnf("carryRouter");
+    CellBsRsdnf *rn,*rs,*re,*rw;
+    RsdnfConnecter c;
+    rn = new CellBsRsdnf();
+    rs = new CellBsRsdnf();
+    re = new CellBsRsdnf();
+    rw = new CellBsRsdnf();
+
+    c.cellConnection(cell,rn,c.N);
+    c.cellConnection(cell,rs,c.S);
+    c.cellConnection(cell,re,c.E);
+    c.cellConnection(cell,rw,c.W);
+
+    c.cellConnection(rn,cell,c.S);
+    c.cellConnection(rs,cell,c.N);
+    c.cellConnection(re,cell,c.W);
+    c.cellConnection(rw,cell,c.E);
+    cell->setParam<float>(CellBsRsdnf::PROBA_SYNAPSE,0.9);
+    assertAlmostEquals(cell->getSubModule(0)->getParam<float>(BSRouter::PROBA_SYNAPSE),0.9);
+    cell->setParam<float>(CellBsRsdnf::PROBA_SYNAPSE,1.);
+    bool activated = true;
+    cell->setAttribute(CellBsRsdnf::ACTIVATED,&activated);
+
+    cell->compute();
+    cell->synch();
+    assert(cell->getRegState<bool>(CellBsRsdnf::SPIKE_BS)==1);
+
+    cell->compute();
+    cell->synch();
+    assert(cell->getSubModule(0)->getRegState<bool>(BSRouter::BS_OUT)==1);
+    assert(cell->getSubModule(1)->getRegState<bool>(BSRouter::BS_OUT)==1);
+
+    cell->compute();
+    rn->compute();
+    cell->synch();
+    rn->synch();
+    int nbB;
+    rn->getAttribute(CellBsRsdnf::NB_BIT_RECEIVED,&nbB);
+    assert(nbB == 1);
+    assert(rn->getSubModule(0)->getRegState<bool>(BSRouter::BS_OUT)==1);
+    assert(rn->getSubModule(2)->getRegState<bool>(BSRouter::BS_OUT)==1);
+
+}
+
 
 void test_stochastic_rsdnf_map_carry_router(int size){
     RsdnfConnecter c;
     Map2D map2d(size,size);
     map2d.initCellArray<CellBsRsdnf>("carryRouter");
     map2d.connect(c);
-
 
     map2d.initMapSeed();
 
@@ -112,31 +160,19 @@ void test_stochastic_rsdnf_map_carry_router(int size){
     map2d.synch();
     map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
     print_2D_array<int>(nb_sp,size,size);
-//    assert(nb_sp[hSize*size+hSize-1]==1);
-//    assert(nb_sp[hSize*size+hSize+1]==1);
-//    assert(nb_sp[(hSize+1)*size+hSize]==1);
-//    assert(nb_sp[(hSize-1)*size+hSize]==1);
     cout << "compute" << endl;
     map2d.compute();
     map2d.synch();
     map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
     print_2D_array<int>(nb_sp,size,size);
-//    assert(nb_sp[hSize*size+hSize-1]==2);
-//    assert(nb_sp[hSize*size+hSize+1]==2);
-//    assert(nb_sp[(hSize+1)*size+hSize]==2);
-//    assert(nb_sp[(hSize-1)*size+hSize]==2);
 
-
-
-    for(int i = 0 ; i < 10 ; i ++){
-        cout << "compute" << endl;
-
-
+    for(int i = 0 ; i < 1000 ; i ++){
         map2d.compute();
         map2d.synch();
-        map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
-        print_2D_array<int>(nb_sp,size,size);
     }
+     cout << "compute" << endl;
+     map2d.getArrayAttribute<int>(CellBsRsdnf::NB_BIT_RECEIVED,nb_sp);
+     print_2D_array<int>(nb_sp,size,size);
 //    assert(nb_sp[0]==20);
 //    assert(nb_sp[size]==20);
 

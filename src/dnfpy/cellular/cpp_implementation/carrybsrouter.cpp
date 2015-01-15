@@ -1,7 +1,10 @@
 #include "carrybsrouter.h"
 #include "bitstreamutils.h"
+#include <iostream>
 CarryBsRouter::CarryBsRouter()
 {
+
+
     //params
     this->params.push_back(new Param<float>(1.));//PROBA_SYNAPSE
     //registres
@@ -27,6 +30,7 @@ void CarryBsRouter::computeState(){
         res = carry | neigh;
         sumNeigh += carry;
         nextCarry =sumNeigh > 1;
+
     }
     this->setRegState<bool>(CarryBSRouter_Registers::BS_OUT,res);
     this->setRegState<bool>(CarryBSRouter_Registers::CARRY,nextCarry);

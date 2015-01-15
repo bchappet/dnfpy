@@ -51,6 +51,7 @@ void CellBsRsdnf::computeState(){
     this->nbBitReceived += nbSpikeReceived;
 
     if(this->activated){
+        //std::cout << "activated"<<std::endl;
         this->nbBitToGenerate = this->getParam<int>(CellBsRsdnf_Parameters::SIZE_STREAM);
         this->activated = 0;
     }
