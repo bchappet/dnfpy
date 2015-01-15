@@ -3,7 +3,6 @@ import imp
 from dnfpy.view.dynamicViewQt import DisplayModelQt
 from dnfpy.controller.runner import Runner
 from PyQt4 import QtGui
-import parser
 
 
 defaultQSS = "stylesheet/default.qss"
@@ -15,11 +14,10 @@ module = imp.load_module(moduleName, fp, pathname, description)
 clazz = getattr(module,modelName)
 
 
-context = sys.argv[2] #arguments of the model
-timeEnd = sys.argv[3] # simulation end
-size= eval(sys.argv[4])
+timeEnd = sys.argv[2] # simulation end
+size= eval(sys.argv[3])
 if len(sys.argv) > 4:
-    timeRatio= eval(sys.argv[5])
+    timeRatio= eval(sys.argv[4])
 else:
     timeRatio = 0.3
 
