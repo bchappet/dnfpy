@@ -1,11 +1,16 @@
-import math
 import sip
 from PyQt4 import QtGui
-from PyQt4 import QtCore
-import plotArrayQt
-import numpy as np
 from PyQt4.QtCore import pyqtSlot
 from paramsView import ParamsView
+from dnfpy.stats.clusterMap import ClusterMap
+from dnfpy.stats.potentialTarget import PotentialTarget
+from dnfpy.stats.trackedTarget import TrackedTarget
+from dnfpy.stats.errorDist import ErrorDist
+from arrayView import ArrayView
+from clusterMapView import ClusterMapView
+from potentialTargetView import PotentialTargetView
+from trackedTargetView import TrackedTargetView
+from errorDistView import ErrorDistView
 class ArrayWidget(QtGui.QGroupBox):
 
     def __init__(self,map,runner,parametersView,view):
@@ -14,7 +19,16 @@ class ArrayWidget(QtGui.QGroupBox):
         self.view = view
         self.runner = runner
         self.parametersView = parametersView
-        self.label = ArrayLabel(self.map,runner,self)
+        if isinstance(map,ClusterMap):
+            self.label = ClusterMapView(self.map,runner,self)
+        elif isinstance(map,PotentialTarget):
+            self.label = PotentialTargetView(self.map,runner,self)
+        elif isinstance(map,TrackedTarget):
+            self.label = TrackedTargetView(self.map,runner,self)
+        elif isinstance(map,ErrorDist):
+            self.label = ErrorDistView(self.map,runner,self)
+        else:
+            self.label = ArrayView(self.map,runner,self)
         self.label.setScaledContents(True)
         params = ArrayButtons(self)
         self.layout = QtGui.QVBoxLayout(self)
@@ -32,7 +46,7 @@ class ArrayWidget(QtGui.QGroupBox):
     def onParamsChanged(self):
         if self.paramDict:
             self.paramDict.onParamUpdate()
-        
+
 
     @pyqtSlot()
     def displayParams(self):
@@ -66,55 +80,6 @@ class ArrayButtons(QtGui.QWidget):
         layout.addWidget(bParams)
         bParams.clicked.connect(arrayWidget.displayParams)
 
-
-
-class ArrayLabel(QtGui.QLabel):
-    triggerOnClick = QtCore.pyqtSignal(str,int,int)#Will be triggered on click
-    triggerOnParamChanged = QtCore.pyqtSignal()
-    #map name coord x y
-    def __init__(self,  map, runner,mapView):
-        super(ArrayLabel,  self).__init__()
-        self.map = map
-        self.updateArray()
-        self.runner = runner
-        self.triggerOnClick.connect(runner.onClick)
-        self.triggerOnParamChanged.connect(mapView.onParamsChanged)
-
-    def updateArray(self):
-        self.array = self.map.getData()
-        self.min = np.min(self.array)
-        self.max = np.max(self.array)
-        if self.array.shape == (1,1,3):
-            #assume hsv
-            self.img = QtGui.QImage(1,1,QtGui.QImage.Format_RGB32)
-            hsv = [self.array[0,0,0]*2,self.array[0,0,1],self.array[0,0,2]]
-            rgbCol = QtGui.QColor.fromHsv(*hsv)
-            self.img.fill(rgbCol)
-        else:
-            self.img = plotArrayQt.npToQImage(self.array)
-
-    def paintEvent(self, event):
-        qp = QtGui.QPainter(self)
-        qp.drawImage(event.rect(), self.img)
-        qp.setPen(QtGui.QColor(0,0,0))
-        qp.drawText(event.rect(),  QtCore.Qt.AlignTop,  "%.2f" %
-                    self.max)
-        qp.drawText(event.rect(),  QtCore.Qt.AlignBottom,  "%.2f" %
-                    self.min)
-
-    def mousePressEvent(self,  event):
-        labXY = np.array([event.x(), event.y()], dtype=np.float32)
-        size = self.rect().size()
-        labWH = np.array([size.width(), size.height()]) - 1
-        shapeWH = np.array([self.array.shape[0],
-                            self.array.shape[1]]) - 1
-        arrXY = (labXY / labWH) * shapeWH
-        arrXY = np.round(arrXY)
-        value = self.array[arrXY[1], arrXY[0]]
-        print arrXY
-        print value
-        self.triggerOnClick.emit(self.map.getName(),arrXY[0],arrXY[1])
-        self.triggerOnParamChanged.emit()#TDOD dirty
 
 
 
