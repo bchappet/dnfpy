@@ -25,25 +25,33 @@ class ClusterMap(Map2D):
 
     """
     def __init__(self,name,size=0,dt=0.1,threshold=0,min_samples=1,
-                 clustSize=0.1,sizeNpArr=1,continuity=0.0,**kwargs):
+                 clustSize=0.1,sizeNpArr=1,continuity=0.0,expectedNumberOfCluster=1,
+                 **kwargs):
         super(ClusterMap,self).__init__(name=name,size=size,dt=dt,threshold=threshold,
             clustSize=clustSize,min_samples=min_samples,sizeNpArr=sizeNpArr,
-            continuity=continuity,
+            continuity=continuity,expectedNumberOfCluster=expectedNumberOfCluster,
                                         **kwargs)
+
+
+    def reset(self):
+        super(ClusterMap,self).reset()
         self.clusters = []#cluster coords saved
         self.setArg(nbOutliners=0)
         self.setArg(nbNewCluster=0)
         self.setArg(nbDiscountinuousCluster=0)
         self.setArg(nbComputationEmpty=0)
+        self.sumNbClusterSave = []
+        self.setArg(nbClusterSum=0)
 
-    def _compute(self,np_arr,threshold,min_samples,clustSize_,continuity):
-        self.toProf(np_arr,threshold,min_samples,clustSize_,continuity)
 
-    @profile
-    def toProf(self,np_arr,threshold,min_samples,clustSize_,continuity):
+    def _compute(self,np_arr,threshold,min_samples,clustSize_,continuity,expectedNumberOfCluster):
+        self.toProf(np_arr,threshold,min_samples,clustSize_,continuity,expectedNumberOfCluster)
+
+    def toProf(self,np_arr,threshold,min_samples,clustSize_,continuity,
+               expectedNumberOfCluster):
         coords = np.where(np_arr > threshold)
         nbActivation = len(coords[0])
-        if nbActivation > 0:
+        if nbActivation > 0 and nbActivation < 100:
             coordsArray = list(zip(coords[1],coords[0]))
             nbClust = len(self.clusters)
 
@@ -98,9 +106,17 @@ class ClusterMap(Map2D):
                     self.clusters.append(barycenter)
 
             self.setArg(nbOutliners=nb_outliners)
+            if len(self.clusters) > expectedNumberOfCluster:
+                self.sumNbClusterSave.append(len(self.clusters))
+                self.setArg(nbClusterSum=np.sum(self.sumNbClusterSave))
+
             self._data = np.array(self.clusters)
-        else:
+        elif nbActivation == 0:
             self.setArg(nbComputationEmpty=self.getArg("nbComputationEmpty")+1)
+        else:
+            #to many activation we don't compute cluster
+            self.clusters = [np.array([-1,-1])]
+            self._data = np.array(self.clusters)
 
 
     def __getBarycenter(self,coordsArrayNp,labels,lab):

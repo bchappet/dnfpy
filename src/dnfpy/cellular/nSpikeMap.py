@@ -9,18 +9,21 @@ class NSpikeMap(Map2D):
                                            nspike=nspike,proba=proba,**kwargs)
 
         def _compute(self,size,activation):
-            self.reset()
+            self.resetLib()
             self.lib.setArrayAttribute(1,activation)
             self.lib.step()
             self.lib.getArrayAttribute(0,self._data)
 
+        def resetLib(self):
+            self.lib.reset()
+            self.lib.getArrayAttribute(0,self._data)
+
 
         def reset(self):
-            size = self.getArg('size')
+            super(NSpikeMap,self).reset()
+            size = self._init_kwargs['size']
             self._data = np.zeros((size,size),dtype=np.intc)
-            if self.lib:
-                self.lib.reset()
-                self.lib.getArrayAttribute(0,self._data)
+
 
         def _onParamsUpdate(self,nspike,proba):
             self.lib.setMapParam(0,nspike)

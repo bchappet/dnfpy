@@ -51,7 +51,7 @@ def plotArrays(name_array_dict):
                 else:
                         ax = plt.subplot(gs[i/width,i%width])
                 array = name_array_dict[name]
-                if len(array.shape) == 1:
+                if len(array.shape) < 3:
                     plotArray(array)
                 else:
                     ax.imshow(array)

@@ -31,18 +31,17 @@ class ShortStim(Map2D):
                 width_ = width * size
                 return dict(width_=width_)
 
-                
+
 
 class ModelWMCam(Model,Renderable):
 
 
 
-    def initMaps(self,size):
-        model = 'spike'
+    def initMaps(self,size=49,model="spike"):
         self.size = size
         dt = 0.6
         wrap = True
-        model_ = 'spike'
+        model_ = model
         #Input
         self.webcam = WebcamMap("Webcam",size=size,dt=dt,numDevice=0)
         self.color_select = ImageColorSelection("Color Select",size,dt=dt,thresh=5)
@@ -108,9 +107,9 @@ class ModelWMCam(Model,Renderable):
         return ret
 
     def onClick(self,mapName,x,y):
-        f mapName == "Webcam":
+        if mapName == "Webcam":
                 bgr = self.webcam.getData()
-                
+
                 sizeROI = self.size/10.
                 s2 = round(sizeROI/2.)
                 roi = bgr[y-s2:y+s2,x-s2:x+s2,:]

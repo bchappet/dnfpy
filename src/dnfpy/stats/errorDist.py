@@ -14,11 +14,16 @@ class ErrorDist(Map2D):
 
     def _compute(self,sizeArray,trackedTarget,clusterMap):
         error = []
-        for i in range(len(clusterMap)):
-            coorClust = clusterMap[i]/float(sizeArray)
-            coorTarget = trackedTarget[i]/float(sizeArray)
-            error.append(distance.euclidean(coorClust,coorTarget))
-            self._data = error
-            self.meanErrorSave.append(error[0])
-            self.setArg(mean=np.mean(self.meanErrorSave))
+        nbCluster = len(clusterMap)
+        if nbCluster > 0 and -1 in clusterMap[0]:
+            error = [1] #to many activation
+        else:
+            for i in range(nbCluster):
+                coorClust = clusterMap[i]/float(sizeArray)
+                coorTarget = trackedTarget[i]/float(sizeArray)
+                error.append(distance.euclidean(coorClust,coorTarget))
+        sumError = np.sum(error)
+        self._data = error
+        self.meanErrorSave.append(sumError)
+        self.setArg(mean=np.mean(self.meanErrorSave))
 

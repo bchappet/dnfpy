@@ -5,11 +5,11 @@ from dnfpy.model.mapDNF import MapDNF
 from dnfpy.stats.statsList import StatsList
 
 class ModelDNF(Model,Renderable):
-    def initMaps(self,size):
+    def initMaps(self,size=49,model="spike",nbStep=0):
         """We initiate the map and link them"""
         #Create maps
         self.aff = InputMap("Inputs",size)
-        self.field = MapDNF("DNF",size,model="spike")
+        self.field = MapDNF("DNF",size,model=model,nbStep=nbStep)
         self.field.addChildren(aff=self.aff)
         #stats
         self.stats = StatsList(size,self.aff,self.field.getActivation())

@@ -36,13 +36,25 @@ def cosTraj(time,center,radius,period,phase):
     """Definie a cosinus trajectory"""
     return center + radius * np.cos(2*np.pi*(time/period-phase))
 
-def sumArrays(*varlist):
+def sumArrays(varlist):
     """Sum n arrays"""
     res = 0
     for i in range(len(varlist)):
         res = np.add(res, varlist[i])
 
     return res
+
+def weightedSumArrays(varlist):
+    res = 0
+   # print(varlist)
+   # print("======================================")
+    for i in range(0,len(varlist),2):
+        res = np.add(res, varlist[i]*varlist[i+1])
+
+    return res
+
+
+
 
 def sumImageArrays(*varlist):
     """Sum n arrays to each color component of an image"""
@@ -82,4 +94,22 @@ def getAssymetricGaussian2D(size,intXY,stdXY):
 
 def abs(x):
         return np.abs(x)
+
+def discretize(array,nbStep):
+    """
+    return a discrete version of the array with nbStep discretization steps
+    """
+    shape = array.shape
+    min = array.min()
+    max = array.max()
+    step = abs(max-min)/nbStep + 1e-8
+    start = min + step/2.
+    end =  max + step/2.
+    values = np.arange(min+step/2,max+step/2,step)
+    bins = np.arange(min,max+step,step)
+    arrBins = np.digitize(array.flatten(),bins) - 1
+    resFlat =  values[arrBins]
+    return resFlat.reshape(shape)
+
+
 

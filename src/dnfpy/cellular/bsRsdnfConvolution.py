@@ -38,7 +38,7 @@ class BsRsdnfConvolution(Map2D):
         pInh_ = pInh**(1./(size))
         iExc_ = iExc/(size**2) * (40**2)/alpha * 1./(sizeStream*pSpike)
         iInh_ = iInh/(size**2) * (40**2)/alpha * 1./(sizeStream*pSpike)
-        print("pExc_ %s, pInh_ %s, iExc_ %s, iInh_ %s"%(pExc_,pInh_,iExc_,iInh_))
+#        print("pExc_ %s, pInh_ %s, iExc_ %s, iInh_ %s"%(pExc_,pInh_,iExc_,iInh_))
 
 
         return dict(pExc_=pExc_,pInh_=pInh_,iExc_=iExc_,iInh_=iInh_)

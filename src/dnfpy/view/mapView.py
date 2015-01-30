@@ -47,6 +47,9 @@ class ArrayWidget(QtGui.QGroupBox):
         if self.paramDict:
             self.paramDict.onParamUpdate()
 
+    def reset(self):
+        self.label.reset()
+
 
     @pyqtSlot()
     def displayParams(self):

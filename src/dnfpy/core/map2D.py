@@ -35,13 +35,9 @@ class Map2D(Computable):
 
     """
 
-    def __init__(self,name,size,**kwargs):
-        super(Map2D,self).__init__(size=size,**kwargs)
+    def __init__(self,name,size,dtype=np.float32,**kwargs):
+        super(Map2D,self).__init__(size=size,dtype=dtype,**kwargs)
         """Init a 2D numpy array of shape (size,size) dtype float32"""
-
-        self.setArg(time=0.0) #last simulation time (in seconds) : it is updated just befor compute() call
-        if not(self.hasArg('dtype')):
-            self.setArg(dtype=np.float32)
         self.reset() #init self._data
         self.name = name
         self.__precision = 7 #allowed precision
@@ -49,6 +45,7 @@ class Map2D(Computable):
 
         #To avoid recursivity
         self.__lock =False #True when method already called
+        self.__lockReset =False #True when method resetParams already called
 
         self.__childrenParamsUpdateArgs = inspect.getargspec(\
                         self._childrenParamsUpdate)[0]
@@ -58,14 +55,12 @@ class Map2D(Computable):
     def getName(self):
         return self.name
 
-
     def _compute(self):
         """
             Abstract
             Update self._data using all parameter of self.__dictionary
         """
-        return None
-
+        pass
 
     def __getNextUpdateTime(self):
         """
@@ -103,17 +98,14 @@ class Map2D(Computable):
                 self.__lock = True
                 for child in self.__children.values():
                         child.compute()
-                self.__computationStep()
+                self._computationStep()
                 self.__lock = False
         else:
-                pass
+            pass
 
-    def __computationStep(self):
+    def _computationStep(self):
         self.setArg(**self._getChildrenStates())
         self._compute_with_params()
-
-
-
 
     def update(self,simuTime):
         """
@@ -124,21 +116,20 @@ class Map2D(Computable):
 
         if not(self.__lock):
             self.__lock = True
-            selfNUT = self.__getNextUpdateTime()
             allowed_error = math.pow(10,-self.__precision)
             #assert( simuTime - selfNUT <= allowed_error), \
             #    "Simulation problem: %r has not been updated. %r < %r" % (self,selfNUT,simuTime)
 
             for child in self.__children.values():
                  child.update(simuTime)
-
             if abs(self.__getNextUpdateTime() - simuTime) <= allowed_error :
-                 self.setArg(time= round(simuTime,self.__precision))
-                 self.__computationStep()
+                 self.setArg(time = round(simuTime,self.__precision))
+                 self._computationStep()
             self.__lock = False
         else:
                 pass
         return None
+
     def _getChildrenStates(self):
         """
             Protected
@@ -146,6 +137,7 @@ class Map2D(Computable):
         """
         newDict = {k:self.__children[k].getData() for k in self.__children.keys()}
         return newDict
+
     def getChildrenNames(self):
         """
             Public
@@ -166,9 +158,6 @@ class Map2D(Computable):
             the children are not considered as attributes
         """
         return  self._getDictionaryNames() - self.getChildrenNames()
-
-
-
 
     def getTime(self):
         """Accessor return self.time"""
@@ -227,14 +216,32 @@ class Map2D(Computable):
             Return the number of child
         """
         return len(self.__children)
+
     def reset(self):
         """Reset the data to 0"""
-        size = self.getArg('size')
-        dtype = self.getArg('dtype')
+        super(Map2D,self).reset()
+        self.setArg(time=0.0) #last simulation time (in seconds) : it is updated just befor compute() call
+        size = self._init_kwargs['size']
+        dtype = self._init_kwargs['dtype']
         if size == 1:
             self._data = 0.
         else:
             self._data = np.zeros((size,size),dtype=dtype)
+
+    def resetParams(self):
+        if not(self.__lockReset):
+            self.__lockReset = True
+            for child in self.__children.values():
+                child.resetParams()
+            super(Map2D,self).resetParams()
+            self.childrenParamsUpdate()
+            self.__lockReset = False
+        else:
+            pass
+
+
+
+
     @staticmethod
     def __associateDict(aDict,bDict):
         """Association beteween aDict and bDict:

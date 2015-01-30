@@ -16,8 +16,8 @@ class WebcamMap(Map2D):
         array = cv2.resize(frame,(size,size))
         self._data =  array
 
-        
-   def reset(self):
-    size = self.getArg('size')
-    self._data = np.zeros((size,size,3),dtype=np.uint8)
 
+   def reset(self):
+    super(WebcamMap,self).reset()
+    size = self._init_kwargs['size']
+    self._data = np.zeros((size,size,3),dtype=np.uint8)

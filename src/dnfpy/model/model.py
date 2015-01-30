@@ -1,13 +1,13 @@
 class Model(object):
     """Abstract class for all the model"""
 
-    def __init__(self,size):
+    def __init__(self,**kwargs):
         self.mapDict = {}
-        self.root = self.initMaps(size) #the root is the root map of the model
+        self.root = self.initMaps(**kwargs) #the root is the root map of the model
         self.__addMapsToDict(self.root)
 
 
-    def initMaps(self):
+    def initMaps(self,size):
         """
             Abstract
             Construct and connect the maps
@@ -21,6 +21,29 @@ class Model(object):
     def getMap(self,mapName):
         map = self.mapDict[mapName]
         return map
+
+    def reset(self):
+        for map in self.mapDict.values():
+            map.reset()
+
+    def firstComputation(self):
+        """
+        Compute map with dt infinite ie dt=10e10
+        """
+        for map in self.mapDict.values():
+            if map.getArg('dt') == 1e10:
+                map.compute()
+
+
+
+
+    def resetParams(self):
+        if isinstance(self.root,list):
+            for root_i in self.root:
+                root_i.resetParams()
+        else:
+            self.root.resetParams()
+
 
 
 
@@ -62,3 +85,7 @@ class Model(object):
             childDic = rootmap.getChildren()
             for child in childDic:
                 self.__addMapsToDict(childDic[child])
+
+
+
+

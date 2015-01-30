@@ -8,7 +8,7 @@ class MapDNF(FieldMap):
                  tau=0.64,h=0,
                  model='cnft',th=0.75,
                  iExc=1.25,iInh=0.7,wExc=0.1,wInh=10,alpha=10,
-                 mapSize=1.,
+                 mapSize=1.,nbStep=0,
                  **kwargs):
         super(MapDNF,self).__init__(name,size,dt=dt,wrap=wrap,
                     tau=tau,h=h,
@@ -20,11 +20,11 @@ class MapDNF(FieldMap):
         self.kernel = LateralWeightsMap(name+"_kernel",mapSize=mapSize,
                                         globalSize=size,wrap=wrap,
                                         iExc=iExc,iInh=iInh,wExc=wExc,
-                                        wInh=wInh,alpha=alpha)
+                                        wInh=wInh,alpha=alpha,nbStep=nbStep)
         self.act.addChildren(field=self)
         self.addChildren(lat=self.lat)
         self.lat.addChildren(source=self.act,kernel=self.kernel)
-        self.kernel.compute()
+
     def getActivation(self):
         return self.act
 
@@ -33,6 +33,3 @@ class MapDNF(FieldMap):
             self.act,
             self.lat,
         ]
-
-
-

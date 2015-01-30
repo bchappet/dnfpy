@@ -1,9 +1,8 @@
 from collections import OrderedDict
 import sip
-from PyQt4 import QtGui,  QtCore
+from PyQt4 import QtGui,QtCore
 from PyQt4.QtCore import pyqtSlot
 import math
-import numpy as np
 from view import View
 from parametersView import ParametersView
 from mapView import ArrayWidget
@@ -13,7 +12,7 @@ class GlobalParams(QtGui.QWidget):
         """
             Global parameter of the runner
         """
-        def __init__(self, runner):
+        def __init__(self, runner,view):
             super(GlobalParams, self).__init__()
 
             self.runner = runner
@@ -26,6 +25,12 @@ class GlobalParams(QtGui.QWidget):
             bPlay.clicked.connect(runner.playSlot)
             bStep = QtGui.QPushButton("Step")
             bStep.clicked.connect(runner.stepSlot)
+            bReset = QtGui.QPushButton("Reset")
+            bReset.clicked.connect(runner.resetSlot)
+            bReset.clicked.connect(view.reset)
+            bResetParams = QtGui.QPushButton("ResetParams")
+            bResetParams.clicked.connect(runner.resetParamsSlot)
+
             spinSpeedRatio = QtGui.QDoubleSpinBox()
             spinSpeedRatio.setMinimum(0.0)
             spinSpeedRatio.setMaximum(10.0)
@@ -39,10 +44,14 @@ class GlobalParams(QtGui.QWidget):
             layout.addWidget(bSaveArr)
             layout.addWidget(bPlay)
             layout.addWidget(bStep)
+            layout.addWidget(bReset)
+            layout.addWidget(bResetParams)
+
             layout.addWidget(spinSpeedRatio)
 
 
 class DisplayModelQt(QtGui.QWidget, View):
+    trigClose = QtCore.pyqtSignal()
     def __init__(self, renderable):
         super(DisplayModelQt,  self).__init__()
         self.widgetV = QtGui.QWidget()
@@ -57,7 +66,7 @@ class DisplayModelQt(QtGui.QWidget, View):
     #Override View
     def setRunner(self, runner):
         self.runner = runner
-        self.globalParams = GlobalParams(self.runner)
+        self.globalParams = GlobalParams(self.runner,self)
         self.rightPanel = ParametersView(self.runner)
         self.displayMaps = DisplayMapsQt(self.renderable,self.runner,self.rightPanel)
         self.layoutV.addWidget(self.displayMaps)
@@ -66,10 +75,21 @@ class DisplayModelQt(QtGui.QWidget, View):
         self.layoutH.addWidget(self.widgetV)
         self.layoutH.addWidget(self.rightPanel)
 
+        self.trigClose.connect(runner.onClose)
+
+    def closeEvent(self, event):
+        self.trigClose.emit()
+
+
     #Override View
     @pyqtSlot()
     def update(self):
         self.displayMaps.update()
+        self.repaint()
+
+    @pyqtSlot()
+    def reset(self):
+        self.displayMaps.reset()
         self.repaint()
 
 
@@ -112,6 +132,7 @@ class DisplayMapsQt(QtGui.QWidget):
 
 
 
+
     def __initArrays(self):
         """
             Add all arrays of renderable
@@ -140,7 +161,7 @@ class DisplayMapsQt(QtGui.QWidget):
         row = index / self.nbCols
         col = index % self.nbCols
         self.grid.addWidget(widg, row, col)
-        
+
     def __reorganizeGrid(self):
         for label in self.dictLabels.values():
             self.grid.removeWidget(label)
@@ -183,6 +204,10 @@ class DisplayMapsQt(QtGui.QWidget):
 
 
         self.mapUpdate += 1
+
+    def reset(self):
+        for mapName in self.dictLabels:
+            self.dictLabels[mapName].reset()
 
     def updateParams(self,mapName):
             label = self.dictLabels[mapName]

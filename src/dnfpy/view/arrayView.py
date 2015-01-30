@@ -15,6 +15,9 @@ class ArrayView(QtGui.QLabel):
         self.triggerOnClick.connect(runner.onClick)
         self.triggerOnParamChanged.connect(mapView.onParamsChanged)
 
+    def reset(self):
+        pass
+
     def updateArray(self):
         self.array = self.map.getData()
         self.min = np.min(self.array)

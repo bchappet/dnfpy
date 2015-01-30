@@ -2,6 +2,7 @@ from dnfpy.core.utils import *
 import unittest
 import numpy as np
 import os
+import dnfpy.view.staticViewMatplotlib as view
 
 
 class TestUtils(unittest.TestCase):
@@ -37,7 +38,7 @@ class TestUtils(unittest.TestCase):
         expected = np.loadtxt(self.testDir+"testExp2DNoWrap.csv",dtype=np.float32,delimiter=",")
         obtained = exp2d(10,False,10,4,7,1)
         self.assertTrue((expected==obtained).all(),"the result should be the same")
-        
+
     def test_cosTraj(self):
         """Function: cosTraj
         scenario standard"""
@@ -56,6 +57,17 @@ class TestUtils(unittest.TestCase):
         expected = [5,12]
         obtained=sumArrays(a,b,c)
         self.assertTrue((expected==obtained).all(),"the result should be the same")
+
+    def test_discretize(self):
+        size = 101
+        arr = np.random.uniform(size=(size,size))
+        arrd = discretize(arr,2)
+        view.plotArrays(dict(before=arr,after=arrd))
+        view.show()
+
+
+
+
 
 
 if __name__ == '__main__':

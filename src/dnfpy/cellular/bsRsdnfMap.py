@@ -64,7 +64,8 @@ class BsRsdnfMap(Map2D):
 
 
         def reset(self):
-            size = self.getArg('size')
+            super(BsRsdnfMap,self).reset()
+            size = self._init_kwargs['size']
             self._data = np.zeros((size,size),dtype=np.intc)
             if self.lib:
                 self.lib.reset()

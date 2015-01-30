@@ -23,11 +23,9 @@ class Computable(object):
         self._computeArgs.remove('self')
         self._updateParamsArgs = inspect.getargspec(self._onParamsUpdate)[0]
         self._updateParamsArgs.remove('self')
+        self._init_kwargs = kwargs
+        self.reset()
         self.setParams(**kwargs)
-        #Debug utilities
-        self.nb_computation = 0
-        self.last_computation_args = {}
-        self.last_computation_dictionary = {}
 
     def setArg(self,**kwargs):
         """
@@ -35,6 +33,7 @@ class Computable(object):
             To add or change parameters in self.dictionary
         """
         self.__dictionary.update(**kwargs)
+        #print("in %s, set arg %s"%(self,kwargs))
 
     def setParams(self,**kwargs):
         self.setArg(**kwargs)
@@ -107,6 +106,7 @@ class Computable(object):
         self.nb_computation += 1
         self.last_computation_args = args
         self.last_computation_dictionary = self.__dictionary
+
     def _getDictionaryNames(self):
         """
             Protected final:
@@ -126,3 +126,16 @@ class Computable(object):
         return name in self.__dictionary.keys()
 
 
+    def reset(self):
+        """
+        Should be called with super
+        Is called on construction before setParam(**kwargs)
+        Hence one should only use self._init_kwargs
+        """
+        #Debug utilities
+        self.nb_computation = 0
+        self.last_computation_args = {}
+        self.last_computation_dictionary = {}
+
+    def resetParams(self):
+        self.setParams(**self._init_kwargs)

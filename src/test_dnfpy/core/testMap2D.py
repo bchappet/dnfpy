@@ -104,20 +104,23 @@ class TestMap2D(TestCase):
             With a size 1. data should be a real"""
             test = Map2D("name",size=1,dt=self.dt)
             self.assertEqual(0.,test.getData(),"When initiated with a size == 1, the data should be a real")
+
         def test_arg_init(self):
             self.uut.update(0.1)
-            expected = dict(size=self.size,dt=self.dt,a=1,b=2,time=0.1)
+            expected = dict(size=self.size,dt=self.dt,a=1,b=2,time=0.1,dtype=np.float32)
             obtained = self.uut.last_computation_dictionary
-            self.assertEqual(expected,obtained,"result should be the same")
+            self.assertEqual(expected,obtained)
 
         def test_get_children_names(self):
             obtained = self.uut_children.getChildrenNames()
             expected = set(['child1','child2'])
             self.assertEqual(expected,obtained,"result should be the same")
+
         def test_get_attributes_names(self):
             obtained = self.uut.getAttributesNames()
-            expected = set(['time','size','dt','a','b'])
-            self.assertEqual(expected,obtained,"result should be the same")
+            expected = set(['time','size','dt','a','b','dtype'])
+            self.assertEqual(expected,obtained)
+
         def test_children_cout(self):
             self.assertEqual(2,self.uut_children.getChildrenCount())
         def test_remove_children(self):

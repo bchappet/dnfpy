@@ -5,11 +5,11 @@ from dnfpy.cellular.mapDNFNSpike import MapDNFNSpike
 from dnfpy.stats.statsList import StatsList
 
 class ModelNSpike(Model,Renderable):
-    def initMaps(self,size):
+    def initMaps(self,size,nspike=10):
         """We initiate the map and link them"""
         #Create maps
         self.aff = InputMap("Inputs",size)
-        self.field = MapDNFNSpike("DNF",size)
+        self.field = MapDNFNSpike("DNF",size,nspike=nspike)
         self.field.addChildren(aff=self.aff)
         #stats
         self.stats = StatsList(size,self.aff,self.field.getActivation())

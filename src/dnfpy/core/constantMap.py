@@ -10,4 +10,5 @@ class ConstantMap(Map2D):
 
 
     def reset(self):
-        self._data = self.getArg("value")
+        super(ConstantMap,self).reset()
+        self._data = self._init_kwargs['value']

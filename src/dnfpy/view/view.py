@@ -16,3 +16,5 @@ class View():
                 """Signal that the params of the map changed"""
                 pass
 
+
+

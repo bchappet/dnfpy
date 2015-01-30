@@ -1,18 +1,14 @@
 from dnfpy.model.inputMap import InputMap
 from dnfpy.view.renderable import Renderable
 from dnfpy.model.model import Model
-from dnfpy.cellular.mapDNFBsRsdnf import MapDNFBsRsdnf
+from dnfpy.model.mapDNF import MapDNF
 
-class ModelBsRsdnf(Model,Renderable):
+class ModelDNF(Model,Renderable):
     def initMaps(self,size):
         """We initiate the map and link them"""
-        dt = 0.01
-
         #Create maps
-        self.aff = InputMap("Inputs",size,dt=dt)
-        #WM
-        #self.field = MapDNFBsRsdnf("DNF",size,dt=dt,sizeStream=100,iExc=0.9,pInh=0.02)
-        self.field = MapDNFBsRsdnf("DNF",size,dt=dt,sizeStream=100)
+        self.aff = InputMap("Inputs",size)
+        self.field = MapDNF("DNF",size)
         self.field.addChildren(aff=self.aff)
         #return the root
         return self.field
