@@ -6,8 +6,11 @@
 #
 *.o
 *.py.swn
+*.txt
 
 src/dnfpy/cellular/cpp_implementation/test_lib
+src/experiments
+src/curveFitting
 
 #ignore Model and params for now
 src/context/*
