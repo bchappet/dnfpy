@@ -1,4 +1,0 @@
-cibler taille sur ordi 
-check dt
-spinner que jusqua 100
-

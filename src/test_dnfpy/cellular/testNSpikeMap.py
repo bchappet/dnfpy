@@ -43,12 +43,40 @@ class TestNSpikeMap(unittest.TestCase):
         self.assertEquals(res[2][5],0)
         self.assertEquals(res[0][0],10)
 
-    def test_visual(self):
+    def test_proba_09(self):
         self.uut.setParams(proba=0.9)
         self.activation[5][5] = 1
         self.uut.compute()
         res = self.uut.getData()
-        print res
+        self.assertTrue(([7,9,10,10,10,11,10,8,6,5,5]==res[0]).all())
+
+    def test_reset_reproductibilite(self):
+        self.uut.setParams(proba=0.9)
+        self.activation[5][5] = 1
+        self.uut.compute()
+        res1 = self.uut.getData()
+        self.uut.reset()
+        self.assertEqual(0.9,self.uut.getArg("proba"))
+        self.activation[5][5] = 1
+        self.uut.compute()
+        res2 = self.uut.getData()
+        self.assertTrue((res1==res2).all())
+
+    def test_reset_non_reproductibilite(self):
+        self.uut = NSpikeMap("uut",self.size,activation=self.activation,
+                             reproductible=False)
+        self.uut.setParams(proba=0.9)
+        self.activation[5][5] = 1
+        self.uut.compute()
+        res1 = self.uut.getData()
+        self.uut.reset()
+        self.assertEqual(0.9,self.uut.getArg("proba"))
+        self.activation[5][5] = 1
+        self.uut.compute()
+        res2 = self.uut.getData()
+        self.assertTrue((res1!=res2).any())
+
+
 
     def test_2map(self):
         activation2 = np.zeros((self.size,self.size),np.intc)

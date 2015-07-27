@@ -2,34 +2,25 @@
 #define REGISTER_H
 
 
-class IRegister
-{
-public:
-    virtual void synch() = 0;
-    virtual void reset() = 0;
 
 
-};
-
-
-template <typename T>
-class Register:public IRegister
+class Register
 {
 public:
     /**
      * @brief Register init state and next state with val
      * @param val
      */
-    Register(const T& val);
+    Register(const int& val);
     /**
      * @brief synch state = nextState
      */
-    virtual void synch() override;
+    void synch() ;
     /**
      * @brief get the state
      * @return
      */
-    T get();
+    int get();
 
 
 
@@ -37,16 +28,16 @@ public:
      * @brief set the nextState
      * @param val
      */
-    void set(T val);
+    void set(int val);
 
     /**
      * @brief reset get back to initState
      */
-    virtual void reset() override;
+    void reset();
 private:
-    T initState;
-    T nextState;
-    T state;
+    int initState;
+    int nextState;
+    int state;
 };
 
 #endif // REGISTER_H

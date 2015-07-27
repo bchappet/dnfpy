@@ -120,7 +120,12 @@ class Computable(object):
             Protected final:
             return the subductionary of self.__dictionary using the keys (must be itarable)
         """
-        return {k :self.__dictionary[k] for k in keys}
+        try:
+            ret =  {k :self.__dictionary[k] for k in keys}
+        except Exception, e:
+            print("in class %s"%self)
+            raise e
+        return ret
 
     def hasArg(self,name):
         return name in self.__dictionary.keys()

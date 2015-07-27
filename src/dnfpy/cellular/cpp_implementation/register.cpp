@@ -1,19 +1,19 @@
 #include "register.h"
-
+#include <vector>
 
 /**
  * @brief Register init state and next state with val
  * @param val
  */
-template <typename T>
-Register<T>::Register(const T& val){
+
+Register::Register(const int& val){
     this->state = val;
     this->nextState = val;
     this->initState = val;
 }
 
-template <typename T>
-void Register<T>::reset(){
+
+void Register::reset(){
     this->state = initState;
     this->nextState = initState;
 }
@@ -21,8 +21,8 @@ void Register<T>::reset(){
 /**
  * @brief synch state = nextState
  */
-template <typename T>
-void Register<T>::synch(){
+
+void Register::synch(){
     this->state = nextState;
 }
 
@@ -30,8 +30,8 @@ void Register<T>::synch(){
  * @brief get the state
  * @return
  */
-template <typename T>
-T Register<T>::get(){
+
+int Register::get(){
     return this->state;
 }
 
@@ -41,11 +41,8 @@ T Register<T>::get(){
  * @brief set the nextState
  * @param val
  */
-template <typename T>
-void Register<T>::set(T val){
+
+void Register::set(int val){
     this->nextState = val;
 }
 
-template class Register<int>;
-template class Register<bool>;
-template class Register<float>;

@@ -15,3 +15,4 @@ void Param<T>::reset(){
 template class Param<int>;
 template class Param<float>;
 template class Param<bool>;
+template class Param<unsigned long int>;

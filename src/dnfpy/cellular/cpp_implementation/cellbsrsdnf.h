@@ -2,12 +2,20 @@
 #define CellBsRsdnf_H
 #include "module.h"
 #include <string>
+
+/**
+ * @brief The CellBsRsdnf class Cery dirty for now... we assume that precisionProbaSpike == precisionProbaSynapse (in nb bit) 30 for best
+ * precision (and fast)
+ */
 class CellBsRsdnf : public Module
 {
 public:
 
-    CellBsRsdnf(std::string typeRouter="orRouter");
 
+
+    CellBsRsdnf(std::string typeRouter="orRouter");
+    virtual void setDefaultParams(ParamsPtr params) override;
+    ~CellBsRsdnf();
 
 
     /**
@@ -15,8 +23,10 @@ public:
      * PROBA_SPIKE : prob value of a spike which correspond to 1. in real
      * SIZE_STREAM : the size of the stochastic bit stream that will be generated
      * PROBA_SYNAPSE : for utility now: linked to the PROBA_SYNAPSE of every router
+     * PRECISION_PROBA: precision used to generate probability Cannot be dynamically changed
+     * NB_NEW_RANDOM_BIT: how many new random bit we generate
      */
-    enum CellBsRsdnf_Parameters{PROBA_SPIKE,SIZE_STREAM,PROBA_SYNAPSE};
+    enum CellBsRsdnf_Parameters{PROBA_SPIKE,SIZE_STREAM,PROBA_SYNAPSE,PRECISION_PROBA,NB_NEW_RANDOM_BIT};
 
     /**
      * @brief The CellBsRsdnf_Registers enum
@@ -56,6 +66,16 @@ protected:
      * not accessible from outside
      */
     int nbBitToGenerate;
+
+    /**
+     * @brief lastRandomNumber save the last random number as we may want to use it
+     */
+    int* lastRandomNumber;
+
+
+
+
+    unsigned long int precisionProbaMask;
 };
 
 #endif // CellBsRsdnf_H

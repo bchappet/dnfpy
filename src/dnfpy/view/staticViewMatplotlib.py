@@ -9,11 +9,7 @@ import matplotlib.gridspec as gridspec
 """
 
 PRECISION = 10000000
-def __egaliseColorBar(data,bar):
-                maximum = np.amax(data)
-                minimum = np.amin(data)
-                egal = max(abs(maximum),abs(minimum))
-                plt.clim(-egal,+egal)
+def egaliseColorBar(egal,bar):
                 bar.set_ticks([__roundUp(-egal),0,__roundDown(+egal)])
 
 def __roundDown(x):
@@ -24,15 +20,25 @@ def __finalize():
         plt.xticks([])
         plt.yticks([])
 
+def getEgal(data):
+        """
+        Return max(abs(min),abs(max))
+        """
+        maximum = np.amax(data)
+        minimum = np.amin(data)
+        egal = max(abs(maximum),abs(minimum))
+        return egal
 
-def plotArray(data):
+def plotArray(data,showBar=True):
         """
             Plot a np.array, with egalised colorbar
         """
-        ret = plt.imshow(data,interpolation='nearest',cmap='RdYlBu_r')
-        if np.sum(data) != 0:
+        egal = getEgal(data)
+
+        ret = plt.imshow(data,interpolation='nearest',cmap='RdYlBu_r',vmin=-egal,vmax=+egal)
+        if showBar and np.sum(data) != 0:
             bar = plt.colorbar(shrink=.92)
-            __egaliseColorBar(data,bar)
+            egaliseColorBar(egal,bar)
         __finalize()
         return ret
 

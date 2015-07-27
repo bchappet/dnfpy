@@ -1,11 +1,11 @@
 from collections import OrderedDict
-import sip
 from PyQt4 import QtGui,QtCore
 from PyQt4.QtCore import pyqtSlot
 import math
 from view import View
 from parametersView import ParametersView
 from mapView import ArrayWidget
+import sip
 
 
 class GlobalParams(QtGui.QWidget):
@@ -21,6 +21,10 @@ class GlobalParams(QtGui.QWidget):
             bSaveFig.clicked.connect(runner.saveFigSlot)
             bSaveArr = QtGui.QPushButton("Save Data")
             bSaveArr.clicked.connect(runner.saveArrSlot)
+
+            #bRecord = QtGui.QPushButton("Record mode")
+            #bRecord.clicked.connect(view.record)
+
             bPlay = QtGui.QPushButton("Play/Pause")
             bPlay.clicked.connect(runner.playSlot)
             bStep = QtGui.QPushButton("Step")
@@ -42,6 +46,7 @@ class GlobalParams(QtGui.QWidget):
 
             layout.addWidget(bSaveFig)
             layout.addWidget(bSaveArr)
+            #layout.addWidget(bRecord)
             layout.addWidget(bPlay)
             layout.addWidget(bStep)
             layout.addWidget(bReset)
@@ -50,7 +55,7 @@ class GlobalParams(QtGui.QWidget):
             layout.addWidget(spinSpeedRatio)
 
 
-class DisplayModelQt(QtGui.QWidget, View):
+class DisplayModelQt(QtGui.QSplitter, View):
     trigClose = QtCore.pyqtSignal()
     def __init__(self, renderable):
         super(DisplayModelQt,  self).__init__()
@@ -77,8 +82,17 @@ class DisplayModelQt(QtGui.QWidget, View):
 
         self.trigClose.connect(runner.onClose)
 
+
+        self.record = False
+
     def closeEvent(self, event):
         self.trigClose.emit()
+
+    @pyqtSlot()
+    def record(self):
+        self.record = not(self.record)
+        print(self.record)
+
 
 
     #Override View
@@ -209,6 +223,9 @@ class DisplayMapsQt(QtGui.QWidget):
         for mapName in self.dictLabels:
             self.dictLabels[mapName].reset()
 
+
     def updateParams(self,mapName):
             label = self.dictLabels[mapName]
             label.onParamsChanged()
+            label.updateArray()
+            label.repaint()

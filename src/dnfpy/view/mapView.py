@@ -6,11 +6,23 @@ from dnfpy.stats.clusterMap import ClusterMap
 from dnfpy.stats.potentialTarget import PotentialTarget
 from dnfpy.stats.trackedTarget import TrackedTarget
 from dnfpy.stats.errorDist import ErrorDist
+from dnfpy.stats.errorShape import ErrorShape
 from arrayView import ArrayView
+from arrayView2 import ArrayView2
 from clusterMapView import ClusterMapView
 from potentialTargetView import PotentialTargetView
 from trackedTargetView import TrackedTargetView
 from errorDistView import ErrorDistView
+from learningmapView import LearningMapView
+from multiLayerMapView import MultiLayerMapView
+from multiLayerMapAliveView import MultiLayerMapAliveView
+from dnfpy.learning.learningMap import STDPLearningMap
+from dnfpy.model.multiLayerMap import MultiLayerMap
+from dnfpy.model.multiLayerMapAlive import MultiLayerMapAlive
+
+from dnfpyUtils.cellular.fhp import Fhp
+
+from fhpMapView import FhpMapView
 class ArrayWidget(QtGui.QGroupBox):
 
     def __init__(self,map,runner,parametersView,view):
@@ -25,18 +37,37 @@ class ArrayWidget(QtGui.QGroupBox):
             self.label = PotentialTargetView(self.map,runner,self)
         elif isinstance(map,TrackedTarget):
             self.label = TrackedTargetView(self.map,runner,self)
-        elif isinstance(map,ErrorDist):
+        elif isinstance(map,ErrorDist) or isinstance(map,ErrorShape):
             self.label = ErrorDistView(self.map,runner,self)
+        elif isinstance(map,STDPLearningMap):
+            self.label = LearningMapView(self.map,runner,self)
+        elif isinstance(map,MultiLayerMapAlive):
+            self.label = MultiLayerMapAliveView(self.map,runner,self)
+        elif isinstance(map,MultiLayerMap):
+            self.label = MultiLayerMapView(self.map,runner,self)
+        elif isinstance(map,Fhp):
+            self.label = FhpMapView(self.map,runner,self)
         else:
             self.label = ArrayView(self.map,runner,self)
-        self.label.setScaledContents(True)
-        params = ArrayButtons(self)
+            #self.label = ArrayView2(self.map,runner,self)
+
+
+
+
+        self.params = ArrayButtons(self)
         self.layout = QtGui.QVBoxLayout(self)
         self.layout.setContentsMargins(2,10,2,2)
         self.layout.addWidget(self.label)
-        self.layout.addWidget(params)
+        self.layout.addWidget(self.params)
         self.paramsDisplayed = False
         self.paramDict = None
+
+
+        if isinstance(self.label,QtGui.QLabel):
+            self.label.setScaledContents(True)
+        else:
+            pass
+            #self.setFixedSize(400,400)
 
     def updateArray(self):
         self.label.updateArray()
@@ -73,15 +104,26 @@ class ArrayWidget(QtGui.QGroupBox):
 
             self.parametersView.removeWidget(name)
 
+    @pyqtSlot()
+    def toggleView(self):
+            self.label.toggleView()
+
+
 
 class ArrayButtons(QtGui.QWidget):
     def __init__(self,arrayWidget):
         super(ArrayButtons,self).__init__()
-        layout = QtGui.QHBoxLayout(self)
-        layout.setContentsMargins(0,0,0,0)
+        self.layout = QtGui.QHBoxLayout(self)
+        self.layout.setContentsMargins(0,0,0,0)
         bParams = QtGui.QPushButton("Infos")
-        layout.addWidget(bParams)
+        bToggleView = QtGui.QPushButton("Toggle View")
+        self.layout.addWidget(bParams)
+        self.layout.addWidget(bToggleView)
         bParams.clicked.connect(arrayWidget.displayParams)
+        bToggleView.clicked.connect(arrayWidget.toggleView)
+
+#       self.checkBox = QtGui.QCheckBox("save")
+#       self.layout.addWidget(self.checkBox)
 
 
 

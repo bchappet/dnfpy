@@ -2,26 +2,37 @@ import sys
 
 from getClassUtils import getClassFromName
 import dnfpy.controller.runnerView as runnerView
+import dnfpy.controller.runner as runner
 
 
 
 #indiv DNF: [1.25,0.7,0.1,10,10,0.64]
 
-def evaluateView(individual,modelClass,contextClass,scenario, size=51,timeRatio=1):
-    context = contextClass(*individual)
-    model = modelClass(size=size)
-    return runnerView.launch(model, context, scenario, timeRatio)
 
 
-print sys.argv[1]
-indiv = eval((sys.argv[1]).strip().replace(" ",""))
-size = eval(sys.argv[2])
-scenarioName = sys.argv[3]
-modelName = sys.argv[4]
-contextName = sys.argv[5]
-timeRatio = eval(sys.argv[6])
+indiv = eval((sys.argv[1]))
+scenarioName = sys.argv[2]
+modelName = sys.argv[3]
+
+time = eval(sys.argv[4])
+
 
 scenarioClass = getClassFromName(scenarioName, "scenarios")
-contextClass = getClassFromName(contextName,"contexts")
 modelClass = getClassFromName(modelName,"models")
-evaluateView(indiv,modelClass,contextClass, scenarioClass(), size,timeRatio)
+scenario = scenarioClass()
+model = modelClass(**indiv)
+if eval(sys.argv[5]):
+       
+    #view
+    timeRatio = time
+    res = runnerView.launch(model, scenario, timeRatio)
+else:
+    #no view
+    timeEnd = time
+    res = runner.launch(model,scenario,timeEnd)
+
+
+
+
+#exemple
+#!python lauchIndiviudal.py "[1.96, 0.93, 1.30e-05, 1.]" 49 ScenarioDistracters ModelBsRsdnf NSpikeContext 1 True

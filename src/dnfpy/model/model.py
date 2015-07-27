@@ -67,6 +67,8 @@ class Model(object):
     def onclick(self,mapName,x,y):
         pass
 
+    def onRClick(self,mapName,x,y):
+        pass
     def __addMapsToDict(self,rootmap):
         if isinstance(rootmap,list):
             for root_i in rootmap:

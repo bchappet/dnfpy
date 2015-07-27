@@ -7,19 +7,21 @@ ffi.cdef("""
     int initSimuParam(int width,int height,char* cellName,char* connecterName,char* param);
     int useMap(int idMap);
 
+    void preCompute();
     void step();
-    void nstep(int n);
+    void nstep(unsigned int n);
     void synch();
     void reset();
-    void initMapSeed();
 
-    void setMapParamInt(int index,int value,char* path);
-    void setMapParamBool(int index,bool value,char* path);
-    void setMapParamFloat(int index,float value,char* path);
+    void initMapSeed(long int seed);
 
-    int getMapParamInt(int index,char* path);
-    bool getMapParamBool(int index,char* path);
-    float getMapParamFloat(int index,char* path);
+    void setMapParamInt(int index,int value);
+    void setMapParamBool(int index,bool value);
+    void setMapParamFloat(int index,float value);
+
+    int getMapParamInt(int index);
+    bool getMapParamBool(int index);
+    float getMapParamFloat(int index);
 
     void getCellAttribute(int x,int y,int index,void* value);
     void setCellAttribute(int x,int y,int index, void* value);
@@ -63,47 +65,53 @@ class HardLib:
         self.__useMap()
         self.C.synch();
 
+    def preCompute(self):
+        self.__useMap()
+        self.C.preCompute()
+
     def step(self):
         self.__useMap()
         self.C.step();
 
     def nstep(self,n):
         self.__useMap()
-        self.C.nstep();
+        self.C.nstep(n);
 
     def reset(self):
         self.__useMap()
         self.C.reset()
 
-    def initSeed(self):
+    def initSeed(self,seed):
         self.__useMap()
-        self.C.initMapSeed()
+        self.C.initMapSeed(seed)
 
-    def getMapParam(self,idParam,dtype,path="."):
+    def getMapParam(self,idParam,dtype):
         self.__useMap()
         if dtype == int:
-            return self.C.getMapParamInt(idParam,path)
+            return self.C.getMapParamInt(idParam)
         elif dtype == bool:
-            return self.C.getMapParamBool(idParam,path)
+            return self.C.getMapParamBool(idParam)
         elif dtype == float:
-            return self.C.getMapParamFloat(idParam,path)
+            return self.C.getMapParamFloat(idParam)
         else:
             raise AttributeError("Expecting int bool or float as dtype. Was %s"%dtype)
 
 
 
 
-    def setMapParam(self,idParam,val,path="."):
+    def setMapParam(self,idParam,val):
         self.__useMap()
         dtype = type(val)
         if dtype == int:
-            self.C.setMapParamInt(idParam,val,path)
+            self.C.setMapParamInt(idParam,val)
         elif dtype == bool:
-            self.C.setMapParamBool(idParam,val,path)
+            self.C.setMapParamBool(idParam,val)
         elif dtype == float:
-            self.C.setMapParamFloat(idParam,val,path)
+            self.C.setMapParamFloat(idParam,val)
+        elif dtype == np.float64:
+            self.C.setMapParamFloat(idParam,val)
         else:
-            raise AttributeError("Expecting int bool or float as dtype. Was %s"%dtype)
+            raise AttributeError("Expecting int bool or float as dtype. %s (id: %s) was %s"%(val,idParam,dtype))
 
 
     def setCellAttribute(self,x,y,idAttribute,val):

@@ -18,7 +18,7 @@ class ModelDNFCam(Model,Renderable):
         self.webcam = WebcamMap("Webcam",size,dt=dt,numDevice=0)
         self.webcam.compute()
         self.playcam = PlayCamMap("PlayCam",size)
-        self.playcam.addChildren(image=self.webcam)
+        self.playcam.addChildren(self.webcam)
         self.color_select = ImageColorSelection("ColorSelect",size,dt=dt)
         self.field = MapDNF("DNF",size,model='spike',dt=dt)
         #Link maps
@@ -41,9 +41,9 @@ class ModelDNFCam(Model,Renderable):
         print("clicked on %s, at coord %s,%s"%(unicode(mapName),x,y))
         if mapName == "PlayCam":
             bgr = self.playcam.getData()
-            
+
             sizeROI = self.size/10.
-            s2 = round(sizeROI/2.)
+            s2 = int(round(sizeROI/2.))
             roi = bgr[y-s2:y+s2,x-s2:x+s2,:]
             hsv = cv2.cvtColor(roi,cv2.COLOR_BGR2HSV)
             colorVal = np.median(hsv[:,:,0])

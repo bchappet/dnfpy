@@ -40,6 +40,9 @@ public:
      * @brief The CellNSpike_Params enum, nb spike emmited on exitation and proba for every direction
      */
     enum CellNSpike_Params {NB_SPIKE,PROBA_N,PROBA_S,PROBA_E,PROBA_W};
+
+    virtual void setDefaultParams(ParamsPtr params) override;
+
     enum CellNSpike_Attributes{NB_BIT_RECEIVED,ACTIVATED,DEAD};
 
     void setDead(bool isDead);

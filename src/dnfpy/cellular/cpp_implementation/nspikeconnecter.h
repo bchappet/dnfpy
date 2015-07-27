@@ -4,7 +4,7 @@
 class NSpikeConnecter : public NeumannConnecter
 {
 public:
-    virtual void cellConnection(Module* cell,Module* neighCell,int dir)const override;
+    virtual void cellNeighbourConnection(Module::ModulePtr cell,Module::ModulePtr neighCell,int dir)const override;
 };
 
 #endif // NSPIKECONNECTER_H

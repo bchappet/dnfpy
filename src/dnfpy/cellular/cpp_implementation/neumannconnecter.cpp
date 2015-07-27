@@ -1,37 +1,38 @@
 #include "neumannconnecter.h"
 
-void NeumannConnecter::cellConnection(Module* cell,Module* neighCell,int dir)const{
+void NeumannConnecter::cellNeighbourConnection(Module::ModulePtr cell,Module::ModulePtr neighCell,int dir)const{
     if(neighCell!=nullptr){
         cell->addNeighbour(neighCell);
     }
 }
 
-void NeumannConnecter::connect(int width,int height,Module*** cellArray) const{
 
-    std::vector<Module*> inputs;
+void NeumannConnecter::connect(int width,int height,std::vector<std::vector<Module::ModulePtr>> &cellArray) const{
+
+
     for(int i = 0 ; i < height ; i++){
         for(int j = 0 ; j < width ; j++){
-            Module* cell = cellArray[i][j];
-            inputs.clear();
+            Module::ModulePtr cell = cellArray[i][j];
+            this->cellConnection(cell);
             if(this->within_border(i-1,j,height,width))
-                this->cellConnection(cell,cellArray[i-1][j],N);
+                this->cellNeighbourConnection(cell,cellArray[i-1][j],N);
             else
-                this->cellConnection(cell,nullptr,N);
+                this->cellNeighbourConnection(cell,nullptr,N);
 
             if(this->within_border(i+1,j,height,width))
-                this->cellConnection(cell,cellArray[i+1][j],S);
+                this->cellNeighbourConnection(cell,cellArray[i+1][j],S);
             else
-                this->cellConnection(cell,nullptr,S);
+                this->cellNeighbourConnection(cell,nullptr,S);
 
             if(this->within_border(i,j+1,height,width))
-                this->cellConnection(cell,cellArray[i][j+1],E);
+                this->cellNeighbourConnection(cell,cellArray[i][j+1],E);
             else
-                this->cellConnection(cell,nullptr,E);
+                this->cellNeighbourConnection(cell,nullptr,E);
 
             if(this->within_border(i,j-1,height,width))
-                this->cellConnection(cell,cellArray[i][j-1],W);
+                this->cellNeighbourConnection(cell,cellArray[i][j-1],W);
             else
-                this->cellConnection(cell,nullptr,W);
+                this->cellNeighbourConnection(cell,nullptr,W);
 
 
         }

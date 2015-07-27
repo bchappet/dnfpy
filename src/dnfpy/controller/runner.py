@@ -1,4 +1,5 @@
 from datetime import datetime
+from dnfpy.stats.statistic import Statistic
 import time as timer
 
 class Runner(object):
@@ -30,6 +31,12 @@ class Runner(object):
         mapName = str(mapName)
         self.model.onClick(mapName,x,y)
 
+    def onLClick(self,mapName,x,y):
+        mapName = str(mapName)
+        self.model.onLClick(mapName,x,y)
+
+
+
     def onClose(self):
         if self.scenario:
             return self.scenario.finalize(self.model,self)
@@ -37,20 +44,57 @@ class Runner(object):
             return None
 
 
-    def saveFigSlot(self):
-            import  dnfpy.view.staticViewMatplotlib as mtpl
-            import matplotlib.pyplot as plt
-            dic = self.model.getArraysDict()
-            for key in dic:
-                mtpl.plotArray(dic[key])
-                plt.savefig(key+".png",dpi=300)
+    def saveFig(self):
+        import dnfpy.view.staticViewMatplotlib as mtpl
+        import matplotlib.pyplot as plt
+        lis = self.model.getArrays()
+        timeStr  = str(self.simuTime).replace(".","_")
+        print timeStr
+        for theMap in lis:
+            fileName = "save/"+theMap.getName()+"_"+timeStr+".png"
+            try:
+                mtpl.plotArray(theMap.getData())
+                print("Saving %s" % fileName)
+                plt.savefig(fileName, dpi=300)
                 plt.close()
 
-    def saveArrSlot(self):
-            import numpy as np
-            dic = self.model.getArraysDict()
-            for key in dic:
-                np.savetxt(key+".csv",dic[key],delimiter = ",")
+            except:
+                print("could not plot: %s" % fileName)
+
+    def saveArr(self):
+        import numpy as np
+        lis = self.model.getArrays()
+        timeStr  = str(self.simuTime).replace(".","_")
+        for theMap in lis:
+            if isinstance(theMap,Statistic):
+                fileName = "save/"+theMap.getName()+".csv"
+                np.savetxt(fileName,theMap.getTrace(),delimiter=",")
+                print("Saving %s" % fileName)
+            else:
+                ndarray = theMap.getData()
+                if isinstance(ndarray,np.ndarray):
+                    dtype = ndarray.dtype
+                    fileName = "save/"+theMap.getName()+"_"+timeStr
+                    if dtype == np.ndarray:
+                        import os
+                        os.mkdir(fileName)
+                        (height,width) = (theMap.getArg('size'),)*2
+                        for row in range(height):
+                             for col in range(width):
+                                filename2 = fileName+"/"+str(row)+"_"+str(col)+".csv"
+                                np.savetxt(filename2,ndarray[row,col],delimiter=",")
+                                print("Saving %s" % filename2)
+                    else:
+                        try:
+                            np.savetxt(fileName+".csv", ndarray, delimiter=",")
+                            print("Saving %s" % fileName+".csv")
+                        except Exception, e:
+                            print("1 could not save: %s." % fileName)
+                            print(e)
+                else:
+                    print("2 could not save: %s" % fileName)
+
+
 
     def step(self):
             if self.simuTime == 0:
@@ -84,9 +128,7 @@ class Runner(object):
         ret = self.onClose()
         return ret
 
-def launch(model,context,scenario,timeEnd,allowedTime=10e10):
-    if context:
-        context.apply(model)
+def launch(model,scenario,timeEnd,allowedTime=10e10):
     if scenario:
         scenario.applyContext(model)
 

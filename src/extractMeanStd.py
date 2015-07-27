@@ -72,7 +72,7 @@ def getMeanStdFile(fileInName,fileOutName,nbRepetition=100):
 
 
 if __name__ == "__main__":
-    getMeanStdFile(sys.argv[1],sys.argv[2])
+    getMeanStdFile(sys.argv[1],sys.argv[2],nbRepetition=eval(sys.argv[3]))
 
 
 

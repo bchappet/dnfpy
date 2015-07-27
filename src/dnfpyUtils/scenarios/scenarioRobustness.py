@@ -1,6 +1,6 @@
 from scenario import Scenario
 class ScenarioRobustness(Scenario):
-    def __init__(self,noiseI=1.0,nbDistr=5):
+    def __init__(self,noiseI=0.5,nbDistr=3):
         super(ScenarioRobustness,self).__init__()
         self.noiseI=noiseI
         self.nbDistr = nbDistr

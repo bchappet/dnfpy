@@ -7,10 +7,12 @@ class CellRsdnf : public Module
 public:
     CellRsdnf();
     virtual void computeState() override;
+    virtual void setDefaultParams(ParamsPtr params) override;
 
     virtual void initRouters();
 
     enum CellRsdnf_Attributes{NB_BIT_RECEIVED,ACTIVATED,DEAD};
+    enum CellRsdnf_Params {NB_SPIKE,PROBA,PRECISION_PROBA};
 
 
     virtual void getAttribute(int index,void* value) override;

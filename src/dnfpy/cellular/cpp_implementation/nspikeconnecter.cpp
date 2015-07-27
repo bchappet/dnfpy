@@ -6,12 +6,12 @@
  * @param neighCell
  * @param dir
  */
-void NSpikeConnecter::cellConnection(Module* cell,Module* neighCell,int dir)const{
+void NSpikeConnecter::cellNeighbourConnection(Module::ModulePtr cell,Module::ModulePtr neighCell,int dir)const{
     if(neighCell!=nullptr){
-        cell->addNeighbour(neighCell);
+        cell.get()->addNeighbour(neighCell);
     }else{
-        CellNSpike* deadCell = new CellNSpike();
-        deadCell->setDead(true);
-        cell->addNeighbour(deadCell);
+        Module::ModulePtr deadCell = Module::ModulePtr(new CellNSpike());
+        ((CellNSpike*)deadCell.get())->setDead(true);
+        cell.get()->addNeighbour(deadCell);
     }
 }

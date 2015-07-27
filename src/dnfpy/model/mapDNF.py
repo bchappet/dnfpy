@@ -6,12 +6,12 @@ from convolution import Convolution
 class MapDNF(FieldMap):
     def __init__(self,name,size,dt=0.1,wrap=True,
                  tau=0.64,h=0,
-                 model='cnft',th=0.75,
+                 model='cnft',th=0.75,delta=1.,
                  iExc=1.25,iInh=0.7,wExc=0.1,wInh=10,alpha=10,
                  mapSize=1.,nbStep=0,
                  **kwargs):
         super(MapDNF,self).__init__(name,size,dt=dt,wrap=wrap,
-                    tau=tau,h=h,
+                    tau=tau,h=h,delta=delta,
                     model=model,th=th,
                     **kwargs)
 

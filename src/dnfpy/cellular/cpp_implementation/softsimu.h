@@ -37,11 +37,13 @@ extern "C" {
      */
     int useMap(int idMap);
 
+    void preCompute();
     void step();
-    void nstep(int n);
+    void nstep(unsigned int n);
     void synch();
     void reset();
-    void initMapSeed();
+    void initMapSeed(long int seed);
+
 
 
    // ModuleC* getCell(int x,int y);
@@ -52,13 +54,15 @@ extern "C" {
      * @param value
      * @param path
      */
-    void setMapParamInt(int index,int value,char* path);
-    void setMapParamBool(int index,bool value,char* path);
-    void setMapParamFloat(int index,float value,char* path);
+    void setMapParamInt(int index,int value);
+    void setMapParamBool(int index,bool value);
+    void setMapParamFloat(int index,float value);
 
-    int getMapParamInt(int index,char* path);
-    bool getMapParamBool(int index,char* path);
-    float getMapParamFloat(int index,char* path);
+
+    int getMapParamInt(int index);
+    bool getMapParamBool(int index);
+    float getMapParamFloat(int index);
+
 
     void getCellAttribute(int x,int y,int index,void* value);
     void setCellAttribute(int x,int y,int index, void* value);

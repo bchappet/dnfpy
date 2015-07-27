@@ -7,9 +7,10 @@ class Router : public Module
 {
 public:
     enum RouterRegister { BUFFER,SPIKE_OUT} ;
-    enum CellRsdnf_Params {NB_SPIKE,PROBA};
+
     Router();
     virtual void computeState() override;
+
     void setActivated(bool isActivated);
 protected:
     bool activated;//controled by cell

@@ -5,55 +5,72 @@
 #include "param.h"
 #include <assert.h>
 #include <iostream>
+#include<boost/ptr_container/ptr_vector.hpp>
+#include <boost/shared_ptr.hpp>
+
+
 
 class Module
 {
+
 public:
+    typedef boost::shared_ptr<Module> ModulePtr;
+    typedef boost::shared_ptr<std::vector<void*>> ParamsPtr;
 
     Module(){}
 
+    /**
+     * @brief preCompute optional and not recursif: is not called on the submodules
+     */
+    virtual void preCompute(){}
+
     virtual void compute(){
-        for(Module* mod:this->subModules){
-            mod->compute();
+        for(unsigned int i = 0; i < this->subModules.size() ; i++){
+
+            this->subModules[i].get()->compute();
         }
         this->computeState();
+    }
+
+    void setParams(ParamsPtr params){
+        this->params = params;
+        for(ModulePtr mod : this->subModules){
+            mod.get()->setParams(params);
+        }
     }
 
     virtual void computeState(){}
 
     /**
-     * @brief linkParam will link the param of target with this param
-     * Which means that
-     *  1) target param value will be the same as this
-     *  2) Every modification on any side will be transmitted to the other
-     * @param indexParam
-     * @param indexParamTarget
-     * @param target
+     * Should be called only once per map2D
+     * @brief getDefaultParams
+     * @return
      */
-    void linkParam(int indexParam,int indexParamTarget,Module* target){
-        target->params[indexParamTarget] = this->params[indexParam];
-//        this->setParam<float>(indexParam,0.01);
-//        std::cout << "param :target" << target->getParam<float>(indexParamTarget) << std::endl;
-//        assert(target->getParam<float>(indexParamTarget) < 0.01);
-    }
+    virtual void setDefaultParams(ParamsPtr params){}
 
 
-    void addNeighbours(std::vector<Module*> new_neighbours){
+
+
+    void addNeighbours(std::vector<ModulePtr> &new_neighbours){
         this->neighbours.insert(this->neighbours.end(),new_neighbours.begin(),new_neighbours.end());
     }
 
-    void addNeighbour(Module* input){
+    /**
+     * @brief addNeighbour
+     * @param input
+     */
+    void addNeighbour(ModulePtr input){
         this->neighbours.push_back(input);
     }
 
-    template <typename T>
-    void setRegState(int index,T val){
-        this->getReg<T>(index)->set(val);
+
+    void setRegState(int index,int val){
+        this->regs.at(index).set(val);
     }
 
-    template <typename T>
-    T getRegState(int index){
-        return this->getReg<T>(index)->get();
+
+    int getRegState(int index){
+        return this->regs.at(index).get();
     }
 
     virtual void getAttribute(int index,void* value){}
@@ -62,65 +79,65 @@ public:
 
 
     virtual void synch(){
-        for(Module* mod:this->subModules){
-            mod->synch();
+
+        for(unsigned int i = 0; i < this->subModules.size() ; i++){
+            subModules[i].get()->synch();
         }
-        for(IRegister* reg:this->regs){
-            reg->synch();
+        for(unsigned int i = 0; i < this->regs.size() ; i++){
+            this->regs[i].synch();
         }
 
     }
 
 
-    Module* getSubModule(int index){
+    ModulePtr getSubModule(int index){
+        //std::cout << "getting sub module" << index << std::endl;
         return this->subModules.at(index);
     }
 
-    std::vector<Module*> getSubModules(){
+    std::vector<ModulePtr> getSubModules(){
         return this->subModules;
     }
 
-    Module* getNeighbour(int index){
+    ModulePtr getNeighbour(int index){
         return this->neighbours.at(index);
     }
 
     template<typename T>
-    void setParam(int index, T value){
-        Param<T>* param = (Param<T>*) (this->params.at(index));
-        param->val = value;
+    void setParam(int index,T value){
+
+        *((T*)this->params->at(index)) = value;
     }
 
-    template<typename T>
-    T getParam(int index){
-        Param<T>* param = (Param<T>*) (this->params.at(index));
-        return param->val;
+
+    template <typename T> T getParam(int index){
+       // std::cout << "size params : " << this->params->size() << std::endl;
+        //std::cout << "getting param " << index << std::endl;
+        return *((T*)this->params->at(index));
     }
+
 
     /**
      * @brief reset the register and the submodules
      */
     virtual void reset(){
-        for(Module* mod : this->subModules){
-            mod->reset();
+        for(unsigned int i = 0; i < this->subModules.size() ; ++i){
+            this->subModules[i]->reset();
         }
-        for(IRegister* reg:this->regs){
-            reg->reset();
+        for(unsigned int i = 0; i < this->regs.size() ; i++){
+            this->regs[i].reset();
         }
-
     }
 
 protected:
-    std::vector<IRegister*> regs;//inner state of the module
-    std::vector<Module*> neighbours;
-    std::vector<Module*> subModules;
+    std::vector<Register> regs;//inner state of the module
+    std::vector<ModulePtr> neighbours;
+    std::vector<ModulePtr> subModules;
+    ParamsPtr params;//only one instance will be constructed : in the map
 
-    std::vector<IParam*> params;//parameters of the module for experimentation
 
-private:
-    template <typename T>
-    Register<T>* getReg(int index){
-        return (Register<T>*)(this->regs.at(index));
-    }
+
+
 
 };
 

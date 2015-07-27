@@ -34,7 +34,9 @@ class TrackedTarget(Map2D):
             #for every cluster find the track with dist < distMax_
             closestTrack = []
             closestTrackIndices = []
-            for clusterCoord in self.clusterMap.getData():
+            #print("clusterCoord%s"%self.clusterMap.getData())
+            clusterCoords = self.clusterMap.getData()
+            for clusterCoord in clusterCoords:
                 closest = np.array([-1,-1])
                 closestIndex = -1
                 i_track = 0
@@ -48,7 +50,8 @@ class TrackedTarget(Map2D):
                 closestTrack.append(closest)
                 closestTrackIndices.append(closestIndex)
 
-            if closestTrackIndices == self.saveClosestTrackIndices \
+            if len(clusterCoords) > 0 and\
+                closestTrackIndices == self.saveClosestTrackIndices \
                 and not (-1 in closestTrackIndices):
                     self.coherency += 1
             else:

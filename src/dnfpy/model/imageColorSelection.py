@@ -41,7 +41,6 @@ class ImageColorSelection(Map2D):
             raise ValueError("bad color : %s"%color)
 
 
-
         return dict(colorVal=colorVal)
 
 
@@ -59,14 +58,14 @@ class ImageColorSelection(Map2D):
 
 		    vHigh = hsvVal[2] + thresh if hsvVal[2] + thresh < 255 else 255
 		    vLow = hsvVal[2] - thresh if hsvVal[2] - thresh >= 0 else 0
-		
+
                     lowHSV = np.array([hLow,sLow,vLow])
                     highHSV = np.array([hHigh,sHigh,vHigh])
                     lowHSV[1] = 0
                     highHSV[1] = 255
 		    print("hsvLow : %s"%lowHSV)
 		    print("hsvHigh : %s"%highHSV)
-                else:        
+                else:
                     lowHSV = np.array([colorVal-thresh,satLow,valLow])
                     highHSV = np.array([colorVal+thresh,satHigh,valHigh])
                 array = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)

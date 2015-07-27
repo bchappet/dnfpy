@@ -3,24 +3,31 @@
 #include <iostream>
 #include "bitstreamutils.h"
 Map2D::Map2D() : Module(){
-
+    this->params = ParamsPtr(new std::vector<void *>());
 }
 
-void Map2D::initMapSeed(){
-    initSeed();
+Map2D::~Map2D(){
 }
+
+void Map2D::initMapSeed(long int seed){
+    initSeed(seed);
+}
+
 
 void Map2D::initMemory(int width, int height){
     this->width = width;
     this->heigth = height;
 
-    this->cellArray = new Module**[this->heigth];
+    this->cellArray = std::vector<std::vector<Module::ModulePtr>>(height);
+
+
+
     for(int i = 0 ; i < this->heigth ; i++){
-        this->cellArray[i] = new Module*[this->width];
+        this->cellArray[i].resize(this->width);
     }
 }
 
-Map2D::Map2D(int width,int height) : Module()
+Map2D::Map2D(int width,int height) : Map2D()
 {
    this->initMemory(width,height);
 }
@@ -39,6 +46,21 @@ void Map2D::reset(){
     for(int i = 0 ; i < this->heigth ; i++){
         for(int j = 0 ; j < this->width ; j++){
             this->cellArray[i][j]->reset();
+        }
+    }
+}
+
+void Map2D::preCompute(){
+//    std::cout << "precompute " << this->heigth  <<"x"<< this->width << std::endl;
+//    std::cout << "pSpike: " <<this->getParam<float>(0) << std::endl;
+//    std::cout << "sizeStream: " <<this->getParam<int>(1) << std::endl;
+//    std::cout << "pExc: " <<this->getParam<float>(2) << std::endl;
+//    std::cout << "precision mask: " <<this->getParam<unsigned long int>(3) << std::endl;
+
+    Module::preCompute();
+    for(int i = 0 ; i < this->heigth ; i++){
+        for(int j = 0 ; j < this->width ; j++){
+            this->cellArray[i][j]->preCompute();
         }
     }
 }

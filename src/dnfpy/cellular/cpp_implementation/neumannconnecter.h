@@ -13,9 +13,11 @@ public:
     enum NeumannDirection { N,S,E,W} ;
     NeumannConnecter(){}
 
-    virtual void cellConnection(Module* cell,Module* neighCell,int dir)const;
+    virtual void cellConnection(Module::ModulePtr cell) const{}
 
-    virtual void connect(int width,int height,Module*** cellArray) const override;
+    virtual void cellNeighbourConnection(Module::ModulePtr cell,Module::ModulePtr neighCell,int dir)const;
+
+    virtual void connect(int width,int height,std::vector<std::vector<Module::ModulePtr>> &cellArray) const override;
 
 };
 

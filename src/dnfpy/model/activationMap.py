@@ -8,7 +8,8 @@ class ActivationMap(Map2D):
 
     def _compute(self,model,field,th,dtype):
         if model == 'cnft':
-            self._data = np.maximum(field,dtype(0))
+            #self._data = np.maximum(field,dtype(0))
+            self._data = np.where(field > th,dtype(1),dtype(0))
         elif model == 'spike':
             self._data = np.where(field > th,dtype(1),dtype(0))
         else:

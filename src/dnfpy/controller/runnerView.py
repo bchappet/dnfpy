@@ -5,6 +5,7 @@ from datetime import datetime
 import time
 from runner import Runner
 import sys
+import time
 
 
 class RunnerView(QtCore.QThread, Runner):
@@ -17,8 +18,13 @@ class RunnerView(QtCore.QThread, Runner):
 
 
         Attribute:
-            model : Model
-            view : View
+            model: Model, instance of Model
+            view: View, instance of View
+            timeEnd: float, end of the simulation (in second, simulator time referential)
+            timeRatio: float, time ratio between simulator time referential and real time -> realTime/simTime
+            scenario: Scenario, instance of Scenario to apply
+            record: bool, if true the record mode is activated. An image named record.png will be produced 
+                with checked map and trace and at specified time step
     """
     triggerUpdate = QtCore.pyqtSignal()
     triggerParamsUpdate = QtCore.pyqtSignal(str)
@@ -29,7 +35,11 @@ class RunnerView(QtCore.QThread, Runner):
             view,
             timeEnd=100000,
             timeRatio=0.3,
-            scenario=None):
+            scenario=None,
+            record=False):
+        """
+        model : Model class of
+        """
         super(RunnerView, self).__init__()
         self.model = model
         self.view = view
@@ -42,9 +52,12 @@ class RunnerView(QtCore.QThread, Runner):
         self.simuTime = 0.
         self.lastSimuTime = 0.
         # Control
-        self.play = True
+        self.play = False
         # scenario
         self.scenario = scenario
+        #view timing
+        self.lastViewUpdate = time.time()
+        self.maxFPS = 60.
 
     def getTimeRatio(self):
         return self.timeRatio
@@ -76,22 +89,21 @@ class RunnerView(QtCore.QThread, Runner):
         if mapToUpdate:
             self.triggerParamsUpdate.emit(mapToUpdate)
 
+    @pyqtSlot(str, int, int)
+    def onRClick(self, mapName, x, y):
+        mapName = str(mapName)
+        mapToUpdate = self.model.onRClick(mapName, x, y)
+        if mapToUpdate:
+            self.triggerParamsUpdate.emit(mapToUpdate)
+
+
     @pyqtSlot()
     def saveFigSlot(self):
-        import dnfpy.view.staticViewMatplotlib as mtpl
-        import matplotlib.pyplot as plt
-        dic = self.model.getArraysDict()
-        for key in dic:
-            mtpl.plotArray(dic[key])
-            plt.savefig(key+".png", dpi=300)
-            plt.close()
+        self.saveFig()
 
     @pyqtSlot()
     def saveArrSlot(self):
-        import numpy as np
-        dic = self.model.getArraysDict()
-        for key in dic:
-            np.savetxt(key+".csv", dic[key], delimiter=",")
+        self.saveArr()
 
     @pyqtSlot(float)
     def setTimeRatio(self, timeRatio):
@@ -110,6 +122,7 @@ class RunnerView(QtCore.QThread, Runner):
         self.lastUpdateTime = datetime.now()
         self.simuTime = 0.
         self.lastSimuTime = 0.
+        self.lastViewUpdate = time.time()
         self.model.reset()
 
     @pyqtSlot()
@@ -119,7 +132,7 @@ class RunnerView(QtCore.QThread, Runner):
     @pyqtSlot()
     def onClose(self):
         if self.scenario:
-            print self.scenario.finalize(self.model, self)
+            print(self.scenario.finalize(self.model, self))
 
     def step(self):
         if self.simuTime == 0:
@@ -130,7 +143,16 @@ class RunnerView(QtCore.QThread, Runner):
         if self.scenario:
             self.scenario.apply(self.model, self.simuTime, self)
         self.model.update(self.simuTime)
-        self.triggerUpdate.emit()
+        self.viewUpdate()
+
+    def viewUpdate(self):
+        """Ensure that the view update frequency is not higher than maxFPS"""
+        now = time.time()
+        deltaTime = now -  self.lastViewUpdate
+        limit = (1./self.maxFPS)
+        if deltaTime >= limit:
+            self.triggerUpdate.emit()
+            self.lastViewUpdate = now
 
     def run(self):
         while self.simuTime < self.timeEnd:
@@ -155,17 +177,15 @@ class RunnerView(QtCore.QThread, Runner):
         self.lastUpdateTime = now
 
 
-def launch(model, context, scenario, timeRatio):
+def launch(model, scenario, timeRatio, record=False):
     defaultQSS = "stylesheet/default.qss"
     app = QtGui.QApplication([""])
     app.setStyleSheet(open(defaultQSS, 'r').read())
 
-    if context:
-        context.apply(model)
     if scenario:
         scenario.applyContext(model)
     view = DisplayModelQt(model)
-    runner = RunnerView(model, view, timeRatio=timeRatio, scenario=scenario)
+    runner = RunnerView(model, view, timeRatio=timeRatio, scenario=scenario, record=record)
     view.setRunner(runner)
     view.show()
     runner.start()

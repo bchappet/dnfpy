@@ -86,10 +86,10 @@ class PSO(QtCore.QThread):
         #return (1 - x)**2 + 100*(y - x**2)**2
 
     def getConstantParamsDict(self):
-        return None
+        return {}
 
     def getEvaluationParamsDict(self):
-        return None
+        return {}
 
 
     def indivToParams(self,indiv):

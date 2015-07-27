@@ -1,4 +1,5 @@
 from dnfpy.core.map2D import Map2D
+import numpy as np
 
 class ConstantMap(Map2D):
     def __init__(self,name,size,value,**kwargs):
@@ -7,7 +8,9 @@ class ConstantMap(Map2D):
     def _compute(self,value):
         self._data = value
 
-
+    def setData(self,data):
+        self.setParams(value=data)
+        self.compute()
 
     def reset(self):
         super(ConstantMap,self).reset()

@@ -6,14 +6,17 @@
 
 Router::Router()
 {
-    //params:
-    this->params.push_back(new Param<int>(20));//NB_SPIKE
-    this->params.push_back(new Param<float>(1.0));//PROBA
+
+    //attribute
+    this->activated = false;
+
     //registres
-    this->regs.push_back(new Register<int>(0));//BUFFER
-    this->regs.push_back(new Register<bool>(false));//SPIKE_OUT
+    this->regs.push_back(Register(0));//BUFFER
+    this->regs.push_back(Register(false));//SPIKE_OUT
 
 }
+
+
 
 
 
@@ -23,11 +26,11 @@ void Router::setActivated(bool isActivated){
 
 void Router::computeState(){
 
-    int buffer = this->getRegState<int>(BUFFER);
+    int buffer = this->getRegState(BUFFER);
     int nbInput = 0;
+
     for(unsigned int i = 1 ; i < this->neighbours.size();i++){
-        Module* mod = this->getNeighbour(i);
-        nbInput += mod->getRegState<bool>(SPIKE_OUT);
+        nbInput += this->getNeighbour(i).get()->getRegState(SPIKE_OUT);
     }
 
     bool activated = this->activated;
@@ -37,20 +40,22 @@ void Router::computeState(){
 //    }
 
     if(buffer > 0 || nbInput > 0 || activated){
-        if(generateStochasticBit(this->getParam<float>(PROBA))){
-            this->setRegState<bool>(SPIKE_OUT,true);
+
+        if(generateStochasticBit(this->getParam<float>(CellRsdnf::PROBA),this->getParam<int>(CellRsdnf::PRECISION_PROBA))){
+            this->setRegState(SPIKE_OUT,true);
+
         }else{
-            this->setRegState<bool>(SPIKE_OUT,false);
+            this->setRegState(SPIKE_OUT,false);
         }
         int toAdd = buffer+nbInput-1;
         if(activated){
-            toAdd += this->getParam<int>(NB_SPIKE);
+            toAdd += this->getParam<int>(CellRsdnf::NB_SPIKE);
 
             //std::cout << "Activated to add : " << toAdd <<  std::endl;
         }
-        this->setRegState<int>(BUFFER,toAdd);
+        this->setRegState(BUFFER,toAdd);
     }else{
-        this->setRegState<bool>(SPIKE_OUT,false); 
+        this->setRegState(SPIKE_OUT,false);
     }
 
 

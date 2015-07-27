@@ -10,12 +10,7 @@ int applyProba(float proba, int n);
 CellNSpike::CellNSpike()
 {
 
-    //params:
-    this->params.push_back(new Param<int>(20));//NB_SPIKE
-    this->params.push_back(new Param<float>(1.0));//PROBA_N
-    this->params.push_back(new Param<float>(1.0));//PROBA_S
-    this->params.push_back(new Param<float>(1.0));//PROBA_E
-    this->params.push_back(new Param<float>(1.0));//PROBA_W
+
     //attribute
     this->nbBitReceived = 0;
     this->activated = false;
@@ -23,6 +18,7 @@ CellNSpike::CellNSpike()
 }
 
 void CellNSpike::reset(){
+    Module::reset();
     this->nbBitReceived = 0;
     this->activated = false;
 }
@@ -38,13 +34,23 @@ void CellNSpike::computeState(){
     }
 }
 
+void CellNSpike::setDefaultParams(ParamsPtr params){
+
+    params->push_back(new int(20));//NB_SPIKE
+    params->push_back(new float(1.0));//PROBA_N
+    params->push_back(new float(1.0));//PROBA_S
+    params->push_back(new float(1.0));//PROBA_E
+    params->push_back(new float(1.0));//PROBA_W
+    //std::cout << "inside NSpike : " << params->size() << std::endl;
+
+}
+
 
 void CellNSpike::emmit(int nbSpike,int toDirection){
     int nb_spike_to_send = 0;
     nb_spike_to_send = applyProba(this->getParam<float>(toDirection+1),nbSpike);//proba corespond to direction of target
     if(nb_spike_to_send > 0){
-        CellNSpike* neigh = (CellNSpike*)this->neighbours.at(toDirection);
-        neigh->receive(nb_spike_to_send,toDirection);
+       ((CellNSpike*)this->neighbours[toDirection].get())->receive(nb_spike_to_send,toDirection);
     }
 
 }

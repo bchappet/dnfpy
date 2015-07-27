@@ -16,8 +16,16 @@ public:
     /**
      * @brief The BSRouter_Parameters enum
      * PROBA_SYNAPSE : to generate the synaptic weight flux.
+     * PRECISION_PROBA_SYNAPSE : precision use to generate the probability
+     * NB_NEW_RANDOM_BIT
      */
-    enum CarryBSRouter_Parameters{PROBA_SYNAPSE};
+    enum CarryBSRouter_Parameters{PROBA_SYNAPSE,PRECISION_PROBA_SYNAPSE,NB_NEW_RANDOM_BIT};
+
+
+    void setLastRandomNumber(int* intp);
+
+protected:
+    int* lastRandomNumber;
 };
 
 #endif // CARRYBSROUTER_H

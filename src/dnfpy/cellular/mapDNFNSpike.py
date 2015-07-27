@@ -6,7 +6,7 @@ from dnfpy.cellular.nSpikeConvolution import NSpikeConvolution
 class MapDNFNSpike(FieldMap):
     def __init__(self,name,size,dt=0.1,wrap=True,
                  tau=0.64,h=0,
-                 th=0.75,nspike=10,
+                 th=0.75,nspike=20,
                  iExc=1.25,iInh=0.7,pExc=0.0043,pInh=0.9,alpha=10,
                  **kwargs):
         super(MapDNFNSpike,self).__init__(name,size,dt=dt,wrap=wrap,

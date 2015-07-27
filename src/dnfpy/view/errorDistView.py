@@ -24,6 +24,13 @@ class ErrorDistView(ArrayView):
         if self.errors > 0:
             pt = np.array([self.time,self.errors])
             self.pt.append(pt)
+            self.updateMinMax()
+            if len(self.pt) > self.curveSize:
+                del self.pt[0]
+        else:
+            pass
+
+    def updateMinMax(self):
             maxTmp = np.max(self.pt,axis=0)
             minTmp = np.min(self.pt,axis=0)
             if (maxTmp != minTmp).all():
@@ -37,13 +44,6 @@ class ErrorDistView(ArrayView):
             elif maxTmp[1] == minTmp[1]:
                 self.maxPt[0] = maxTmp[0]
                 self.minPt[0] = minTmp[0]
-
-            if len(self.pt) > self.curveSize:
-                del self.pt[0]
-        else:
-            pass
-
-
 
     def paintEvent(self, event):
         qp = QtGui.QPainter(self)

@@ -1,4 +1,5 @@
 import unittest
+import time
 import numpy as np
 from dnfpy.cellular.bsRsdnfMap import BsRsdnfMap
 import dnfpy.view.staticViewMatplotlib as view
@@ -39,7 +40,7 @@ class TestBsRsdnfMap(unittest.TestCase):
         self.uut.compute()
         self.uut.compute()
         res = self.uut.getData()
-        self.assertEquals(res[5][5],2)
+        self.assertEquals(res[5][5],1)
 
     def test_proba_0(self):
         self.uut.setParams(probaSynapse=0.)
@@ -50,6 +51,8 @@ class TestBsRsdnfMap(unittest.TestCase):
         res = self.uut.getData()
         self.assertEquals(res[2][5],0)
         self.assertEquals(res[0][0],0)
+
+
 
     def test_reset_data(self):
         self.uut.setParams(probaSpike=1.)
@@ -91,26 +94,75 @@ class TestBsRsdnfMap(unittest.TestCase):
         sizeStream = 200
         self.size = 101
         self.activation = np.zeros((self.size,self.size),np.intc)
-        self.uut = BsRsdnfMap("uut",self.size,activation=self.activation,routerType="carryRouter")
-        self.uut.setParams(probaSpike=0.05)
+        self.uut = BsRsdnfMap("uut",self.size,activation=self.activation,routerType="uniformCell")
+        self.uut.setParams(probaSpike=0.1)
         self.uut.setParams(sizeStream=sizeStream)
-        self.uut.setParams(probaSynapse=0.99)
+        self.uut.setParams(probaSynapse=0.98)
+        self.uut.setParams(reproductible=True)
 
         sizePatch = 2
         for i in range(-1,sizePatch,1):
             for j in range(-1,sizePatch,1):
                 self.activation[self.size/2+i][self.size/2+j] = 1;
+
+        #10.331086 s before
+        #7.96 after
+        self.uut.setParams(nstep=sizeStream+self.size)
+        start = time.clock()
+        #for i in range(sizeStream+self.size):
         self.uut.compute()
-        for i in range(-1,sizePatch,1):
-            for j in range(-1,sizePatch,1):
-                self.activation[self.size/2+i][self.size/2+j] = 0;
-        for i in range(sizeStream+self.size):
-            self.uut.compute()
+        end = time.clock()
+        print("Time elapsed %s"%(end-start))
 
         res = self.uut.getData()
+        sumD = np.sum(res)
+        self.assertEqual(553405,sumD)
+        #view.plotArray(res)
+        #view.show()
+
+    def test_Precision2(self):
+        self.uut.setParams(reproductible=True)
+        self.uut.setParams(precisionProba=1)
+        self.uut.setParams(probaSpike=0.4)
+        self.activation[5][4] = 1
+        self.uut.compute()
+        self.uut.compute()
+        self.uut.compute()
+        self.uut.compute()
+        self.uut.compute()
+        self.uut.compute()
+        res = self.uut.getData()
         print res
-        view.plotArray(res)
-        view.show()
+        self.assertEquals(res[5][5],2)
+
+    def test_Precision1(self):
+        self.uut.setParams(precisionProba=1)
+        self.uut.setParams(probaSpike=0.99999) #We cannot detect
+        self.activation[5][4] = 1
+        self.uut.compute()
+        self.uut.compute()
+        self.uut.compute()
+        self.uut.compute()
+        self.uut.compute()
+        self.uut.compute()
+        res = self.uut.getData()
+        #print res
+        self.assertEquals(res[5][5],2)
+
+
+
+    def test_Precision3(self):
+        self.uut.setParams(probaSpike=0.9999)
+        self.activation[5][4] = 1
+        self.uut.compute()
+        self.uut.compute()
+        self.uut.compute()
+        self.uut.compute()
+        self.uut.compute()
+        self.uut.compute()
+        res = self.uut.getData()
+        #print res
+        self.assertEquals(res[5][5],4)
 
 
 if __name__ == "__main__":

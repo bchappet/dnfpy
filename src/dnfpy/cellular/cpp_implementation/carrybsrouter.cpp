@@ -1,29 +1,31 @@
 #include "carrybsrouter.h"
 #include "bitstreamutils.h"
 #include <iostream>
+#include "cellbsrsdnf.h"
 CarryBsRouter::CarryBsRouter()
 {
 
 
-    //params
-    this->params.push_back(new Param<float>(1.));//PROBA_SYNAPSE
+
     //registres
-    this->regs.push_back(new Register<bool>(0));//BS_OUT
-    this->regs.push_back(new Register<bool>(0));//CARRY
+    this->regs.push_back(Register(0));//BS_OUT
+    this->regs.push_back(Register(0));//CARRY
 }
 
 void CarryBsRouter::computeState(){
     bool res = false;
-    bool carry = this->getRegState<bool>(CarryBSRouter_Registers::CARRY);
+    bool carry = this->getRegState(CarryBSRouter_Registers::CARRY);
     bool nextCarry = carry;
     //multiplication per synaptic weight
-    bool synaptiWeightBS = generateStochasticBit(this->getParam<float>(CarryBSRouter_Parameters::PROBA_SYNAPSE));
+    bool synaptiWeightBS = generateStochasticBit(this->getParam<float>(CellBsRsdnf::PROBA_SYNAPSE),
+                                                this->getParam<int>(CellBsRsdnf::PRECISION_PROBA));
+
     if(synaptiWeightBS){
         bool neigh = false;
 
         int sumNeigh = 0;
-        for(Module* mod:this->neighbours){
-            bool neighState = mod->getRegState<bool>(0);
+        for(ModulePtr mod:this->neighbours){
+            bool neighState = mod.get()->getRegState(0);
             neigh |= neighState;//rough addition of inputs
             sumNeigh += neighState;
         }
@@ -32,7 +34,10 @@ void CarryBsRouter::computeState(){
         nextCarry =sumNeigh > 1;
 
     }
-    this->setRegState<bool>(CarryBSRouter_Registers::BS_OUT,res);
-    this->setRegState<bool>(CarryBSRouter_Registers::CARRY,nextCarry);
+    this->setRegState(CarryBSRouter_Registers::BS_OUT,res);
+    this->setRegState(CarryBSRouter_Registers::CARRY,nextCarry);
 }
 
+void CarryBsRouter::setLastRandomNumber(int* intp){
+    this->lastRandomNumber = intp;
+}

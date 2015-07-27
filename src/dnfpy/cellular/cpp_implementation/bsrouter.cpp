@@ -1,28 +1,36 @@
 #include "bsrouter.h"
 #include "bitstreamutils.h"
 #include <iostream>
+#include "cellbsrsdnf.h"
 BSRouter::BSRouter()
 {
-    //params
-    this->params.push_back(new Param<float>(1.));//PROBA_SYNAPSE
+
     //registres
-    this->regs.push_back(new Register<bool>(0));//BS_OUT
+    this->regs.push_back(Register(0));//BS_OUT
+
 }
+
+
 
 void BSRouter::computeState(){
     bool res = false;
     //multiplication per synaptic weight
-    bool synaptiWeightBS = generateStochasticBit(this->getParam<float>(BSRouter_Parameters::PROBA_SYNAPSE));
+
+    bool synaptiWeightBS = generateStochasticBit(this->getParam<float>(CellBsRsdnf::PROBA_SYNAPSE),
+                                                this->getParam<int>(CellBsRsdnf::PRECISION_PROBA));
+
     if(synaptiWeightBS){
         //int i = 0;
-        for(Module* mod:this->neighbours){
-            res |= mod->getRegState<bool>(0);//rough addition of inputs
+        for(ModulePtr mod:this->neighbours){
+            res |= mod.get()->getRegState(0);//rough addition of inputs
            // std::cout << "i: " << i << " res : " << res << std::endl;
            // i++;
 
         }
     }
-    this->setRegState<bool>(BSRouter_Registers::BS_OUT,res);
+    this->setRegState(BSRouter_Registers::BS_OUT,res);
 }
 
-
+void BSRouter::setLastRandomNumber(int* intp){
+    this->lastRandomNumber = intp;
+}

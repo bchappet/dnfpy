@@ -5,7 +5,7 @@ class Connecter{
 public:
     Connecter(){}
 
-    virtual void connect(int width,int height,Module*** cellArray) const = 0;
+    virtual void connect(int width,int height,std::vector<std::vector<Module::ModulePtr>> &cellArray) const = 0;
 
 protected:
     bool within_border(int i,int j,int height,int width) const{

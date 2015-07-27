@@ -1,20 +1,16 @@
-# Byte-compiled / optimized / DLL files
-#
-#
-#
-#
-#
-*.o
-*.py.swn
 *.txt
 
 src/dnfpy/cellular/cpp_implementation/test_lib
 src/experiments
 src/curveFitting
-
 #ignore Model and params for now
 src/context/*
 
+
+# Byte-compiled / optimized / DLL files
+*.o
+*.py.swn
+#
 .ropeproject/
 
 #Ignore images and data saved
@@ -28,6 +24,8 @@ __pycache__/
 *.lprof
 *.swo
 *.prof
+*.py.sw*
+
 
 # C extensions
 *.so

@@ -24,13 +24,14 @@ class ClusterMap(Map2D):
     "nbDiscontinuousCluster": int nb cluster which where outliners
 
     """
-    def __init__(self,name,size=0,dt=0.1,threshold=0,min_samples=1,
+    def __init__(self,name,size=0,dt=0.1,threshold=0.4,min_samples=1,
                  clustSize=0.1,sizeNpArr=1,continuity=0.0,expectedNumberOfCluster=1,
                  **kwargs):
         super(ClusterMap,self).__init__(name=name,size=size,dt=dt,threshold=threshold,
             clustSize=clustSize,min_samples=min_samples,sizeNpArr=sizeNpArr,
             continuity=continuity,expectedNumberOfCluster=expectedNumberOfCluster,
                                         **kwargs)
+
 
 
     def reset(self):
@@ -42,16 +43,34 @@ class ClusterMap(Map2D):
         self.setArg(nbComputationEmpty=0)
         self.sumNbClusterSave = []
         self.setArg(nbClusterSum=0)
+        self.setArg(maxNbAct=0)
+        self.nbActList = []
 
 
-    def _compute(self,np_arr,threshold,min_samples,clustSize_,continuity,expectedNumberOfCluster):
-        self.toProf(np_arr,threshold,min_samples,clustSize_,continuity,expectedNumberOfCluster)
+    def _compute(self,size,np_arr,threshold,min_samples,clustSize_,continuity,expectedNumberOfCluster):
+        self.toProf(size,np_arr,threshold,min_samples,clustSize_,continuity,expectedNumberOfCluster)
 
-    def toProf(self,np_arr,threshold,min_samples,clustSize_,continuity,
+    def getMaxNbAct(self):
+        if len(self.nbActList) > 0:
+            return np.max(self.nbActList)
+        else:
+            return np.nan
+
+    def getMeanNbAct(self):
+        if len(self.nbActList) > 0:
+            return np.mean(self.nbActList)
+        else:
+            return np.nan
+
+    def toProf(self,size,np_arr,threshold,min_samples,clustSize_,continuity,
                expectedNumberOfCluster):
-        coords = np.where(np_arr > threshold)
+        maxArr = np.max(np_arr)
+        coords = np.where(np_arr > maxArr/1.2)
         nbActivation = len(coords[0])
-        if nbActivation > 0 and nbActivation < 100:
+        #if nbActivation > 0 and nbActivation < np_arr.shape[0]*1.6:
+        if nbActivation > 0 and nbActivation < np_arr.shape[0]*1.2:
+            #print("nbActivation : %s"%nbActivation)
+            self.nbActList.append(nbActivation)
             coordsArray = list(zip(coords[1],coords[0]))
             nbClust = len(self.clusters)
 

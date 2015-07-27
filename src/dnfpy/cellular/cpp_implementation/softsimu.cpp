@@ -10,9 +10,12 @@
 #include "neumannconnecter.h"
 #include "rsdnfconnecter.h"
 #include "nspikeconnecter.h"
+#include "rsdnfconnecter2layer.h"
 #include "connecter.h"
 #include <string.h>
 #include "cellbsrsdnf.h"
+#include "cellsbsfast.h"
+#include "cellsbsfast2.h"
 
 
 std::vector<Map2D*> mapSimuVec;
@@ -27,29 +30,29 @@ int useMap(int idMap_){
     return 0;
 }
 
-void setMapParamInt(int index,int value,char* path){
-    mapSimu->setMapParam<int>(index,value,path);
+void setMapParamInt(int index,int value){
+    mapSimu->setParam<int>(index,value);
 }
 
-void setMapParamBool(int index,bool value,char* path){
-    mapSimu->setMapParam<bool>(index,value,path);
+void setMapParamBool(int index,bool value){
+    mapSimu->setParam<bool>(index,value);
 }
 
-void setMapParamFloat(int index,float value,char* path){
-    mapSimu->setMapParam<float>(index,value,path);
+void setMapParamFloat(int index,float value){
+    mapSimu->setParam<float>(index,value);
 }
 
-int getMapParamInt(int index,char* path){
-    return mapSimu->getMapParam<int>(index,path);
+int getMapParamInt(int index){
+    return mapSimu->getParam<int>(index);
 }
 
 
-bool getMapParamBool(int index,char* path){
-    return mapSimu->getMapParam<bool>(index,path);
+bool getMapParamBool(int index){
+    return mapSimu->getParam<bool>(index);
 }
 
-float getMapParamFloat(int index,char* path){
-    return mapSimu->getMapParam<float>(index,path);
+float getMapParamFloat(int index){
+    return mapSimu->getParam<float>(index);
 }
 
 
@@ -57,7 +60,9 @@ float getMapParamFloat(int index,char* path){
 int initSimu(int width,int height,char* cellName,char* connecterName)
 {
     Map2D* theNewMap = new Map2D(width,height);
+
     initCellArrayFromName(theNewMap,cellName);
+
     connecterFromName(theNewMap,connecterName);
     mapSimuVec.push_back(theNewMap);
     return mapSimuVec.size()-1;
@@ -80,19 +85,35 @@ void synch(){
     mapSimu->synch();
 }
 
+void preCompute(){
+  //  clock_t start = clock(), diff;
+    mapSimu->preCompute();
+   // diff = clock() - start;
+  //  int msec = diff * 1000 / CLOCKS_PER_SEC;
+   // printf("Precompute time taken %d seconds %d milliseconds\n", msec/1000, msec%1000);
+}
+
 void step(){
+//    clock_t start = clock(), diff;
     mapSimu->compute();
     mapSimu->synch();
+//    diff = clock() - start;
+//    int msec = diff * 1000 / CLOCKS_PER_SEC;
+//    printf("Step time taken %d seconds %d milliseconds\n", msec/1000, msec%1000);
 }
-void nstep(int n){
-    for(int i = 0 ; i < n ; i++){
-        step();
+void nstep(unsigned int n){
+    unsigned int count;
+    for(count = 0 ; count < n ; ++count){
+        //for unknown reason when calling directly step, it doesnot work on python side...
+        mapSimu->compute();
+        mapSimu->synch();
     }
 }
 
-void initMapSeed(){
-    mapSimu->initMapSeed();
+void initMapSeed(long int seed){
+    mapSimu->initMapSeed(seed);
 }
+
 
 //ModuleC* getCell(int x,int y){
 //    return convertModuleToC(mapSimu->getCell(x,y));
@@ -137,39 +158,24 @@ void setArrayAttributeFloat(int index, float* array){
 
 
 void getArrayInt(int index,int * array){
-    mapSimu->getArrayState<int>(index,array);
+    mapSimu->getArrayState(index,array);
 }
 
-void getArrayBool(int index,bool* array){
-    mapSimu->getArrayState<bool>(index,array);
-}
 
-void getArrayFloat(int index,float* array){
-    mapSimu->getArrayState<float>(index,array);
-}
 
 void setArrayInt(int index,int* array){
-    return mapSimu->setArrayState<int>(index,array);
+    return mapSimu->setArrayState(index,array);
 }
 
-void setArrayBool(int index,bool* array){
-    return mapSimu->setArrayState<bool>(index,array);
-}
 
-void setArrayFloat(int index,float* array){
-    return mapSimu->setArrayState<float>(index,array);
-}
+
 
 void setCellInt(int x,int y,int index,int val){
-    mapSimu->setCellState<int>(x,y,index,val);
+    mapSimu->setCellState(x,y,index,val);
 }
 
 void setCellBool(int x,int y,int index,bool val){
-    mapSimu->setCellState<bool>(x,y,index,val);
-}
-
-void setCellFloat(int x,int y,int index,float val){
-    mapSimu->setCellState<float>(x,y,index,val);
+    mapSimu->setCellState(x,y,index,val);
 }
 
 
@@ -180,6 +186,8 @@ void initCellArrayFromNameWithParam(Map2D* map,char* name,char* param){
     }else{
         std::cerr << "unvalid cell name " << name << std::endl;
     }
+
+
 }
 
 
@@ -193,9 +201,15 @@ void initCellArrayFromName(Map2D* map,char* name){
         map->initCellArray<CellNSpike>();
     }else if(strcmp(name,"cellbsrsdnf")==0){
         map->initCellArray<CellBsRsdnf>();
+    }else if(strcmp(name,"cellsbsfast")==0){
+        map->initCellArray<CellSBSFast>();
+    }else if(strcmp(name,"cellsbsfast2")==0){
+        map->initCellArray<CellSBSFast2>();
     }else{
         std::cerr << "unvalid cell name " << name << std::endl;
     }
+
+
 }
 
 void connecterFromName(Map2D* map,char* name){
@@ -211,6 +225,9 @@ void connecterFromName(Map2D* map,char* name){
         map->connect(c);
     }else if(strcmp(name,"nspikeconnecter")==0){
         NSpikeConnecter c;
+        map->connect(c);
+    }else if(strcmp(name,"rsdnfconnecter2layer")==0){
+        RsdnfConnecter2layer c;
         map->connect(c);
     }else{
         std::cerr << "unvalid connecter name " << name << std::endl;

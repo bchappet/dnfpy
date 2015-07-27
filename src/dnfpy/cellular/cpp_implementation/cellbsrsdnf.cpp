@@ -5,21 +5,29 @@
 #include <iostream>
 
 
-Module* getRouter(std::string typeRouter){
-    if(typeRouter.compare("orRouter") == 0){
-        return new BSRouter();
-    }else if(typeRouter.compare("carryRouter") == 0){
-        return new CarryBsRouter();
+Module::ModulePtr getRouter(std::string typeRouter){
+    Module::ModulePtr router;
+    if(typeRouter.compare("carryRouter") == 0){
+        router =  Module::ModulePtr(new CarryBsRouter());
+    }else{ //(typeRouter.compare("orRouter") == 0){
+        router =  Module::ModulePtr(new BSRouter());
     }
-    return nullptr;
+    return router;
+}
+
+CellBsRsdnf::~CellBsRsdnf(){
+    delete this->lastRandomNumber;
 }
 
 CellBsRsdnf::CellBsRsdnf(std::string typeRouter) :Module(){
 
+    //allocate the lastRandomNumber
+    this->lastRandomNumber= new int;
+    *this->lastRandomNumber = 0;
+
 
     for(int i = 0 ; i < 4 ;i ++){
-        Module* r = getRouter(typeRouter);
-        r->addNeighbour(this);
+        ModulePtr r = getRouter(typeRouter);
         this->subModules.push_back(r);
     }
     //attributes
@@ -27,16 +35,24 @@ CellBsRsdnf::CellBsRsdnf(std::string typeRouter) :Module(){
     this->activated = false;
     this->dead = false;
     this->nbBitToGenerate = 0;
-    //params:
-    this->params.push_back(new Param<float>(1));//PROBA_SPIKE
-    this->params.push_back(new Param<int>(20));//SIZE_STREAM
-    this->params.push_back(new Param<float>(1.));//PROBA_SYNAPSE
-    //link to submodule hence if we change this PROBA_SYNAPSE param it will change all sub mods
-    for(Module* mod : this->subModules){
-        this->linkParam(CellBsRsdnf_Parameters::PROBA_SYNAPSE,BSRouter::PROBA_SYNAPSE,mod);
-    }
+    //params
+
+
+
     //registres
-    this->regs.push_back(new Register<bool>(0));//SPIKE_BS
+    this->regs.push_back(Register(0));//SPIKE_BS
+
+
+}
+
+
+void CellBsRsdnf::setDefaultParams(ParamsPtr params){
+    params->push_back(new float(1));//PROBA_SPIKE
+    params->push_back(new int(20));//SIZE_STREAM
+    params->push_back(new float(1.));//PROBA_SYNAPSE
+    params->push_back(new unsigned long int(PRECISION_MAX));//PRECISION_PROBA
+    params->push_back(new int(30));//NB_NEW_RANDOM_BIT
+
 }
 
 
@@ -44,24 +60,33 @@ CellBsRsdnf::CellBsRsdnf(std::string typeRouter) :Module(){
 void CellBsRsdnf::computeState(){
     int nbSpikeReceived = 0;
     bool ret = false;
-    for(Module* in:this->neighbours){
-        nbSpikeReceived += in->getRegState<bool>(BSRouter::BS_OUT);
+
+
+    bool bsSum = false;
+    for(ModulePtr in :this->neighbours){
+        bsSum |= in->getRegState(BSRouter::BS_OUT);
         //std::cout << "nb spike received " << nbSpikeReceived << std::endl;
     }
+    nbSpikeReceived = bsSum;//number spike received = 1 or 0
+
     this->nbBitReceived += nbSpikeReceived;
 
     if(this->activated){
         //std::cout << "activated"<<std::endl;
         this->nbBitToGenerate = this->getParam<int>(CellBsRsdnf_Parameters::SIZE_STREAM);
+        //std::cout << "nb bit to generate : " << this->nbBitToGenerate << std::endl;
         this->activated = 0;
     }
 
     if(this->nbBitToGenerate > 0){
-        ret = generateStochasticBit(this->getParam<float>(CellBsRsdnf_Parameters::PROBA_SPIKE));
+        ret = generateStochasticBit(this->getParam<float>(CellBsRsdnf_Parameters::PROBA_SPIKE),
+                                    this->getParam<int>(CellBsRsdnf_Parameters::PRECISION_PROBA));
+                                   // this->lastRandomNumber,
+                                   // this->getParam<int>(CellBsRsdnf_Parameters::NB_NEW_RANDOM_BIT));
         //std::cout << "bit to generate : " << this->nbBitToGenerate  <<  std::endl;
         this->nbBitToGenerate --;
     }
-    this->setRegState<bool>(CellBsRsdnf_Registers::SPIKE_BS,ret);
+    this->setRegState(CellBsRsdnf_Registers::SPIKE_BS,ret);
 
 }
 

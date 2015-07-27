@@ -16,23 +16,29 @@ if __name__ == "__main__":
     contextClass = None
     scenarioClass = None
     size = eval(sys.argv[2])
-    if len(sys.argv) > 3:
-        timeRatio = eval(sys.argv[3])
-    else:
-        timeRatio = 0.3
+    timeRatio = eval(sys.argv[3])
+   # timeRatio = 0.3
     if len(sys.argv) > 4:
-        if sys.argv[4] != "None":
-            contextClass = getClassFromName(sys.argv[4], "contexts")
-        if len(sys.argv) > 5:
-            scenarioClass = getClassFromName(sys.argv[5], "scenarios")
-    scenario = None
-    context = None
-    if contextClass:
-            context = contextClass()
+        #we put the following args in a dict to give to the model
+        #except if we have scenario:'scenarioName'
+
+        params = eval((sys.argv[4]))
+        if 'scenario' in params:
+            scenarioName = params['scenario']
+            scenarioClass = getClassFromName(scenarioName, "scenarios")
+            del params['scenario']
+    else:
+        params = {}
 
     if scenarioClass:
         scenario = scenarioClass()
+    else:
+        scenario = None
 
-    model = modelClass(size=size)
+    kwparams = dict(size=size)
+    kwparams.update(params)
 
-    runner.launch(model, context, scenario, timeRatio)
+
+    model = modelClass(**kwparams)
+
+    runner.launch(model, scenario, timeRatio)

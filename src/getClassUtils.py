@@ -10,4 +10,15 @@ def getClassFromName(className, path):
     clazz = getattr(module, modelName)
     return clazz
 
+def getFunctionFromName(fileName,funcName,path):
+    """
+    return a function in the specified file and path
+    """
+    path = "dnfpyUtils." + path + "."
+    module = importlib.import_module(path+fileName)
+    func = getattr(module,funcName)
+    return func
+
+
+
 

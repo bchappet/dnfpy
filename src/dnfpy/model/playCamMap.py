@@ -23,7 +23,7 @@ class PlayCamMap(FuncWithoutKeywords):
 
         self.noise = NoiseMap("noise",size,dt=noise_dt,intensity=noiseI)
 
-        self.addChildren(noise=self.noise,distrs=self.distrs)
+        self.addChildren(self.noise,self.distrs)
 
         #debug:
     def get_nbDistr(self):

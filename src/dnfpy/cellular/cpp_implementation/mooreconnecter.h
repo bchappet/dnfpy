@@ -11,9 +11,9 @@ public:
     enum MooreDirection { NW,N,NE,W,E,SW,S,SE} ;
     MooreConnecter(){}
 
-    virtual void cellConnection(Module* cell,Module* neighCell,int dir)const;
+    virtual void cellConnection(Module::ModulePtr cell,Module::ModulePtr neighCell,int dir)const;
 
-    virtual void connect(int width,int height,Module*** cellArray) const override;
+    virtual void connect(int width,int height,std::vector<std::vector<Module::ModulePtr>> &cellArray) const override;
 
 };
 

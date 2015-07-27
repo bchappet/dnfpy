@@ -6,5 +6,5 @@ class ScenarioDistracters(Scenario):
 
 
     def _apply(self,model,time,runner):
-        if self.isTime(1.0):
+       if self.isTime(1.0):
             model.getMap("Inputs").setParamsRec(nbDistr=self.nbDistr)

@@ -1,14 +1,14 @@
 import numpy as np
 import scipy.signal as signal
-from dnfpy.model.webcamMap import WebcamMap
 import copy
+#import numba
 
 
 #Utilitary functions
 #TODO try with cython
 
-
-def __generateWrappedDistance(size,centerX,centerY,wrap):
+#@numba.autojit
+def generateWrappedDistance(size,centerX,centerY,wrap):
     """Compute the distance (real) between the set (0..size-1) and the center
     if wrap is true, the distance will be the minimal from center and center + size"""
     X = np.arange(0, size, 1,dtype= np.float32)
@@ -24,17 +24,25 @@ def __generateWrappedDistance(size,centerX,centerY,wrap):
 
 def gauss2d(size,wrap,intensity,width,centerX,centerY):
     """ Make a  gaussian kernel."""
-    (distX,distY) = __generateWrappedDistance(size,centerX,centerY,wrap);
+    (distX,distY) = generateWrappedDistance(size,centerX,centerY,wrap);
     return intensity * np.exp( (-((distX)**2 + (distY)**2)) / width**2)
 
 def exp2d(size,wrap,intensity,proba,centerX,centerY):
     """Make an Exponential kernel """
-    (distX,distY) = __generateWrappedDistance(size,centerX,centerY,wrap);
+    (distX,distY) = generateWrappedDistance(size,centerX,centerY,wrap);
     return intensity * (proba ** (distX + distY) )
 
 def cosTraj(time,center,radius,period,phase):
     """Definie a cosinus trajectory"""
     return center + radius * np.cos(2*np.pi*(time/period-phase))
+
+def affTraj(wrapSize,wrap,time,speed,origin):
+    """Return a affine traj: a * time + b"""
+    pos =  speed * time + origin
+    if wrap:
+        pos = pos % wrapSize
+    return pos
+
 
 def sumArrays(varlist):
     """Sum n arrays"""
@@ -56,7 +64,7 @@ def weightedSumArrays(varlist):
 
 
 
-def sumImageArrays(*varlist):
+def sumImageArrays(varlist):
     """Sum n arrays to each color component of an image"""
     k=len(varlist)
     for i in range(len(varlist)):
@@ -103,13 +111,16 @@ def discretize(array,nbStep):
     min = array.min()
     max = array.max()
     step = abs(max-min)/nbStep + 1e-8
-    start = min + step/2.
-    end =  max + step/2.
     values = np.arange(min+step/2,max+step/2,step)
     bins = np.arange(min,max+step,step)
     arrBins = np.digitize(array.flatten(),bins) - 1
     resFlat =  values[arrBins]
     return resFlat.reshape(shape)
 
+def matrixTranslation(array,tx,ty):
+    import cv2
+    rows,cols = array.shape
+    M = np.float32([[1,0,tx],[0,1,ty]])
+    return cv2.warpAffine(array,M,(cols,rows))
 
 

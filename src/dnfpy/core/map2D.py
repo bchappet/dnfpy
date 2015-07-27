@@ -114,6 +114,7 @@ class Map2D(Computable):
             Computation occurs <==> simuTime = Map2D.getNextUpdateTime
         """
 
+        #try:
         if not(self.__lock):
             self.__lock = True
             allowed_error = math.pow(10,-self.__precision)
@@ -128,6 +129,10 @@ class Map2D(Computable):
             self.__lock = False
         else:
                 pass
+        #except Exception:
+        #    raise Exception("Error cannot update map :%s"%self.name)
+
+
         return None
 
     def _getChildrenStates(self):
@@ -227,6 +232,7 @@ class Map2D(Computable):
             self._data = 0.
         else:
             self._data = np.zeros((size,size),dtype=dtype)
+            #print self, self._data.dtype
 
     def resetParams(self):
         if not(self.__lockReset):
@@ -249,6 +255,12 @@ class Map2D(Computable):
         """
         newDict = dict((k,bDict[aDict[k]]) for k in aDict.keys()   )
         return newDict
+
+    def getViewData(self):
+            """
+            To use if we need a different array for the view
+            """
+            return None
 
 
 
