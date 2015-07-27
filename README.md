@@ -15,7 +15,6 @@ DEPENDENCIES:
 
 
 EXECUTION:
-    cd src
     python main.py ModelDNF 101 0.3 #ModelName resolution (odd) speed
 
 
