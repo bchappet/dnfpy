@@ -11,15 +11,12 @@ DEPENDENCIES:
     numpy
     PyQt4
     opencv
-    line_profiler
     qimage2ndarray (thanks to http://kogs-www.informatik.uni-hamburg.de/~meine/software/qimage2ndarray/doc/#converting-ndarrays-into-qimages)
 
-INSTALLATION:
-    For now you have to source install_tmp.sh which will add the dnfpy module to your PYTHONPATH.
 
 EXECUTION:
     cd src
-    kernprof -l -v main.py ModelDNF context/params.dnfs 100
+    python main.py ModelDNF 101 0.3 #ModelName resolution (odd) speed
 
 
 
