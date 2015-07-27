@@ -83,7 +83,7 @@ class InputMap(FuncWithoutKeywords):
 
         #debug:
     def get_nbDistr(self):
-        return self.distrs.getChildrenCount()
+        return self.distrs.getArg('number')
 
     def getTracks(self):
         tracks = []

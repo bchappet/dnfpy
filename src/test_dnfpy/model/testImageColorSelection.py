@@ -16,7 +16,7 @@ class TestImageColorSelection(unittest.TestCase):
         self.testDir =path +  "/testFiles/"
 
         self.img = cv2.imread(self.testDir + "exampleFinger.png")
-        self.uut = ImageColorSelection(size = self.img.shape[0],
+        self.uut = ImageColorSelection("uut",size = self.img.shape[0],
             image = self.img,dt=0.1,color='red',reverseColors=False,thresh=20,
             lowHSV=np.array([150,50,50]),highHSV  = np.array([20,255,255]))
     def test_red(self):

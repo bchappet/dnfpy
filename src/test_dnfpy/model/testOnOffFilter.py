@@ -7,7 +7,7 @@ import numpy as np
 class TestOnOffFilter(unittest.TestCase):
 
         def test_1(self):
-            uut = OnOffFilter(100,onIntXY=(1,1),onStdXY=np.array([0.1,0.5]),
+            uut = OnOffFilter("uut",100,onIntXY=(1,1),onStdXY=np.array([0.1,0.5]),
                               offIntXY = (1,1), offStdXY = np.array([0.1,0.5]),
                               shift = 0.2)
 

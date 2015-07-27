@@ -1,5 +1,6 @@
 from map2D import Map2D
 from funcMap2D import FuncMap2D
+from dnfpy.core.constantMap import ConstantMap
 
 class FuncWithoutKeywords(FuncMap2D):
     """To use with a function taking an undifined amount of args
@@ -14,6 +15,9 @@ class FuncWithoutKeywords(FuncMap2D):
 
 
     def addChildren(self,*kwargs):
+        """
+        The arguments of func are the children
+        """
         self._computeMapList += kwargs
         theDict = self.extractDictFromMaps(kwargs)
         super(FuncWithoutKeywords,self).addChildren(**theDict)
@@ -41,4 +45,9 @@ class FuncWithoutKeywords(FuncMap2D):
 
     def _getChildrenStatesList(self,mapList):
         return [map.getData() for map in mapList]
+
+    def addComputeArgs(self,*argNameList):
+            for arg in argNameList:
+                    self.addChildren(ConstantMap(arg,1,self.getArg(arg)))
+
 

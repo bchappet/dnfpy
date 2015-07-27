@@ -4,7 +4,7 @@ from dnfpy.model.fieldMap import FieldMap
 
 class TestFieldMap(unittest.TestCase):
         def setUp(self):
-                self.uut = FieldMap(size=1,dt=0.1,lat=1,aff=1,tau=0.8,h=0,
+                self.uut = FieldMap("uut",size=1,dt=0.1,lat=1,aff=1,tau=0.8,h=0,
                                     th=0.64,model='cnft')
 
         def test_update(self):

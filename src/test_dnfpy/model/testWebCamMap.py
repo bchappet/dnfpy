@@ -5,7 +5,7 @@ from dnfpy.model.webcamMap import WebcamMap
 
 class TestWebcamMap(unittest.TestCase):
         def test_cam1(self):
-                uut = WebcamMap(512)
+                uut = WebcamMap("uut",512)
                 uut.compute()
                 #view.plotArray(uut.getData())
                 #plt.show()

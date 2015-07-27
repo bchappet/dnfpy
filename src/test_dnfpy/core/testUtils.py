@@ -55,7 +55,7 @@ class TestUtils(unittest.TestCase):
         b = [2,3]
         c = [2,7]
         expected = [5,12]
-        obtained=sumArrays(a,b,c)
+        obtained=sumArrays([a,b,c])
         self.assertTrue((expected==obtained).all(),"the result should be the same")
 
     def test_discretize(self):

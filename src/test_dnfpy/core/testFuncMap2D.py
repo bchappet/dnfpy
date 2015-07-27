@@ -14,11 +14,10 @@ class TestFuncMap2D(unittest.TestCase):
         self.dt = 0.1
         self.func = utils.gauss2d
 
-        self.uut = FuncMap2D(self.func,self.size,dt=self.dt,wrap=True,
-                             intensity=10,width=4,centerX=7,centerY=1)
+        self.uut = FuncMap2D(self.func,self.size,dt=self.dt,size=self.size,wrap=True,intensity=10,width=4,centerX=7,centerY=1)
 
         func2 = utils.cosTraj
-        self.uut2 = FuncMap2D(func2,1,dt=0.1,center=0.2,
+        self.uut2 = FuncMap2D(func2,1,dt=0.1,center=0.2,size=self.size,
                               radius=0.1,period=10,phase=0.2)
 
     def test_computeGauss2d(self):
@@ -77,7 +76,7 @@ class TestFuncMap2D(unittest.TestCase):
     def test_constantArgs(self):
         """Test with only constant args"""
         func2 = utils.cosTraj
-        self.uut2 = FuncMap2D(func2,1,dt=0.1,time=0.1,center=0.2,radius=0.1,period=10,phase=0.2)
+        self.uut2 = FuncMap2D(func2,"uut2",1,dt=0.1,time=0.1,center=0.2,radius=0.1,period=10,phase=0.2)
         self.uut2.update(0.1)
         expected = 0.23681245526846784
         obtained = self.uut2.getData()
@@ -85,7 +84,7 @@ class TestFuncMap2D(unittest.TestCase):
 
     def test_constantArgs_attribute_andGlobalArgs(self):
         func2 = utils.cosTraj
-        self.uut2 = FuncMap2D(func2,1,dt=0.1,radius=0.1,period=10,phase=0.2,center=0.2)
+        self.uut2 = FuncMap2D(func2,"uut2",1,dt=0.1,radius=0.1,period=10,phase=0.2,center=0.2)
 
         self.uut2.update(0.1)
 
@@ -96,7 +95,7 @@ class TestFuncMap2D(unittest.TestCase):
     def test_constantArgs_attribute_andGlobalArgs_changeArgs(self):
         """Scenario : change args after 1 computation"""
         func2 = utils.cosTraj
-        self.uut2 = FuncMap2D(func2,1,dt=0.1,radius=0.1,period=10,phase=0.2,center=0.2)
+        self.uut2 = FuncMap2D(func2,"uut2",1,dt=0.1,radius=0.1,period=10,phase=0.2,center=0.2)
         self.uut2.update(0.1)
         self.uut2.setArg(center=0.3)
         self.uut2.update(0.2)

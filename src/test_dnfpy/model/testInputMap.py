@@ -24,10 +24,10 @@ class TestInputMap(unittest.TestCase):
         self.uut.update(0.1)
         self.assertEqual(0,np.sum(self.uut.getData()))
 
-    def test_updateTrack(self):
+    def _test_updateTrack(self):
         self.uut.update(0.1)
         self.uut.update(0.2)
-        plt.imshow(self.uut.getChildren()['track1'].getData())
+        plt.imshow(self.uut.getChildren()['map_track1'].getData(),interpolation='nearest',cmap='RdYlBu_r')
         plt.show()
 
         #s/\n/,\r/g
@@ -41,7 +41,7 @@ class TestInputMap(unittest.TestCase):
                    1.73002411e-11]
         obtained = np.diagonal(self.uut.getData())
         self.assertAlmostEqual(0,np.sum(expected-obtained),self.precision)
-    def test_updateTrack10(self):
+    def _test_updateTrack10(self):
         for time in np.arange(0,2,0.1):
                 self.uut.update(time)
         #s/\n/,\r/g

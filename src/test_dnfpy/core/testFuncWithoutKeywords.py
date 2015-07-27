@@ -9,9 +9,9 @@ class TestFuncWithoutKewords(unittest.TestCase):
 
     def setUp(self):
         self.precision = 7
-        self.uut = FuncWithoutKeywords(utils.sumArrays,1,dt=0.1)
-        self.uut2 = FuncMap2D(utils.cosTraj,1,dt=0.1,**{'time':0.,'center':0.2,'radius':0.1,'period':10,'phase':0.2})
-        self.uut.addChildren(**{'child':self.uut2})
+        self.uut = FuncWithoutKeywords(utils.sumArrays,"uut",1,dt=0.1)
+        self.uut2 = FuncMap2D(utils.cosTraj,"uut2",1,dt=0.1,**{'time':0.,'center':0.2,'radius':0.1,'period':10,'phase':0.2})
+        self.uut.addChildren(self.uut2)
 
 
     def test_withChildren(self):
@@ -25,7 +25,7 @@ class TestFuncWithoutKewords(unittest.TestCase):
         self.assertAlmostEqual(expected,obtained,self.precision,"the result should be the same")
 
     def test_withConstant(self):
-        self.uut = FuncWithoutKeywords(utils.sumArrays,1,dt=0.1,a=1,b=4,c=8)
+        self.uut = FuncWithoutKeywords(utils.sumArrays,"uut",1,dt=0.1,a=1,b=4,c=8)
         self.uut.addComputeArgs('a','b','c')
         self.uut.update(0.1)
         expected = 13
@@ -33,33 +33,28 @@ class TestFuncWithoutKewords(unittest.TestCase):
         self.assertEqual(expected,obtained,"the result should be the same")
 
     def test_withBoth(self):
-        self.uut = FuncWithoutKeywords(utils.sumArrays,1,dt=0.1,a=1,b=4,c=8)
+        self.uut = FuncWithoutKeywords(utils.sumArrays,"uut",1,dt=0.1,a=1,b=4,c=8)
         self.uut.addComputeArgs('a','b','c')
-        self.uut.addChildren(uut2=self.uut2)
+        self.uut.addChildren(self.uut2)
         self.uut2.update(0.1)
         self.uut.update(0.1)
         expected = 13 + 0.236812455268
         obtained = self.uut.getData()
         self.assertAlmostEqual(expected,obtained,self.precision,"the result should be the same")
     def test_sumArray(self):
-        self.uut = FuncWithoutKeywords(utils.sumArrays,1,dt=0.1,a=[1,2],b=[3,4],c=[4,5])
+        self.uut = FuncWithoutKeywords(utils.sumArrays,"uut",1,dt=0.1,a=[1,2],b=[3,4],c=[4,5])
         self.uut.addComputeArgs('a','b','c')
         self.uut.update(0.1)
         expected = [8,11]
         obtained = self.uut.getData()
         self.assertTrue((expected==obtained).all(),"The result should be the same")
     def test_igore(self):
-        self.uut = FuncWithoutKeywords(utils.sumArrays,1,dt=0.1,a=[1,2],b=[3,4],c=[4,5])
+        self.uut = FuncWithoutKeywords(utils.sumArrays,"uut",1,dt=0.1,a=[1,2],b=[3,4],c=[4,5])
         self.uut.addComputeArgs('a','b','c')
         self.uut.update(0.1)
         expected = [8,11]
         obtained = self.uut.getData()
         self.assertTrue((expected==obtained).all(),"The result should be the same")
-
-
-
-
-
 
 
 
