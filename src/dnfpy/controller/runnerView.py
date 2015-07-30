@@ -41,20 +41,14 @@ class RunnerView(QtCore.QThread, Runner):
         model : Model class of
         """
         super(RunnerView, self).__init__()
-        self.model = model
+        Runner.__init__(self,model,timeEnd,scenario)
+
         self.view = view
-        self.timeEnd = timeEnd
         self.timeRatio = timeRatio
         self.triggerUpdate.connect(self.view.update)
         self.triggerParamsUpdate.connect(self.view.updateParams)
-        # timing
-        self.lastUpdateTime = datetime.now()
-        self.simuTime = 0.
-        self.lastSimuTime = 0.
         # Control
         self.play = False
-        # scenario
-        self.scenario = scenario
         #view timing
         self.lastViewUpdate = time.time()
         self.maxFPS = 60.
@@ -119,11 +113,8 @@ class RunnerView(QtCore.QThread, Runner):
 
     @pyqtSlot()
     def resetSlot(self):
-        self.lastUpdateTime = datetime.now()
-        self.simuTime = 0.
-        self.lastSimuTime = 0.
+        Runner.resetSlot(self)
         self.lastViewUpdate = time.time()
-        self.model.reset()
 
     @pyqtSlot()
     def resetParamsSlot(self):

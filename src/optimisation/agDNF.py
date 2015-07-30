@@ -1,41 +1,42 @@
-import numpy as np
+from ag import AlgoGen
 import dnfpy.controller.runner as runner
 from dnfpyUtils.scenarios.scenarioRobustness import ScenarioRobustness
 from dnfpyUtils.scenarios.scenarioSwitch import ScenarioSwitch
 from dnfpyUtils.scenarios.scenarioNoise import ScenarioNoise
-from dnfpyUtils.models.modelDNF import ModelDNF
-from pso import PSO
 from pso import QtApp
 from PyQt4 import QtGui
 from ag import AlgoGen
+
+from dnfpyUtils.models.modelDNFCellular import ModelDNFCellular
+import numpy as np
+import signal
+import sys
+
+from dnfpyUtils.scenarios.scenarioSwitchWM import ScenarioSwitchWM
+from dnfpyUtils.scenarios.scenarioStatic import ScenarioStatic
+from dnfpyUtils.models.modelDNF import ModelDNF
+
 class AGDNF(AlgoGen):
-
-    def getExecutionBounds(self):
-        return (1)
-
-
-    def getListParam(self):
-        return ["iExc","iInh","wExc","wInh"]
-
-    def getBounds(self):
-        """return (lowerBounds,upperBounds"""
-        z = 10e-6
-        lowerBounds = np.array([z,z,z,z])
-        upperBounds = np.array([1,1,1,2])
-        return (lowerBounds,upperBounds)
-
-    def getStartBounds(self):
-        z = 10e-6
-        lowerBounds = np.array([z,z,z,z])
-        upperBounds = np.array([1,1,1,2])
-        return (lowerBounds,upperBounds)
-
-    def getConstantParamsDict(self):
-        return dict(size=49,model='spike')
+    def __init__(self,view,**kwargs):
+            #self.wInh = 0.2
+            super(AGDNF,self).__init__(view,**kwargs)
 
     def getEvaluationParamsDict(self):
         return dict(timeEnd=20,allowedtime=10e10)
 
+    def getListParam(self):
+        return ["iExc","iInh","wExc","wInh","h","th"]
+
+    def getBounds(self):
+        """return (lowerBounds,upperBounds"""
+        lowerBounds = np.array([0,0,0,0,-1,0])
+        upperBounds = np.array([10,1,1,10,1,1])
+        return (lowerBounds,upperBounds)
+
+
+
+    def getConstantParamsDict(self):
+        return dict(size=49,model='cnft',activation='step')
 
     def indivToParams(self,indiv):
         """return the parameters dictionary which will be given to the model"""
@@ -45,70 +46,68 @@ class AGDNF(AlgoGen):
         paramList[1] = indiv[1]*indiv[0]
         paramList[2] = indiv[2]*indiv[3]
         paramList[3] = indiv[3]
+        paramList[4] = indiv[4]
+        paramList[5] = indiv[5]
         return self.indivToDict(paramList)
-
 
 
     def getModel(self,indiv):
         return ModelDNF(**indiv)
 
+
+
     def evaluate(self,indiv):
-        scenarioR = ScenarioRobustness()
-        scenarioS = ScenarioSwitch()
-        scenarioN = ScenarioNoise()
+        #TODO have a list of scenario
+        #print(indiv)
+        scenarioStatic = ScenarioStatic(timeStim=1.2)
+        scenarioWM = ScenarioSwitchWM()
 
-        #indiv.update(self.constantParamsDict)
-        #print("evaluate %s"%indiv)
         model =  self.getModel(indiv)
+        timeEnd = 30
+        allowedTime = 10e10
 
-        timeEnd = self.evaluationParamsDict['timeEnd']
-        allowedTime = self.evaluationParamsDict['allowedTime']
+        (error,wellClusterized,time,convergence,maxNbAct,meanNbAct,elapsedTime,errorShape,compEmpty)\
+                         = runner.launch(model, scenarioStatic, timeEnd,allowedTime)
+        if not(convergence):
+            conv = 1.
+        else:
+            conv = convergence/10.
 
-        #(errorR,wellClusterizedR,time,convergenceR,maxNbAct,meanNbAct,elapsedTime,errorShapeR)\
-                        #= runner.launch(model, scenarioR, timeEnd,allowedTime)
-        (errorN,wellClusterizedN,time,convergenceN,maxNbAct,meanNbAct,elapsedTime,errorShapeN)\
-                         = runner.launch(model, scenarioN, timeEnd,allowedTime)
-#        if errorR < 1 and errorShapeR < 3. and convergenceR <30:
-#            #print("indiv %s"%indiv)
-#            #print("error %s shape %s convergence %s"%(errorR,errorShapeR,convergenceR))
-#            (errorS,wellClusterizedS,time,convergenceS,maxNbAct,meanNbAct,elapsedTime,errorShapeS)\
-                #            = runner.launch(
-#                model, scenarioS, 6.,allowedTime)
-#            (errorN,wellClusterizedN,time,convergenceN,maxNbAct,meanNbAct,elapsedTime,errorShapeN)\
-                #            = runner.launch(model, scenarioN, timeEnd,allowedTime)
-#        else:
-#            (errorS, wellClusterizedS,errorShapeS,convergenceS) = (10, 10, 10,100)
-#            (errorN, wellClusterizedN,errorNhapeN,convergenceN) = (10, 10, 10,100)
-#
-#        if convergenceS == None:
-#            convergenceS = 100
-#        if convergenceR == None:
-#            convergenceR = 100
-        if convergenceN == None:
-            convergenceN = 100
-#
-#        fitnessError = (errorR + errorS + errorN )/3.
-#        fitnessCluster = (wellClusterizedR + wellClusterizedS + wellClusterizedN)/3.
-#        fitnessShape = (errorShapeR + errorShapeS + wellClusterizedN)/3.
-#        fitnessConv = (convergenceR + convergenceS + convergenceN)/3.
-        #print("error %s, conv %s, shape %s"%(fitnessError*10,fitnessConv/10.,fitnessShape))
+        f1 = conv+ compEmpty +error + errorShape
+        #print("F1 : error : %s compEmpty %s"%(error,compEmpty))
 
-        #return fitnessShape + fitnessError*10 + fitnessConv/10.
-        return errorShapeN + errorN*10 + convergenceN/10.
+        model =  self.getModel(indiv)
+        (error2,wellClusterized,time,convergence,maxNbAct,meanNbAct,elapsedTime,errorShape,compEmpty,wrongNumberOfCluster)  \
+                         = runner.launch(model, scenarioWM, timeEnd,allowedTime)
+
+        #print("F2 : error : %s compEmpty %s"%(error,compEmpty))
+        f2 = 2*error2+compEmpty+1.5*wrongNumberOfCluster + errorShape
+        return (f1 + f2)/2. 
 
 
 
+
+
+def signal_handler(signal, frame):
+            print('You pressed Ctrl+C!')
+            res = (model.bestX,model.bestFitness)
+            print(res)
+            print(model.bestXList[:-20])
+            sys.exit(0)
 
 if __name__ == "__main__":
     import sys
-    app = QtGui.QApplication([""])
-    view = QtApp()
-    model = PSODNF(view,swarmSize=100,nbEvaluationMax=30000,nbThread=8)
-    view.setModel(model)
+    global model
+    model = AGDNF(view=None,swarmSize=100,nbEvaluationMax=30000,nbThread=8,mutationRate=0.5,nbMutation=1,eliteRatio=0.1)
     model.start()
-    sys.exit(app.exec_())
-    res = (model.bestX,model.bestFitness)
-    print(res)
+
+    signal.signal(signal.SIGINT, signal_handler)
+    print('Press Ctrl+C to exit')
+    signal.pause()
+
+
+
+
 
 
 

@@ -32,12 +32,12 @@ class StatsList(object):
         self.shapeMap.addChildren(
             tracksCenter=self.trackedTarget,inputMap=inputMap)
 
-        self.activation = ActivationMap("statAct",size,dt,model='cnft',
-                                       th= activationMap.getArg('th'))
-        self.activation.addChildren(field=fieldMap)
+        #self.activation = ActivationMap("statAct",size,dt,model='cnft',
+        #                               th= activationMap.getArg('th'))
+        #self.activation.addChildren(field=fieldMap)
 
         self.errorShape = ErrorShape("errorShape",dt=dt)
-        self.errorShape.addChildren(shapeMap=self.shapeMap,activationMap=self.activation)
+        self.errorShape.addChildren(shapeMap=self.shapeMap,activationMap=activationMap)
 
 
 

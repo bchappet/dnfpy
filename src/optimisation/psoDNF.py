@@ -21,17 +21,17 @@ class PSODNF(PSO):
         """return (lowerBounds,upperBounds"""
         z = 10e-6
         lowerBounds = np.array([z,z,z,z])
-        upperBounds = np.array([1,1,1,2])
+        upperBounds = np.array([10,1,1,2])
         return (lowerBounds,upperBounds)
 
     def getStartBounds(self):
         z = 10e-6
         lowerBounds = np.array([z,z,z,z])
-        upperBounds = np.array([1,1,1,2])
+        upperBounds = np.array([10,1,1,2])
         return (lowerBounds,upperBounds)
 
     def getConstantParamsDict(self):
-        return dict(size=49,model='spike')
+        return dict(size=49,model='spike',activation='step')
 
     def getEvaluationParamsDict(self):
         return dict(timeEnd=20,allowedtime=10e10)
@@ -53,6 +53,7 @@ class PSODNF(PSO):
         return ModelDNF(**indiv)
 
     def evaluate(self,indiv):
+        #TODO have a list of scenario
         scenarioR = ScenarioRobustness()
         scenarioS = ScenarioSwitch()
         scenarioN = ScenarioNoise()

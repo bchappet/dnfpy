@@ -1,6 +1,6 @@
 from scenario import Scenario
 class ScenarioNoise(Scenario):
-    def __init__(self,noiseI=1.0):
+    def __init__(self,noiseI=0.75):
         super(ScenarioNoise,self).__init__()
         self.noiseI=noiseI
 

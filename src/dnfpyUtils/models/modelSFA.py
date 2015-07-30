@@ -38,7 +38,7 @@ class ModelSFA(Model,Renderable):
     """
     def initMaps(self,size=49,model="spike",nbStep=0,
                  iExc=1.25,iInh=0.7,wExc=0.1,wInh=10.,alpha=10.,
-                 obsSize=0.50,nbDistr=0,
+                 obsSize=0.50,nbDistr=0,m=1.1,tauSFA=2.8,
                  ):
         """We initiate the map and link them"""
        # print("iExc : %s, iInh: %s, wExc %s, wInh %s"%(iExc,iInh,wExc,wInh))
@@ -74,7 +74,7 @@ class ModelSFA(Model,Renderable):
         #self.act.addChildren(field=self.field)
 
         #self.sfa.addChildren(pot=self.field)
-        self.field =  MapSFA("dnfSFA",size,model="spike")
+        self.field =  MapSFA("dnfSFA",size,dt=dt,wrap=wrap,model=model,th=th,iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,m=m,tauSFA=tauSFA)
         self.field.addChildren(aff=self.input)
         #stats
         self.stats = StatsList(size,self.input,self.field.getActivation(),

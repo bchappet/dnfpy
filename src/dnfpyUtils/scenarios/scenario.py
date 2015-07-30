@@ -12,6 +12,7 @@ class Scenario(object):
         self.nbIteration = 0
         self.time = 0
         self.convergence = None
+        self.processorTime = time.clock()
 
 
     def applyContext(self,model):
@@ -53,8 +54,16 @@ class Scenario(object):
         meanNbAct = model.getMap("clusterMap").getMeanNbAct()
         elapsedTime = endProcessorTime - self.processorTime
         errorShape  = model.getMap("errorShape").getArg("mean")
-        return (error,wellClusterized,self.time,self.convergence,maxNbAct,meanNbAct,elapsedTime,errorShape)
+        compEmpty = model.getMap("clusterMap").getArg("nbComputationEmpty")/float(self.nbIteration)
+        #print("compEmpty %s, nbCom %s ,it %s"%(compEmpty,model.getMap("clusterMap").getArg("nbComputationEmpty"),float(self.nbIteration)))
+        
+        return (error,wellClusterized,self.time,self.convergence,maxNbAct,meanNbAct,elapsedTime,errorShape,compEmpty)
+
+
+    def __str__(self):
+            return str(self.__class__).split("'")[-2].split(".")[-1]
 
     @staticmethod
     def getCharacNameList():
-        return ["ErrorDist","WellClusterized","timeEnd","convergenceTime","maxNbAct","meanNbAct","elapsedTime","ErrorShape"]
+        return ["ErrorDist","WellClusterized","timeEnd","convergenceTime","maxNbAct","meanNbAct","elapsedTime","ErrorShape","CompEmpty"]
+

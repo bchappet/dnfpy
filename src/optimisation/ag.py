@@ -83,10 +83,7 @@ class AlgoGen(QtCore.QThread):
         return (lowerBounds,upperBounds)
 
     def getStartBounds(self):
-        """return (lowerBounds,upperBounds"""
-        lowerBounds = np.array([-10,-10,-10,-10,-10])
-        upperBounds = np.array([10,10,10,10,10])
-        return (lowerBounds,upperBounds)
+            return self.getBounds()
 
     def evaluate(self,indiv):
         x = indiv['x']
@@ -183,7 +180,7 @@ class AlgoGen(QtCore.QThread):
             self.bestXList.append(indiv)
             self.bestXTimeList.append(self.evaluationNb)
             self.bestFitness = newFitness
-            print("##bestFitness : %s, indiv: %s"%(self.bestFitness,self.indivToParams(indiv)))
+            #print("##bestFitness : %s, indiv: %s"%(self.bestFitness,self.indivToParams(indiv)))
 
         if (self.evaluationNb % self.swarmSize) == 0:
             self.savePart.append(np.copy(self.pop))

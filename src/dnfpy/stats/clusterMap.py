@@ -68,7 +68,8 @@ class ClusterMap(Map2D):
         coords = np.where(np_arr > maxArr/1.2)
         nbActivation = len(coords[0])
         #if nbActivation > 0 and nbActivation < np_arr.shape[0]*1.6:
-        if nbActivation > 0 and nbActivation < np_arr.shape[0]*1.2:
+        
+        if nbActivation > 0 and nbActivation < (np_arr.shape[0]/5.)**2:
             #print("nbActivation : %s"%nbActivation)
             self.nbActList.append(nbActivation)
             coordsArray = list(zip(coords[1],coords[0]))

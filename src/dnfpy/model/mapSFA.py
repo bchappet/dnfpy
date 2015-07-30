@@ -26,7 +26,7 @@ class MapSFA(Map2D):
                  tau=0.64,h=0,
                  model='cnft',th=0.75,
                  iExc=1.25,iInh=0.7,wExc=0.1,wInh=10,alpha=10,
-                 mapSize=1.,nbStep=0,beta=0.2,
+                 mapSize=1.,nbStep=0,beta=0.2,m=1.1,tauSFA=2.8,
                  **kwargs):
         super(MapSFA,self).__init__(name,size,dt=dt,wrap=wrap,
                     tau=tau,h=h,
@@ -38,7 +38,7 @@ class MapSFA(Map2D):
 
 
 
-        self.sfa = SFAMap("SFAMap",size,dt=dt,tau=2.8,m=1.1)
+        self.sfa = SFAMap("SFA",size,dt=dt,tau=tauSFA,m=m)
         self.sfa.addChildren(pot=self)
 
 

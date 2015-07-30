@@ -6,18 +6,18 @@ from convolution import Convolution
 class MapDNF(FieldMap):
     def __init__(self,name,size,dt=0.1,wrap=True,
                  tau=0.64,h=0,
-                 model='cnft',th=0.75,delta=1.,
+                 model='cnft',th=0.75,delta=1.,activation='step',
                  iExc=1.25,iInh=0.7,wExc=0.1,wInh=10,alpha=10,
                  mapSize=1.,nbStep=0,
                  **kwargs):
         super(MapDNF,self).__init__(name,size,dt=dt,wrap=wrap,
                     tau=tau,h=h,delta=delta,
-                    model=model,th=th,
+                    model=model,th=th,activation=activation,
                     **kwargs)
 
-        self.act = ActivationMap(name+"_activation",size,dt=dt,model=model,th=th)
-        self.lat =Convolution(name+"_lateral",size,dt=dt,wrap=wrap)
-        self.kernel = LateralWeightsMap(name+"_kernel",mapSize=mapSize,
+        self.act = ActivationMap(name+"Activation",size,dt=dt,type=activation,th=th)
+        self.lat =Convolution(name+"Lateral",size,dt=dt,wrap=wrap)
+        self.kernel = LateralWeightsMap(name+"Kernel",mapSize=mapSize,
                                         globalSize=size,wrap=wrap,
                                         iExc=iExc,iInh=iInh,wExc=wExc,
                                         wInh=wInh,alpha=alpha,nbStep=nbStep)

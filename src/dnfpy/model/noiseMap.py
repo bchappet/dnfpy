@@ -6,7 +6,8 @@ def randomNormal(scale,size_):
     if scale == 0:
         return np.zeros(size_,dtype=np.float32)
     else:
-        return np.random.uniform(low=-scale,high=scale,size=size_)
+        #return np.random.uniform(low=-scale,high=scale,size=size_)
+        return np.random.normal(0,scale,size=size_)
 
 
 class NoiseMap(FuncMap2D):

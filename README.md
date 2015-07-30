@@ -10,8 +10,11 @@ It is more than unstable for now
 DEPENDENCIES:
     numpy
     PyQt4
-    opencv
-    qimage2ndarray (thanks to http://kogs-www.informatik.uni-hamburg.de/~meine/software/qimage2ndarray/doc/#converting-ndarrays-into-qimages)
+    python-opencv
+    qimage2ndarray https://pypi.python.org/pypi/qimage2ndarray/0.2
+    python-scikits-learn
+    python-pyqtgraph
+
 
 
 EXECUTION:

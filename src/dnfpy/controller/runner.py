@@ -1,6 +1,7 @@
 from datetime import datetime
 from dnfpy.stats.statistic import Statistic
 import time as timer
+import os
 
 class Runner(object):
     """
@@ -27,6 +28,9 @@ class Runner(object):
         self.scenario=scenario
 
 
+        self.saveFolder = self.__getNameFolder()
+
+
     def onClick(self,mapName,x,y):
         mapName = str(mapName)
         self.model.onClick(mapName,x,y)
@@ -43,6 +47,15 @@ class Runner(object):
         else:
             return None
 
+    def __getNameFolder(self):
+        import datetime
+        name_uuid = str(self.model)+"_"+str(self.scenario)+"_"+datetime.datetime.now().isoformat()
+        return name_uuid
+
+    def __createDir(self,name):
+        if not os.path.exists(name):
+            os.makedirs(name)
+
 
     def saveFig(self):
         import dnfpy.view.staticViewMatplotlib as mtpl
@@ -50,8 +63,10 @@ class Runner(object):
         lis = self.model.getArrays()
         timeStr  = str(self.simuTime).replace(".","_")
         print timeStr
+        folder = "save/" + self.saveFolder+ "/"
+        self.__createDir(folder)
         for theMap in lis:
-            fileName = "save/"+theMap.getName()+"_"+timeStr+".png"
+            fileName = folder+theMap.getName()+"_"+timeStr+".png"
             try:
                 mtpl.plotArray(theMap.getData())
                 print("Saving %s" % fileName)
@@ -63,36 +78,39 @@ class Runner(object):
 
     def saveArr(self):
         import numpy as np
-        lis = self.model.getArrays()
+        mapList = self.model.getMapDict().values()
         timeStr  = str(self.simuTime).replace(".","_")
-        for theMap in lis:
+        print timeStr
+        folder = "save/" + self.saveFolder+ "/"
+        self.__createDir(folder)
+
+        for theMap in mapList:
+            print("saving... %s"%theMap.getName())
             if isinstance(theMap,Statistic):
-                fileName = "save/"+theMap.getName()+".csv"
+                fileName = folder+theMap.getName()+".csv"
                 np.savetxt(fileName,theMap.getTrace(),delimiter=",")
                 print("Saving %s" % fileName)
             else:
-                ndarray = theMap.getData()
-                if isinstance(ndarray,np.ndarray):
-                    dtype = ndarray.dtype
-                    fileName = "save/"+theMap.getName()+"_"+timeStr
+                data = theMap.getData()
+                fileName = folder+theMap.getName()+"_"+timeStr
+                if isinstance(data,np.ndarray):
+                    dtype = data.dtype
                     if dtype == np.ndarray:
-                        import os
                         os.mkdir(fileName)
                         (height,width) = (theMap.getArg('size'),)*2
                         for row in range(height):
                              for col in range(width):
                                 filename2 = fileName+"/"+str(row)+"_"+str(col)+".csv"
-                                np.savetxt(filename2,ndarray[row,col],delimiter=",")
+                                np.savetxt(filename2,data[row,col],delimiter=",")
                                 print("Saving %s" % filename2)
                     else:
-                        try:
-                            np.savetxt(fileName+".csv", ndarray, delimiter=",")
-                            print("Saving %s" % fileName+".csv")
-                        except Exception, e:
-                            print("1 could not save: %s." % fileName)
-                            print(e)
+                        np.savetxt(fileName+".csv", data, delimiter=",")
+                        print("Saving %s" % fileName+".csv")
+                elif isinstance(data,float) or isinstance(data,int) or isinstance(data,bool):
+                    np.savetxt(fileName+".csv", np.array([data]), delimiter=",")
+                    print("Saving %s" % fileName+".csv")
                 else:
-                    print("2 could not save: %s" % fileName)
+                    print("could not save: %s" % theMap.getName())
 
 
 
@@ -111,6 +129,8 @@ class Runner(object):
         self.simuTime = 0.
         self.lastSimuTime = 0.
         self.model.reset()
+        if self.scenario:
+            self.scenario.applyContext(self.model)
 
     def resetParamsSlot(self):
         self.model.resetParams()
@@ -129,6 +149,7 @@ class Runner(object):
         return ret
 
 def launch(model,scenario,timeEnd,allowedTime=10e10):
+    model.reset()
     if scenario:
         scenario.applyContext(model)
 

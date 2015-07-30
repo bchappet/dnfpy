@@ -1,3 +1,9 @@
+
+.ipynb_checkpoints/*
+*.dropbox.attr
+
+
+
 *.txt
 
 src/dnfpy/cellular/cpp_implementation/test_lib

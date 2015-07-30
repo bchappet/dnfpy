@@ -36,7 +36,7 @@ class ShapeMap(Map2D):
                 #iExc = self.latMap.getArg('iExc_')
                 #iInh = self.latMap.getArg('iInh_')
                 wStim = self.inputMap.getWidth()
-                iStim = self.inputMap.getIntensity()
+                iStim = 1
                 #scalingFactor = wStim/(iExc-iInh)
                 #print("scaling factor : %s"%scalingFactor)
                 #if shapeType == 'gauss':

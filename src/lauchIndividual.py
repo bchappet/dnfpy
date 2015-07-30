@@ -13,16 +13,23 @@ import dnfpy.controller.runner as runner
 indiv = eval((sys.argv[1]))
 scenarioName = sys.argv[2]
 modelName = sys.argv[3]
-
 time = eval(sys.argv[4])
+
+args_scenario = None
+if len(sys.argv) > 6:
+        args_scenario = eval(sys.argv[6])
 
 
 scenarioClass = getClassFromName(scenarioName, "scenarios")
 modelClass = getClassFromName(modelName,"models")
-scenario = scenarioClass()
+if args_scenario:
+    scenario = scenarioClass(**args_scenario)
+else:
+    scenario = scenarioClass()
+
+
 model = modelClass(**indiv)
 if eval(sys.argv[5]):
-       
     #view
     timeRatio = time
     res = runnerView.launch(model, scenario, timeRatio)

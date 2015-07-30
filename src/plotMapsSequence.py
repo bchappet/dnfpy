@@ -8,12 +8,16 @@ import re
 import numpy as np
 from dnfpy.core.utils import cosTraj
 
+color = 'black'
+
 showBar = True
-showArrows = True
+showArrows = False
+showCross = True
 #if show arrow
 radius = 0.3
 center = 0.
 period = 36
+dt = 0.1
 
 
 path = sys.argv[1] #name of the save folder
@@ -33,8 +37,12 @@ def getTrackCenter(index,time,sizeArray):
     radius_ = radius * sizeArray
     center_ = center * sizeArray + (sizeArray-1)/2
 
+    print(cosTraj(26.4,50,36,30.3,0))
+    print(cosTraj(26.4,50,36,30.3,0.25))
+
     x = cosTraj(time,center_,period,radius_,phase)
     y = cosTraj(time,center_,period,radius_,phase+0.25)
+    
     return x,y
 
 
@@ -43,11 +51,13 @@ def getTrackCenter(index,time,sizeArray):
 timeList = [] #list of time step
 
 for filename in glob.glob(os.path.join(path, '*.csv')):
-    if mapNames[0] in filename:
-        time = eval(".".join(re.compile("[_\.]").split(filename)[1:-1]))
+    mapOfFile = (filename.split('_')[-3]).split('/')[-1]
+    if mapNames[0] == mapOfFile:
+        time = eval(".".join(re.compile("[_\.]").split(filename)[-3:-1]))
         timeList.append(time)
 timeList.sort()
 
+print(mapNames,timeList)
 
 #get size array
 sizeArray = getArray(mapNames[0],timeList[0]).shape[0]
@@ -60,6 +70,8 @@ size = 2
 fig = plt.figure(figsize=(size*len(timeList),size*(len(mapNames)+len(traceNames))))
 main_ax = plt.gca()
 
+
+
 for i in range(len(mapNames)):
     for j in range(len(timeList)):
         axes = plt.subplot(grid[i,j])
@@ -68,24 +80,26 @@ for i in range(len(mapNames)):
             plt.text(-0.15,0.5,mapNames[i],transform=axes.transAxes,va='center',ha='left',zorder=100,fontsize=12,rotation=90)
 
 
-        if j==0 and showArrows and mapNames[i] == "Inputs":
+        if mapNames[i] == "Inputs":
             time = timeList[j]
             for indexStim in [0,1]:
-                (x,y) = getTrackCenter(indexStim,time,sizeArray)
+                #(x,y) = getTrackCenter(indexStim,time,sizeArray)
+
+                x = getArray("Inputs_track"+str(indexStim)+"_cX",time)
+                y = getArray("Inputs_track"+str(indexStim)+"_cY",time)
                 (xt,yt) = getTrackCenter(indexStim,time+5,sizeArray)
-                print(time,x,y)
                 #[xFig,yFig] = axis.transData.transform([x,y])
-                axes.annotate("",
-                xy=(xt, yt), xycoords='data',
-                xytext=(x, y), textcoords='data',
-                arrowprops=dict(arrowstyle="->",
-                                 connectionstyle="arc3,rad=-0.3",
-                                 ),
-                )
+                if j==0 and showArrows:
+                        axes.annotate("",
+                        xy=(xt, yt), xycoords='data',
+                        xytext=(x, y), textcoords='data',
+                        arrowprops=dict(arrowstyle="->",
+                                        connectionstyle="arc3,rad=-0.3",
+                                        ),
+                        )
+                if showCross:
+                        marker = axes.scatter([x], [y], marker='+',color=color)
              
-
-
-
         plt.xticks([]), plt.yticks([])
         array = getArray(mapNames[i],timeList[j])
         img = view.plotArray(array,showBar=False)
@@ -112,74 +126,87 @@ for i in range(len(mapNames)):
         subax = fig.add_axes([x,y,width,height],axisbg=axisbg)
 
         egal = view.getEgal(array)
+        egal = round(egal,2)
         a = np.array([[-egal,egal]])
         img = view.plotArray(a,showBar=False)
         bar = plt.colorbar(shrink=.9)
         plt.gca().set_visible(False)
         #axes.set_visible(False)
         view.egaliseColorBar(egal,bar)
-#TODO trace
-
-lwTrace= 2
-lineColor = 'black'
-lineWidth = 3
-
-traceName = traceNames[0]
-trace =  np.loadtxt(path + traceName + ".csv",delimiter=",")
-
-x = np.linspace(0,timeList[-1],len(trace))
-print(timeList)
-print(x)
-
-axis = plt.subplot(grid[-1,:])
-
-plt.plot(x,trace,lw=lwTrace)
-plt.xlabel("Computation iteration")
-plt.ylabel("Error distance\nfrom the tracked\nstimulus",multialignment='center')
-
-ax = plt.gca()
-ax.tick_params(axis='both', which='major', labelsize=10)
-formatter=ticker.FormatStrFormatter("%1.2f")
-ax.yaxis.set_major_formatter(formatter)
-plt.xlim(0,timeList[-1])
-
-plt.ylim(0,0.31)
-ylim = ax.get_ylim()
-plt.ylim(ylim)
-#Add lines on trace
-for it in zip(timeList):
-        plt.plot([it,it],ylim,color=lineColor,lw=lineWidth)
-
-
-newax = fig.add_axes(main_ax.get_position(), frameon=False)
-#plt.subplot2grid(grid,(gridY-2,0),colspan=gridX,rowspan=2)
-size =100
-plt.xlim([0,size])
-plt.ylim([0,size])
-rowSize = size/float(len(mapNames)+1)
-yto = 0 + rowSize + rowSize/10.0 -rowSize/15.0
-yfrom =0 +  rowSize - rowSize/10.0 -rowSize/50.0
-
-#xfrom = np.linspace(0,size,len(trace),endpoint=False)
-xfrom = [x / timeList[-1] * size for x in timeList]
-
-nbIt = len(timeList)
-xto = np.linspace(nbIt,size,nbIt,endpoint=True)
-print "xfrom : " + str(xfrom)
-
-xmargin = size /float( nbIt *5)
-print "xmargin : " + str(xmargin)
-image = (size - (nbIt-1)*xmargin)/float(nbIt)
-print "image : " + str(image)
-xto=np.arange(image/2,size,image+xmargin)
-print "xto : " + str(xto)
-
-print "xfrom lenght : " + str(len(xfrom))
 
 
 
-for i in range(len(timeList)):
-        plt.plot([xfrom[i],xto[i]],[yfrom,yto],color=lineColor,lw=2)
+if len(traceNames) > 0:
+
+
+    lwTrace= 2
+    lineColor = 'black'
+    lineWidth = 2
+
+    traceName = traceNames[0]
+    trace =  np.loadtxt(path + traceName + ".csv",delimiter=",")
+
+    x = np.linspace(0,timeList[-1],len(trace))
+    print(timeList)
+    print(x)
+
+    axis = plt.subplot(grid[-1,:])
+
+    plt.plot(x,trace,lw=1,color=color)
+    # Hide the right and top spines
+    axis.spines['right'].set_visible(False)
+    axis.spines['top'].set_visible(False)
+    # Only show ticks on the left and bottom spines
+    axis.yaxis.set_ticks_position('left')
+    axis.xaxis.set_ticks_position('bottom')
+    
+    plt.xlabel("Time (s)")
+    plt.ylabel("Error distance",multialignment='center')
+
+    ax = plt.gca()
+    ax.tick_params(axis='both', which='major', labelsize=10)
+    formatter=ticker.FormatStrFormatter("%1.2f")
+    ax.yaxis.set_major_formatter(formatter)
+    plt.xlim(0,timeList[-1])
+
+    plt.ylim(0,1)
+    ylim = ax.get_ylim()
+    plt.ylim(ylim)
+
+    #Add lines on trace
+    for it in zip(timeList):
+            plt.plot([it,it],ylim,color=lineColor,lw=lineWidth)
+
+
+    newax = fig.add_axes(main_ax.get_position(), frameon=False)
+    #plt.subplot2grid(grid,(gridY-2,0),colspan=gridX,rowspan=2)
+    size =100
+    plt.xlim([0,size])
+    plt.ylim([0,size])
+    rowSize = size/float(len(mapNames)+1)
+    yto = 0 + rowSize + rowSize/10.0 -rowSize/15.0 -3
+    yfrom =0 +  rowSize - rowSize/10.0 -rowSize/50.0
+
+    #xfrom = np.linspace(0,size,len(trace),endpoint=False)
+    xfrom = [x / timeList[-1] * size for x in timeList]
+
+    nbIt = len(timeList)
+    xto = np.linspace(nbIt,size,nbIt,endpoint=True)
+    print "xfrom : " + str(xfrom)
+
+    xmargin = size /float( nbIt *5)
+    print "xmargin : " + str(xmargin)
+    image = (size - (nbIt-1)*xmargin)/float(nbIt)
+    print "image : " + str(image)
+    xto=np.arange(image/2,size,image+xmargin)
+    print "xto : " + str(xto)
+
+    print "xfrom lenght : " + str(len(xfrom))
+
+
+
+    for i in range(len(timeList)):
+            plt.plot([xfrom[i],xto[i]],[yfrom,yto],color=lineColor,lw=lineWidth)
 
 plt.xticks([])
 plt.yticks([])

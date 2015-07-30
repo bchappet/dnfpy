@@ -27,6 +27,8 @@ def getEgal(data):
         maximum = np.amax(data)
         minimum = np.amin(data)
         egal = max(abs(maximum),abs(minimum))
+        if egal == 0:
+                egal = 1
         return egal
 
 def plotArray(data,showBar=True):
@@ -36,7 +38,7 @@ def plotArray(data,showBar=True):
         egal = getEgal(data)
 
         ret = plt.imshow(data,interpolation='nearest',cmap='RdYlBu_r',vmin=-egal,vmax=+egal)
-        if showBar and np.sum(data) != 0:
+        if showBar  and np.sum(data) != 0:
             bar = plt.colorbar(shrink=.92)
             egaliseColorBar(egal,bar)
         __finalize()

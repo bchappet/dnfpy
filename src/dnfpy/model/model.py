@@ -22,13 +22,16 @@ class Model(object):
         map = self.mapDict[mapName]
         return map
 
+    def getMapDict(self):
+        return self.mapDict
+
     def reset(self):
         for map in self.mapDict.values():
             map.reset()
 
     def firstComputation(self):
         """
-        Compute map with dt infinite ie dt=10e10
+        Compute map with dt infinite ie dt=1e10
         """
         for map in self.mapDict.values():
             if map.getArg('dt') == 1e10:
@@ -89,5 +92,7 @@ class Model(object):
                 self.__addMapsToDict(childDic[child])
 
 
+    def __str__(self):
+            return str(self.__class__).split("'")[-2].split(".")[-1]
 
 

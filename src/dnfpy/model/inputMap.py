@@ -77,7 +77,7 @@ class InputMap(FuncWithoutKeywords):
     def _compute(self,args):
         super(InputMap,self)._compute(args)
         if self.getArg('normalize'):
-            self._data = np.where(self._data>1,1,self._data)
+            self._data = np.clip(self._data,-1,1)
 
 
 
@@ -118,6 +118,17 @@ class InputMap(FuncWithoutKeywords):
         self.noise.setParams(dt=noise_dt,scale=noiseI)
         self.distrs.setParams(dt=distr_dt,wrap=wrap,intensity=iDistr,width=wDistr_,
                         number=nbDistr)
+        if self.track1:
+            self.track1.setParams(dt=tck_dt)
+            #TODO do something to avoid this (we got to change dt recursevly in some case)
+            for child in self.track1.getChildren().values():
+                    child.setParams(dt=tck_dt)
+
+        if self.track2:
+            self.track2.setParams(dt=tck_dt)
+            for child in self.track2.getChildren().values():
+                    child.setParams(dt=tck_dt)
+            
 
 
 

@@ -5,16 +5,17 @@ from dnfpy.model.mapDNF import MapDNF
 from dnfpy.stats.statsList import StatsList
 
 class ModelDNF(Model,Renderable):
-    def initMaps(self,size=49,model="cnft",nbStep=0,
-                 iExc=1.25,iInh=0.7,wExc=0.1,wInh=10.,alpha=10.,th=0.75,
+    def initMaps(self,size=49,model="cnft",activation="step",nbStep=0,
+                 iExc=1.25,iInh=0.7,wExc=0.1,wInh=10.,alpha=10.,th=0.75,h=0,
                  ):
         """We initiate the map and link them"""
        # print("iExc : %s, iInh: %s, wExc %s, wInh %s"%(iExc,iInh,wExc,wInh))
         #Create maps
         self.aff = InputMap("Inputs",size)
                             #iStim1 = 0, iStim2 = 0,noiseI=1.,noise_dt=1e10)
-        self.field = MapDNF("DNF",size,model=model,nbStep=nbStep, \
-                        iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,th=th)
+               
+        self.field = MapDNF("Potential",size,model=model,activation=activation,nbStep=nbStep, \
+                        iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,th=th,h=h)
         self.field.addChildren(aff=self.aff)
         #stats
         self.stats = StatsList(size,self.aff,self.field.getActivation(),
@@ -27,8 +28,10 @@ class ModelDNF(Model,Renderable):
     #override Renderable
     def getArrays(self):
         ret =  [self.aff,self.field]
-        #ret.extend(self.field.getArrays())
+        ret.extend(self.field.getArrays())
         ret.extend(self.stats.getArrays())
+        ret.append(self.stats.errorShape)
+        ret.append(self.stats.shapeMap)
         return ret
 
     def onClick(self,mapName,x,y):
