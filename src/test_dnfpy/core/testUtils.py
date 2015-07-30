@@ -10,6 +10,7 @@ class TestUtils(unittest.TestCase):
         path =  os.path.dirname(os.path.realpath(__file__))
         self.testDir =path +  "/testFiles/"
         self.precision = 7
+
     def test_gauss2DWrap(self):
         """Function : gaus2D
         Scenario : wrap"""
