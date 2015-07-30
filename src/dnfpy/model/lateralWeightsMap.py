@@ -6,7 +6,12 @@ from dnfpy.core.funcMap2D import FuncMap2D
 
 
 class LateralWeightsMap(Map2D):
+    """
+    Map describing the lateral weights of the dynamic neural fields
+    The lateral weights are usually a sum of excitatory and inhibitory weights
+    In this case the lateral weights is a difference of Gaussiana
 
+    """
     def __init__(self,name,globalSize,mapSize=1,dt=1e10,wrap=True,
                  iExc=1.25,iInh=0.7,wExc=0.1,wInh=10,alpha=10,
                 wExc_=1,wInh_=1,iExc_=1,iInh_=1,nbStep=0,
