@@ -18,26 +18,26 @@ class VRepSimulator(RobotSimulator):
     Class for exchange with v-rep simulator
     """
     
-    def __init__(self, name, size, dt, **kwargs):
+    def __init__(self, name, size, dt, synchronous=True, **kwargs):
         super(RobotSimulator,self).__init__(
-        name,size,dt=dt,**kwargs        
+        name,size,dt=dt,synchronous=synchronous,**kwargs        
         )
-        self.synchronous=True
+        self.synchronous=synchronous
         self.clientID=-1 #ID of client initialized
-        self.port=0 #Port initialisation
+        self.port=19997 #Port initialisation
         self.returnSynchro=-1 #initialisation return flag from simsxSychronousTrigger
         self.returnStart=-1 #initialisation return flag from simsxStartSimulation
         
     def _compute(self):
         if self.synchronous:
             self.returnSynchro=vrep.simxSynchronousTrigger(self.clientID)
-        self._data[0]=self
+        self._data=self
     
     def connection(self):
         """
         Make connection with v-rep simulator
         """
-        print ('Program started')
+        print ('Waiting for connection...')
         vrep.simxFinish(-1) # just in case, close all opened connections
         self.clientID=vrep.simxStart('127.0.0.1',self.port,True,True,5000,5) # Connect to V-REP
         if self.clientID!=-1:

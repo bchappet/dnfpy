@@ -5,18 +5,19 @@ from dnfpyUtils.robots.getIRSensors import GetIRSensors
 from dnfpyUtils.robots.obstacleAvoidanceBehaviour import ObstacleAvoidanceBehaviour
 
 class ModelEPuck(Model,Renderable):
-    def initMaps(self
+    def initMaps(self, size
                  ):
         """We initiate the map and link them"""
        
         #Create maps
         self.simulator = VRepSimulator("simulator",1,0.1)
                             
+        self.simulator.connection()
         
-        self.obstacle = ObstacleAvoidanceBehaviour("obstacle", 1, 0.1)
+        self.obstacle = ObstacleAvoidanceBehaviour("obstacle", 2, 0.1)
         
         
-        self.getIRSensors = GetIRSensors("IRSensors", 1, 0.1) 
+        self.getIRSensors = GetIRSensors("IRSensors", 8, 0.1) 
         
         
         self.obstacle.addChildren(irSensors=self.getIRSensors, simulator=self.simulator)
@@ -29,11 +30,8 @@ class ModelEPuck(Model,Renderable):
 
     #override Renderable
     def getArrays(self):
-        ret =  [self.aff,self.field]
-        ret.extend(self.field.getArrays())
-        ret.extend(self.stats.getArrays())
-        ret.append(self.stats.errorShape)
-        ret.append(self.stats.shapeMap)
+        ret =  [self.obstacle,self.getIRSensors]
+
         return ret
 
     def onClick(self,mapName,x,y):
