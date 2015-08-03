@@ -11,23 +11,27 @@ except:
     print ('')
     
 import time
+import numpy as np
 
 class VRepSimulator(RobotSimulator):
     """
-    Interface for exchange with v-rep simulator
+    Class for exchange with v-rep simulator
     """
     
     def __init__(self, name, size, dt, **kwargs):
         super(RobotSimulator,self).__init__(
         name,size,dt=dt,**kwargs        
         )
+        self.synchronous=True
         self.clientID=-1 #ID of client initialized
         self.port=0 #Port initialisation
-        self.returnSychro=-1 #initialisation return flag from simsxSychronousTrigger
+        self.returnSynchro=-1 #initialisation return flag from simsxSychronousTrigger
         self.returnStart=-1 #initialisation return flag from simsxStartSimulation
         
     def _compute(self):
-        self.returnSychro=vrep.simxSynchronousTrigger(self.clientID);
+        if self.synchronous:
+            self.returnSynchro=vrep.simxSynchronousTrigger(self.clientID)
+        self._data[0]=self
     
     def connection(self):
         """
@@ -40,7 +44,8 @@ class VRepSimulator(RobotSimulator):
             print ('Connected to remote API server')
             
             # enable the synchronous mode on the client:
-            vrep.simxSynchronous(self.clientID,True)
+            if self.synchronous:
+                vrep.simxSynchronous(self.clientID,True)
             
             # start the simulation:
             vrep.simxStartSimulation(self.clientID,vrep.simx_opmode_oneshot_wait)
@@ -62,12 +67,36 @@ class VRepSimulator(RobotSimulator):
     
     def getSensor(self, name, typeSensor):
         """
-        Get data of robot sensors
+        Get data of robot sensor
+        Different type of sensor:
+        -prox
+        -cam
         """
-        
+        if typeSensor == "prox":
+            
+            errorCode,sensor_handle=vrep.simxGetObjectHandle(self.clientID,name,vrep.simx_opmode_oneshot_wait)
+            errorCode,detectionState,detectedPoint,detectedObjectHandle,detectedSurfaceNormalVector=vrep.simxReadProximitySensor(self.clientID,sensor_handle,vrep.simx_opmode_streaming)
+            #errorCode,detectionState,detectedPoint,detectedObjectHandle,detectedSurfaceNormalVector=vrep.simxReadProximitySensor(self.clientID,sensor_handle,vrep.simx_opmode_buffer)
+            sensor_val = np.linalg.norm(detectedPoint)
+            print(sensor_val)
+            return sensor_val
+        elif typeSensor == "cam":
+            pass
+                    
+    def getSensors(self, listname, typeSensor):
+        """
+        Get data of several same robot sensors
+        """
+        sensors_val=np.array([])
+        for name in listname:
+            sensors_val=np.append(sensors_val,self.getSensor(name,typeSensor))
+        return sensors_val
     
-    def setController(self, name, typeControler):
+    def setController(self, name, typeController, val):
         """
         Give an order to a controller
         """
-        pass
+        if typeController == "motor":
+            errorCode,motor_handle=vrep.simxGetObjectHandle(self.clientID,name,vrep.simx_opmode_oneshot_wait)
+            vrep.simxSetJointTargetVelocity(self.clientID,motor_handle,val, vrep.simx_opmode_streaming)
+        

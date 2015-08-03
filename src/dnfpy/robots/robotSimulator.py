@@ -32,7 +32,13 @@ class RobotSimulator(Map2D):
         """
         pass
     
-    def setController(self, name, typeControler):
+    def getSensors(self, listname, typeSensor):
+        """
+        Get data of several same robot sensors
+        """
+        pass
+    
+    def setController(self, name, typeController, val):
         """
         Give an order to a controller
         """
