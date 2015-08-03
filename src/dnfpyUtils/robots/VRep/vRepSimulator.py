@@ -1,15 +1,5 @@
 from dnfpy.robots.robotSimulator import RobotSimulator
-try:
-    import vrep
-except:
-    print ('--------------------------------------------------------------')
-    print ('"vrep.py" could not be imported. This means very probably that')
-    print ('either "vrep.py" or the remoteApi library could not be found.')
-    print ('Make sure both are in the same folder as this file,')
-    print ('or appropriately adjust the file "vrep.py"')
-    print ('--------------------------------------------------------------')
-    print ('')
-    
+import vrep
 import time
 
 class VRepSimulator(RobotSimulator):
@@ -71,3 +61,7 @@ class VRepSimulator(RobotSimulator):
         Give an order to a controller
         """
         pass
+
+if __name__ == "__main__":
+    uut = VRepSimulator("uut",1,0.1) 
+    uut.connection()
