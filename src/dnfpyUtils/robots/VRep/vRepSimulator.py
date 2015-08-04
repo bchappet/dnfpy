@@ -77,8 +77,16 @@ class VRepSimulator(RobotSimulator):
             errorCode,sensor_handle=vrep.simxGetObjectHandle(self.clientID,name,vrep.simx_opmode_oneshot_wait)
             errorCode,detectionState,detectedPoint,detectedObjectHandle,detectedSurfaceNormalVector=vrep.simxReadProximitySensor(self.clientID,sensor_handle,vrep.simx_opmode_streaming)
             #errorCode,detectionState,detectedPoint,detectedObjectHandle,detectedSurfaceNormalVector=vrep.simxReadProximitySensor(self.clientID,sensor_handle,vrep.simx_opmode_buffer)
+            
             sensor_val = np.linalg.norm(detectedPoint)
-            print(sensor_val)
+            print(name)
+            print("detectionState", detectionState)           
+            print("detectedPoint", detectedPoint)
+            print("sensor val", sensor_val)
+            if detectionState==False:
+                sensor_val = 0
+            else:
+                sensor_val=0.0415-sensor_val
             return sensor_val
         elif typeSensor == "cam":
             pass
