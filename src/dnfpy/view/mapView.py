@@ -19,6 +19,8 @@ from multiLayerMapAliveView import MultiLayerMapAliveView
 from dnfpy.learning.learningMap import STDPLearningMap
 from dnfpy.model.multiLayerMap import MultiLayerMap
 from dnfpy.model.multiLayerMapAlive import MultiLayerMapAlive
+from dnfpy.core.mapND import MapND
+from arrayNDView import ArrayNDView
 
 from dnfpyUtils.cellular.fhp import Fhp
 
@@ -47,6 +49,8 @@ class ArrayWidget(QtGui.QGroupBox):
             self.label = MultiLayerMapView(self.map,runner,self)
         elif isinstance(map,Fhp):
             self.label = FhpMapView(self.map,runner,self)
+        elif isinstance(map,MapND):
+            self.label = ArrayNDView(self.map,runner,self)
         else:
             self.label = ArrayView(self.map,runner,self)
             #self.label = ArrayView2(self.map,runner,self)
