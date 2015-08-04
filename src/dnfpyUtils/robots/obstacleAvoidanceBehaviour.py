@@ -5,7 +5,7 @@ import math
 
 PI=math.pi
 
-sensor_loc=np.array([PI/2-1.27, PI/2-0.77,PI/2,PI/2+1.05,-PI/2-1.05, -PI/2, -PI/2+0.77, -PI/2+1.27])     
+sensor_loc=np.array([-PI/2,-PI/2+0.77,-PI/2+1.27, PI/2-1.27, PI/2-0.77, PI/2,])     
 
 
 class ObstacleAvoidanceBehaviour(Map2D):
@@ -27,19 +27,20 @@ class ObstacleAvoidanceBehaviour(Map2D):
         
         
         
-        sensor_sq=irSensors[0,0:8]*irSensors[0,0:8]
+        sensor_sq=irSensors[0,0:6]*irSensors[0,0:6]
         #sensor_sq=sensor_sq.reshape((1,8))
-        min_ind=np.argmin(sensor_sq)
+        max_ind=np.argmax(sensor_sq)
         print("ssq",sensor_sq)
-        print("min_ind ",min_ind)
-        print("ssqm ",sensor_sq[min_ind])
-        if (sensor_sq[min_ind]<0.002):
-            steer=-1/sensor_loc[min_ind]
+        print("max_ind ",max_ind)
+        print("ssqm ",sensor_sq[max_ind])
+        if (sensor_sq[max_ind]>0):
+            steer=-1/sensor_loc[max_ind]
         else:
             steer=0
         
+        print("steer",steer)
         v=1	#forward velocity
-        kp=1	#steering gain
+        kp=0.5	#steering gain
         vL=v+kp*steer
         vR=v-kp*steer
         print("vl",vL)

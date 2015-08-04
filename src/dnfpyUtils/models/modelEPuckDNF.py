@@ -3,8 +3,9 @@ from dnfpy.model.model import Model
 from dnfpyUtils.robots.VRep.vRepSimulator import VRepSimulator
 from dnfpyUtils.robots.getIRSensors import GetIRSensors
 from dnfpyUtils.robots.obstacleAvoidanceBehaviour import ObstacleAvoidanceBehaviour
+from dnfpy.model.mapDNF import MapDNF
 
-class ModelEPuck(Model,Renderable):
+class ModelEPuckDNF(Model,Renderable):
     def initMaps(self, size
                  ):
         """We initiate the map and link them"""
@@ -14,17 +15,21 @@ class ModelEPuck(Model,Renderable):
                             
         self.simulator.connection()
         
-        self.obstacle = ObstacleAvoidanceBehaviour("obstacle", 2, 0.1)
-        
+        self.motorL = MotorProjection("motorL", 2, 0.1)
+        self.motorR = MotorProjection("motorR", 2, 0.1)
+        self.dnfmap = MapDNF("dnfmap")
+        self.activation = self.dnfmap.getActivation()
         
         self.getIRSensors = GetIRSensors("IRSensors", 8, 0.1) 
         
         
-        self.obstacle.addChildren(irSensors=self.getIRSensors, simulator=self.simulator)
+        self.motorL.addChildren(activation=self.activation, simulator=self.simulator)
+        self.motorR.addChildren(activation=self.activation, simulator=self.simulator)
+        self.activation.addChildren(dnfmap=self.dnfmap)
         self.getIRSensors.addChildren(simulator=self.simulator)
-        
+        self.dnfmap.addChildren(irSensors=self.getIRSensors)
         #return the roots
-        roots =  [self.obstacle]
+        roots =  [self.motorL, self.motorR]
 
         return roots
 
@@ -33,3 +38,6 @@ class ModelEPuck(Model,Renderable):
         ret =  [self.obstacle,self.getIRSensors]
 
         return ret
+
+    def onClick(self,mapName,x,y):
+        print("clicked on %s, at coord %s,%s"%(unicode(mapName),x,y))

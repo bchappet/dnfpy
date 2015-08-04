@@ -19,6 +19,6 @@ class GetIRSensors(Map2D):
             
             
         sensors_data=simulator.getSensors(listname,"prox")
-        print(sensors_data)
+        print("sensors_data", sensors_data)
         self._data=sensors_data.reshape((1,size))
     
