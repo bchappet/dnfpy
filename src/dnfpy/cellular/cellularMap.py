@@ -3,6 +3,12 @@ import numpy as np
 
 
 class CellularMap(Map2D):
+    """
+    This map is used as a super class for all the cellular compution
+    A conmputation function can be provided
+    Or this map can be extended
+
+    """
     def __init__(self,name,size,computation=None,dt=0.1,dtype=np.uint8,**kwargs):
         super(CellularMap,self).__init__(name,size,dtype,dt=dt,computation=computation,**kwargs)
 
