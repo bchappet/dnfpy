@@ -42,9 +42,8 @@ class ArrayNDView(ArrayView):
     def paintEvent(self, event):
         qp = QtGui.QPainter(self)
         qp.setPen(QtGui.QColor(0,0,0))
-        #if self.errors > 0:
-        #    qp.drawText(event.rect(),  QtCore.Qt.AlignTop,  "error: %f" %self.errors)
-        #qp.drawText(event.rect(),  QtCore.Qt.AlignBottom,  "meanError: %f" %self.mean)
+        qp.drawText(event.rect(),  QtCore.Qt.AlignTop,  "max: %f" %self.maxPt[1])
+        qp.drawText(event.rect(),  QtCore.Qt.AlignBottom,  "min: %f" %self.minPt[1])
 
         if len(self.pt ) > 1:
             qp.setPen(QtGui.QPen(QtGui.QColor(0,0,0),2))
