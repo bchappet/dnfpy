@@ -43,3 +43,4 @@ class RobotSimulator(Map2D):
         Give an order to a controller
         """
         pass
+    

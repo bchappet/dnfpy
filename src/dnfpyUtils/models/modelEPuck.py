@@ -10,7 +10,7 @@ class ModelEPuck(Model,Renderable):
         """We initiate the map and link them"""
        
         #Create maps
-        self.simulator = VRepSimulator("simulator",1,0.1)
+        self.simulator = VRepSimulator("simulator",1,dt=1)
                             
         self.simulator.connection()
         

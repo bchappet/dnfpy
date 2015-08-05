@@ -34,9 +34,9 @@ class MotorProjection(Map2D):
             meanP = meanP/sumP   
             print("meanP",meanP)
             if self.side=='l':
-                v=2/(1+np.exp(meanP))-0.5
+                v=3/(1+np.exp(meanP*5))-1.5
             elif self.side=='r':
-                v=2/(1+np.exp(-meanP))-0.5
+                v=3/(1+np.exp(-meanP*5))-1.5
         
         print("v",v)
         if self.side=='l':
@@ -50,4 +50,4 @@ class MotorProjection(Map2D):
     def _reset(self):
         super(MotorProjection,self)._reset(
         )
-        self._data=np.array([1, 1])
+        self._data=np.array([1])
