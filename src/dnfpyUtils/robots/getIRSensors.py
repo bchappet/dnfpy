@@ -1,8 +1,8 @@
-from dnfpy.core.map2D import Map2D
+from dnfpy.core.mapND import MapND
 
 import numpy as np
 
-class GetIRSensors(Map2D):
+class GetIRSensors(MapND):
     """
     Get IR sensors from a robot simulator
     """
@@ -20,5 +20,4 @@ class GetIRSensors(Map2D):
             
         sensors_data=simulator.getSensors(listname,"prox")
         print("sensors_data", sensors_data)
-        self._data=sensors_data.reshape((1,size))
-    
+        self._data=sensors_data

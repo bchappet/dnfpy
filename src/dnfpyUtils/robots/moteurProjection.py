@@ -16,7 +16,7 @@ class MotorProjection(Map2D):
     
     def __init__(self, name, size=1, dt=0.1, side='r', **kwargs):
         super(MotorProjection,self).__init__(
-        name,size,dt=dt,side=side**kwargs        
+        name,size,dt=dt,side=side, **kwargs        
         )
         self.side = side
         
@@ -24,23 +24,30 @@ class MotorProjection(Map2D):
 
         v = self._data[0,0]
 
-        meanP=(-activation[0]*5-activation[1]*3-activation[2]+activation[3]+activation[4]*3+activation[5]*5)/6
-        print("meanP",smeanP)
-        if np.sum(activation)<0.5:
+        meanP=0
+        sumP=np.sum(activation)
+        for i in range(activation.shape[0]):
+            meanP=meanP+sensor_loc[i]*activation[i]
+        if sumP==0:
             v=1 #forward velocity
         else:
-            
-        kp=0.5	#steering gain
-        vL=v+kp*steer
-        vR=v-kp*steer
-        print("vl",vL)
-        simulator.setController('ePuck_leftJoint', "motor", vL)
-        simulator.setController('ePuck_rightJoint', "motor", vR)
+            meanP = meanP/sumP   
+            print("meanP",meanP)
+            if self.side=='l':
+                v=2/(1+np.exp(meanP))-0.5
+            elif self.side=='r':
+                v=2/(1+np.exp(-meanP))-0.5
         
-        self._data=np.array([[vL, vR]])
+        print("v",v)
+        if self.side=='l':
+            simulator.setController('ePuck_leftJoint', "motor", v)
+        elif self.side=='r':
+            simulator.setController('ePuck_rightJoint', "motor", v)
+        
+        self._data=np.array([[v]])
         
         
     def _reset(self):
-        super(ObstacleAvoidanceBehaviour,self)._reset(
+        super(MotorProjection,self)._reset(
         )
         self._data=np.array([1, 1])
