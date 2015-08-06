@@ -4,7 +4,7 @@ import numpy as np
 import math
 
 PI=math.pi
-
+#orientation of all the sensors: 
 sensor_loc=np.array([-PI/2,-PI/2+0.77,-PI/2+1.27, PI/2-1.27, PI/2-0.77, PI/2,])     
 
 
@@ -12,7 +12,6 @@ class MotorProjection(Map2D):
     """
     Set motor to avoid obstacle in a robot simulator
     """
-    #orientation of all the sensors: 
     
     def __init__(self, name, size=1, dt=0.1, side='r', **kwargs):
         super(MotorProjection,self).__init__(
