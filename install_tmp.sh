@@ -1,9 +1,9 @@
 #!/bin/bash
 
 ######To set accordingly##############
-DNFPY_HOME=~/Dropbox/THESE/workspace_python/SDNF/dnfpy
-VREP_HOME=~/bin/V-REP_PRO_EDU_V3_2_1_64_Linux
-ARCHI=64
+DNFPY_HOME=~/Documents/DNFPY/dnfpy
+VREP_HOME=~/Documents/bin/V-REP_PRO_EDU_V3_2_1_Linux
+ARCHI=32
 ###################################
 
 
