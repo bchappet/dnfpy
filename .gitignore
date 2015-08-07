@@ -4,6 +4,7 @@ install_tmp1.sh
 install_tmp_loria.fish
 */vrep.py
 */remoteApi.so
+src/dnfpyUtils/robots/VRep/vrep.py
 
 
 
