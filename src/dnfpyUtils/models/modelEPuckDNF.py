@@ -11,7 +11,7 @@ class ModelEPuckDNF(Model,Renderable):
         """We initiate the map and link them"""
         dt=0.1
         #Create maps
-        self.simulator = VRepSimulator("simulator",1,dt)
+        self.simulator = VRepSimulator("simulator",1,dt, synchronous=False)
                             
         self.simulator.connection()
         
