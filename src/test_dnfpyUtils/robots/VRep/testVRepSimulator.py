@@ -38,7 +38,7 @@ class TestVRepSimulator(unittest.TestCase):
         self.uut.compute()
         a=self.uut.getSensor("ePuck_proxSensor2","prox")
         a=self.uut.getSensor("ePuck_proxSensor2","prox")
-        self.assertNotEquals(a,0)
+        self.assertEquals(a,0)
         self.uut.disconnection()
         
     def testGetController(self):
@@ -65,6 +65,28 @@ class TestVRepSimulator(unittest.TestCase):
         b=self.uut.getSensors(listname,"prox")
         b=self.uut.getSensors(listname,"prox")
         self.assertNotEquals(a,b.all)
+        self.uut.disconnection()
+        
+    def testGetOrientation(self):
+        self.uut.port=19997
+        self.uut.connection()
+        a=0
+        self.uut.compute()
+        b=self.uut.getOrientation("ePuck","Cuboid")
+        b=self.uut.getOrientation("ePuck","Cuboid")
+        self.assertNotEquals(a,b)
+        self.uut.disconnection()
+        
+        
+    def testGetPosition(self):
+        self.uut.port=19997
+        self.uut.connection()
+        a=0
+        self.uut.compute()
+        b=self.uut.getPosition("ePuck","Cuboid")
+        b=self.uut.getPosition("ePuck","Cuboid")
+        print("position",b)
+        self.assertNotEquals(a,b)
         self.uut.disconnection()
     
         

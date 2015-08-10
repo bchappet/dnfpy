@@ -98,3 +98,22 @@ class VRepSimulator(RobotSimulator):
             errorCode,motor_handle=vrep.simxGetObjectHandle(self.clientID,name,vrep.simx_opmode_oneshot_wait)
             vrep.simxSetJointTargetVelocity(self.clientID,motor_handle,val, vrep.simx_opmode_streaming)
         
+    def getOrientation(self, name, relativeName):
+        """
+        Get the orientation of an object
+        """
+        errorCode,robotHandle=vrep.simxGetObjectHandle(self.clientID,name,vrep.simx_opmode_oneshot_wait)
+        errorCode,relativeHandle=vrep.simxGetObjectHandle(self.clientID,relativeName,vrep.simx_opmode_oneshot_wait)
+
+        returnCode,angles=vrep.simxGetObjectOrientation(self.clientID,robotHandle,relativeHandle,vrep.simx_opmode_streaming)
+        return angles
+        
+    def getPosition(self, name, relativeName):
+        """
+        Get the position of an object
+        """
+        errorCode,robotHandle=vrep.simxGetObjectHandle(self.clientID,name,vrep.simx_opmode_oneshot_wait)
+        errorCode,relativeHandle=vrep.simxGetObjectHandle(self.clientID,relativeName,vrep.simx_opmode_oneshot_wait)
+        
+        returnCode,arrayPosition=vrep.simxGetObjectPosition(self.clientID,robotHandle,relativeHandle,vrep.simx_opmode_streaming)
+        return arrayPosition
