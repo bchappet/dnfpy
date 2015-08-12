@@ -19,23 +19,38 @@ class MotorProjection(Map2D):
         )
         self.side = side
         
-    def _compute(self, activation, simulator):
+    def _compute(self, activationI, activationD, simulator):
 
         v = self._data[0,0]
 
-        meanP=0
-        sumP=np.sum(activation)
-        for i in range(activation.shape[0]):
-            meanP=meanP+sensor_loc[i]*activation[i]
-        if sumP==0:
-            v=1 #forward velocity
+        meanIP=0
+        sumIP=np.sum(activationI)
+        sum
+        for i in range(activationI.shape[0]):
+            meanIP=meanIP+sensor_loc[i]*activationI[i]
+        if sumIP==0:
+            meanDP=0
+            print("taille activationD",activationD.shape[0])
+            print("activationD",activationD)
+            for i in range(activationD.shape[0]):
+                meanDP=meanDP+activationD[i]*math.pi*(-activationD.shape[0]+1+2*i)/(activationD.shape[0])
+            sumDP=np.sum(activationD)
+            if sumDP==0:
+                v=1
+            else:
+                meanDP = meanDP/sumDP
+                print("meanDP",meanDP)
+                if self.side=='l':
+                    v=3/(1+np.exp(-meanDP))
+                if self.side=='r':
+                    v=3/(1+np.exp(meanDP))
         else:
-            meanP = meanP/sumP   
-            print("meanP",meanP)
+            meanIP = meanIP/sumIP   
+            print("meanIP",meanIP)
             if self.side=='l':
-                v=3/(1+np.exp(meanP*5))-1.5
+                v=3/(1+np.exp(meanIP*5))-1.5
             elif self.side=='r':
-                v=3/(1+np.exp(-meanP*5))-1.5
+                v=3/(1+np.exp(-meanIP*5))-1.5
         
         print("v",v)
         if self.side=='l':
