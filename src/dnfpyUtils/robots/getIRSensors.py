@@ -1,23 +1,38 @@
 from dnfpy.core.mapND import MapND
-
+import math
 import numpy as np
+from math import pi as PI
+sensor_loc=np.array([-PI/2,-PI/2+0.77,-PI/2+1.27, PI/2-1.27, PI/2-0.77, PI/2,]) 
 
 class GetIRSensors(MapND):
     """
     Get IR sensors from a robot simulator
     """
     
-    def __init__(self, name, size=8, dt=0.1, **kwargs):
+    def __init__(self, name, size=8, dt=0.1, nbSensors=6, **kwargs):
         super(GetIRSensors,self).__init__(
-        name,size,dt=dt,**kwargs        
+        name,size,dt=dt,nbSensors=nbSensors,**kwargs        
         )
         
-    def _compute(self, simulator, size):
-        listname=np.array([])        
-        for x in range(1,size+1):
+    def _compute(self, simulator, size, nbSensors):
+        listname=np.array([])
+        dec=int((6-nbSensors)/2)
+            
+        for x in range(1+dec,nbSensors+1+dec):
             listname=np.append(listname,"ePuck_proxSensor"+str(x))
             
             
         sensors_data=simulator.getSensors(listname,"prox")
         print("sensors_data", sensors_data)
-        self._data=sensors_data
+        
+        sensors_dataN = np.zeros((size))
+
+        for i in range(nbSensors):
+            if sensors_data[i]>0:
+                indice=int((sensor_loc[i+dec]+math.pi)*size/(2*math.pi))
+                sensors_dataN[indice]=sensors_data[i]
+        
+
+        
+        
+        self._data=sensors_dataN

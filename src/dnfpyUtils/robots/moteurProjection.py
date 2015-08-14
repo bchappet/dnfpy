@@ -22,12 +22,34 @@ class MotorProjection(Map2D):
     def _compute(self, activationI, activationD, simulator):
 
         v = self._data[0,0]
-
-        meanIP=0
+        if self.side=='l':
+            a=-1
+        else:
+            a=1
+            
+            
         sumIP=np.sum(activationI)
+        x=np.linspace(-PI,PI,activationI.shape[0])
+        
+        
+        #sumDP=np.sum(activationD)
+        fD=3/(1+np.exp(a*x))
+        
+        if sumIP==0:
+            v=0
+        else:
+            v=np.sum(fD*activationI)/sumIP
+            
+        """
+        else:
+            fO=3/(1+np.exp(-a*x))-1.5
+            v=np.sum(fO*activationI)/sumIP
+        """
+        
+        """
         sum
         for i in range(activationI.shape[0]):
-            meanIP=meanIP+sensor_loc[i]*activationI[i]
+            meanIP=meanIP+activationI[i]*math.pi*(-activationI.shape[0]+1+2*i)/(activationI.shape[0])
         if sumIP==0:
             meanDP=0
             print("taille activationD",activationD.shape[0])
@@ -51,6 +73,8 @@ class MotorProjection(Map2D):
                 v=3/(1+np.exp(meanIP*5))-1.5
             elif self.side=='r':
                 v=3/(1+np.exp(-meanIP*5))-1.5
+                
+        """
         
         print("v",v)
         if self.side=='l':

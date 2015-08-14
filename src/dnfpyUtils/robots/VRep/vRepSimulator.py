@@ -117,3 +117,11 @@ class VRepSimulator(RobotSimulator):
         
         returnCode,arrayPosition=vrep.simxGetObjectPosition(self.clientID,robotHandle,relativeHandle,vrep.simx_opmode_streaming)
         return arrayPosition
+        
+    def setPositionObject(self, name, relativeName, position):
+        """
+        Set the position of an object
+        """
+        errorCode,objectHandle=vrep.simxGetObjectHandle(self.clientID,name,vrep.simx_opmode_oneshot_wait)
+        errorCode,relativeHandle=vrep.simxGetObjectHandle(self.clientID,relativeName,vrep.simx_opmode_oneshot_wait)
+        vrep.simxSetObjectPosition(self.clientID,objectHandle,relativeHandle,position,vrep.simx_opmode_oneshot)

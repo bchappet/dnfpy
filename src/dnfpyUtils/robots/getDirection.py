@@ -49,9 +49,9 @@ class GetDirection(MapND):
                 beta=-psi+alpha
             
         indice=int((beta+math.pi)*size/(2*math.pi))
-        x = np.zeros((size))
-        x[indice]=1
+        direction = np.zeros((size))
+        direction[indice]=1
 
 
         
-        self._data=x
+        self._data=direction
