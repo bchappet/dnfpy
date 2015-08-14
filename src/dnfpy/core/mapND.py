@@ -222,6 +222,15 @@ class MapND(Computable):
         """
         return len(self.__children)
 
+    def getSize(self):
+        size = self._init_kwargs['size']
+        return size
+
+    def getDtype(self):
+        dtype = self._init_kwargs['dtype']
+        return dtype
+
+
     def reset(self):
         """Reset the data to 0"""
         super(MapND,self).reset()

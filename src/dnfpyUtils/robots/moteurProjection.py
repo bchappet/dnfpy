@@ -76,7 +76,6 @@ class MotorProjection(Map2D):
                 
         """
         
-        print("v",v)
         if self.side=='l':
             simulator.setController('ePuck_leftJoint', "motor", v)
         elif self.side=='r':

@@ -11,7 +11,7 @@ class RobotSimulator(Map2D):
         )
         
     def _compute(self):
-        pass
+        self._data = self
     
     def connection(self):
         """

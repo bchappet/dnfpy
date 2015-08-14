@@ -6,7 +6,6 @@ from dnfpyUtils.robots.getDirection import GetDirection
 from dnfpyUtils.robots.moteurProjection import MotorProjection
 from dnfpy.model.mapDNF1D import MapDNFND
 from dnfpy.model.convolutionND import ConvolutionND
-from dnfpyUtils.robots.noiseModelSensorMap import NoiseModelSensorMap
 from dnfpy.core.funcMapND import FuncMapND
 import dnfpy.core.utilsND as utils
 

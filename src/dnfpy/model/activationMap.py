@@ -11,7 +11,8 @@ class ActivationMap(Map2D):
         if type ==  'step':
             self._data = np.where(field > th,dtype(1),dtype(0))
         elif  type == 'sigm' :
+            self._data = 1/(1+np.exp(-beta*(field-th)))
+        elif type== 'id':
             self._data = np.maximum(field,dtype(0))
-            #self._data = 1/(1+np.exp(-beta*(field-th)))
         else:
-            raise NameError(" Invalid activation type option : %s. It should be 'sigm' or 'step' " % type)
+            raise NameError(" Invalid activation type option : %s. It should be 'sigm' or 'step' or 'id' " % type)
