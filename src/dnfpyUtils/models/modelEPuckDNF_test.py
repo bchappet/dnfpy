@@ -31,19 +31,19 @@ class ModelEPuckDNF_test(Model,Renderable):
         
         self.motorL = MotorProjection("motorL", 2, dt, 'l')
         self.motorR = MotorProjection("motorR", 2, dt, 'r')
-        self.dnfmapI = MapDNFND("dnfmapI", size, dt=0.1, gainAff=1,tau=1, wInh=0.15, wrap=wrap,activation='sigm')
+        self.dnfmapI = MapDNFND("dnfmapI", size, dt=0.1, gainAff=1,tau=0.2,  wrap=wrap,activation='sigm')
         self.dnfmapD = MapDNFND("dnfmapD", size, dt=0.1, gainAff=1,tau=0.1, wrap=wrap)
         self.activationI = GainMap(self.dnfmapI.getActivation(),gain=1.0)
-        self.activationD = GainMap(self.dnfmapD.getActivation(),gain=2.0)
-        self.navigationMap = MapDNFND("navigationMap", size, dt,gainAff=2.0, iExc=1.6,wExc=0.07,iInh=0.3, wInh=1.0, tau=0.3,h=-0.5,activation='sigm')
+        self.activationD = GainMap(self.dnfmapD.getActivation(),gain=1.0)
+        self.navigationMap = MapDNFND("navigationMap", size, dt,gainAff=1.0, tau=0.3,activation='step')
         self.navAff = FuncMapND(utils.subArrays, "navAff", size, dt=dt)
-        self.navAffGain = GainMap(self.navAff,gain=0.5)
+        self.navAffGain = GainMap(self.navAff,gain=1.0)
         
         
         self.modelI =ConvolutionND("IRSensorsModel",size,dt=dt,wrap=wrap)
         self.modelD =ConvolutionND("DirectionModel",size,dt=dt,wrap=wrap)
-        self.kernelI = FuncMapND(utils.gaussNd,"I_noiseK",size,dt=dt,center=center,wrap=wrap,intensity=1,width=0.05*size)
-        self.kernelD = FuncMapND(utils.gaussNd,"D_noiseK",size,dt=dt,center=center,wrap=wrap,intensity=1,width=0.1*size)
+        self.kernelI = FuncMapND(utils.gaussNd,"I_noiseK",size,dt=dt,center=center,wrap=wrap,intensity=1,width=0.1*size)
+        self.kernelD = FuncMapND(utils.gaussNd,"D_noiseK",size,dt=dt,center=center,wrap=wrap,intensity=1,width=0.05*size)
         
         irSensor = np.zeros((size))
         direction = np.zeros((size))
