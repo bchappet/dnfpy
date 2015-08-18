@@ -119,7 +119,7 @@ class ModelEPuckDNFMemory(Model,Renderable):
         self.projObstacle.addChildren(source=self.dnfmapI.getActivation(),shift=self.psi)
 
 
-        self.memObs = MapDNFND("memoryObstacle",size=size,dt=dt,tau=0.1,wrap=wrap,activation='step',iExc=3.7,wInh=0.1,wExc=0.05)
+        self.memObs = MapDNFND("memoryObstacle",size=size,dt=dt,tau=1.3,wrap=wrap,activation='step',iExc=3.7,wInh=0.1,wExc=0.05)
         self.memObs.addChildren(aff=self.projObstacle)
 
         self.navigationMap = MapDNFND("navigationMap", size, dt, tau=0.64, wrap=wrap, activation = "step",wInh=10.0,th=0.01,noiseI=0.01)
@@ -155,7 +155,7 @@ class ModelEPuckDNFMemory(Model,Renderable):
 
     #override Renderable
     def getArrays(self):
-        ret =  [self.motorL, self.motorR,  self.dnfmapI, self.dnfmapD, self.navigationMap,self.navRelativeMap,self.memObs,self.memObs.kernel]
+        ret =  [self.motorL, self.motorR,  self.dnfmapI, self.dnfmapD, self.navigationMap,self.navigationMap.getActivation(),self.memObs,self.memObs.kernel,self.navigationMap.kernel]
 
         return ret
 
