@@ -11,11 +11,12 @@ class MapDNFND(FieldMapND):
                  tau=0.64,h=0,
                  model='cnft',th=0.75,delta=1.,activation='step',
                  iExc=1.25,iInh=0.7,wExc=0.1,wInh=1,alpha=10,
-                 mapSize=1.,nbStep=0,
+                 mapSize=1.,nbStep=0,noiseI=0.0,
                  **kwargs):
         super(MapDNFND,self).__init__(name,size,dt=dt,wrap=wrap,
                     tau=tau,h=h,delta=delta,
                     model=model,th=th,activation=activation,
+                    noiseI=noiseI,
                     **kwargs)
 
         self.act = ActivationMapND(name+"Activation",size,dt=dt,type=activation,th=th)

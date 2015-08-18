@@ -44,11 +44,10 @@ class RobotSimulator(Map2D):
         """
         pass
     
-    def getOrientation(self, name, relativeName):
+    def getOrientation(self, name, relativeName=None):
         """
         Get the orientation of an object
         """
-        pass
         
     def getPosition(self, name, relativeName):
         """

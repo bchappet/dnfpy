@@ -13,13 +13,13 @@ class ModelDNF1D(Model,Renderable):
         """We initiate the map and link them"""
        # print("iExc : %s, iInh: %s, wExc %s, wInh %s"%(iExc,iInh,wExc,wInh))
         #Create maps
-        self.aff = InputMap("Inputs",size,periodStim=20,iStim1 = 0 )
+        self.aff = InputMap("Inputs",size,periodStim=20000,iStim1 = 1,iStim2=1 )
         #input = np.zeros((size))
         #input[size/2] = 1
         #self.aff = ConstantMapND("Inputs",size,value=input)
                
         self.field = MapDNFND("Potential",size,model=model,activation=activation,nbStep=nbStep, \
-                        iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,th=th,h=h)
+                        iExc=3.7,iInh=iInh,wExc=0.05,wInh=0.1,th=0.75,h=h,tau=0.1)
         self.field.addChildren(aff=self.aff)
         #return the roots
         roots =  [self.field]

@@ -48,7 +48,7 @@ class RunnerView(QtCore.QThread, Runner):
         self.triggerUpdate.connect(self.view.update)
         self.triggerParamsUpdate.connect(self.view.updateParams)
         # Control
-        self.play = False
+        self.play = True
         #view timing
         self.lastViewUpdate = time.time()
         self.maxFPS = 60.
@@ -144,7 +144,6 @@ class RunnerView(QtCore.QThread, Runner):
         if deltaTime >= limit:
             self.triggerUpdate.emit()
             self.lastViewUpdate = now
-
     def run(self):
         while self.simuTime < self.timeEnd:
             while not(self.play):

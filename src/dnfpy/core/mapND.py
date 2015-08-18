@@ -104,6 +104,7 @@ class MapND(Computable):
             pass
 
     def _computationStep(self):
+        #print("Compute "+self.getName())
         self.setArg(**self._getChildrenStates())
         self._compute_with_params()
 

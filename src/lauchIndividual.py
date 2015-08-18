@@ -43,3 +43,4 @@ else:
 
 #exemple
 #!python lauchIndiviudal.py "[1.96, 0.93, 1.30e-05, 1.]" 49 ScenarioDistracters ModelBsRsdnf NSpikeContext 1 True
+#!python lauchIndiviudal.py "['size':49]" ScenarioDistracters ModelBsRsdnf  1 True

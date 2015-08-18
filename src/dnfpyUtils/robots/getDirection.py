@@ -18,7 +18,7 @@ class GetDirection(MapND):
             
         orientation_data=simulator.getOrientation("ePuck","Cuboid")
         orientation_data=simulator.getOrientation("ePuck","Cuboid")
-        print("orientation_data", orientation_data)
+        #print("orientation_data", orientation_data)
         if (orientation_data[0]<=0):
             psi=orientation_data[1]
         else:
@@ -26,20 +26,22 @@ class GetDirection(MapND):
                 psi=-math.pi-orientation_data[1]
             else:
                 psi=math.pi-orientation_data[1]
-        print("psi",psi)
+        #print("psi",psi)
         
         position_data=simulator.getPosition("ePuck","Cuboid")
-        position_data=simulator.getPosition("ePuck","Cuboid")
-        print("position_data",position_data)
-        tan=position_data[0]/position_data[1]
-        alpha=math.atan(tan)
-        print("alpha",alpha)
-        print("x",position_data[0])
-        print("y",position_data[1])
+        #print("position_data",position_data)
+        if position_data[1] != 0.0:
+            tan=position_data[0]/position_data[1]
+            alpha=math.atan(tan)
+        else:
+            alpha = 0
+        #print("alpha",alpha)
+        #print("x",position_data[0])
+        #print("y",position_data[1])
         if position_data[0]>0:
             if position_data[1]>0:
                 beta=-psi-math.pi+alpha
-                print("beta",beta)
+                #print("beta",beta)
             else:
                 beta=-psi+alpha
         else:

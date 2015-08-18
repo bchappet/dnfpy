@@ -36,8 +36,11 @@ class MotorProjection(Map2D):
         #sumDP=np.sum(activationD)
         fD=2/(1+np.exp(a*x))
         fO=2/(1+np.exp(-a*x*10))-1
-        
-        v=(np.sum(fD*activationN)+np.sum(fO*activationI))/(sumIP+sumNP)
+        if(sumIP+sumNP != 0): 
+            v=(np.sum(fD*activationN)+np.sum(fO*activationI))/(sumIP+sumNP)
+        else:
+            v=0
+
         
         
         

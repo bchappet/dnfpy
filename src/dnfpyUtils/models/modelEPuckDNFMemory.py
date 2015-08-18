@@ -22,6 +22,7 @@ import dnfpy.core.utilsND as utils
 import numpy as np
 from dnfpy.core.mapND import MapND
 from dnfpy.core.constantMapND import ConstantMapND
+from dnfpy.core.gainMap import GainMap
 
 
 class ProjectionMapND(MapND):
@@ -30,7 +31,6 @@ class ProjectionMapND(MapND):
 
         def _compute(self, source,shift,size,factor):
                 conv = int(np.round(factor*shift*size/(2*np.pi)))
-                print("conv :",conv)
                 self._data = np.roll(source,conv)
 
 class PsiMap(MapND):
@@ -88,12 +88,8 @@ class ModelEPuckDNFMemory(Model,Renderable):
         self.motorR = MotorProjection("motorR", 1, dt, 'r')
         self.setMotorL = SetVelMotor("setMotorL", 1, dt, 'l')
         self.setMotorR = SetVelMotor("setMotorR", 1, dt, 'r')
-        self.dnfmapI = MapDNFND("dnfmapI", size, dt=0.1, gainAff=140,tau=0.1, wInh=0.15, wrap=wrap, activation='id')
-        self.dnfmapD = MapDNFND("dnfmapD", size, dt=0.1, gainAff=2,tau=0.1, wrap=wrap, activation=activation)
-        self.activationI = self.dnfmapI.getActivation()
-        self.activationD = self.dnfmapD.getActivation()
-        self.noise = NoiseMap("noise",size,dt=dt,intensity=0.01)
-        self.dnfmapDaff= FuncWithoutKeywords(utils.sumArrays, "dnfmapDaff", size, dt=dt)
+        self.dnfmapI = MapDNFND("dnfmapI", size, dt=0.1, gainAff=140,tau=0.1, wInh=0.12, wrap=wrap, activation='sigm',noiseI=0.01)
+        self.dnfmapD = MapDNFND("dnfmapD", size, dt=0.1, gainAff=2,tau=0.1, wrap=wrap, activation=activation,noiseI = 0.01)
         
         self.modelI =ConvolutionND("IRSensorsModel",size,dt=dt,wrap=wrap)
         self.modelD =ConvolutionND("DirectionModel",size,dt=dt,wrap=wrap)
@@ -101,6 +97,10 @@ class ModelEPuckDNFMemory(Model,Renderable):
         self.kernelI = FuncMapND(utils.gaussNd,"I_noiseK",size,dt=dt,center=center,wrap=wrap,intensity=1,width=0.1*size)
         self.kernelD = FuncMapND(utils.gaussNd,"D_noiseK",size,dt=dt,center=center,wrap=wrap,intensity=1,width=0.05*size)
         
+        irSensor = np.zeros((size))
+        direction = np.zeros((size))
+        #self.getIRSensors = ConstantMap("IRSensors", size,value=irSensor)
+        #self.getDirection = ConstantMap("Direction",size, value=direction)
         
         self.getIRSensors = GetIRSensors("IRSensors", size, dt, nbSensors=8)
         self.getDirection = GetDirection("Direction",size, dt)
@@ -112,16 +112,21 @@ class ModelEPuckDNFMemory(Model,Renderable):
 
 
         self.projTarget = ProjectionMapND("projTarget",size=size,dt=dt)
-        self.projTarget.addChildren(source=self.dnfmapD,shift=self.psi)
+        self.projTarget.addChildren(source=self.dnfmapD.getActivation(),shift=self.psi)
 
 
         self.projObstacle = ProjectionMapND("projObtacle",size=size,dt=dt)
-        self.projObstacle.addChildren(source=self.dnfmapI,shift=self.psi)
+        self.projObstacle.addChildren(source=self.dnfmapI.getActivation(),shift=self.psi)
 
-        self.navigationMap = MapDNFND("navigationMap", size, dt, tau=0.1, wrap=wrap, activation = "id")
+
+        self.memObs = MapDNFND("memoryObstacle",size=size,dt=dt,tau=0.1,wrap=wrap,activation='step',iExc=3.7,wInh=0.1,wExc=0.05)
+        self.memObs.addChildren(aff=self.projObstacle)
+
+        self.navigationMap = MapDNFND("navigationMap", size, dt, tau=0.64, wrap=wrap, activation = "step",wInh=10.0,th=0.01,noiseI=0.01)
         self.navAff = FuncMapND(utils.subArrays, "navAff", size, dt=dt)
         self.navigationMap.addChildren(aff=self.navAff)
-        self.navAff.addChildren(a=self.projTarget, b=self.projObstacle)
+        gainObs = GainMap(self.memObs.getActivation(),gain=1.2)
+        self.navAff.addChildren(a=self.projTarget, b=gainObs)
 
 
         self.navRelativeMap = ProjectionMapND("navigationRelative",size=size,dt=dt,factor=-1.0)
@@ -129,16 +134,7 @@ class ModelEPuckDNFMemory(Model,Renderable):
 
         zeros = ConstantMapND("zeros",size=size,value=np.zeros((size)))
         
-        """
-        irSensor = np.zeros((size))
-        direction = np.zeros((size))
-        
-        self.getIRSensors = ConstantMap("IRSensors", size,value=irSensor)
-        self.getDirection = ConstantMap("Direction",size, value=direction)
-        """
-        
         #Specify children
-        self.dnfmapDaff.addChildren(self.modelD, self.noise)
         self.modelI.addChildren(source=self.getIRSensors, kernel=self.kernelI)
         self.modelD.addChildren(source=self.getDirection, kernel=self.kernelD)
         
@@ -147,12 +143,10 @@ class ModelEPuckDNFMemory(Model,Renderable):
         self.motorR.addChildren(activationN=self.navRelativeMap, activationI = zeros)
         self.setMotorR.addChildren(motor=self.motorR, simulator=self.simulator)
         
-        self.activationI.addChildren(dnfmapI=self.dnfmapI)
-        self.activationD.addChildren(dnfmapD=self.dnfmapD)
         self.getIRSensors.addChildren(simulator=self.simulator)
         self.getDirection.addChildren(simulator=self.simulator)
         self.dnfmapI.addChildren(aff=self.modelI)
-        self.dnfmapD.addChildren(aff=self.dnfmapDaff )
+        self.dnfmapD.addChildren(aff=self.modelD )
         
         #return the roots
         roots =  [self.setMotorL,self.setMotorR]
@@ -161,7 +155,7 @@ class ModelEPuckDNFMemory(Model,Renderable):
 
     #override Renderable
     def getArrays(self):
-        ret =  [self.motorL, self.motorR, self.activationI, self.dnfmapI, self.modelI, self.activationD, self.dnfmapD,  self.modelD, self.navigationMap, self.navigationMap.getActivation(),self.psi,self.projTarget,self.projObstacle,self.navRelativeMap]
+        ret =  [self.motorL, self.motorR,  self.dnfmapI, self.dnfmapD, self.navigationMap,self.navRelativeMap,self.memObs,self.memObs.kernel]
 
         return ret
 

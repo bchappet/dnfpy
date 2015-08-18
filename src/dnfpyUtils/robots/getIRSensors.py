@@ -14,7 +14,13 @@ class GetIRSensors(MapND):
         name,size,dt=dt,nbSensors=nbSensors,**kwargs        
         )
         
+
+
     def _compute(self, simulator, size, nbSensors):
+        self.compute2(simulator, size, nbSensors)
+
+    @profile
+    def compute2(self, simulator, size, nbSensors):
         listname=np.array([])
         if nbSensors>6:
             dec=0
@@ -26,7 +32,7 @@ class GetIRSensors(MapND):
             
             
         sensors_data=simulator.getSensors(listname,"prox")
-        print("sensors_data", sensors_data)
+        #print("sensors_data", sensors_data)
         
         sensors_dataN = np.zeros((size))
 
