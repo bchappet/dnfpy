@@ -8,6 +8,7 @@ import numpy as np
 class ArrayNDView(ArrayView):
     def __init__(self,  map, runner,mapView):
         self.reset()
+        self.curveSize = 100
         super(ArrayNDView,self).__init__(map,runner,mapView)
 
     def reset(self):
@@ -18,7 +19,19 @@ class ArrayNDView(ArrayView):
 
     def updateArray(self):
         self.data = self.map.getData()
-        self.pt = np.vstack((np.arange(0,self.data.shape[0]),self.data)).T
+        if type(self.data) == np.ndarray and (self.data.shape[0] > 1):
+            self.pt = np.vstack((np.arange(0,self.data.shape[0]),self.data)).T
+        else:
+            if type(self.data) == np.ndarray:
+                    self.data = self.data[0]
+
+            self.time = self.map.getArg("time")
+            pt = np.array([self.time,self.data])
+            self.pt.append(pt)
+            if len(self.pt) > self.curveSize:
+                del self.pt[0]
+
+
         self.updateMinMax()
 
     def updateMinMax(self):
