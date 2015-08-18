@@ -2,7 +2,7 @@ from dnfpy.core.mapND import MapND
 import math
 import numpy as np
 from math import pi as PI
-sensor_loc=np.array([-PI/2,-PI/2+0.77,-PI/2+1.27, PI/2-1.27, PI/2-0.77, PI/2,]) 
+sensor_loc=np.array([-PI/2,-PI/2+0.77,-PI/2+1.27, PI/2-1.27, PI/2-0.77, PI/2,PI-(5.21-3*PI/2), -PI+(3*PI/2-4.21)]) 
 
 class GetIRSensors(MapND):
     """
@@ -16,7 +16,10 @@ class GetIRSensors(MapND):
         
     def _compute(self, simulator, size, nbSensors):
         listname=np.array([])
-        dec=int((6-nbSensors)/2)
+        if nbSensors>6:
+            dec=0
+        else:
+            dec=int((6-nbSensors)/2)
             
         for x in range(1+dec,nbSensors+1+dec):
             listname=np.append(listname,"ePuck_proxSensor"+str(x))
