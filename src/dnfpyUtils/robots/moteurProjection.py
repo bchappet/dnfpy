@@ -19,9 +19,9 @@ class MotorProjection(Map2D):
         )
         self.side = side
         
-    def _compute(self, activationI, activationD, simulator):
+    def _compute(self, activationN, activationI):
 
-        v = self._data[0,0]
+        #v = self._data[0,0]
         if self.side=='l':
             a=-1
         else:
@@ -29,22 +29,17 @@ class MotorProjection(Map2D):
             
             
         sumIP=np.sum(activationI)
-        x=np.linspace(-PI,PI,activationI.shape[0])
+        sumNP=np.sum(activationN)
+        x=np.linspace(-PI,PI,activationN.shape[0])
         
         
         #sumDP=np.sum(activationD)
-        fD=3/(1+np.exp(a*x))
+        fD=2/(1+np.exp(a*x))
+        fO=2/(1+np.exp(-a*x*10))-1
         
-        if sumIP==0:
-            v=0
-        else:
-            v=np.sum(fD*activationI)/sumIP
-            
-        """
-        else:
-            fO=3/(1+np.exp(-a*x))-1.5
-            v=np.sum(fO*activationI)/sumIP
-        """
+        v=(np.sum(fD*activationN)+np.sum(fO*activationI))/(sumIP+sumNP)
+        
+        
         
         """
         sum
@@ -74,15 +69,17 @@ class MotorProjection(Map2D):
             elif self.side=='r':
                 v=3/(1+np.exp(-meanIP*5))-1.5
                 
-        """
+    
         
         if self.side=='l':
             simulator.setController('ePuck_leftJoint', "motor", v)
         elif self.side=='r':
             simulator.setController('ePuck_rightJoint', "motor", v)
-        
+            
+        """
         self._data=np.array([[v]])
         
+    
         
     def _reset(self):
         super(MotorProjection,self)._reset(

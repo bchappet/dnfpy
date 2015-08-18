@@ -20,7 +20,7 @@ from dnfpy.core.funcWithoutKeywordsND import FuncWithoutKeywords
 import dnfpy.core.utilsND as utils
 import numpy as np
 
-class ModelEPuckDNF(Model,Renderable):
+class ModelEPuckDNFScenario(Model,Renderable):
     def initMaps(self, size
                  ):
         """We initiate the map and link them"""
@@ -33,8 +33,8 @@ class ModelEPuckDNF(Model,Renderable):
         #Create maps
         
         
-        self.simulator = VRepSimulator("simulator",1,dt, synchronous=False)
-        #self.simulator = RobotSimulator("simulator",1,dt)
+        #self.simulator = VRepSimulator("simulator",1,dt, synchronous=False)
+        self.simulator = RobotSimulator("simulator",1,dt)
                     
         self.simulator.connection()
         
@@ -57,17 +57,16 @@ class ModelEPuckDNF(Model,Renderable):
         self.kernelI = FuncMapND(utils.gaussNd,"I_noiseK",size,dt=dt,center=center,wrap=wrap,intensity=1,width=0.1*size)
         self.kernelD = FuncMapND(utils.gaussNd,"D_noiseK",size,dt=dt,center=center,wrap=wrap,intensity=1,width=0.05*size)
         
-        
+        """
         self.getIRSensors = GetIRSensors("IRSensors", size, dt, nbSensors=4)
         self.getDirection = GetDirection("Direction",size, dt)
-        
         """
+        
         irSensor = np.zeros((size))
         direction = np.zeros((size))
         
         self.getIRSensors = ConstantMap("IRSensors", size,value=irSensor)
         self.getDirection = ConstantMap("Direction",size, value=direction)
-        """
         
         #Specify children
         self.navigationMap.addChildren(aff=self.navAff)
@@ -103,7 +102,7 @@ class ModelEPuckDNF(Model,Renderable):
         print("clicked on %s, at coord %s,%s"%(unicode(mapName),x,y))
         
     def _reset(self):
-        super(ModelEPuckDNF,self)._reset(
+        super(ModelEPuckDNFScenario,self)._reset(
         )
         self.simulator.disconnection()
         self.simulator.connection()
