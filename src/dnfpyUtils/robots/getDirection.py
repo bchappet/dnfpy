@@ -41,14 +41,24 @@ class GetDirection(MapND):
         if position_data[0]>0:
             if position_data[1]>0:
                 beta=-psi-math.pi+alpha
-                #print("beta",beta)
+                #print("beta1",beta)
             else:
                 beta=-psi+alpha
+                #print("beta2",beta)
         else:
             if position_data[1]>0:
                 beta=-psi+math.pi+alpha
+                #print("beta3",beta)
             else:
                 beta=-psi+alpha
+                #print("beta4",beta)
+                
+        if beta>math.pi:
+            beta=-2*math.pi+beta
+        elif beta<-math.pi:
+            beta=2*math.pi+beta
+        else:
+            pass
             
         indice=int((beta+math.pi)*size*0.9999999/(2*math.pi))
         direction = np.zeros((size))

@@ -58,7 +58,7 @@ class VRepSimulator(RobotSimulator):
         # Now close the connection to V-REP:	
         vrep.simxFinish(self.clientID)
     
-    @profile
+    #@profile
     def getSensor(self, name, typeSensor):
         """
         Get data of robot sensor
@@ -85,7 +85,7 @@ class VRepSimulator(RobotSimulator):
         elif typeSensor == "cam":
             pass
                     
-    @profile
+    #@profile
     def getSensors(self, listname, typeSensor):
         """
         Get data of several same robot sensors
@@ -95,7 +95,7 @@ class VRepSimulator(RobotSimulator):
             sensors_val=np.append(sensors_val,self.getSensor(name,typeSensor))
         return sensors_val
     
-    @profile
+    #@profile
     def setController(self, name, typeController, val):
         """
         Give an order to a controller
@@ -104,7 +104,7 @@ class VRepSimulator(RobotSimulator):
             errorCode,motor_handle=vrep.simxGetObjectHandle(self.clientID,name,self.operationMode)
             vrep.simxSetJointTargetVelocity(self.clientID,motor_handle,val, vrep.simx_opmode_streaming)
         
-    @profile
+    #@profile
     def getOrientation(self, name, relativeName=None):
         """
         Get the orientation of an object
@@ -118,7 +118,7 @@ class VRepSimulator(RobotSimulator):
         returnCode,angles=vrep.simxGetObjectOrientation(self.clientID,robotHandle,relativeHandle,vrep.simx_opmode_streaming)
         return angles
         
-    @profile
+    #@profile
     def getPosition(self, name, relativeName):
         """
         Get the position of an object
@@ -129,7 +129,7 @@ class VRepSimulator(RobotSimulator):
         returnCode,arrayPosition=vrep.simxGetObjectPosition(self.clientID,robotHandle,relativeHandle,vrep.simx_opmode_streaming)
         return arrayPosition
         
-    @profile
+    #@profile
     def setPositionObject(self, name, relativeName, position):
         """
         Set the position of an object
