@@ -34,6 +34,11 @@ class GetIRSensors(MapND):
         sensors_data=simulator.getSensors(listname,"prox")
         #print("sensors_data", sensors_data)
         
+        sensors_orientation=np.array([])
+        for name in listname:
+            sensors_orientation=np.append(sensors_orientation,simulator.getOrientation(name,"ePuck"))
+        print("sensors_orientation",sensors_orientation)
+        
         sensors_dataN = np.zeros((size))
 
         for i in range(nbSensors):
