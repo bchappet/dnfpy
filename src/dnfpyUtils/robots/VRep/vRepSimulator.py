@@ -130,10 +130,33 @@ class VRepSimulator(RobotSimulator):
         return arrayPosition
         
     #@profile
-    def setPositionObject(self, name, relativeName, position):
+    def setPositionObject(self, name, relativeName=None, position):
         """
         Set the position of an object
         """
         errorCode,objectHandle=vrep.simxGetObjectHandle(self.clientID,name,self.operationMode)
-        errorCode,relativeHandle=vrep.simxGetObjectHandle(self.clientID,relativeName,self.operationMode)
+        
+        if relativeName:
+            errorCode,relativeHandle=vrep.simxGetObjectHandle(self.clientID,relativeName,self.operationMode)
+        else:
+            relativeHandle = -1
+        
         vrep.simxSetObjectPosition(self.clientID,objectHandle,relativeHandle,position,vrep.simx_opmode_oneshot)
+
+    def copyObject(self,name,relativeName=None,position):
+        """
+        Copy and paste an object in a specific position
+        """
+        errorCode,objectHandle=vrep.simxGetObjectHandle(self.clientID,name,self.operationMode)
+        
+        if relativeName:
+            errorCode,relativeHandle=vrep.simxGetObjectHandle(self.clientID,relativeName,self.operationMode)
+        else:
+            relativeHandle = -1
+
+            
+        returnCode, newObjectHandles=simxCopyPasteObjects(self.clientID, [objectHandle], self.operationMode)
+        
+        newObjectHandle=newObjectHandles[0]
+        
+        vrep.simxSetObjectPosition(self.clientID,newObjectHandle,relativeHandle,position,vrep.simx_opmode_oneshot)

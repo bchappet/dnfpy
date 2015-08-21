@@ -13,7 +13,21 @@ class GetIRSensors(MapND):
         super(GetIRSensors,self).__init__(
         name,size,dt=dt,nbSensors=nbSensors,**kwargs        
         )
+        self.sensors_loc=np.array([])
         
+        for i in range(nbSensors):
+            angle=-PI/2-i*2*PI/nbSensors
+            if angle>-PI:
+                print("1er angle "+str(i+1),angle)
+            elif angle<-2*PI:
+                angle=angle+2*PI
+                print("2eme angle "+str(i+1),angle)
+            else:
+                angle=PI+(angle+PI)
+                print("3eme angle "+str(i+1),angle)
+            
+                
+            self.sensors_loc=np.append(self.sensors_loc,angle)
 
 
     def _compute(self, simulator, size, nbSensors):
@@ -33,17 +47,15 @@ class GetIRSensors(MapND):
             
         sensors_data=simulator.getSensors(listname,"prox")
         #print("sensors_data", sensors_data)
+
+
         
-        sensors_orientation=np.array([])
-        for name in listname:
-            sensors_orientation=np.append(sensors_orientation,simulator.getOrientation(name,"ePuck"))
-        print("sensors_orientation",sensors_orientation)
         
         sensors_dataN = np.zeros((size))
 
         for i in range(nbSensors):
-            if sensors_data[i]>0:
-                indice=int((sensor_loc[i+dec]+math.pi)*size/(2*math.pi))
+            if sensors_data[i]>0 and self.sensors_loc[i]>-PI/2 and self.sensors_loc[i]<PI/2:
+                indice=int((self.sensors_loc[i+dec]+math.pi)*size/(2*math.pi))
                 sensors_dataN[indice]=sensors_data[i]
         
 

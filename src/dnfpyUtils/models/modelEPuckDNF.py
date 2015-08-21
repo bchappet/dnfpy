@@ -58,7 +58,7 @@ class ModelEPuckDNF(Model,Renderable):
         self.kernelD = FuncMapND(utils.gaussNd,"D_noiseK",size,dt=dt,center=center,wrap=wrap,intensity=1,width=0.05*size)
         
         
-        self.getIRSensors = GetIRSensors("IRSensors", size, dt, nbSensors=4)
+        self.getIRSensors = GetIRSensors("IRSensors", size, dt, nbSensors=50)
         self.getDirection = GetDirection("Direction",size, dt)
         
         """
