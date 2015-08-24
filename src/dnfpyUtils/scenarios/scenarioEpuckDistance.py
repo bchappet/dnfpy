@@ -20,10 +20,21 @@ class ScenarioEpuckDistance(Scenario):
         simulator = model.getMap("simulator")
         
         self.size= directionMap.getArg('size')
+        simulator.connection()        
         
-        simulator.setPosition()
         
-        simulator.copyObject("Cuboid","Cuboid",positionF)
+        positionEPuck=simulator.getPosition("ePuck", "Cuboid")
+        positionEPuck=simulator.getPosition("ePuck", "Cuboid")
+        print("positionEPuck",positionEPuck)
+        positionCuboid=simulator.getPosition("Cuboid","Cuboid")
+        positionCuboid=simulator.getPosition("Cuboid","Cuboid")
+        print("positionCuboid",positionCuboid)
+        positionF=positionCuboid
+        positionF[0]=positionEPuck[0]+0.5
+        positionF[1]=positionEPuck[1]
+        print("positionF",positionF)
+        
+        simulator.copyObject("Cuboid",positionF,"Cuboid")
         
         
 

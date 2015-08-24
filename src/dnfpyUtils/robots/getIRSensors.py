@@ -18,13 +18,14 @@ class GetIRSensors(MapND):
         for i in range(nbSensors):
             angle=-PI/2-i*2*PI/nbSensors
             if angle>-PI:
-                print("1er angle "+str(i+1),angle)
+                pass
+                #print("1er angle "+str(i+1),angle)
             elif angle<-2*PI:
                 angle=angle+2*PI
-                print("2eme angle "+str(i+1),angle)
+                #print("2eme angle "+str(i+1),angle)
             else:
                 angle=PI+(angle+PI)
-                print("3eme angle "+str(i+1),angle)
+                #print("3eme angle "+str(i+1),angle)
             
                 
             self.sensors_loc=np.append(self.sensors_loc,angle)
