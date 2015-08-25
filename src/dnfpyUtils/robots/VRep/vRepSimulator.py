@@ -17,9 +17,12 @@ class VRepSimulator(RobotSimulator):
         self.port=19997 #Port initialisation
         self.returnSynchro=-1 #initialisation return flag from simsxSychronousTrigger
         self.returnStart=-1 #initialisation return flag from simsxStartSimulation
+        self.handles=dict()
 
-
-        self.operationMode = vrep.simx_opmode_oneshot
+        if synchronous==True:
+            self.operationMode = vrep.simx_opmode_oneshot_wait
+        else:
+            self.operationMode = vrep.simx_opmode_oneshot
         
     def _compute(self):
         if self.synchronous:
@@ -57,8 +60,16 @@ class VRepSimulator(RobotSimulator):
         
         # Now close the connection to V-REP:	
         vrep.simxFinish(self.clientID)
+        
+    def initHandle(self,name):
+        """
+        Initialize the handle associate with a name
+        """
+        errorCode,handle=vrep.simxGetObjectHandle(self.clientID,name,vrep.simx_opmode_oneshot_wait)
+        self.handles[name]=handle
+
     
-    #@profile
+    @profile
     def getSensor(self, name, typeSensor):
         """
         Get data of robot sensor
@@ -68,7 +79,11 @@ class VRepSimulator(RobotSimulator):
         """
         if typeSensor == "prox":
             
-            errorCode,sensor_handle=vrep.simxGetObjectHandle(self.clientID,name,self.operationMode)
+            if name in self.handles.keys():
+                pass
+            else:
+                self.initHandle(name)
+            sensor_handle=self.handles[name]
             errorCode,detectionState,detectedPoint,detectedObjectHandle,detectedSurfaceNormalVector=vrep.simxReadProximitySensor(self.clientID,sensor_handle,vrep.simx_opmode_streaming)
             #errorCode,detectionState,detectedPoint,detectedObjectHandle,detectedSurfaceNormalVector=vrep.simxReadProximitySensor(self.clientID,sensor_handle,vrep.simx_opmode_buffer)
             
@@ -85,7 +100,7 @@ class VRepSimulator(RobotSimulator):
         elif typeSensor == "cam":
             pass
                     
-    #@profile
+    @profile
     def getSensors(self, listname, typeSensor):
         """
         Get data of several same robot sensors
@@ -95,41 +110,61 @@ class VRepSimulator(RobotSimulator):
             sensors_val=np.append(sensors_val,self.getSensor(name,typeSensor))
         return sensors_val
     
-    #@profile
+    @profile
     def setController(self, name, typeController, val):
         """
         Give an order to a controller
         """
         if typeController == "motor":
-            errorCode,motor_handle=vrep.simxGetObjectHandle(self.clientID,name,self.operationMode)
+            if name in self.handles.keys():
+                pass
+            else:
+                self.initHandle(name)
+            motor_handle=self.handles[name]
             vrep.simxSetJointTargetVelocity(self.clientID,motor_handle,val, vrep.simx_opmode_streaming)
         
-    #@profile
+    @profile
     def getOrientation(self, name, relativeName=None):
         """
         Get the orientation of an object
         """
-        errorCode,robotHandle=vrep.simxGetObjectHandle(self.clientID,name,self.operationMode)
+        if name in self.handles.keys():
+            pass
+        else:
+            self.initHandle(name)
+        robotHandle=self.handles[name]
         if relativeName:
-            errorCode,relativeHandle=vrep.simxGetObjectHandle(self.clientID,relativeName,self.operationMode)
+            if relativeName in self.handles.keys():
+                pass
+            else:
+                self.initHandle(relativeName)
+            relativeHandle=self.handles[relativeName]
         else:
             relativeHandle = -1
 
         returnCode,angles=vrep.simxGetObjectOrientation(self.clientID,robotHandle,relativeHandle,vrep.simx_opmode_streaming)
         return angles
         
-    #@profile
+    @profile
     def getPosition(self, name, relativeName):
         """
         Get the position of an object
         """
-        errorCode,robotHandle=vrep.simxGetObjectHandle(self.clientID,name,self.operationMode)
-        errorCode,relativeHandle=vrep.simxGetObjectHandle(self.clientID,relativeName,self.operationMode)
+        if name in self.handles.keys():
+            pass
+        else:
+            self.initHandle(name)
+        robotHandle=self.handles[name]
+        if relativeName in self.handles.keys():
+            pass
+        else:
+            self.initHandle(relativeName)
+        relativeHandle=self.handles[relativeName]
         
-        returnCode,arrayPosition=vrep.simxGetObjectPosition(self.clientID,robotHandle,relativeHandle,vrep.simx_opmode_streaming)
+        returnCode,arrayPosition=vrep.simxGetObjectPosition(self.clientID,robotHandle,relativeHandle,self.operationMode)
         return arrayPosition
         
-    #@profile
+    @profile
     def setPositionObject(self, name, position, relativeName=None):
         """
         Set the position of an object
@@ -142,7 +177,8 @@ class VRepSimulator(RobotSimulator):
             relativeHandle = -1
         
         vrep.simxSetObjectPosition(self.clientID,objectHandle,relativeHandle,position,vrep.simx_opmode_oneshot)
-
+    
+    @profile
     def copyObject(self,name,position,relativeName=None):
         """
         Copy and paste an object in a specific position
@@ -162,3 +198,5 @@ class VRepSimulator(RobotSimulator):
         vrep.simxSetObjectPosition(self.clientID,newObjectHandle,relativeHandle,position,vrep.simx_opmode_oneshot)
         
         return newObjectHandle
+        
+    

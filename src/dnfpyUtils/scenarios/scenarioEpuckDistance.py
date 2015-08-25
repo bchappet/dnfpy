@@ -1,5 +1,6 @@
 from scenario import Scenario
 import numpy as np
+
 import math
 PI=math.pi
 
@@ -20,21 +21,24 @@ class ScenarioEpuckDistance(Scenario):
         simulator = model.getMap("simulator")
         
         self.size= directionMap.getArg('size')
-        simulator.connection()        
-        
-        
-        positionEPuck=simulator.getPosition("ePuck", "Cuboid")
+        simulator.connection()
+
         positionEPuck=simulator.getPosition("ePuck", "Cuboid")
         print("positionEPuck",positionEPuck)
         positionCuboid=simulator.getPosition("Cuboid","Cuboid")
-        positionCuboid=simulator.getPosition("Cuboid","Cuboid")
         print("positionCuboid",positionCuboid)
-        positionF=positionCuboid
-        positionF[0]=positionEPuck[0]+0.5
-        positionF[1]=positionEPuck[1]
-        print("positionF",positionF)
-        
-        simulator.copyObject("Cuboid",positionF,"Cuboid")
+        self.positionF=positionCuboid
+        self.positionF[0]=positionEPuck[0]-0.2
+        self.positionF[1]=positionEPuck[1]+0.1
+        print("positionF",self.positionF)
+        simulator.copyObject("Cuboid0",self.positionF,"Cuboid")
+        self.positionF=positionCuboid
+        self.positionF[0]=positionEPuck[0]-0.2
+        self.positionF[1]=positionEPuck[1]-0.1
+        print("positionF",self.positionF)
+        simulator.copyObject("Cuboid0",self.positionF,"Cuboid")
+
+ 
         
         
 
@@ -42,9 +46,15 @@ class ScenarioEpuckDistance(Scenario):
     def apply(self,model,time,runner):
         self.nbIteration += 1
         self.time = time
+
         self._apply(model,time,runner)
 
     def _apply(self,model,time,runner):
+        simulator = model.getMap("simulator")
+        
+
+
+        
         """
         if time > 2.0:
                 self.ir[...] = 0

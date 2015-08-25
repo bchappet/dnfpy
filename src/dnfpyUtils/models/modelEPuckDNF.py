@@ -33,7 +33,7 @@ class ModelEPuckDNF(Model,Renderable):
         #Create maps
         
         
-        self.simulator = VRepSimulator("simulator",1,dt, synchronous=False)
+        self.simulator = VRepSimulator("simulator",1,dt, synchronous=True)
         #self.simulator = RobotSimulator("simulator",1,dt)
                     
         self.simulator.connection()

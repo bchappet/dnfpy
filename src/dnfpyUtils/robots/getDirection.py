@@ -16,7 +16,7 @@ class GetDirection(MapND):
         
             
             
-        orientation_data=simulator.getOrientation("ePuck","Cuboid")
+
         orientation_data=simulator.getOrientation("ePuck","Cuboid")
         print("orientation_data", orientation_data)
         if (orientation_data[0]<=0):
