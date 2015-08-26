@@ -14,11 +14,15 @@ class GetDirection(MapND):
         
     def _compute(self, simulator, size):
         
-            
+        self.compute2(simulator, size)
             
 
+
+
+    def compute2(self, simulator, size):
+        
         orientation_data=simulator.getOrientation("ePuck","Cuboid")
-        print("orientation_data", orientation_data)
+        #print("orientation_data", orientation_data)
         if (orientation_data[0]<=0):
             psi=orientation_data[1]
         else:
@@ -29,7 +33,7 @@ class GetDirection(MapND):
         #print("psi",psi)
         
         position_data=simulator.getPosition("ePuck","Cuboid")
-        print("position_data",position_data)
+        #print("position_data",position_data)
         if position_data[1] != 0.0:
             tan=position_data[0]/position_data[1]
             alpha=math.atan(tan)
@@ -59,11 +63,12 @@ class GetDirection(MapND):
             beta=2*math.pi+beta
         else:
             pass
+        
+
             
         indice=int((beta+math.pi)*size*0.9999999/(2*math.pi))
         direction = np.zeros((size))
         direction[indice]=1
 
-
-        
         self._data=direction
+        

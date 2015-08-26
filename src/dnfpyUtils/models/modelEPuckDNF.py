@@ -42,7 +42,7 @@ class ModelEPuckDNF(Model,Renderable):
         self.motorR = MotorProjection("motorR", 1, dt, 'r')
         self.setMotorL = SetVelMotor("setMotorL", 1, dt, 'l')
         self.setMotorR = SetVelMotor("setMotorR", 1, dt, 'r')
-        self.dnfmapI = MapDNFND("dnfmapI", size, dt=0.1, gainAff=100,tau=0.1, wInh=0.15, wrap=wrap, activation=activation)
+        self.dnfmapI = MapDNFND("dnfmapI", size, dt=0.1, gainAff=15,tau=0.1, wInh=0.15, wrap=wrap, activation=activation)
         self.dnfmapD = MapDNFND("dnfmapD", size, dt=0.1, gainAff=2,tau=0.1, wrap=wrap, activation=activation)
         self.activationI = self.dnfmapI.getActivation()
         self.activationD = self.dnfmapD.getActivation()

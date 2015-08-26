@@ -5,8 +5,9 @@ import math
 PI=math.pi
 
 class ScenarioEpuckDistance(Scenario):
-    def __init__(self):
+    def __init__(self,dist=0.1):
         super(ScenarioEpuckDistance,self).__init__()
+        self.dist=dist
 
     def reset(self):
         super(ScenarioEpuckDistance,self).reset()
@@ -28,16 +29,16 @@ class ScenarioEpuckDistance(Scenario):
         positionCuboid=simulator.getPosition("Cuboid","Cuboid")
         print("positionCuboid",positionCuboid)
         self.positionF=positionCuboid
-        self.positionF[0]=positionEPuck[0]-0.2
-        self.positionF[1]=positionEPuck[1]+0.1
+        self.positionF[0]=positionEPuck[0]-0.15
+        self.positionF[1]=positionEPuck[1]+self.dist
         print("positionF",self.positionF)
-        simulator.copyObject("Cuboid0",self.positionF,"Cuboid")
+        simulator.setPositionObject("Cuboid3",self.positionF,"Cuboid")
         self.positionF=positionCuboid
-        self.positionF[0]=positionEPuck[0]-0.2
-        self.positionF[1]=positionEPuck[1]-0.1
+        self.positionF[0]=positionEPuck[0]-0.15
+        self.positionF[1]=positionEPuck[1]-self.dist
         print("positionF",self.positionF)
-        simulator.copyObject("Cuboid0",self.positionF,"Cuboid")
-
+        simulator.setPositionObject("Cuboid11",self.positionF,"Cuboid")
+        self.direction=0
  
         
         
@@ -46,13 +47,36 @@ class ScenarioEpuckDistance(Scenario):
     def apply(self,model,time,runner):
         self.nbIteration += 1
         self.time = time
-
         self._apply(model,time,runner)
 
     def _apply(self,model,time,runner):
         simulator = model.getMap("simulator")
-        
-
+        print("time",self.time)
+        if self.time>=25:
+            orientation_data=simulator.getOrientation("ePuck","Cuboid")
+            #print("orientation_data", orientation_data)
+            if (orientation_data[0]<=0):
+                psi=orientation_data[1]
+            else:
+                if (orientation_data[1]<0):
+                    psi=-math.pi-orientation_data[1]
+                else:
+                    psi=math.pi-orientation_data[1]
+            print("psi",psi)
+            simulator.disconnection()
+            
+        elif self.time>=24.7:
+            orientation_data=simulator.getOrientation("ePuck","Cuboid")
+            #print("orientation_data", orientation_data)
+            if (orientation_data[0]<=0):
+                psi=orientation_data[1]
+            else:
+                if (orientation_data[1]<0):
+                    psi=-math.pi-orientation_data[1]
+                else:
+                    psi=math.pi-orientation_data[1]
+            print("psi",psi)
+            
 
         
         """
@@ -67,9 +91,7 @@ class ScenarioEpuckDistance(Scenario):
         """
 
     def finalize(self,model,runner):
-            pass;
-    #   (error,wellClusterized,self.time,self.convergence,maxNbAct,meanNbAct,elapsedTime,errorShape,compEmpty) = \
-    #   super(ScenarioSwitchWM,self).finalize(model,runner)
-    #   return  (error,wellClusterized,self.time,self.convergence,maxNbAct,meanNbAct,elapsedTime,errorShape,compEmpty,
-    #            self.wrongNumberOfCluster/float(self.nbIteration))
+        (self.time,self.direction) = \
+        super(ScenarioEpuckDistance,self).finalize(model,runner)
+        return  (self.time,self.direction)
 

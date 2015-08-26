@@ -146,22 +146,27 @@ class VRepSimulator(RobotSimulator):
         return angles
         
     @profile
-    def getPosition(self, name, relativeName):
+    def getPosition(self, name, relativeName=None):
         """
         Get the position of an object
         """
         if name in self.handles.keys():
+            mode=vrep.simx_opmode_streaming
             pass
         else:
+            mode=vrep.simx_opmode_oneshot_wait
             self.initHandle(name)
         robotHandle=self.handles[name]
-        if relativeName in self.handles.keys():
-            pass
+        if relativeName:
+            if relativeName in self.handles.keys():
+                pass
+            else:
+                self.initHandle(relativeName)
+            relativeHandle=self.handles[relativeName]
         else:
-            self.initHandle(relativeName)
-        relativeHandle=self.handles[relativeName]
+            relativeHandle = -1
         
-        returnCode,arrayPosition=vrep.simxGetObjectPosition(self.clientID,robotHandle,relativeHandle,self.operationMode)
+        returnCode,arrayPosition=vrep.simxGetObjectPosition(self.clientID,robotHandle,relativeHandle,mode)
         return arrayPosition
         
     @profile
@@ -169,10 +174,17 @@ class VRepSimulator(RobotSimulator):
         """
         Set the position of an object
         """
-        errorCode,objectHandle=vrep.simxGetObjectHandle(self.clientID,name,self.operationMode)
-        
+        if name in self.handles.keys():
+            pass
+        else:
+            self.initHandle(name)
+        objectHandle=self.handles[name]
         if relativeName:
-            errorCode,relativeHandle=vrep.simxGetObjectHandle(self.clientID,relativeName,self.operationMode)
+            if relativeName in self.handles.keys():
+                pass
+            else:
+                self.initHandle(relativeName)
+            relativeHandle=self.handles[relativeName]
         else:
             relativeHandle = -1
         
@@ -183,10 +195,17 @@ class VRepSimulator(RobotSimulator):
         """
         Copy and paste an object in a specific position
         """
-        errorCode,objectHandle=vrep.simxGetObjectHandle(self.clientID,name,self.operationMode)
-        
+        if name in self.handles.keys():
+            pass
+        else:
+            self.initHandle(name)
+        objectHandle=self.handles[name]
         if relativeName:
-            errorCode,relativeHandle=vrep.simxGetObjectHandle(self.clientID,relativeName,self.operationMode)
+            if relativeName in self.handles.keys():
+                pass
+            else:
+                self.initHandle(relativeName)
+            relativeHandle=self.handles[relativeName]
         else:
             relativeHandle = -1
 
