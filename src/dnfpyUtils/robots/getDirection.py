@@ -11,6 +11,7 @@ class GetDirection(MapND):
         super(GetDirection,self).__init__(
         name,size,dt=dt,**kwargs        
         )
+        self.angle=0
         
     def _compute(self, simulator, size):
         
@@ -64,7 +65,7 @@ class GetDirection(MapND):
         else:
             pass
         
-
+        self.angle=beta
             
         indice=int((beta+math.pi)*size*0.9999999/(2*math.pi))
         direction = np.zeros((size))

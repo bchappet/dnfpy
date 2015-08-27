@@ -18,29 +18,32 @@ class ScenarioEpuckDistance(Scenario):
         If we need to change parameters before modele instanciation
         """
         irSensorMap = model.getMap("IRSensors")
-        directionMap = model.getMap("Direction")
-        simulator = model.getMap("simulator")
+        self.directionMap = model.getMap("Direction")
+        self.simulator = model.getMap("simulator")
         
-        self.size= directionMap.getArg('size')
-        simulator.connection()
+        self.size= self.directionMap.getArg('size')
+        self.simulator.startSimulation()
 
-        positionEPuck=simulator.getPosition("ePuck", "Cuboid")
-        print("positionEPuck",positionEPuck)
-        positionCuboid=simulator.getPosition("Cuboid","Cuboid")
+
+        positionCuboid=self.simulator.getPosition("Cuboid","Cuboid")
         print("positionCuboid",positionCuboid)
+        positionEPuck=self.simulator.getPosition("ePuck", "Cuboid")
+        print("positionEPuck",positionEPuck)
         self.positionF=positionCuboid
         self.positionF[0]=positionEPuck[0]-0.15
         self.positionF[1]=positionEPuck[1]+self.dist
         print("positionF",self.positionF)
-        simulator.setPositionObject("Cuboid3",self.positionF,"Cuboid")
+        self.simulator.setPositionObject("Cuboid3",self.positionF,"Cuboid")
         self.positionF=positionCuboid
         self.positionF[0]=positionEPuck[0]-0.15
         self.positionF[1]=positionEPuck[1]-self.dist
         print("positionF",self.positionF)
-        simulator.setPositionObject("Cuboid11",self.positionF,"Cuboid")
+        self.simulator.setPositionObject("Cuboid11",self.positionF,"Cuboid")
         self.direction=0
- 
-        
+        self.i=0
+        self.phi1=0
+        self.phi2=0
+        self.t1=0
         
 
 
@@ -50,33 +53,19 @@ class ScenarioEpuckDistance(Scenario):
         self._apply(model,time,runner)
 
     def _apply(self,model,time,runner):
-        simulator = model.getMap("simulator")
-        print("time",self.time)
-        if self.time>=25:
-            orientation_data=simulator.getOrientation("ePuck","Cuboid")
-            #print("orientation_data", orientation_data)
-            if (orientation_data[0]<=0):
-                psi=orientation_data[1]
-            else:
-                if (orientation_data[1]<0):
-                    psi=-math.pi-orientation_data[1]
-                else:
-                    psi=math.pi-orientation_data[1]
-            print("psi",psi)
-            simulator.disconnection()
-            
-        elif self.time>=24.7:
-            orientation_data=simulator.getOrientation("ePuck","Cuboid")
-            #print("orientation_data", orientation_data)
-            if (orientation_data[0]<=0):
-                psi=orientation_data[1]
-            else:
-                if (orientation_data[1]<0):
-                    psi=-math.pi-orientation_data[1]
-                else:
-                    psi=math.pi-orientation_data[1]
-            print("psi",psi)
-            
+        #print("time",self.time)
+        psi=self.directionMap.angle
+        #print("psi",psi)
+        if self.time>=15 and self.i==1:
+            self.phi2=psi
+            self.dphidt=(self.phi2-self.phi1)/(self.time-self.t1)
+
+            self.simulator.stopSimulation()
+        elif self.time>=14.9:
+            self.t1=self.time
+            self.phi1=psi
+            self.i=1
+
 
         
         """
@@ -91,7 +80,5 @@ class ScenarioEpuckDistance(Scenario):
         """
 
     def finalize(self,model,runner):
-        (self.time,self.direction) = \
-        super(ScenarioEpuckDistance,self).finalize(model,runner)
-        return  (self.time,self.direction)
+        return  (self.dist,self.dphidt)
 

@@ -48,7 +48,7 @@ class ModelEPuckDNF(Model,Renderable):
         self.activationD = self.dnfmapD.getActivation()
         self.navigationMap = MapDNFND("navigationMap", size, dt, tau=0.1, wrap=wrap, activation = "id")
         self.navAff = FuncMapND(utils.subArrays, "navAff", size, dt=dt)
-        self.noise = NoiseMap("noise",size,dt=dt,intensity=0.1)
+        self.noise = NoiseMap("noise",size,dt=dt,intensity=0.3)
         self.dnfmapDaff= FuncWithoutKeywords(utils.sumArrays, "dnfmapDaff", size, dt=dt)
         
         self.modelI =ConvolutionND("IRSensorsModel",size,dt=dt,wrap=wrap)
@@ -95,7 +95,7 @@ class ModelEPuckDNF(Model,Renderable):
 
     #override Renderable
     def getArrays(self):
-        ret =  [self.motorL, self.motorR, self.activationI, self.dnfmapI, self.modelI, self.activationD, self.dnfmapD,  self.modelD, self.navigationMap, self.navigationMap.getActivation()]
+        ret =  [self.motorL, self.motorR, self.activationI, self.dnfmapI, self.modelI, self.activationD, self.dnfmapD,  self.modelD, self.navigationMap, self.navigationMap.getActivation(), self.dnfmapI.kernel]
 
         return ret
 

@@ -44,7 +44,7 @@ class GetIRSensors(MapND):
     def _compute(self, simulator, size, nbSensors):
         self.compute2(simulator, size, nbSensors)
 
-    @profile
+    #@profile
     def compute2(self, simulator, size, nbSensors):
         
             
