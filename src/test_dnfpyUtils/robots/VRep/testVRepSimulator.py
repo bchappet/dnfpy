@@ -70,8 +70,9 @@ class TestVRepSimulator(unittest.TestCase):
     def testGetOrientation(self):
         self.uut.port=19997
         self.uut.connection()
-        a=0
+        a=[0,0,0]
         self.uut.compute()
+        b=self.uut.getOrientation("ePuck","Cuboid")
         b=self.uut.getOrientation("ePuck","Cuboid")
         b=self.uut.getOrientation("ePuck","Cuboid")
         self.assertNotEquals(a,b)
@@ -81,14 +82,25 @@ class TestVRepSimulator(unittest.TestCase):
     def testGetPosition(self):
         self.uut.port=19997
         self.uut.connection()
-        a=0
+        a=[0,0,0]
         self.uut.compute()
         b=self.uut.getPosition("ePuck","Cuboid")
+        self.uut.compute()
+        b=self.uut.getPosition("ePuck","Cuboid")
+        self.uut.compute()
         b=self.uut.getPosition("ePuck","Cuboid")
         print("position",b)
         self.assertNotEquals(a,b)
         self.uut.disconnection()
-    
+        
+    def testCopyObject(self):
+        self.uut.port=19997
+        self.uut.connection()
+        position=self.uut.getPosition("ePuck","Cuboid")
+        print("position",position)
+        b=self.uut.copyObject("Cuboid",position,"Cuboid")
+        print("handle",b)
+        self.uut.disconnection()
         
         
 if __name__ == '__main__':

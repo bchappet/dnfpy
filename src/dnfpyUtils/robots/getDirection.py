@@ -11,12 +11,17 @@ class GetDirection(MapND):
         super(GetDirection,self).__init__(
         name,size,dt=dt,**kwargs        
         )
+        self.angle=0
         
     def _compute(self, simulator, size):
         
+        self.compute2(simulator, size)
             
-            
-        orientation_data=simulator.getOrientation("ePuck","Cuboid")
+
+
+
+    def compute2(self, simulator, size):
+        
         orientation_data=simulator.getOrientation("ePuck","Cuboid")
         #print("orientation_data", orientation_data)
         if (orientation_data[0]<=0):
@@ -59,11 +64,12 @@ class GetDirection(MapND):
             beta=2*math.pi+beta
         else:
             pass
+        
+        self.angle=beta
             
         indice=int((beta+math.pi)*size*0.9999999/(2*math.pi))
         direction = np.zeros((size))
         direction[indice]=1
 
-
-        
         self._data=direction
+        

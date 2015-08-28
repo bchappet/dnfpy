@@ -60,3 +60,9 @@ class RobotSimulator(Map2D):
         Set the position of an object
         """
         pass
+    
+    def copyObject(self,name,position,relativeName=None):
+        """
+        Copy and paste an object in a specific position
+        """
+        pass

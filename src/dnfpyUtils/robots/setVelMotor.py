@@ -15,6 +15,7 @@ class SetVelMotor(Map2D):
         )
         self.side = side
         
+        
     def _compute(self, motor, simulator):
 
         v = motor
@@ -31,4 +32,5 @@ class SetVelMotor(Map2D):
     def _reset(self):
         super(SetVelMotor,self)._reset(
         )
+        
         self._data=np.array([1])

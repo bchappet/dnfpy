@@ -33,7 +33,7 @@ class ModelEPuckDNF(Model,Renderable):
         #Create maps
         
         
-        self.simulator = VRepSimulator("simulator",1,dt, synchronous=False)
+        self.simulator = VRepSimulator("simulator",1,dt, synchronous=True)
         #self.simulator = RobotSimulator("simulator",1,dt)
                     
         self.simulator.connection()
@@ -42,13 +42,13 @@ class ModelEPuckDNF(Model,Renderable):
         self.motorR = MotorProjection("motorR", 1, dt, 'r')
         self.setMotorL = SetVelMotor("setMotorL", 1, dt, 'l')
         self.setMotorR = SetVelMotor("setMotorR", 1, dt, 'r')
-        self.dnfmapI = MapDNFND("dnfmapI", size, dt=0.1, gainAff=100,tau=0.1, wInh=0.15, wrap=wrap, activation=activation)
+        self.dnfmapI = MapDNFND("dnfmapI", size, dt=0.1, gainAff=15,tau=0.1, wInh=0.15, wrap=wrap, activation=activation)
         self.dnfmapD = MapDNFND("dnfmapD", size, dt=0.1, gainAff=2,tau=0.1, wrap=wrap, activation=activation)
         self.activationI = self.dnfmapI.getActivation()
         self.activationD = self.dnfmapD.getActivation()
         self.navigationMap = MapDNFND("navigationMap", size, dt, tau=0.1, wrap=wrap, activation = "id")
         self.navAff = FuncMapND(utils.subArrays, "navAff", size, dt=dt)
-        self.noise = NoiseMap("noise",size,dt=dt,intensity=0.1)
+        self.noise = NoiseMap("noise",size,dt=dt,intensity=0.3)
         self.dnfmapDaff= FuncWithoutKeywords(utils.sumArrays, "dnfmapDaff", size, dt=dt)
         
         self.modelI =ConvolutionND("IRSensorsModel",size,dt=dt,wrap=wrap)
@@ -58,7 +58,7 @@ class ModelEPuckDNF(Model,Renderable):
         self.kernelD = FuncMapND(utils.gaussNd,"D_noiseK",size,dt=dt,center=center,wrap=wrap,intensity=1,width=0.05*size)
         
         
-        self.getIRSensors = GetIRSensors("IRSensors", size, dt, nbSensors=4)
+        self.getIRSensors = GetIRSensors("IRSensors", size, dt, nbSensors=50)
         self.getDirection = GetDirection("Direction",size, dt)
         
         """
@@ -95,7 +95,7 @@ class ModelEPuckDNF(Model,Renderable):
 
     #override Renderable
     def getArrays(self):
-        ret =  [self.motorL, self.motorR, self.activationI, self.dnfmapI, self.modelI, self.activationD, self.dnfmapD,  self.modelD, self.navigationMap, self.navigationMap.getActivation()]
+        ret =  [self.motorL, self.motorR, self.activationI, self.dnfmapI, self.modelI, self.activationD, self.dnfmapD,  self.modelD, self.navigationMap, self.navigationMap.getActivation(), self.dnfmapI.kernel]
 
         return ret
 
