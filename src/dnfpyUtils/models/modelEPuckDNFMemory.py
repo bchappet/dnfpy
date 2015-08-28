@@ -88,13 +88,13 @@ class ModelEPuckDNFMemory(Model,Renderable):
         self.motorR = MotorProjection("motorR", 1, dt, 'r')
         self.setMotorL = SetVelMotor("setMotorL", 1, dt, 'l')
         self.setMotorR = SetVelMotor("setMotorR", 1, dt, 'r')
-        self.dnfmapI = MapDNFND("dnfmapI", size, dt=0.1, gainAff=140,tau=0.1, wInh=0.12, wrap=wrap, activation='sigm',noiseI=0.01)
+        self.dnfmapI = MapDNFND("dnfmapI", size, dt=0.1, gainAff=140,tau=0.1, wInh=0.12,wExc=0.02, wrap=wrap, activation='sigm',noiseI=0.01)
         self.dnfmapD = MapDNFND("dnfmapD", size, dt=0.1, gainAff=2,tau=0.1, wrap=wrap, activation=activation,noiseI = 0.01)
         
         self.modelI =ConvolutionND("IRSensorsModel",size,dt=dt,wrap=wrap)
         self.modelD =ConvolutionND("DirectionModel",size,dt=dt,wrap=wrap)
         #self.kernel = FuncMapND(utils.gaussNd,"sensor_noseK",size,dt=dt,center=center,wrap=wrap,intensity=1,width=0.05*size)
-        self.kernelI = FuncMapND(utils.gaussNd,"I_noiseK",size,dt=dt,center=center,wrap=wrap,intensity=1,width=0.1*size)
+        self.kernelI = FuncMapND(utils.gaussNd,"I_noiseK",size,dt=dt,center=center,wrap=wrap,intensity=1,width=0.05*size)
         self.kernelD = FuncMapND(utils.gaussNd,"D_noiseK",size,dt=dt,center=center,wrap=wrap,intensity=1,width=0.05*size)
         
         irSensor = np.zeros((size))
@@ -119,7 +119,7 @@ class ModelEPuckDNFMemory(Model,Renderable):
         self.projObstacle.addChildren(source=self.dnfmapI.getActivation(),shift=self.psi)
 
 
-        self.memObs = MapDNFND("memoryObstacle",size=size,dt=dt,tau=1.3,wrap=wrap,activation='step',iExc=3.7,wInh=0.1,wExc=0.05)
+        self.memObs = MapDNFND("memoryObstacle",size=size,dt=dt,tau=1.3,wrap=wrap,activation='step',iExc=3.1,wInh=0.1,wExc=0.05)
         self.memObs.addChildren(aff=self.projObstacle)
 
         self.navigationMap = MapDNFND("navigationMap", size, dt, tau=0.64, wrap=wrap, activation = "step",wInh=10.0,th=0.01,noiseI=0.01)
@@ -155,7 +155,7 @@ class ModelEPuckDNFMemory(Model,Renderable):
 
     #override Renderable
     def getArrays(self):
-        ret =  [self.motorL, self.motorR,  self.dnfmapI, self.dnfmapD, self.navigationMap,self.navigationMap.getActivation(),self.memObs,self.memObs.kernel,self.navigationMap.kernel]
+        ret =  [self.motorL, self.motorR,  self.dnfmapI, self.dnfmapD, self.navigationMap,self.navigationMap.getActivation(),self.memObs,self.memObs.kernel,self.navigationMap.kernel,self.dnfmapI.kernel,self.kernelI]
 
         return ret
 

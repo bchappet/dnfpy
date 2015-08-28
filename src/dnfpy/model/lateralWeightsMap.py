@@ -5,6 +5,8 @@ import numpy as np
 from dnfpy.core.funcMap2D import FuncMap2D
 
 
+
+
 class LateralWeightsMap(Map2D):
     """
     Map describing the lateral weights of the dynamic neural fields
@@ -39,7 +41,8 @@ class LateralWeightsMap(Map2D):
             pass
         self._data = ret
 
-    def _onParamsUpdate(self,size,globalSize,mapSize,alpha,iExc,iInh,wExc,wInh):
+    @staticmethod
+    def getScaledParams(size,globalSize,mapSize,alpha,iExc,iInh,wExc,wInh):
         wExc_ = wExc*globalSize
         wInh_ = wInh*globalSize
         size = mapSize *  globalSize
@@ -48,6 +51,11 @@ class LateralWeightsMap(Map2D):
         iInh_ = iInh/(globalSize**2) * (40**2)/alpha
 
         return dict(size=size,wExc_=wExc_,wInh_=wInh_,iExc_=iExc_,iInh_=iInh_)
+
+
+    def _onParamsUpdate(self,size,globalSize,mapSize,alpha,iExc,iInh,wExc,wInh):
+        return LateralWeightsMap.getScaledParams(size,globalSize,mapSize,alpha,iExc,iInh,wExc,wInh)
+
 
     def _childrenParamsUpdate(self,iExc_,iInh_,wExc_,wInh_):
         self.kernelExc.setParams(intensity=iExc_,width=wExc_)

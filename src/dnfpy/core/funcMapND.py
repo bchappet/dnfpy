@@ -1,4 +1,4 @@
-from mapND import MapND
+from dnfpy.core.mapND import MapND
 import inspect
 
 class FuncMapND(MapND):

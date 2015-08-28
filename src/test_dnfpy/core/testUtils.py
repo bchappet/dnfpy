@@ -40,6 +40,15 @@ class TestUtils(unittest.TestCase):
         obtained = exp2d(10,False,10,4,7,1)
         self.assertTrue((expected==obtained).all(),"the result should be the same")
 
+    def test_lin2DWrap(self):
+        """Function : lin2D
+        Scenario : wrap"""
+        expected = np.loadtxt(self.testDir+"testLin2DWrap.csv",dtype=np.float32,delimiter=",")
+        obtained = lin2d(10,True,1,1,5,5)
+        self.assertTrue((expected==obtained).all(),"the result should be the same")
+
+
+
     def test_cosTraj(self):
         """Function: cosTraj
         scenario standard"""

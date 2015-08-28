@@ -122,7 +122,7 @@ class Computable(object):
         """
         try:
             ret =  {k :self.__dictionary[k] for k in keys}
-        except Exception, e:
+        except Exception as e:
             print("in class %s"%self)
             raise e
         return ret

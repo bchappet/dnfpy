@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 import scipy.signal as signal
 import copy
 #import numba
@@ -31,6 +32,13 @@ def exp2d(size,wrap,intensity,proba,centerX,centerY):
     """Make an Exponential kernel """
     (distX,distY) = generateWrappedDistance(size,centerX,centerY,wrap);
     return intensity * (proba ** (distX + distY) )
+
+def lin2d(size,wrap,alpha,beta,centerX,centerY):
+    """Make an linear kernel """
+    (distX,distY) = generateWrappedDistance(size,centerX,centerY,wrap);
+    return beta*np.maximum(0,alpha-(distX+distY))
+
+
 
 def cosTraj(time,center,radius,period,phase):
     """Definie a cosinus trajectory"""

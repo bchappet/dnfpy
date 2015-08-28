@@ -3,7 +3,7 @@ import math
 from dnfpy.core.funcMap2D import FuncMap2D
 from dnfpy.core.map2D import Map2D
 
-class LateralWeightsMapExp(Map2D):
+class LateralWeightsMapExpND(Map2D):
 
     def __init__(self,name,globalSize,mapSize=1,dt=1e10,wrap=True,
                  iExc=1.25,iInh=0.7,pExc=0.1,pInh=10,alpha=10.0,
@@ -39,13 +39,13 @@ class LateralWeightsMapExp(Map2D):
         pInh_ = pInh**(1./globalSize)
         size = mapSize *  globalSize
         size = int(((math.floor(size/2.)) * 2) + 1)#Ensure odd
-        iExc_ = iExc/(globalSize**2) * (40**2)/alpha
-        iInh_ = iInh/(globalSize**2) * (40**2)/alpha
+        iExc_ = iExc/(globalSize) * (40**2)/alpha
+        iInh_ = iInh/(globalSize) * (40**2)/alpha
 
         return dict(size=size,pExc_=pExc_,pInh_=pInh_,iExc_=iExc_,iInh_=iInh_)
 
     def _onParamsUpdate(self,size,globalSize,mapSize,alpha,iExc,iInh,pExc,pInh):
-        return  self.getScaledParams(size,globalSize,mapSize,alpha,iExc,iInh,pExc,pInh)
+        return  getScaledParams(size,globalSize,mapSize,alpha,iExc,iInh,pExc,pInh)
         
 
     def _childrenParamsUpdate(self,iExc_,iInh_,pExc_,pInh_):

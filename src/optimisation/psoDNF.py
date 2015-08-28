@@ -25,10 +25,7 @@ class PSODNF(PSO):
         return (lowerBounds,upperBounds)
 
     def getStartBounds(self):
-        z = 10e-6
-        lowerBounds = np.array([z,z,z,z])
-        upperBounds = np.array([10,1,1,2])
-        return (lowerBounds,upperBounds)
+        return self.getBounds()
 
     def getConstantParamsDict(self):
         return dict(size=49,model='spike',activation='step')

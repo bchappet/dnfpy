@@ -1,4 +1,4 @@
-from map2D import Map2D
+from dnfpy.core.map2D import Map2D
 import inspect
 
 class FuncMap2D(Map2D):

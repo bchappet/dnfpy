@@ -1,7 +1,7 @@
 import numpy as np
 import sys
 import math
-from computable import Computable
+from dnfpy.core.computable import Computable
 import inspect
 
 
