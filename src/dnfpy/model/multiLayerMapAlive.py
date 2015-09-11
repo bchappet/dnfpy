@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import dnfpy.core.utils as utils
-from multiLayerMap import MultiLayerMap
+from dnfpy.model.multiLayerMap import MultiLayerMap
 
 class MultiLayerMapAlive(MultiLayerMap):
     """The only purpose is to warn the view that this map has several layer"""
@@ -135,8 +135,8 @@ class MultiLayerMapAlive(MultiLayerMap):
 
     def onRClick(self,x,y):
         self.changeColor()
-        print self.score()
-        print self.printROI("col",self.colors,y,x,3)
+        print(self.score())
+        print(self.printROI("col",self.colors,y,x,3))
 
     def changeColor(self):
         nbCol = self.getArg('nbCol')

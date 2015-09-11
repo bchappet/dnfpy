@@ -1,4 +1,4 @@
-from scenario import Scenario
+from dnfpyUtils.scenarios.scenario import Scenario
 class ScenarioTracking(Scenario):
     pass
 

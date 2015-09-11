@@ -1,5 +1,5 @@
 
-from arrayView import ArrayView
+from dnfpy.view.arrayView import ArrayView
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 import numpy as np

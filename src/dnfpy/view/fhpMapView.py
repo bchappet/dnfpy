@@ -2,14 +2,14 @@ from PyQt4 import QtGui
 import qimage2ndarray #http://kogs-www.informatik.uni-hamburg.de/~meine/software/qimage2ndarray/doc/#converting-ndarrays-into-qimages
 from PyQt4 import QtCore
 import numpy as np
-import plotArrayQt
+import dnfpy.view.plotArrayQt
 import pyqtgraph as pg
 from scipy import signal
 from scipy import ndimage
 import scipy as sp
 import cv2
 
-from arrayView import ArrayView
+from dnfpy.view.arrayView import ArrayView
 
 
 from scipy.interpolate import interpolate

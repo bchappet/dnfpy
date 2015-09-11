@@ -23,14 +23,22 @@ class StatsTracking(Runnable):
         self.mapDict = {}
         self.runner = runner
         self.root = self.initMaps(**kwargs)
-        self.__addMapsToDict(self.root) #recursively add map to mapDict
+        self._addMapsToDict(self.root) #recursively add map to mapDict
+
+    def getRoot(self):
+        return self.root
+
+    def getMapDict(self):
+        return self.mapDict
+
 
     def initMaps(self,clustSize=0.2):
 
-        activationMap = self.runner.getMap("activationMap")
-        inputMap = self.runner.getMap("inputMap")
+        activationMap = self.runner.getMap("Activation")
+        inputMap = self.runner.getMap("Inputs")
         size = inputMap.getArg("size")
         dt = inputMap.getArg("dt")
+        wrap = inputMap.getArg("wrap")
 
 
         self.clusters = ClusterMap("clusterMap",sizeNpArr=size,dt=dt,clustSize=clustSize)
@@ -68,4 +76,6 @@ class StatsTracking(Runnable):
         #return [self.clusters,self.potentialTarget,self.trackedTarget,
         #        self.errorDist,self.shapeMap,self.errorShape,self.activation]
         return [self.trackedTarget,self.errorDist]
+
+
 

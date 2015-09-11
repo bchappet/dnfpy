@@ -1,4 +1,3 @@
-
 from dnfpy.core.funcMap2D import FuncMap2D
 import numpy as np
 def randomNormal(scale,size_):

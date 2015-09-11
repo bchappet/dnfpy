@@ -1,9 +1,9 @@
-from activationMap import ActivationMap
-from fieldMap import FieldMap
-from lateralWeightsMap import LateralWeightsMap
-from lateralWeightsMapExp import LateralWeightsMapExp
-from lateralWeightsMapLin import LateralWeightsMapLin
-from convolution import Convolution
+from dnfpy.model.activationMap import ActivationMap
+from dnfpy.model.fieldMap import FieldMap
+from dnfpy.model.lateralWeightsMap import LateralWeightsMap
+from dnfpy.model.lateralWeightsMapExp import LateralWeightsMapExp
+from dnfpy.model.lateralWeightsMapLin import LateralWeightsMapLin
+from dnfpy.model.convolution import Convolution
 
 class MapDNF(FieldMap):
     """
@@ -35,7 +35,7 @@ class MapDNF(FieldMap):
                     model=model,th=th,activation=activation,
                     **kwargs)
 
-        self.act = ActivationMap(name+"Activation",size,dt=dt,type=activation,th=th)
+        self.act = ActivationMap("Activation",size,dt=dt,type=activation,th=th)
         self.lat =Convolution(name+"Lateral",size,dt=dt,wrap=wrap)
         
         if lateral=='dog':

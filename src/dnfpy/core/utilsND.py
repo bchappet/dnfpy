@@ -19,11 +19,35 @@ def generateWrappedDistance(size,centerX,wrap):
             distX = np.minimum(distX,abs(X-(centerX+size)))
     return distX
 
+def generateWrappedDistance2(size,res,centerX,wrap):
+    """Compute the distance (real) between the set (0..size-1) and the center
+    if wrap is true, the distance will be the minimal from center and center + size"""
+    X = np.linspace(0, size, res,dtype= np.float32)
+    distX = abs(X-centerX)
+
+    if wrap:
+            distX = np.minimum(distX,abs(X-(centerX+size)))
+    return distX
+
+
 
 def gaussNd(size,wrap,intensity,width,center):
     """ Make a  gaussian kernel."""
     distX = generateWrappedDistance(size,center,wrap);
     return intensity * np.exp( (-((distX)**2 )) / width**2)
+
+def gaussian(x,intensity,width):
+    """Gaussian kernel V2"""
+    return intensity/(width*np.sqrt(np.pi))*np.exp(-x**2/(2*width**2))
+
+def gaussianNd(size,res,wrap,intensity,width,center):
+    """
+    width is in the size referential width \in [0,size]
+    """
+    distX = generateWrappedDistance2(size,res,center,wrap);
+    return gaussian(distX,intensity,width)
+
+
 
 def expNd(size,wrap,intensity,proba,center):
     """Make an Exponential kernel """

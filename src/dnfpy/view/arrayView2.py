@@ -3,7 +3,7 @@ import pyqtgraph as pg
 import qimage2ndarray #http://kogs-www.informatik.uni-hamburg.de/~meine/software/qimage2ndarray/doc/#converting-ndarrays-into-qimages
 from PyQt4 import QtCore
 import numpy as np
-import plotArrayQt
+import dnfpy.view.plotArrayQt
 class ArrayView2(pg.GraphicsLayoutWidget):
     triggerOnClick = QtCore.pyqtSignal(str,int,int)#Will be triggered on click
     triggerOnRClick = QtCore.pyqtSignal(str,int,int)#Will be triggered on click
@@ -50,7 +50,7 @@ class ArrayView2(pg.GraphicsLayoutWidget):
                 self.img = plotArrayQt.npToQImage(stackedArray)
             else:
                 self.img.setImage(self.array,autoDownsample=True,_callSync='off')
-                print self.array[70:,70:]
+                print(self.array[70:,70:])
                 
         else:
             pass

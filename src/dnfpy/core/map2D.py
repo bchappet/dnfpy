@@ -86,7 +86,7 @@ class Map2D(Computable):
             self.__lock = False
             return minNUT
         else:
-            return sys.maxint
+            return sys.maxsize
 
     def compute(self):
         """

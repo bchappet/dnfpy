@@ -1,5 +1,5 @@
-from map2D import Map2D
-from funcMap2D import FuncMap2D
+from dnfpy.core.map2D import Map2D
+from dnfpy.core.funcMap2D import FuncMap2D
 from dnfpy.core.constantMap import ConstantMap
 
 class FuncWithoutKeywords(FuncMap2D):

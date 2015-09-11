@@ -20,6 +20,6 @@ class PotentialTarget(Map2D):
         """
         supose that the first child is the input
         """
-        self.input = kwargs.values()[0]
+        self.input = list(kwargs.values())[0]
 
 

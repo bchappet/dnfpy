@@ -14,7 +14,7 @@ class AlgoGen(QtCore.QThread):
     #def __init__(self,view,swarmSize=100,nbEvaluationMax=1000,omega=.9,
     #             phiP=2.,phiG=2.,nbThread=8,argv=[""]):
     def __init__(self,view,swarmSize=100,nbEvaluationMax=1000,eliteRatio=0.2,
-                 bestIndRatio=0.2,mutationRate=1.,nbMutation=2,nbThread=8,argv=[""]):
+                 bestIndRatio=0.2,mutationRate=0.3,nbMutation=1,nbThread=8,argv=[""]):
         super(AlgoGen,self).__init__()
         if view:
             self.triggerUpdate.connect(view.updateData,type=QtCore.Qt.DirectConnection)
@@ -180,13 +180,14 @@ class AlgoGen(QtCore.QThread):
             self.bestXList.append(indiv)
             self.bestXTimeList.append(self.evaluationNb)
             self.bestFitness = newFitness
-            #print("##bestFitness : %s, indiv: %s"%(self.bestFitness,self.indivToParams(indiv)))
+            print("##bestFitness : %s, indiv: %s"%(self.bestFitness,self.indivToParams(indiv)))
 
         if (self.evaluationNb % self.swarmSize) == 0:
             self.savePart.append(np.copy(self.pop))
             self.timeStamps.append(self.evaluationNb)
             self.triggerUpdate.emit()
-            print("end of generation %s best fitness: %s, bestIndiv: %s"%(self.evaluationNb/self.swarmSize,self.bestFitness,self.indivToParams(self.bestX)))
+            #this indiv is false for some resons
+            #print("end of generation %s best fitness: %s, bestIndiv: %s"%(self.evaluationNb/self.swarmSize,self.bestFitness,self.indivToParams(self.bestX)))
 
             
 
@@ -390,7 +391,7 @@ if __name__ == "__main__":
     import sys
     app = QtGui.QApplication([""])
     view = QtApp()
-    model = AlgoGen(view,swarmSize=100,nbEvaluationMax=10e10,nbThread=8)
+    model = AlgoGen(view,swarmSize=20,nbEvaluationMax=10e10,nbThread=4,mutationRate=0.1,eliteRatio=0.1,bestIndRatio=1.)
     view.setModel(model)
     model.start()
     sys.exit(app.exec_())

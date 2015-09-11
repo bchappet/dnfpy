@@ -12,44 +12,55 @@ class Runner(object):
         Attribute:
             model : Model
     """
-    def __init__(self,model,timeEnd=100,scenario=None,allowedTime=10e10):
+    def __init__(self,timeEnd=100,allowedTime=10e10):
         super(Runner,self).__init__()
+        self.mapDict = {} #dictionary with every map for fast access
+        self.runnables = [] #list of runnable to run
+
         self.nbIt = 0
         self.startTime = timer.clock()
         self.allowedTime =  allowedTime
-        self.model = model
         self.simuTime = 0.
         self.timeEnd = timeEnd
         #timing
         self.lastUpdateTime = datetime.now()
         self.simuTime = 0.
         self.lastSimuTime = 0.
-        #scenario
-        self.scenario=scenario
 
 
         self.saveFolder = self.__getNameFolder()
 
+    def getMap(self,mapName):
+            return self.mapDict[mapName]
+
+
+    def addRunnable(self,runnable):
+            self.runnables.append(runnable)
+            self.mapDict.update(runnable.getMapDict())
+
 
     def onClick(self,mapName,x,y):
         mapName = str(mapName)
-        self.model.onClick(mapName,x,y)
+        for r in self.runnables:
+            r.onClick(mapName,x,y)
 
     def onLClick(self,mapName,x,y):
         mapName = str(mapName)
-        self.model.onLClick(mapName,x,y)
+        for r in self.runnables:
+            r.onLClick(mapName,x,y)
 
 
 
     def onClose(self):
-        if self.scenario:
-            return self.scenario.finalize(self.model,self)
-        else:
-            return None
+        for r in self.runnables:
+            return r.finalize()
 
     def __getNameFolder(self):
         import datetime
-        name_uuid = str(self.model)+"_"+str(self.scenario)+"_"+datetime.datetime.now().isoformat()
+        name = ""
+        for r in self.runnables:
+                name += r.getName()+"_"
+        name_uuid = name+datetime.datetime.now().isoformat()
         return name_uuid
 
     def __createDir(self,name):
@@ -60,9 +71,12 @@ class Runner(object):
     def saveFig(self):
         import dnfpy.view.staticViewMatplotlib as mtpl
         import matplotlib.pyplot as plt
-        lis = self.model.getArrays()
+        lis = []
+        for r in self.runnables:
+                lis.extend(r.getArrays())
+
         timeStr  = str(self.simuTime).replace(".","_")
-        print timeStr
+        print(timeStr)
         folder = "save/" + self.saveFolder+ "/"
         self.__createDir(folder)
         for theMap in lis:
@@ -78,9 +92,9 @@ class Runner(object):
 
     def saveArr(self):
         import numpy as np
-        mapList = self.model.getMapDict().values()
+        mapList = self.mapDict.values()
         timeStr  = str(self.simuTime).replace(".","_")
-        print timeStr
+        print(timeStr)
         folder = "save/" + self.saveFolder+ "/"
         self.__createDir(folder)
 
@@ -112,28 +126,32 @@ class Runner(object):
                 else:
                     print("could not save: %s" % theMap.getName())
 
+    def getNextUpdateTime(self):
+            snut = [r.getNextUpdateTime() for r in self.runnables]
+            return min(snut)
+
 
 
     def step(self):
             if self.simuTime == 0:
-                self.model.firstComputation()
-            nextTime = self.model.getSmallestNextUpdateTime()
+                for r in self.runnables:
+                    r.firstComputation()
+            nextTime = self.getNextUpdateTime()
             self.lastSimuTime = self.simuTime
             self.simuTime = nextTime
-            if self.scenario:
-                self.scenario.apply(self.model,self.simuTime,self)
-            self.model.update(self.simuTime)
+            for r in self.runnables:
+                r.updateRunnable(self.simuTime)
 
     def resetSlot(self):
         self.lastUpdateTime = datetime.now()
         self.simuTime = 0.
         self.lastSimuTime = 0.
-        self.model.reset()
-        if self.scenario:
-            self.scenario.applyContext(self.model)
+        for r in self.runnables:
+            r.resetRunnable()
 
     def resetParamsSlot(self):
-        self.model.resetParams()
+        for r in self.runnables:
+            r.resetParamsRunnable()
 
 
 
@@ -149,9 +167,18 @@ class Runner(object):
         return ret
 
 def launch(model,scenario,timeEnd,allowedTime=10e10):
-    model.reset()
-    if scenario:
-        scenario.applyContext(model)
+    """
 
-    runner = Runner(model,timeEnd=timeEnd,scenario=scenario,allowedTime=allowedTime)
+    """
+    model.reset()
+    runner = Runner(timeEnd=timeEnd,allowedTime=allowedTime)
+    runner.addRunnable(model)
+    if scenario:
+        scenario.reset()
+        runner.addRunnable(scenario)
+        scenario.applyContext(runner)
+        stats = scenario.initStats()
+        if stats:
+            runner.addRunnable(stats)
+
     return runner.run()

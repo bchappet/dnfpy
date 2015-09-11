@@ -1,30 +1,30 @@
 import sip
 from PyQt4 import QtGui
 from PyQt4.QtCore import pyqtSlot
-from paramsView import ParamsView
+from dnfpy.view.paramsView import ParamsView
 from dnfpy.stats.clusterMap import ClusterMap
 from dnfpy.stats.potentialTarget import PotentialTarget
 from dnfpy.stats.trackedTarget import TrackedTarget
 from dnfpy.stats.errorDist import ErrorDist
 from dnfpy.stats.errorShape import ErrorShape
-from arrayView import ArrayView
-from arrayView2 import ArrayView2
-from clusterMapView import ClusterMapView
-from potentialTargetView import PotentialTargetView
-from trackedTargetView import TrackedTargetView
-from errorDistView import ErrorDistView
-from learningmapView import LearningMapView
-from multiLayerMapView import MultiLayerMapView
-from multiLayerMapAliveView import MultiLayerMapAliveView
+from dnfpy.view.arrayView import ArrayView
+from dnfpy.view.arrayView2 import ArrayView2
+from dnfpy.view.clusterMapView import ClusterMapView
+from dnfpy.view.potentialTargetView import PotentialTargetView
+from dnfpy.view.trackedTargetView import TrackedTargetView
+from dnfpy.view.errorDistView import ErrorDistView
+from dnfpy.view.learningmapView import LearningMapView
+from dnfpy.view.multiLayerMapView import MultiLayerMapView
+from dnfpy.view.multiLayerMapAliveView import MultiLayerMapAliveView
 from dnfpy.learning.learningMap import STDPLearningMap
 from dnfpy.model.multiLayerMap import MultiLayerMap
 from dnfpy.model.multiLayerMapAlive import MultiLayerMapAlive
 from dnfpy.core.mapND import MapND
-from arrayNDView import ArrayNDView
+from dnfpy.view.arrayNDView import ArrayNDView
 
 from dnfpyUtils.cellular.fhp import Fhp
 
-from fhpMapView import FhpMapView
+from dnfpy.view.fhpMapView import FhpMapView
 class ArrayWidget(QtGui.QGroupBox):
 
     def __init__(self,map,runner,parametersView,view):

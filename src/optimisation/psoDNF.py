@@ -3,6 +3,9 @@ import dnfpy.controller.runner as runner
 from dnfpyUtils.scenarios.scenarioRobustness import ScenarioRobustness
 from dnfpyUtils.scenarios.scenarioSwitch import ScenarioSwitch
 from dnfpyUtils.scenarios.scenarioNoise import ScenarioNoise
+from dnfpyUtils.scenarios.scenarioTracking import  ScenarioTracking
+from dnfpyUtils.scenarios.scenarioDistracters import ScenarioDistracters
+from dnfpyUtils.scenarios.scenarioStatic2 import ScenarioStatic2
 from dnfpyUtils.models.modelDNF import ModelDNF
 from pso import PSO
 from pso import QtApp
@@ -31,7 +34,7 @@ class PSODNF(PSO):
         return dict(size=49,model='spike',activation='step')
 
     def getEvaluationParamsDict(self):
-        return dict(timeEnd=20,allowedtime=10e10)
+        return dict(timeEnd=20,allowedTime=10e10)
 
 
     def indivToParams(self,indiv):
@@ -54,6 +57,12 @@ class PSODNF(PSO):
         scenarioR = ScenarioRobustness()
         scenarioS = ScenarioSwitch()
         scenarioN = ScenarioNoise()
+        scenarioT = ScenarioTracking()
+        scenarioD = ScenarioDistracters()
+
+        #scenarioList = [scenarioT,scenarioN,scenarioD]
+        scenarioList = [scenarioN,]
+        fitnessList = []
 
         #indiv.update(self.constantParamsDict)
         #print("evaluate %s"%indiv)
@@ -64,8 +73,15 @@ class PSODNF(PSO):
 
         #(errorR,wellClusterizedR,time,convergenceR,maxNbAct,meanNbAct,elapsedTime,errorShapeR)\
                         #= runner.launch(model, scenarioR, timeEnd,allowedTime)
-        (errorN,wellClusterizedN,time,convergenceN,maxNbAct,meanNbAct,elapsedTime,errorShapeN)\
-                         = runner.launch(model, scenarioN, timeEnd,allowedTime)
+        for scenario in scenarioList:
+            (error,wellClusterized,time,convergence,maxNbAct,meanNbAct,elapsedTime,errorShape,compEmpty,nbClusterEnd)\
+                             = runner.launch(model, scenario, timeEnd,allowedTime)
+            if convergence == None:
+                fitnessList.append(10)
+                break
+            else:
+                fitnessList.append(errorShape + error*10 + convergence/10.)
+
 #        if errorR < 1 and errorShapeR < 3. and convergenceR <30:
 #            #print("indiv %s"%indiv)
 #            #print("error %s shape %s convergence %s"%(errorR,errorShapeR,convergenceR))
@@ -82,8 +98,6 @@ class PSODNF(PSO):
 #            convergenceS = 100
 #        if convergenceR == None:
 #            convergenceR = 100
-        if convergenceN == None:
-            convergenceN = 100
 #
 #        fitnessError = (errorR + errorS + errorN )/3.
 #        fitnessCluster = (wellClusterizedR + wellClusterizedS + wellClusterizedN)/3.
@@ -92,7 +106,7 @@ class PSODNF(PSO):
         #print("error %s, conv %s, shape %s"%(fitnessError*10,fitnessConv/10.,fitnessShape))
 
         #return fitnessShape + fitnessError*10 + fitnessConv/10.
-        return errorShapeN + errorN*10 + convergenceN/10.
+        return np.mean(np.array(fitnessList))
 
 
 
@@ -101,7 +115,7 @@ if __name__ == "__main__":
     import sys
     app = QtGui.QApplication([""])
     view = QtApp()
-    model = PSODNF(view,swarmSize=100,nbEvaluationMax=30000,nbThread=8)
+    model = PSODNF(view,swarmSize=100,nbEvaluationMax=30000,nbThread=8,omega=0.9,phiP=0.9,phiG=0.5)
     view.setModel(model)
     model.start()
     sys.exit(app.exec_())

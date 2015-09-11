@@ -36,7 +36,7 @@ class MapND(Computable):
     """
 
     def __init__(self,name,size,dtype=np.float32,**kwargs):
-        super(MapND,self).__init__(size=size,dtype=dtype,**kwargs)
+        Computable.__init__(self,size=size,dtype=dtype,**kwargs)
         """Init a 2D numpy array of shape (size,size) dtype float32"""
         self.reset() #init self._data
         self.name = name
@@ -86,7 +86,7 @@ class MapND(Computable):
             self.__lock = False
             return minNUT
         else:
-            return sys.maxint
+            return sys.maxsize
 
     def compute(self):
         """
@@ -234,7 +234,7 @@ class MapND(Computable):
 
     def reset(self):
         """Reset the data to 0"""
-        super(MapND,self).reset()
+        Computable.reset(self)
         self.setArg(time=0.0) #last simulation time (in seconds) : it is updated just befor compute() call
         size = self._init_kwargs['size']
         dtype = self._init_kwargs['dtype']
@@ -249,7 +249,7 @@ class MapND(Computable):
             self.__lockReset = True
             for child in self.__children.values():
                 child.resetParams()
-            super(MapND,self).resetParams()
+            Computable.resetParams(self)
             self.childrenParamsUpdate()
             self.__lockReset = False
         else:

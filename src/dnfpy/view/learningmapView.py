@@ -1,7 +1,7 @@
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 import numpy as np
-import plotArrayQt
+import dnfpy.view.plotArrayQt
 
 class ArrayWeightsView(QtGui.QLabel):
     def __init__(self,learningMap,coords):

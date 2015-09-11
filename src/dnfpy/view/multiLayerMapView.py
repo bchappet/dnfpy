@@ -2,8 +2,8 @@ from PyQt4 import QtGui
 from PyQt4 import QtCore
 import numpy as np
 import qimage2ndarray #http://kogs-www.informatik.uni-hamburg.de/~meine/software/qimage2ndarray/doc/#converting-ndarrays-into-qimages
-import plotArrayQt
-from arrayView import ArrayView
+import dnfpy.view.plotArrayQt
+from dnfpy.view.arrayView import ArrayView
 
 colors = ['white','red','green','blue','purple','cyan']
 

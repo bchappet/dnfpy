@@ -1,8 +1,8 @@
-from activationMapND import ActivationMapND
+from dnfpy.model.activationMapND import ActivationMapND
 import numpy as np
-from fieldMapND import FieldMapND
-from lateralWeightsMapND import LateralWeightsMapND
-from convolutionND import ConvolutionND
+from dnfpy.model.fieldMapND import FieldMapND
+from dnfpy.model.lateralWeightsMapND import LateralWeightsMapND
+from dnfpy.model.convolutionND import ConvolutionND
 from dnfpy.core.constantMapND import ConstantMapND
 import matplotlib.pyplot as plt
 

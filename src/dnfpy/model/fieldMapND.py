@@ -22,7 +22,7 @@ class FieldMapND(MapND):
             self._data = np.where(self._data > th,0.,self._data) # if x > th => x = 0
             self._data = self._data + dt/tau*(-self._data + h + aff*gainAff ) +  1.0/tau*delta*lat + noise
         else:
-            print "Invalid model option : " + model
+            print("Invalid model option : " + model)
 
         if resetLat:
                 self.getChild('lat').resetLat()

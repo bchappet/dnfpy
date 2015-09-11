@@ -4,7 +4,7 @@ import json
 
 def getColorMap(nameCm='RdYlBu_r'):
         folder = 'stylesheet/'
-        f = file(folder+nameCm+'.cm','r')
+        f = open(folder+nameCm+'.cm','r')
         array = json.load(f)
         return array
 

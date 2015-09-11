@@ -2,7 +2,7 @@ from PyQt4 import QtGui
 import qimage2ndarray #http://kogs-www.informatik.uni-hamburg.de/~meine/software/qimage2ndarray/doc/#converting-ndarrays-into-qimages
 from PyQt4 import QtCore
 import numpy as np
-import plotArrayQt
+import dnfpy.view.plotArrayQt as plotArrayQt
 import pyqtgraph as pg
 from scipy import signal
 from scipy import ndimage
@@ -23,8 +23,8 @@ class ArrayView(QtGui.QLabel):
         super(ArrayView,  self).__init__()
         self.map = map
         self.runner = runner
-        self.triggerOnClick.connect(runner.onClick)
-        self.triggerOnRClick.connect(runner.onRClick)
+        self.triggerOnClick.connect(runner.onClickSlot)
+        self.triggerOnRClick.connect(runner.onRClickSlot)
         self.triggerOnParamChanged.connect(mapView.onParamsChanged)
         self.stateList = ["default","1D"]
         self.viewState = "default"

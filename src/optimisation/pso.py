@@ -9,14 +9,27 @@ import time
 from multiprocessing import Queue
 class PSO(QtCore.QThread):
     triggerUpdate = QtCore.pyqtSignal()
-    """Particle swarm optimisation class"""
+    """
+    Particle swarm optimisation class
+    Omega : inertia
+    phiP : atracted by best of part
+    phiG : attracted by best of pop
+
+    -0.2144,-0.4040,2.03249 is good for exploration
+    -0.2144,1,1 seems better for exploitation
+    0.2,1,1 is very good
+    """
     #def __init__(self,view,swarmSize=100,nbEvaluationMax=1000,omega=.9,
     #             phiP=2.,phiG=2.,nbThread=8,argv=[""]):
-    def __init__(self,view,swarmSize=100,nbEvaluationMax=1000,omega=-0.2144,
-                 phiP=-0.4040,phiG=2.03249,nbThread=8,argv=[""]):
+    #def __init__(self,view,swarmSize=100,nbEvaluationMax=1000,omega=-0.2144,
+    #             phiP=-0.4040,phiG=2.03249,nbThread=8,argv=[""]): good
+    def __init__(self,view,swarmSize=100,nbEvaluationMax=1000,omega=0.2,
+                 phiP=1.0,phiG=1.0,nbThread=8,argv=[""]):
         super(PSO,self).__init__()
         self.triggerUpdate.connect(view.updateData,type=QtCore.Qt.DirectConnection)
         #self.triggerUpdate.connect(view.updateData)
+        print(r"\omega,\phi_p,\phi_g")
+        print(omega,phiP,phiG)
 
         self.listParam = self.getListParam()
         self.constantParamsDict = self.getConstantParamsDict()
@@ -77,7 +90,7 @@ class PSO(QtCore.QThread):
     def evaluate(self,indiv):
         x = indiv['x']
         y = indiv['y']
-        time.sleep(1)
+        time.sleep(0.2)
 
         #print("evaluate %s"%indiv)
         return x**2 + (1-y)**2 +(2-indiv["z"])**2 + \

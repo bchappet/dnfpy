@@ -37,6 +37,7 @@ else:
     #no view
     timeEnd = time
     res = runner.launch(model,scenario,timeEnd)
+    print(res)
 
 
 

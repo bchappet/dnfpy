@@ -27,7 +27,6 @@ class ShapeMap(Map2D):
     def _compute(self,size,wrap,shapeType,tracksCenter):
         self._data = np.zeros((size,size))
         for trackCenter in tracksCenter:
-            #print("trackCenter %s"%trackCenter)
             if len(trackCenter) < 2 or np.all(trackCenter == [-1,-1]):
                 #No tracked stim
                 pass

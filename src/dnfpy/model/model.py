@@ -1,10 +1,16 @@
-class Model(object):
+from dnfpy.controller.runnable import Runnable
+class Model(Runnable):
     """Abstract class for all the model"""
 
     def __init__(self,**kwargs):
         self.mapDict = {}
         self.root = self.initMaps(**kwargs) #the root is the root map of the model
-        self.__addMapsToDict(self.root)
+        self._addMapsToDict(self.root) #recursively add map to mapDict
+
+
+    def getRoot(self):
+        return self.root
+
 
 
     def initMaps(self,size):
@@ -72,27 +78,7 @@ class Model(object):
 
     def onRClick(self,mapName,x,y):
         pass
-    def __addMapsToDict(self,rootmap):
-        if isinstance(rootmap,list):
-            for root_i in rootmap:
-                if not(root_i.getName() in self.mapDict.keys()):
-                    self.mapDict.update({root_i.getName():root_i})
-                else:
-                    return
-                childDic = root_i.getChildren()
-                for child in childDic:
-                    self.__addMapsToDict(childDic[child])
-        else:
-            if not(rootmap.getName() in self.mapDict.keys()):
-                self.mapDict.update({rootmap.getName():rootmap})
-            else:
-                return
-            childDic = rootmap.getChildren()
-            for child in childDic:
-                self.__addMapsToDict(childDic[child])
 
 
-    def __str__(self):
-            return str(self.__class__).split("'")[-2].split(".")[-1]
 
 

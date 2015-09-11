@@ -69,7 +69,7 @@ class Computable(object):
         Update the dictionary with modified version of the params
         stated in self._onParamsUpdate
         """
-        updatedArgSet = set(self._updateParamsArgs) & kwargs.viewkeys()
+        updatedArgSet = set(self._updateParamsArgs) & kwargs.keys()
         if len(updatedArgSet) > 0:
             args = self._subDictionary(self._updateParamsArgs)
             newArgs = self._onParamsUpdate(**args)

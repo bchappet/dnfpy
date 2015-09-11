@@ -3,7 +3,7 @@ from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import pyqtSlot
 from datetime import datetime
 import time
-from runner import Runner
+from dnfpy.controller.runner import Runner
 import sys
 import time
 
@@ -31,7 +31,6 @@ class RunnerView(QtCore.QThread, Runner):
 
     def __init__(
             self,
-            model,
             view,
             timeEnd=100000,
             timeRatio=0.3,
@@ -41,7 +40,7 @@ class RunnerView(QtCore.QThread, Runner):
         model : Model class of
         """
         super(RunnerView, self).__init__()
-        Runner.__init__(self,model,timeEnd,scenario)
+        Runner.__init__(self,timeEnd,scenario)
 
         self.view = view
         self.timeRatio = timeRatio
@@ -77,14 +76,14 @@ class RunnerView(QtCore.QThread, Runner):
         self.model.updateParam(mapName, name, value)
 
     @pyqtSlot(str, int, int)
-    def onClick(self, mapName, x, y):
+    def onClickSlot(self, mapName, x, y):
         mapName = str(mapName)
         mapToUpdate = self.model.onClick(mapName, x, y)
         if mapToUpdate:
             self.triggerParamsUpdate.emit(mapToUpdate)
 
     @pyqtSlot(str, int, int)
-    def onRClick(self, mapName, x, y):
+    def onRClickSlot(self, mapName, x, y):
         mapName = str(mapName)
         mapToUpdate = self.model.onRClick(mapName, x, y)
         if mapToUpdate:
@@ -121,19 +120,11 @@ class RunnerView(QtCore.QThread, Runner):
         self.model.resetParams()
 
     @pyqtSlot()
-    def onClose(self):
-        if self.scenario:
-            print(self.scenario.finalize(self.model, self))
+    def onCloseSlot(self):
+        print(self.onClose())
 
     def step(self):
-        if self.simuTime == 0:
-            self.model.firstComputation()
-        nextTime = self.model.getSmallestNextUpdateTime()
-        self.lastSimuTime = self.simuTime
-        self.simuTime = nextTime
-        if self.scenario:
-            self.scenario.apply(self.model, self.simuTime, self)
-        self.model.update(self.simuTime)
+        super().step()
         self.viewUpdate()
 
     def viewUpdate(self):
@@ -171,12 +162,22 @@ def launch(model, scenario, timeRatio, record=False):
     defaultQSS = "stylesheet/default.qss"
     app = QtGui.QApplication([""])
     app.setStyleSheet(open(defaultQSS, 'r').read())
-
-    if scenario:
-        scenario.applyContext(model)
-    view = DisplayModelQt(model)
-    runner = RunnerView(model, view, timeRatio=timeRatio, scenario=scenario, record=record)
+    view = DisplayModelQt()
+    model.reset()
+    runner = RunnerView(view, timeRatio=timeRatio, record=record)
     view.setRunner(runner)
+    view.addRenderable(model)
+    runner.addRunnable(model)
+    if scenario:
+        scenario.reset()
+        runner.addRunnable(scenario)
+        scenario.applyContext(runner)
+        stats = scenario.initStats()
+        if stats:
+            runner.addRunnable(stats)
+            view.addRenderable(stats)
+
+
     view.show()
     runner.start()
     sys.exit(app.exec_())

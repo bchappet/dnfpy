@@ -1,5 +1,5 @@
-from mapND import MapND
-from funcMapND import FuncMapND
+from dnfpy.core.mapND import MapND
+from dnfpy.core.funcMapND import FuncMapND
 from dnfpy.core.constantMapND import ConstantMapND
 
 class FuncWithoutKeywords(FuncMapND):

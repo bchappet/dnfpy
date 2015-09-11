@@ -2,9 +2,9 @@ from collections import OrderedDict
 from PyQt4 import QtGui,QtCore
 from PyQt4.QtCore import pyqtSlot
 import math
-from view import View
-from parametersView import ParametersView
-from mapView import ArrayWidget
+from dnfpy.view.view import View
+from dnfpy.view.parametersView import ParametersView
+from dnfpy.view.mapView import ArrayWidget
 import sip
 
 
@@ -57,13 +57,12 @@ class GlobalParams(QtGui.QWidget):
 
 class DisplayModelQt(QtGui.QSplitter, View):
     trigClose = QtCore.pyqtSignal()
-    def __init__(self, renderable):
+    def __init__(self):
         super(DisplayModelQt,  self).__init__()
         self.widgetV = QtGui.QWidget()
         self.layoutV = QtGui.QVBoxLayout(self.widgetV)
 
         self.layoutH = QtGui.QHBoxLayout(self)
-        self.renderable = renderable
 
         self.setGeometry(0,  0,  1000,  700)
 
@@ -73,7 +72,7 @@ class DisplayModelQt(QtGui.QSplitter, View):
         self.runner = runner
         self.globalParams = GlobalParams(self.runner,self)
         self.rightPanel = ParametersView(self.runner)
-        self.displayMaps = DisplayMapsQt(self.renderable,self.runner,self.rightPanel)
+        self.displayMaps = DisplayMapsQt(self.runner,self.rightPanel)
         self.layoutV.addWidget(self.displayMaps)
         self.layoutV.addWidget(self.globalParams)
 
@@ -84,6 +83,10 @@ class DisplayModelQt(QtGui.QSplitter, View):
 
 
         self.record = False
+
+    def addRenderable(self,renderable):
+        self.displayMaps.addRenderable(renderable)
+
 
     def closeEvent(self, event):
         self.trigClose.emit()
@@ -119,39 +122,35 @@ class DisplayMapsQt(QtGui.QWidget):
 
     """
 
-    def __init__(self, renderable, runner,parametersView):
+    def __init__(self,  runner,parametersView):
         super(DisplayMapsQt,  self).__init__()
-        self.renderable = renderable
         self.parametersView = parametersView
         self.runner = runner
-        size = len(self.renderable.getArrays())
         self.simuTime = 0
 
         self.dictLabels = OrderedDict()
         self.grid = QtGui.QGridLayout(self)
-        self.__updateGridSize(size)
 
 
         #debug
         self.paintEventCount = 0
         self.mapUpdate = 0
-
-        self.__initArrays()
-
-    def __updateGridSize(self,size):
-        self.size = size
-        self.nbCols = int(math.ceil(math.sqrt(size))) #nb cols in the label matrix
-        self.nbRows = int(math.ceil(size/float(self.nbCols))) #nb rows in the label matrix
+        self.size = 0
 
 
 
+    def __updateGridSize(self):
+        self.nbCols = int(math.ceil(math.sqrt(self.size))) #nb cols in the label matrix
+        self.nbRows = int(math.ceil(self.size/float(self.nbCols))) #nb rows in the label matrix
 
 
-    def __initArrays(self):
+    def addRenderable(self,renderable):
         """
             Add all arrays of renderable
         """
-        maps = self.renderable.getArrays()
+        maps = renderable.getArrays()
+        self.size += len(maps)
+        self.__updateGridSize()
         for map in maps:
             self.addMap( map)
 

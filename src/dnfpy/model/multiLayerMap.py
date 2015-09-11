@@ -112,7 +112,7 @@ class MultiLayerMap(CellularMap):
 
     def onRClick(self,x,y):
         self.changeColor()
-        print self.score()
+        print(self.score())
 
     def changeColor(self):
         nbCol = self.getArg('nbCol')
