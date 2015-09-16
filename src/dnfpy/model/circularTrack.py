@@ -2,6 +2,7 @@
 from dnfpy.core.funcMap2D import FuncMap2D
 import dnfpy.core.utils as utils
 from dnfpy.core.map2D import Map2D
+import numpy as np
 
 
 
@@ -61,3 +62,9 @@ class CircularTrack(Map2D):
 
     def _compute(self,size,wrap,width_,intensity,centerX,centerY):
         self._data = utils.gauss2d(size,wrap,intensity,width_,centerX,centerY)
+
+    def getCenter(self):
+            return np.array([self.cX.getData(),self.cY.getData()])
+
+    def getShape(self):
+            return self.getArg('intensity'),self.getArg('width_')

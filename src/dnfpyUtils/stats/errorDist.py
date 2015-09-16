@@ -1,6 +1,6 @@
 from dnfpy.core.map2D import Map2D
 from scipy.spatial import distance
-from dnfpy.stats.statistic import Statistic
+from dnfpyUtils.stats.statistic import Statistic
 import numpy as np
 
 

@@ -2,11 +2,11 @@ import sip
 from PyQt4 import QtGui
 from PyQt4.QtCore import pyqtSlot
 from dnfpy.view.paramsView import ParamsView
-from dnfpy.stats.clusterMap import ClusterMap
-from dnfpy.stats.potentialTarget import PotentialTarget
-from dnfpy.stats.trackedTarget import TrackedTarget
-from dnfpy.stats.errorDist import ErrorDist
-from dnfpy.stats.errorShape import ErrorShape
+from dnfpyUtils.stats.clusterMap import ClusterMap
+from dnfpyUtils.stats.potentialTarget import PotentialTarget
+from dnfpyUtils.stats.trackedTarget import TrackedTarget
+from dnfpyUtils.stats.errorDist import ErrorDist
+from dnfpyUtils.stats.errorShape import ErrorShape
 from dnfpy.view.arrayView import ArrayView
 from dnfpy.view.arrayView2 import ArrayView2
 from dnfpy.view.clusterMapView import ClusterMapView

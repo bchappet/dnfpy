@@ -1,5 +1,5 @@
 from datetime import datetime
-from dnfpy.stats.statistic import Statistic
+from dnfpyUtils.stats.statistic import Statistic
 import time as timer
 import os
 
@@ -38,6 +38,10 @@ class Runner(object):
             self.runnables.append(runnable)
             self.mapDict.update(runnable.getMapDict())
 
+    def updateParam(self,mapName,name,value):
+        map = self.mapDict[mapName]
+        nameStr = name
+        map.setParamsRec(**{nameStr:value})
 
     def onClick(self,mapName,x,y):
         mapName = str(mapName)
@@ -52,8 +56,10 @@ class Runner(object):
 
 
     def onClose(self):
+        ret = []
         for r in self.runnables:
-            return r.finalize()
+            ret.extend( r.finalize())
+        return ret
 
     def __getNameFolder(self):
         import datetime
@@ -149,13 +155,18 @@ class Runner(object):
         for r in self.runnables:
             r.resetRunnable()
 
+        for r in self.runnables:
+            r.applyContext()
+
     def resetParamsSlot(self):
         for r in self.runnables:
             r.resetParamsRunnable()
 
 
 
+
     def run(self):
+        self.resetSlot()
         while self.simuTime < self.timeEnd:
             self.nbIt += 1
             if timer.clock() - self.startTime > self.allowedTime:
@@ -166,19 +177,17 @@ class Runner(object):
         ret = self.onClose()
         return ret
 
-def launch(model,scenario,timeEnd,allowedTime=10e10):
+def launch(model,scenario,stats,timeEnd,allowedTime=10e10):
     """
 
     """
-    model.reset()
     runner = Runner(timeEnd=timeEnd,allowedTime=allowedTime)
     runner.addRunnable(model)
     if scenario:
-        scenario.reset()
         runner.addRunnable(scenario)
-        scenario.applyContext(runner)
-        stats = scenario.initStats()
-        if stats:
-            runner.addRunnable(stats)
+        scenario.init(runner)
+    if stats:
+        runner.addRunnable(stats)
+        stats.init(runner)
 
     return runner.run()

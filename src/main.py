@@ -14,6 +14,7 @@ if __name__ == "__main__":
     modelClass = getClassFromName(sys.argv[1], "models")
     contextClass = None
     scenarioClass = None
+    statsClass = None
     size = eval(sys.argv[2])
     timeRatio = eval(sys.argv[3])
    # timeRatio = 0.3
@@ -24,8 +25,12 @@ if __name__ == "__main__":
         params = eval((sys.argv[4]))
         if 'scenario' in params:
             scenarioName = params['scenario']
-            scenarioClass = getClassFromName(scenarioName, "scenarios")
+            scenarioClass = getClassFromName(scenarioName, 'scenarios')
             del params['scenario']
+        if 'stats' in params:
+            statsName = params['stats']
+            statsClass = getClassFromName(statsName,'stats')
+            del params['stats']
     else:
         params = {}
 
@@ -34,10 +39,15 @@ if __name__ == "__main__":
     else:
         scenario = None
 
+    if statsClass:
+        stats = statsClass()
+    else:
+        stats = None
+
     kwparams = dict(size=size)
     kwparams.update(params)
 
 
     model = modelClass(**kwparams)
 
-    runner.launch(model, scenario, timeRatio)
+    runner.launch(model, scenario,stats, timeRatio)

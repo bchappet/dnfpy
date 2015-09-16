@@ -112,7 +112,7 @@ class Computable(object):
             Protected final:
             return the set of self._dictionary names
         """
-        return set(self.__dictionary.viewkeys())
+        return set(self.__dictionary.keys())
 
 
     def _subDictionary(self,keys):

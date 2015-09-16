@@ -11,17 +11,22 @@ import dnfpy.controller.runner as runner
 
 
 indiv = eval((sys.argv[1]))
-scenarioName = sys.argv[2]
-modelName = sys.argv[3]
-time = eval(sys.argv[4])
 
+modelName = sys.argv[2]
+scenarioName = sys.argv[3]
+statsName = sys.argv[4]
+
+time = eval(sys.argv[5])
+withView = eval(sys.argv[6])
 args_scenario = None
-if len(sys.argv) > 6:
-        args_scenario = eval(sys.argv[6])
+if len(sys.argv) > 7:
+        args_scenario = eval(sys.argv[7])
 
 
 scenarioClass = getClassFromName(scenarioName, "scenarios")
 modelClass = getClassFromName(modelName,"models")
+statsClass = getClassFromName(statsName,"stats")
+
 if args_scenario:
     scenario = scenarioClass(**args_scenario)
 else:
@@ -29,14 +34,15 @@ else:
 
 
 model = modelClass(**indiv)
-if eval(sys.argv[5]):
+stats = statsClass()
+if withView:
     #view
     timeRatio = time
-    res = runnerView.launch(model, scenario, timeRatio)
+    res = runnerView.launch(model, scenario,stats, timeRatio)
 else:
     #no view
     timeEnd = time
-    res = runner.launch(model,scenario,timeEnd)
+    res = runner.launch(model,scenario,stats,timeEnd)
     print(res)
 
 

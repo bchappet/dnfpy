@@ -9,7 +9,7 @@ class Runnable(object):
         """
         return something when we end simulation
         """
-        return None
+        return []
 
     def initMaps(self,size):
         """
@@ -17,6 +17,14 @@ class Runnable(object):
             Construct and connect the maps
             return the root
         """
+
+    def applyContext(self):
+        """
+        Modify maps if needed
+        Called after construction of the whole simulation and after each reset
+        """
+        pass
+
     def getMapDict(self):
             return {}
 

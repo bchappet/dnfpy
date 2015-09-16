@@ -148,7 +148,7 @@ class Map2D(Computable):
             Public
             Return the children name set
         """
-        return set(self.__children.viewkeys())
+        return set(self.__children.keys())
 
     def getChildren(self):
         return self.__children

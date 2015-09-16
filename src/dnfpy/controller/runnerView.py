@@ -57,11 +57,11 @@ class RunnerView(QtCore.QThread, Runner):
 
     @pyqtSlot(str, str, int)
     def onParamIntChange(self, mapName, name, value):
-        self.model.updateParam(mapName, name, value)
+        self.updateParam(mapName, name, value)
 
     @pyqtSlot(str, str, float)
     def onParamFloatChange(self, mapName, name, value):
-        self.model.updateParam(mapName, name, value)
+        self.updateParam(mapName, name, value)
 
     @pyqtSlot(str)
     def onSpinIntValueChange(self, val):
@@ -73,7 +73,7 @@ class RunnerView(QtCore.QThread, Runner):
         print(
             "On param in t change in \"%s\" :  %s = %s " %
             (mapName, name, value))
-        self.model.updateParam(mapName, name, value)
+        self.updateParam(mapName, name, value)
 
     @pyqtSlot(str, int, int)
     def onClickSlot(self, mapName, x, y):
@@ -135,7 +135,9 @@ class RunnerView(QtCore.QThread, Runner):
         if deltaTime >= limit:
             self.triggerUpdate.emit()
             self.lastViewUpdate = now
+
     def run(self):
+        self.resetSlot()
         while self.simuTime < self.timeEnd:
             while not(self.play):
                 time.sleep(0.1)
@@ -158,24 +160,23 @@ class RunnerView(QtCore.QThread, Runner):
         self.lastUpdateTime = now
 
 
-def launch(model, scenario, timeRatio, record=False):
+def launch(model, scenario,stats, timeRatio, record=False):
     defaultQSS = "stylesheet/default.qss"
     app = QtGui.QApplication([""])
     app.setStyleSheet(open(defaultQSS, 'r').read())
     view = DisplayModelQt()
-    model.reset()
+    model.resetRunnable()
     runner = RunnerView(view, timeRatio=timeRatio, record=record)
     view.setRunner(runner)
     view.addRenderable(model)
     runner.addRunnable(model)
     if scenario:
-        scenario.reset()
         runner.addRunnable(scenario)
-        scenario.applyContext(runner)
-        stats = scenario.initStats()
-        if stats:
-            runner.addRunnable(stats)
-            view.addRenderable(stats)
+        scenario.init(runner)
+    if stats:
+        runner.addRunnable(stats)
+        stats.init(runner)
+        view.addRenderable(stats)
 
 
     view.show()

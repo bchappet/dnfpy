@@ -160,13 +160,13 @@ class DisplayMapsQt(QtGui.QWidget):
         Add a map to the view when clicked on children map button
         """
         mapName = str(mapName)
-        map = self.renderable.getMap(mapName)
+        map = self.runner.getMap(mapName)
         if mapName in self.dictLabels.keys():
             self.removeMap(mapName)
-            self.__updateGridSize(self.size-1)
+            self.size = self.size-1
             self.__reorganizeGrid()
         else:
-            self.__updateGridSize(self.size+1)
+            self.size = self.size+1
             self.addMap(map)
             self.__reorganizeGrid()
 

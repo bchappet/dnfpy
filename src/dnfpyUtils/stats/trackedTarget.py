@@ -24,9 +24,13 @@ class TrackedTarget(Map2D):
         self.coherency = 0
         self.saveClosestTrackIndices = []
         self.freezed = False #true when long enough coherency
+        self.convergenceTime = None #when self.freeze, save the time
 
     def isFreezed(self):
         return self.freezed
+
+    def getConvergenceTime(self):
+            return self.convergenceTime
 
     def _compute(self,time,coherencyTime,canSwitch,distMax_):
         potentialTargetData = self.potentialTarget.getData()
@@ -60,6 +64,7 @@ class TrackedTarget(Map2D):
             if coherencyTime <= self.coherency * self.getArg('dt'):
                 if not canSwitch:
                     self.freezed = True
+                    self.convergenceTime = time - coherencyTime
 
             closestTrackArr = np.array(closestTrack)
             self._data = closestTrackArr
@@ -100,6 +105,7 @@ class TrackedTarget(Map2D):
         self.coherency = 0
         self.saveClosestTrackIndices = []
         self.freezed = False #true when long enough coherency
+        self.convergenceTime = None #when self.freeze, save the time
 
 
     def _onAddChildren(self,**kwargs):
