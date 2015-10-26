@@ -32,20 +32,23 @@ class CircularTrack(MapND):
     centerX : cos traj
     centerY : cos traj
     """
-    def __init__(self,name,size,dt=0.1,wrap=True,intensity=1.,width=0.1,
+    def __init__(self,name,size,dim=1,dt=0.1,wrap=True,intensity=1.,width=0.1,
                  radius=0.3,period=36,phase=0.,center=0.,
                  center_=10,radius_=10):
-        super(CircularTrack,self).__init__(name=name,size=size,
+        super(CircularTrack,self).__init__(name=name,size=size,dim=dim,
                                            dt=dt,wrap=wrap,intensity=intensity,
                                            width=width,radius=radius,center=center,
                                            period=period,phase=phase,
                                            center_=center_,radius_=radius_)
 
-        self.cX = FuncMapND(utils.cosTraj,name+"_cX",1
-                       ,center=center_,period=period,phase=phase,
-            dt=dt,radius=radius_)
+        self.centerTraj = []
+        for d in range(dim):
+            self.centerTraj.append(FuncMapND(utils.cosTraj,name+"_c"+str(d),1,dim=0,
+                        center=center_,period=period,phase=phase+d*0.25,
+                        dt=dt,radius=radius_))
 
-        self.addChildren(centerX=self.cX)
+        for trajI,i in zip(self.centerTraj,range(len(self.centerTraj))):
+                self.addChildren(**{'center'+str(i):trajI})
 
     def _onParamsUpdate(self,size,width,radius,center):
         width_ = width * size
@@ -54,15 +57,17 @@ class CircularTrack(MapND):
         return dict(width_=width_,radius_=radius_,center_=center_)
 
     def _childrenParamsUpdate(self,radius_,center_):
-        self.cX.setParams(radius=radius_,center=center_)
+        for traj in self.centerTraj:
+            traj.setParams(radius=radius_,center=center_)
 
-    def _compute(self,size,wrap,width_,intensity,centerX):
-        self._data = utils.gaussNd(size,wrap,intensity,width_,centerX)
+    def _compute(self,size,wrap,width_,intensity):
+        center = self.getCenter()
+        self._data = utils.gaussNd(size,wrap,intensity,width_,center)
 
 
 
     def getCenter(self):
-            return np.array([self.cX.getData(),])
+        return np.array([traj.getData() for traj in self.centerTraj])
 
     def getShape(self):
             return self.getArg('intensity'),self.getArg('width_')

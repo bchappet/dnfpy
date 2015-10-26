@@ -3,15 +3,15 @@ import numpy as np
 from dnfpy.model.noiseMapND import NoiseMap
 
 class FieldMapND(MapND):
-    def __init__(self,name,size,dt=0.1,model='cnft',tau=0.64,h=0,th=0.75,delta=1.,
+    def __init__(self,name,size,dim=1,dt=0.1,model='cnft',tau=0.64,h=0,th=0.75,delta=1.,
                     resetLat=False,gainAff=1.0,
                     noiseI=0.0,
                     **kwargs):
-        super(FieldMapND,self).__init__(name,size,dt=dt,model=model,
+        super(FieldMapND,self).__init__(name,size,dim=dim,dt=dt,model=model,
                                       tau=tau,h=h,th=th,delta=delta,
                                       resetLat=resetLat,gainAff=gainAff,noiseI=noiseI,**kwargs)
 
-        self.noise = NoiseMap(name+"_noise",size=size,dt=dt,intensity=noiseI)
+        self.noise = NoiseMap(name+"_noise",size=size,dim=dim,dt=dt,intensity=noiseI)
         self.addChildren(noise=self.noise)
 
 

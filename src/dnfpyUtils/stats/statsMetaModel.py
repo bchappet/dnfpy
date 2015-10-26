@@ -4,11 +4,12 @@ from dnfpy.model.activationMap import ActivationMap
 from dnfpyUtils.stats.stats import Stats
 from dnfpy.core.constantMap import ConstantMap
 
+from dnfpyUtils.stats.lyapunovMap import LyapunovMap
 
-class StatsTemplate(Stats):
+class StatsMetaModel(Stats):
     """
 
-    This is the default stats it expect:
+    This is the stats to compute the meta model it expect:
         activationMap
         inputMap
 
@@ -17,17 +18,21 @@ class StatsTemplate(Stats):
 
         activationMap = self.runner.getMap("Activation")
         inputMap = self.runner.getMap("Inputs")
+        convMap = self.runner.getMap("Lateral")
+        dnfMap = self.runner.getMap("Potential")
+
+        th = dnfMap.getArg("th")
+        h = dnfMap.getArg("h")
+
         size = inputMap.getArg("size")
         dim = inputMap.getArg("dim")
 
-        self.targetList = [0,]
-        self.targetListMap = ConstantMap("TargetList",size=size,dim=dim,value=self.targetList)
-        self.simpleShape = SimpleShapeMap("SimpleShape",size=size,dim=dim,dt=self.dt,inputMap=inputMap,shapeThreshold=shapeThreshold)
-        self.simpleShape.addChildren(targetList=self.targetListMap)
-        self.errorShape = ErrorShape("errorShape",dim=dim,dt=self.dt)
-        self.errorShape.addChildren(shapeMap=self.simpleShape,activationMap=activationMap)
 
-        return [self.errorShape,]
+        self.lyapunov = LyapunovMap("Lyapunov",th=th,h=h)
+        self.lyapunov.addChildren(conv=convMap,input=inputMap,act=activationMap)
+
+
+        return [self.lyapunov,]
 
 
     def applyContext(self):
@@ -38,10 +43,10 @@ class StatsTemplate(Stats):
         self.track1.setParams(intensity=0.95)
 
     def getArrays(self):
-        return [self.simpleShape,self.errorShape]
+        return [self.lyapunov,]
 
 
 
     def finalize(self):
-        return [self.errorShape.getArg("mean"),]
+        return []
 

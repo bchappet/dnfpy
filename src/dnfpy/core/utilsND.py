@@ -9,15 +9,19 @@ import sys
 #TODO try with cython
 
 #@numba.autojit
-def generateWrappedDistance(size,centerX,wrap):
+def generateWrappedDistance(size,center,wrap):
     """Compute the distance (real) between the set (0..size-1) and the center
     if wrap is true, the distance will be the minimal from center and center + size"""
-    X = np.arange(0, size, 1,dtype= np.float32)
-    distX = abs(X-centerX)
+    distI = []
+    Xi = [np.arange(0, size, 1,dtype= np.float32),]
+    for i in range(len(center)):
+        distI.append(abs(Xi[i]-center[i]))
+        Xi.append(Xi[i][:,np.newaxis]) #no way it's working for dim >2 TODO
 
     if wrap:
-            distX = np.minimum(distX,abs(X-(centerX+size)))
-    return distX
+        for i in range(len(center)):
+            distI[i] = np.minimum(distI[i],abs(Xi[i]-(center[i]+size)))
+    return distI
 
 def generateWrappedDistance2(size,res,centerX,wrap):
     """Compute the distance (real) between the set (0..size-1) and the center
@@ -33,8 +37,12 @@ def generateWrappedDistance2(size,res,centerX,wrap):
 
 def gaussNd(size,wrap,intensity,width,center):
     """ Make a  gaussian kernel."""
-    distX = generateWrappedDistance(size,center,wrap);
-    return intensity * np.exp( (-((distX)**2 )) / width**2)
+    dim = len(center) #nb Dim
+    distI = generateWrappedDistance(size,center,wrap);
+    sumDistSquared = np.zeros((size,)*dim)
+    for dist in distI:
+            sumDistSquared += dist**2
+    return intensity * np.exp( -( sumDistSquared) / (width**2))
 
 def gaussian(x,intensity,width):
     """Gaussian kernel V2"""
@@ -51,8 +59,12 @@ def gaussianNd(size,res,wrap,intensity,width,center):
 
 def expNd(size,wrap,intensity,proba,center):
     """Make an Exponential kernel """
-    distX = generateWrappedDistance(size,center,wrap);
-    return intensity * (proba ** (distX ) )
+    dim = len(center) #nb Dim
+    distI = generateWrappedDistance(size,center,wrap);
+    sumDistSquared = np.zeros((size,)*dim)
+    for dist in distI:
+            sumDistSquared += dist
+    return intensity * (proba ** (sumDistSquared ) )
 
 def linNd(size,wrap,alpha,beta,center):
     """Make an linear kernel """

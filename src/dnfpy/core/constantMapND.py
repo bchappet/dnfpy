@@ -3,7 +3,7 @@ import numpy as np
 
 class ConstantMapND(MapND):
     def __init__(self,name,size,value,**kwargs):
-        MapND.__init__(self,name,size,dt=1e10,value=value,**kwargs)
+        MapND.__init__(self,name,size,dim=len(value.shape),dt=1e10,value=value,**kwargs)
 
     def _compute(self,value):
         self._data = value

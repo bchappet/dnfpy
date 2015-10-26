@@ -24,7 +24,7 @@ class Computable(object):
         self._updateParamsArgs = inspect.getargspec(self._onParamsUpdate)[0]
         self._updateParamsArgs.remove('self')
         self._init_kwargs = kwargs
-        self.reset()
+        #self.reset()
         self.setParams(**kwargs)
 
     def setArg(self,**kwargs):

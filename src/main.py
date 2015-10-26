@@ -12,20 +12,18 @@ Scenario: str ScenarioTracking...
 
 """
 @begin.start
-def main(model = "ModelDNF",size="101",tr="0.3",stats="None",params={}):
+def main(model = "ModelDNF",size="101",tr="0.3",stats="None",params="{}"):
     """
     model : name of the model
     size : resolution for the simulation
     tr : time ratio or period of the simulation (in seconds)
     stats : [None|StatsTemplate]
+    params : dictinonary : "{'k':p}"
 
     """
     #modelName = sys.argv[1]
     size = eval(size)
     timeRatio = eval(tr)
-
-    
-
 
     modelClass = getClassFromName(model, "models")
     contextClass = None
@@ -40,12 +38,11 @@ def main(model = "ModelDNF",size="101",tr="0.3",stats="None",params={}):
         #except if we have scenario:'scenarioName'
 
      #   params = eval((sys.argv[4]))
+    params = eval(params)
     if 'scenario' in params:
             scenarioName = params['scenario']
             scenarioClass = getClassFromName(scenarioName, 'scenarios')
             del params['scenario']
-    else:
-        params = {}
 
     if scenarioClass:
         scenario = scenarioClass()
@@ -61,6 +58,7 @@ def main(model = "ModelDNF",size="101",tr="0.3",stats="None",params={}):
     kwparams.update(params)
 
 
+    print(kwparams)
     model = modelClass(**kwparams)
 
     runner.launch(model, scenario,stats, timeRatio)

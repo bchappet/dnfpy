@@ -8,20 +8,21 @@ import numpy as np
 class ErrorDistView(ArrayView):
     def __init__(self,  map, runner,mapView):
         self.reset()
-        self.curveSize = 100
+        self.curveSize = 200
         super(ErrorDistView,self).__init__(map,runner,mapView)
 
     def reset(self):
         self.pt = []
-        self.maxPt = np.ones((2))
-        self.minPt = np.zeros((2))
+        finfo = np.finfo(float)
+        self.maxPt = np.ones((2))*finfo.max
+        self.minPt = np.ones((2))*finfo.min
 
 
     def updateArray(self):
         self.errors = np.sum(self.map.getData())
         self.time = self.map.getArg("time")
         self.mean = self.map.getArg("mean")
-        if self.errors > 0:
+        if abs(self.errors) > 0:
             pt = np.array([self.time,self.errors])
             self.pt.append(pt)
             self.updateMinMax()
@@ -49,8 +50,8 @@ class ErrorDistView(ArrayView):
         qp = QtGui.QPainter(self)
         qp.setPen(QtGui.QColor(0,0,0))
         if self.errors > 0:
-            qp.drawText(event.rect(),  QtCore.Qt.AlignTop,  "error: %f" %self.errors)
-        qp.drawText(event.rect(),  QtCore.Qt.AlignBottom,  "meanError: %f" %self.mean)
+            qp.drawText(event.rect(),  QtCore.Qt.AlignTop,  "value: %f" %self.errors)
+        qp.drawText(event.rect(),  QtCore.Qt.AlignBottom,  "mean: %f" %self.mean)
 
         if len(self.pt ) > 1:
             qp.setPen(QtGui.QPen(QtGui.QColor(0,0,0),2))

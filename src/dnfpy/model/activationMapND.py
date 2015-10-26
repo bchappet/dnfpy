@@ -2,9 +2,9 @@ import numpy as np
 from dnfpy.core.mapND import MapND
 
 class ActivationMapND(MapND):
-    def __init__(self,name,size,dt=0.1,type='step',th=0.75,beta=8,**kwargs):
+    def __init__(self,name,size,dim=1,dt=0.1,type='step',th=0.75,beta=8,**kwargs):
         super(ActivationMapND,self).__init__(name,
-            size=size,dt=dt,type=type,th=th,beta=beta,**kwargs)
+            size=size,dim=dim,dt=dt,type=type,th=th,beta=beta,**kwargs)
 
     def _compute(self,type,field,th,dtype,beta):
         #if 'cnft' in model:

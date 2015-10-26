@@ -7,22 +7,22 @@ from dnfpy.core.constantMapND import ConstantMapND
 import matplotlib.pyplot as plt
 
 class MapDNFND(FieldMapND):
-    def __init__(self,name,size,dt=0.1,wrap=True,
+    def __init__(self,name,size,dim=1,dt=0.1,wrap=True,
                  tau=0.64,h=0,
                  model='cnft',th=0.75,delta=1.,activation='step',
                  iExc=1.25,iInh=0.7,wExc=0.1,wInh=1,alpha=10,
                  mapSize=1.,nbStep=0,noiseI=0.0,
                  **kwargs):
-        super(MapDNFND,self).__init__(name,size,dt=dt,wrap=wrap,
+        super(MapDNFND,self).__init__(name,size,dim=dim,dt=dt,wrap=wrap,
                     tau=tau,h=h,delta=delta,
                     model=model,th=th,activation=activation,
                     noiseI=noiseI,
                     **kwargs)
 
-        self.act = ActivationMapND("Activation",size,dt=dt,type=activation,th=th)
-        self.lat =ConvolutionND(name+"Lateral",size,dt=dt,wrap=wrap)
+        self.act = ActivationMapND("Activation",size,dim=dim,dt=dt,type=activation,th=th)
+        self.lat =ConvolutionND("Lateral",size,dim=dim,dt=dt,wrap=wrap)
         self.kernel = LateralWeightsMapND(name+"Kernel",mapSize=mapSize,
-                                        globalSize=size,wrap=wrap,
+                                        globalSize=size,dim=dim,wrap=wrap,
                                         iExc=iExc,iInh=iInh,wExc=wExc,
                                         wInh=wInh,alpha=alpha,nbStep=nbStep)
         self.act.addChildren(field=self)
@@ -41,10 +41,12 @@ class MapDNFND(FieldMapND):
 
 if __name__ == "__main__":
         size = 101
+        dim = 2
+        shape = (size,)*dim
         dt = 0.1
         time = 0
-        dnf = MapDNFND("uut",size);
-        inputArray = np.zeros((size));
+        dnf = MapDNFND("uut",size,dim=dim);
+        inputArray = np.zeros(shape);
         input = ConstantMapND("input",size,inputArray)
 
         dnf.addChildren(aff=input)
@@ -53,9 +55,9 @@ if __name__ == "__main__":
         dnf.kernel.compute()
 
 
-        inputArray[size/2] = 1
-        inputArray[size/2-1] = 1
-        inputArray[size/2+1] = 1
+        inputArray[(size/2,)*dim] = 1
+        inputArray[(size/2-1,)*dim] = 1
+        inputArray[(size/2+1,)*dim] = 1
         for i in range(100):
             time += dt
             dnf.act.update(time)

@@ -12,27 +12,27 @@ class LateralWeightsMapND(MapND):
     In this case the lateral weights is a difference of Gaussiana
 
     """
-    def __init__(self,name,globalSize,mapSize=1,dt=1e10,wrap=True,
+    def __init__(self,name,globalSize,dim=1,mapSize=1,dt=1e10,wrap=True,
                  iExc=1.25,iInh=0.7,wExc=0.1,wInh=1,alpha=10,
                 wExc_=1,wInh_=1,iExc_=1,iInh_=1,nbStep=0,
                  **kwargs):
         super(LateralWeightsMapND,self).__init__(
-            name=name,size=globalSize,globalSize=globalSize,
+            name=name,size=globalSize,dim=dim,globalSize=globalSize,
             mapSize = mapSize,nbStep=nbStep,
             dt=dt,wrap=wrap,iExc=iExc,
             wExc_=wExc_,wInh_=wInh_,iExc_=iExc_,iInh_=iInh_,
             iInh=iInh,wExc=wExc,wInh=wInh,alpha=alpha,**kwargs)
         size = self.getArg('size')
-        center = (size - 1)/2
+        dim = self.getArg('dim')
+        center = ((size//2),)*dim
 
-        self.kernelExc = FuncMapND(utils.gaussNd,name+"_exc",size,dt=dt,center=center,
+        self.kernelExc = FuncMapND(utils.gaussNd,name+"_exc",size,dim=dim,dt=dt,center=center,
                               wrap=wrap,intensity=iExc_,width=wExc_)
-        self.kernelInh = FuncMapND(utils.gaussNd,name+"_inh",size,dt=dt,center=center,
+        self.kernelInh = FuncMapND(utils.gaussNd,name+"_inh",size,dim=dim,dt=dt,center=center,
                               wrap=wrap,intensity=iInh_,width=wInh_)
         self.addChildren(exc=self.kernelExc,inh=self.kernelInh)
 
-    def _compute(self,exc,inh,nbStep,size):
-        center = (size - 1)/2
+    def _compute(self,exc,inh,nbStep):
         ret = exc - inh
         if nbStep > 0:
             ret = utils.discretize(ret,nbStep=nbStep)
@@ -59,15 +59,15 @@ class LateralWeightsMapND(MapND):
         return LateralWeightsMap.getScaledParams(self,size,globalSize,mapSize,alpha,iExc,iInh,wExc,wInh)
 
 
-    def _onParamsUpdate(self,size,globalSize,mapSize,alpha,iExc,iInh,wExc,wInh):
+    def _onParamsUpdate(self,size,globalSize,mapSize,alpha,iExc,iInh,wExc,wInh,dim):
         wExc_ = wExc*globalSize
         wInh_ = wInh*globalSize
         size = mapSize *  globalSize
         size = int(((math.floor(size/2.)) * 2) + 1)#Ensure odd
-        iExc_ = iExc/(globalSize) * (60)/alpha
-        iInh_ = iInh/(globalSize) * (60)/alpha
-        print("globalSize",globalSize)
-        print(iExc_,iInh_,wExc_,wInh_)
+        iExc_ = iExc/(globalSize) * (40**dim)/alpha
+        iInh_ = iInh/(globalSize) * (40**dim)/alpha
+        #print("globalSize",globalSize)
+        #print(iExc_,iInh_,wExc_,wInh_)
         #print("iExc_",iExc_)
         #print("iInh_",iInh_)
         #print("WExc_",wExc_)

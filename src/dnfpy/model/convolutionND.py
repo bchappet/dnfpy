@@ -12,16 +12,17 @@ class ConvolutionND(MapND):
             wrap
 
     """
-    def __init__(self,name,size,dt=0.1,wrap=True,kernelProjection=0,**kwargs):
-        super(ConvolutionND,self).__init__(name,size=size,dt=dt,wrap=wrap,
+    def __init__(self,name,size,dim=1,dt=0.1,wrap=True,kernelProjection=0,**kwargs):
+        super(ConvolutionND,self).__init__(name,size=size,dim=dim,dt=dt,wrap=wrap,
                                          **kwargs)
 
-    def _compute(self,source,size,kernel,wrap):
-        if wrap:
-            border = 'wrap'
-        else:
-            border = 'reflect'
+    def _compute(self,source,size,kernel,wrap,dim):
 
-        #self._data = cv2.filter2D(source,-1,cv2.flip(kernel,-1),
-        #                          anchor=(-1,-1),borderType=border)
-        self._data = filter.convolve(source,kernel,mode=border)
+        if dim == 2:
+            border = cv2.BORDER_WRAP if wrap else cv2.BORDER_DEFAULT
+            self._data = cv2.filter2D(source,-1,cv2.flip(kernel,-1),anchor=(-1,-1),borderType=border)
+        elif dim == 1:
+            border = 'wrap' if wrap else 'reflect'
+            self._data = filter.convolve(source,kernel,mode=border)
+        else:
+            raise Exception("Dim ",dim, " is not supported")

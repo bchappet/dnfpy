@@ -34,12 +34,12 @@ class ObstacleMap(MapND):
 
 class InputMap(FuncWithoutKeywords):
     """The input are defined here"""
-    def __init__(self,name,size,dt=0.1,wrap=True,distr_dt=1.,noise_dt=0.1,noiseI=0.01,
+    def __init__(self,name,size,dim=1,dt=0.1,wrap=True,distr_dt=1.,noise_dt=0.1,noiseI=0.01,
                  tck_dt=0.1,iStim1=0.99,iStim2=0.99,wStim=0.1,nbDistr=0,iDistr=0.99,tck_radius=0.3,
                  wDistr=0.1,wStim_=1.0,wDistr_=1.0,tck_radius_=1,periodStim=36,normalize=True,iStim=1.0,
                  straight=False,
                  **kwargs):
-        super(InputMap,self).__init__(utils.sumArrays,name,size,dt=dt,
+        super(InputMap,self).__init__(utils.sumArrays,name,size,dim=dim,dt=dt,
                 wrap=wrap,distr_dt=distr_dt,noise_dt=noise_dt,noiseI=noiseI,
                 tck_dt = tck_dt,iStim1 = iStim1, iStim2 = iStim2, wStim = wStim ,wDistr=wDistr,
                 nbDistr = nbDistr ,iDistr=iDistr,tck_radius = tck_radius,
@@ -49,21 +49,21 @@ class InputMap(FuncWithoutKeywords):
                 **kwargs)
 
 
-        self.distrs = DistrMap("Distracters",size,dt=distr_dt,wrap=wrap,
+        self.distrs = DistrMap("Distracters",size,dim=dim,dt=distr_dt,wrap=wrap,
                         intensity=iDistr,width=wDistr_,number=nbDistr)
-        self.noise = NoiseMap("noise",size,dt=noise_dt,intensity=noiseI)
+        self.noise = NoiseMap("noise",size,dim=dim,dt=noise_dt,intensity=noiseI)
 
 
         #self.traj = []
 
         if straight:
-            self.track1 = StraightTrack("input",size,dt,wrap,1.,width=0.1,
+            self.track1 = StraightTrack("input",size,dim,dt,wrap,1.,width=0.1,
                                     direction=np.float32([1,0]),start=[0,0.5],speed=0.04)
             #self.track2 = self.newTrack(1,size,tck_dt,wrap,iStim2,wStim,tck_radius,periodStim)
             self.track2 = None
         else:
-            self.track1 = self.newTrack(0,size,tck_dt,wrap,iStim1,wStim,tck_radius,periodStim)
-            self.track2 = self.newTrack(1,size,tck_dt,wrap,iStim2,wStim,tck_radius,periodStim)
+            self.track1 = self.newTrack(0,size,dim,tck_dt,wrap,iStim1,wStim,tck_radius,periodStim)
+            self.track2 = self.newTrack(1,size,dim,tck_dt,wrap,iStim2,wStim,tck_radius,periodStim)
             self.addChildren(self.track2)
 
 
@@ -132,11 +132,11 @@ class InputMap(FuncWithoutKeywords):
 
 
 
-    def newTrack(self,index,size,tck_dt,wrap,iStim,wStim,tck_radius,periodStim):
+    def newTrack(self,index,size,dim,tck_dt,wrap,iStim,wStim,tck_radius,periodStim):
         name = self.getName() +  "_track"+str(index)
         phase = index/2.
         period  = periodStim
-        track = CircularTrack(name,size,dt=tck_dt,wrap=wrap,intensity=iStim,
+        track = CircularTrack(name,size,dim=dim,dt=tck_dt,wrap=wrap,intensity=iStim,
                     width=wStim,radius=tck_radius,period=period,phase=phase)
 
         return track

@@ -6,7 +6,7 @@ class ModelMap(Map2D):
         """
         Input: 
             1)targetList : list of target index to follow : list of int (children)
-            2)shapeThreshold : threshold of input shape (constructor)
+            2)activationSize : expected activation bubble size (constructor)
             3)inputMap: the input map (constructor)
         Output:
             A sizexsize array of reals. It is the theoric shape of activation.

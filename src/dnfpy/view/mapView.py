@@ -50,7 +50,15 @@ class ArrayWidget(QtGui.QGroupBox):
         elif isinstance(map,Fhp):
             self.label = FhpMapView(self.map,runner,self)
         elif isinstance(map,MapND):
-            self.label = ArrayNDView(self.map,runner,self)
+            dim = map.getArg('dim')
+            if dim == 0:
+                self.label = ErrorDistView(self.map,runner,self)
+            elif dim == 1:
+                self.label = ArrayNDView(self.map,runner,self)
+            elif dim == 2:
+                self.label = ArrayView(self.map,runner,self)
+            else:
+                raise Exception("No display for dimension ",dim)
         else:
             self.label = ArrayView(self.map,runner,self)
             #self.label = ArrayView2(self.map,runner,self)

@@ -13,14 +13,14 @@ class ErrorShape(Map2D):
 
     Limit cases:
     If shapeMap == 0:
-        error = 10
+        error = 10 TODO np.nan ?
     If activationMap == 0:
         error = 10
 
     """
-    def __init__(self,name,size=0,dt=0.1,
+    def __init__(self,name,size=0,dim=0,dt=0.1,
                  **kwargs):
-        super(ErrorShape,self).__init__(name=name,size=size,dt=dt,
+        super(ErrorShape,self).__init__(name=name,size=size,dim=dim,dt=dt,
                 **kwargs)
         self.meanErrorSave = []
         self.setArg(mean=0.0)

@@ -16,10 +16,6 @@ class Convolution(Map2D):
                                          **kwargs)
 
     def _compute(self,source,size,kernel,wrap):
-        if wrap:
-            border = cv2.BORDER_WRAP
-        else:
-            border = cv2.BORDER_DEFAULT
-
+        border = cv2.BORDER_WRAP if wrap else cv2.BORDER_DEFAULT
         self._data = cv2.filter2D(source,-1,cv2.flip(kernel,-1),
                                   anchor=(-1,-1),borderType=border)

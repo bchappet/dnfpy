@@ -11,7 +11,8 @@ class MapND(Computable):
     The allowed precision for the time values is 1e-10
 
     Attributes:
-        'size': the data is of shape (size,size)
+        'size': the data is of shape (size,)*dim
+        'dim': dimentionality (0 is for scalar) default 1
         'dt':  the update will be done every dt (second)
         'time': simulation time
         self._data: data accessible with self.getData()
@@ -35,11 +36,11 @@ class MapND(Computable):
 
     """
 
-    def __init__(self,name,size,dtype=np.float32,**kwargs):
-        Computable.__init__(self,size=size,dtype=dtype,**kwargs)
+    def __init__(self,name,size,dim=1,dtype=np.float32,**kwargs):
+        Computable.__init__(self,size=size,dim=dim,dtype=dtype,**kwargs)
         """Init a 2D numpy array of shape (size,size) dtype float32"""
-        self.reset() #init self._data
         self.name = name
+        self.reset() #init self._data
         self.__precision = 7 #allowed precision
         self.__children = {} #dict of str:MapND: the children are computed before self
 
@@ -237,11 +238,12 @@ class MapND(Computable):
         Computable.reset(self)
         self.setArg(time=0.0) #last simulation time (in seconds) : it is updated just befor compute() call
         size = self._init_kwargs['size']
+        dim = self._init_kwargs['dim']
         dtype = self._init_kwargs['dtype']
-        if size == 1:
+        if dim == 0:
             self._data = 0.
         else:
-            self._data = np.zeros((size),dtype=dtype)
+            self._data = np.zeros((size,)*dim,dtype=dtype)
             #print self, self._data.dtype
 
     def resetParams(self):
