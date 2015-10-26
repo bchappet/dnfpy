@@ -13,7 +13,7 @@ class ModelDNF1D(Model,Renderable):
         """We initiate the map and link them"""
        # print("iExc : %s, iInh: %s, wExc %s, wInh %s"%(iExc,iInh,wExc,wInh))
         #Create maps
-        self.aff = InputMap("Inputs",size,periodStim=20000,iStim1 = 1,iStim2=0 )
+        self.aff = InputMap("Inputs",size,periodStim=36,iStim1 = 1,iStim2=0 )
         #input = np.zeros((size))
         #input[size/2] = 1
         #self.aff = ConstantMapND("Inputs",size,value=input)

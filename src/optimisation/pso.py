@@ -163,7 +163,7 @@ class PSO(QtCore.QThread):
 
 
     def addFitness(self,i,newFitness):
-        print i
+        print(i)
         self.inProcessPart.remove(i)
         self.fitness[i] = newFitness
 

@@ -13,7 +13,7 @@ class StatsTemplate(Stats):
         inputMap
 
     """
-    def initMaps(self):
+    def initMaps(self,shapeThreshold=0.4):
 
         activationMap = self.runner.getMap("Activation")
         inputMap = self.runner.getMap("Inputs")
@@ -21,7 +21,7 @@ class StatsTemplate(Stats):
 
         self.targetList = [0,]
         self.targetListMap = ConstantMap("TargetList",size=size,value=self.targetList)
-        self.simpleShape = SimpleShapeMap("SimpleShape",size=size,dt=self.dt,inputMap=inputMap)
+        self.simpleShape = SimpleShapeMap("SimpleShape",size=size,dt=self.dt,inputMap=inputMap,shapeThreshold=shapeThreshold)
         self.simpleShape.addChildren(targetList=self.targetListMap)
         self.errorShape = ErrorShape("errorShape",dt=self.dt)
         self.errorShape.addChildren(shapeMap=self.simpleShape,activationMap=activationMap)

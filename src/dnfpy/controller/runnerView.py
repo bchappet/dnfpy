@@ -171,11 +171,11 @@ def launch(model, scenario,stats, timeRatio, record=False):
     view.addRenderable(model)
     runner.addRunnable(model)
     if scenario:
-        runner.addRunnable(scenario)
         scenario.init(runner)
+        runner.addRunnable(scenario)
     if stats:
-        runner.addRunnable(stats)
         stats.init(runner)
+        runner.addRunnable(stats)
         view.addRenderable(stats)
 
 

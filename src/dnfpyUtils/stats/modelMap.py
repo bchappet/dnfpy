@@ -2,7 +2,7 @@ import numpy as np
 
 from dnfpy.core.map2D import Map2D
 import dnfpy.core.utils as utils
-class SimpleShapeMap(Map2D):
+class ModelMap(Map2D):
         """
         Input: 
             1)targetList : list of target index to follow : list of int (children)

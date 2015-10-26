@@ -37,9 +37,8 @@ class Scenario(Runnable,MapND):
         If we need to change parameters of the model
         """
         self.runner = runner
-        self._applyContext()
 
-    def _applyContext(self):
+    def applyContext(self):
         pass
 
     def isTime(self,time):

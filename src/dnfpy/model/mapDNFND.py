@@ -19,7 +19,7 @@ class MapDNFND(FieldMapND):
                     noiseI=noiseI,
                     **kwargs)
 
-        self.act = ActivationMapND(name+"Activation",size,dt=dt,type=activation,th=th)
+        self.act = ActivationMapND("Activation",size,dt=dt,type=activation,th=th)
         self.lat =ConvolutionND(name+"Lateral",size,dt=dt,wrap=wrap)
         self.kernel = LateralWeightsMapND(name+"Kernel",mapSize=mapSize,
                                         globalSize=size,wrap=wrap,

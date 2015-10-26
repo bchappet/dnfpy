@@ -1,5 +1,5 @@
 from dnfpyUtils.scenarios.scenarioTracking import ScenarioTracking
-class ScenarioRobustness(Scenarioracking):
+class ScenarioRobustness(ScenarioTracking):
     def __init__(self,noiseI=0.5,nbDistr=3):
         super(ScenarioRobustness,self).__init__()
         self.noiseI=noiseI

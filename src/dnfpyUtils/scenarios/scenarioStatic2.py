@@ -1,14 +1,15 @@
-from scenario import Scenario
+from dnfpyUtils.scenarios.scenario import Scenario
 class ScenarioStatic2(Scenario):
     def __init__(self,timeStim=2.,noiseI=0.5):
         super(ScenarioStatic2,self).__init__(expectedNbCluster=2)
         self.timeStim = timeStim
         self.noiseI = noiseI
 
-    def applyContext(self,model):
+    def applyContext(self):
         """
         If we need to change parameters before modele instanciation
         """
+        model = self.runner
         self.input = model.getMap("Inputs")
         self.input.setParamsRec(noiseI=self.noiseI)
 
@@ -29,10 +30,13 @@ class ScenarioStatic2(Scenario):
         self.track1 = model.getMap("Inputs_track1")
         self.track1.setParams(intensity=1.)
 
-        model.getMap("clusterMap").setParams(clustSize=0.3)
 
+        try:
+            self.runner.getMap("TargetList").setData([0,1])
+        except(KeyError):
+            pass
 
-    def _apply(self,model,time,runner):
+    def _apply(self):
         if self.isTime(self.timeStim):
             self.track0.setParams(intensity=0.)
             self.track1.setParams(intensity=0.)

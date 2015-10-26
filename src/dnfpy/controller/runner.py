@@ -184,10 +184,10 @@ def launch(model,scenario,stats,timeEnd,allowedTime=10e10):
     runner = Runner(timeEnd=timeEnd,allowedTime=allowedTime)
     runner.addRunnable(model)
     if scenario:
-        runner.addRunnable(scenario)
         scenario.init(runner)
+        runner.addRunnable(scenario)
     if stats:
-        runner.addRunnable(stats)
         stats.init(runner)
+        runner.addRunnable(stats)
 
     return runner.run()

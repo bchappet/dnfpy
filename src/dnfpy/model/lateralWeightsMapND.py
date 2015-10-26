@@ -50,6 +50,7 @@ class LateralWeightsMapND(MapND):
         size = int(((math.floor(size/2.)) * 2) + 1)#Ensure odd
         iExc_ = iExc/(globalSize) * (40**2)/alpha
         iInh_ = iInh/(globalSize) * (40**2)/alpha
+        print(iExc_,iInh_,wExc_,wInh_)
 
         return dict(size=size,wExc_=wExc_,wInh_=wInh_,iExc_=iExc_,iInh_=iInh_)
 
@@ -65,7 +66,8 @@ class LateralWeightsMapND(MapND):
         size = int(((math.floor(size/2.)) * 2) + 1)#Ensure odd
         iExc_ = iExc/(globalSize) * (60)/alpha
         iInh_ = iInh/(globalSize) * (60)/alpha
-        #print("globalSize",globalSize)
+        print("globalSize",globalSize)
+        print(iExc_,iInh_,wExc_,wInh_)
         #print("iExc_",iExc_)
         #print("iInh_",iInh_)
         #print("WExc_",wExc_)

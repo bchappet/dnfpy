@@ -1,4 +1,5 @@
 
+import numpy as np
 from dnfpy.core.funcMapND import FuncMapND
 import dnfpy.core.utilsND as utils
 from dnfpy.core.mapND import MapND
@@ -57,3 +58,11 @@ class CircularTrack(MapND):
 
     def _compute(self,size,wrap,width_,intensity,centerX):
         self._data = utils.gaussNd(size,wrap,intensity,width_,centerX)
+
+
+
+    def getCenter(self):
+            return np.array([self.cX.getData(),])
+
+    def getShape(self):
+            return self.getArg('intensity'),self.getArg('width_')

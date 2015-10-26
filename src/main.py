@@ -1,6 +1,7 @@
 import sys
 import dnfpy.controller.runnerView as runner
 from getClassUtils import getClassFromName
+import begin #very usefull arg parsing library
 
 
 """
@@ -10,27 +11,39 @@ Scenario: str ScenarioTracking...
 
 
 """
-if __name__ == "__main__":
-    modelClass = getClassFromName(sys.argv[1], "models")
+@begin.start
+def main(model = "ModelDNF",size="101",tr="0.3",stats="None",params={}):
+    """
+    model : name of the model
+    size : resolution for the simulation
+    tr : time ratio or period of the simulation (in seconds)
+    stats : [None|StatsTemplate]
+
+    """
+    #modelName = sys.argv[1]
+    size = eval(size)
+    timeRatio = eval(tr)
+
+    
+
+
+    modelClass = getClassFromName(model, "models")
     contextClass = None
     scenarioClass = None
     statsClass = None
-    size = eval(sys.argv[2])
-    timeRatio = eval(sys.argv[3])
+    statsName = stats
+    if statsName != "None":
+            statsClass = getClassFromName(statsName,'stats')
    # timeRatio = 0.3
-    if len(sys.argv) > 4:
+    #if len(sys.argv) > 4:
         #we put the following args in a dict to give to the model
         #except if we have scenario:'scenarioName'
 
-        params = eval((sys.argv[4]))
-        if 'scenario' in params:
+     #   params = eval((sys.argv[4]))
+    if 'scenario' in params:
             scenarioName = params['scenario']
             scenarioClass = getClassFromName(scenarioName, 'scenarios')
             del params['scenario']
-        if 'stats' in params:
-            statsName = params['stats']
-            statsClass = getClassFromName(statsName,'stats')
-            del params['stats']
     else:
         params = {}
 

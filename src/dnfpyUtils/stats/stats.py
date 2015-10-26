@@ -20,7 +20,7 @@ class Stats(Runnable):
         self.root = self.initMaps(**self.kwargs)
         self._addMapsToDict(self.root) #recursively add map to mapDict
 
-    def initMaps(self):
+    def initMaps(self,**kwargs):
         """
         Initialize the maps and return the roots
         """
