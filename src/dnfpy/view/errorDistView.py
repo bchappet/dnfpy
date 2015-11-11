@@ -21,7 +21,7 @@ class ErrorDistView(ArrayView):
     def updateArray(self):
         self.errors = np.sum(self.map.getData())
         self.time = self.map.getArg("time")
-        self.mean = self.map.getArg("mean")
+        self.mean = self.map.getMean()
         if abs(self.errors) > 0:
             pt = np.array([self.time,self.errors])
             self.pt.append(pt)

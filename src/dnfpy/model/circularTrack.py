@@ -1,13 +1,13 @@
 
 from dnfpy.core.funcMap2D import FuncMap2D
 import dnfpy.core.utils as utils
-from dnfpy.core.map2D import Map2D
+from dnfpy.core.mapND import MapND
 import numpy as np
 
 
 
 
-class CircularTrack(Map2D):
+class CircularTrack(MapND):
     """
     Circular gaussian shaped trajectory
     ====================================
@@ -32,10 +32,10 @@ class CircularTrack(Map2D):
     centerX : cos traj
     centerY : cos traj
     """
-    def __init__(self,name,size,dt=0.1,wrap=True,intensity=1.,width=0.1,
+    def __init__(self,name,size,dim=2,dt=0.1,wrap=True,intensity=1.,width=0.1,
                  radius=0.3,period=36,phase=0.,center=0.,
                  center_=10,radius_=10):
-        super(CircularTrack,self).__init__(name=name,size=size,
+        super().__init__(name=name,size=size,dim=dim,
                                            dt=dt,wrap=wrap,intensity=intensity,
                                            width=width,radius=radius,center=center,
                                            period=period,phase=phase,

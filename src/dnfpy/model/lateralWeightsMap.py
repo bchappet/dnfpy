@@ -11,7 +11,7 @@ class LateralWeightsMap(Map2D):
     """
     Map describing the lateral weights of the dynamic neural fields
     The lateral weights are usually a sum of excitatory and inhibitory weights
-    In this case the lateral weights is a difference of Gaussiana
+    In this case the lateral weights is a difference of Gaussian
 
     """
     def __init__(self,name,globalSize,mapSize=1,dt=1e10,wrap=True,
@@ -49,6 +49,8 @@ class LateralWeightsMap(Map2D):
         size = int(((math.floor(size/2.)) * 2) + 1)#Ensure odd
         iExc_ = iExc/(globalSize**2) * (40**2)/alpha
         iInh_ = iInh/(globalSize**2) * (40**2)/alpha
+        #print("globalSize",globalSize)
+        #print(iExc_,iInh_,wExc_,wInh_)
 
         return dict(size=size,wExc_=wExc_,wInh_=wInh_,iExc_=iExc_,iInh_=iInh_)
 

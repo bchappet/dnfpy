@@ -7,6 +7,9 @@ from dnfpyUtils.scenarios.scenarioTracking import  ScenarioTracking
 from dnfpyUtils.scenarios.scenarioDistracters import ScenarioDistracters
 from dnfpyUtils.scenarios.scenarioStatic2 import ScenarioStatic2
 from dnfpyUtils.models.modelDNF import ModelDNF
+
+from dnfpyUtils.stats.statsMetaModel import StatsMetaModel
+
 from pso import PSO
 from pso import QtApp
 from PyQt4 import QtGui
@@ -53,7 +56,6 @@ class PSODNF(PSO):
         return ModelDNF(**indiv)
 
     def evaluate(self,indiv):
-        #TODO have a list of scenario
         scenarioR = ScenarioRobustness()
         scenarioS = ScenarioSwitch()
         scenarioN = ScenarioNoise()
@@ -63,6 +65,10 @@ class PSODNF(PSO):
         #scenarioList = [scenarioT,scenarioN,scenarioD]
         scenarioList = [scenarioN,]
         fitnessList = []
+
+        #statistic used
+        statistic = StatsMetaModel()
+
 
         #indiv.update(self.constantParamsDict)
         #print("evaluate %s"%indiv)

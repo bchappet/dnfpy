@@ -4,11 +4,30 @@ from dnfpy.cellular.cellularMap import CellularMap
 from getClassUtils import getFunctionFromName,getClassFromName
 
 class ModelCellular(Model,Renderable):
+    """
+    The model is a subclass of CellularMap
+    If model == None , the model will be CellularMap itself and a comp class needs to be provided
+
+    Interface Comp:
+
+    Return the new array
+    +compute(data):
+
+
+    Initialisa the first array:
+    +initModel()
+
+        
+
+    By default comp is 'gameOfLife'
+
+    """
     def initMaps(self,size,comp=None,model=None,**kwargs):
-        if comp:
-            computationFunction = getFunctionFromName(comp, 'compute','cellular')
-        else:
-            computationFunction = None
+
+        if not(comp):
+                comp = 'gameOfLife' 
+
+        computationFunction = getFunctionFromName(comp, 'compute','cellular')
 
         if model:
             TheModel = getClassFromName(model,'cellular')

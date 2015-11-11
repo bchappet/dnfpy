@@ -6,6 +6,7 @@ from dnfpyUtils.stats.clusterMap import ClusterMap
 from dnfpyUtils.stats.potentialTarget import PotentialTarget
 from dnfpyUtils.stats.trackedTarget import TrackedTarget
 from dnfpyUtils.stats.errorDist import ErrorDist
+from dnfpyUtils.stats.errorDistSimple import ErrorDistSimple
 from dnfpyUtils.stats.errorShape import ErrorShape
 from dnfpy.view.arrayView import ArrayView
 from dnfpy.view.arrayView2 import ArrayView2
@@ -25,6 +26,12 @@ from dnfpy.view.arrayNDView import ArrayNDView
 from dnfpyUtils.cellular.fhp import Fhp
 
 from dnfpy.view.fhpMapView import FhpMapView
+from dnfpy.view.trajectoryView import TrajectoryView
+from dnfpy.view.tupleView import TupleView
+
+
+from dnfpy.view.multipleData import MultipleData
+from dnfpy.view.multipleDataView import MultipleDataView
 class ArrayWidget(QtGui.QGroupBox):
 
     def __init__(self,map,runner,parametersView,view):
@@ -39,7 +46,7 @@ class ArrayWidget(QtGui.QGroupBox):
             self.label = PotentialTargetView(self.map,runner,self)
         elif isinstance(map,TrackedTarget):
             self.label = TrackedTargetView(self.map,runner,self)
-        elif isinstance(map,ErrorDist) or isinstance(map,ErrorShape):
+        elif isinstance(map,ErrorDist) or isinstance(map,ErrorDistSimple) or isinstance(map,ErrorShape):
             self.label = ErrorDistView(self.map,runner,self)
         elif isinstance(map,STDPLearningMap):
             self.label = LearningMapView(self.map,runner,self)
@@ -49,10 +56,15 @@ class ArrayWidget(QtGui.QGroupBox):
             self.label = MultiLayerMapView(self.map,runner,self)
         elif isinstance(map,Fhp):
             self.label = FhpMapView(self.map,runner,self)
+        elif isinstance(map,MultipleData):
+            self.label = MultipleDataView(self.map,runner,self)
         elif isinstance(map,MapND):
             dim = map.getArg('dim')
-            if dim == 0:
-                self.label = ErrorDistView(self.map,runner,self)
+            size = map.getArg('size')
+            if size == 0 and dim == 0: #scalar
+                self.label = TrajectoryView(self.map,runner,self)
+            elif size == 0 and dim != 0:
+                self.label = TupleView(self.map,runner,self) #it will be displayed as a dot on a ndim view with a nice trace
             elif dim == 1:
                 self.label = ArrayNDView(self.map,runner,self)
             elif dim == 2:

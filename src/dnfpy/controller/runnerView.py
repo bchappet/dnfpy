@@ -1,4 +1,5 @@
 from dnfpy.view.dynamicViewQt import DisplayModelQt
+import warnings
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import pyqtSlot
 from datetime import datetime
@@ -35,7 +36,8 @@ class RunnerView(QtCore.QThread, Runner):
             timeEnd=100000,
             timeRatio=0.3,
             scenario=None,
-            record=False):
+            record=False,
+            pause=False):
         """
         model : Model class of
         """
@@ -47,7 +49,7 @@ class RunnerView(QtCore.QThread, Runner):
         self.triggerUpdate.connect(self.view.update)
         self.triggerParamsUpdate.connect(self.view.updateParams)
         # Control
-        self.play = True
+        self.play = not(pause)
         #view timing
         self.lastViewUpdate = time.time()
         self.maxFPS = 60.
@@ -78,9 +80,14 @@ class RunnerView(QtCore.QThread, Runner):
     @pyqtSlot(str, int, int)
     def onClickSlot(self, mapName, x, y):
         mapName = str(mapName)
-        mapToUpdate = self.model.onClick(mapName, x, y)
-        if mapToUpdate:
-            self.triggerParamsUpdate.emit(mapToUpdate)
+        for r in self.runnables:
+            mapToUpdate = r.onClick(mapName, x, y)
+            if mapToUpdate:
+                if isinstance(mapToUpdate,list) or isinstance(mapToUpdate,tuple):
+                    for map in mapToUpdate:
+                        self.triggerParamsUpdate.emit(map.getName())
+                else:
+                    self.triggerParamsUpdate.emit(mapToUpdate.getName())
 
     @pyqtSlot(str, int, int)
     def onRClickSlot(self, mapName, x, y):
@@ -160,13 +167,13 @@ class RunnerView(QtCore.QThread, Runner):
         self.lastUpdateTime = now
 
 
-def launch(model, scenario,stats, timeRatio, record=False):
+def launch(model, scenario,stats, timeRatio, record=False,pause=False):
     defaultQSS = "stylesheet/default.qss"
     app = QtGui.QApplication([""])
     app.setStyleSheet(open(defaultQSS, 'r').read())
     view = DisplayModelQt()
     model.resetRunnable()
-    runner = RunnerView(view, timeRatio=timeRatio, record=record)
+    runner = RunnerView(view, timeRatio=timeRatio, record=record,pause=pause)
     view.setRunner(runner)
     view.addRenderable(model)
     runner.addRunnable(model)
@@ -180,5 +187,7 @@ def launch(model, scenario,stats, timeRatio, record=False):
 
 
     view.show()
-    runner.start()
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=RuntimeWarning)
+        runner.start()
     sys.exit(app.exec_())

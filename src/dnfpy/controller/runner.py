@@ -1,4 +1,5 @@
 from datetime import datetime
+import warnings
 from dnfpyUtils.stats.statistic import Statistic
 import time as timer
 import os
@@ -190,4 +191,6 @@ def launch(model,scenario,stats,timeEnd,allowedTime=10e10):
         stats.init(runner)
         runner.addRunnable(stats)
 
-    return runner.run()
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=RuntimeWarning)
+        return runner.run()

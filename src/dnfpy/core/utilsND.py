@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.signal as signal
+from scipy.special import erf
 import copy
 import sys
 #import numba
@@ -10,18 +11,52 @@ import sys
 
 #@numba.autojit
 def generateWrappedDistance(size,center,wrap):
-    """Compute the distance (real) between the set (0..size-1) and the center
+    """Compute the oriented distance (real) between the set (0..size-1) and the center
     if wrap is true, the distance will be the minimal from center and center + size"""
     distI = []
     Xi = [np.arange(0, size, 1,dtype= np.float32),]
+    center = np.array(center)
     for i in range(len(center)):
-        distI.append(abs(Xi[i]-center[i]))
         Xi.append(Xi[i][:,np.newaxis]) #no way it's working for dim >2 TODO
 
     if wrap:
         for i in range(len(center)):
-            distI[i] = np.minimum(distI[i],abs(Xi[i]-(center[i]+size)))
+            center[i] %= size
+            distI.append(Xi[i]-center[i])
+        for i in range(len(center)):
+            cas1 = abs(Xi[i] - (center[i] + size)) < abs(Xi[i]-center[i])
+            cas2 = abs(Xi[i] - (center[i] - size)) < abs(Xi[i]-center[i])
+        
+            distI[i][cas1] = (Xi[i] - (center[i] + size))[cas1]
+            distI[i][cas2] = (Xi[i] - (center[i] - size))[cas2]
+
+            #distI[i] = np.minimum(distI[i],abs(Xi[i]-(center[i]+size)))
+            #distI[i] = np.minimum(distI[i],abs(Xi[i]-(center[i]-size)))
+    else:
+        for i in range(len(center)):
+            distI.append(abs(Xi[i]-(center[i])))
+
     return distI
+    
+
+def wrappedVector(z0,z,size):
+        """
+        Generate the wrapped vector z0 - z
+        If a nan is in z0 or z, return nan
+        """
+        if np.any(np.isnan(z0)) or np.any(np.isnan(z)):
+                return np.ones_like(z)*np.nan
+
+        z0 = z0 % size
+        z = z % size
+        dist = z0-z
+
+        cas1 = abs(z0 - (z + size)) < abs(z0-z)
+        cas2 = abs(z0 - (z - size)) < abs(z0-z)
+
+        dist[cas1] = (z0 - (z + size))[cas1]
+        dist[cas2] = (z0 - (z - size))[cas2]
+        return dist
 
 def generateWrappedDistance2(size,res,centerX,wrap):
     """Compute the distance (real) between the set (0..size-1) and the center
@@ -79,8 +114,6 @@ def cosTraj(time,center,radius,period,phase):
 def affTraj(wrapSize,wrap,time,speed,origin):
     """Return a affine traj: a * time + b"""
     pos =  speed * time + origin
-    if wrap:
-        pos = pos % wrapSize
     return pos
 
 
@@ -160,5 +193,20 @@ def matrixTranslation(array,tx,ty):
     rows,cols = array.shape
     M = np.float32([[1,0,tx],[0,1,ty]])
     return cv2.warpAffine(array,M,(cols,rows))
+
+
+def moving_average(a, n=3) :
+    ret = np.cumsum(a, dtype=float)
+    ret[n:] = ret[n:] - ret[:-n]
+    return ret[n - 1:] / n
+
+
+
+def gaussSolution(x,k,w):
+    return np.sqrt(np.pi)/2 * k * w *erf(x/w)
+
+
+def dogSolution(x,kE,kI,wE,wI):
+    return gaussSolution(x,kE,wE) - gaussSolution(x,kI,wI)
 
 

@@ -14,7 +14,7 @@ class AlgoGen(QtCore.QThread):
     #def __init__(self,view,swarmSize=100,nbEvaluationMax=1000,omega=.9,
     #             phiP=2.,phiG=2.,nbThread=8,argv=[""]):
     def __init__(self,view,swarmSize=100,nbEvaluationMax=1000,eliteRatio=0.2,
-                 bestIndRatio=0.2,mutationRate=0.3,nbMutation=1,nbThread=8,argv=[""]):
+                 bestIndRatio=0.2,mutationRate=0.2,nbMutation=2,nbThread=8,argv=[""]):
         super(AlgoGen,self).__init__()
         if view:
             self.triggerUpdate.connect(view.updateData,type=QtCore.Qt.DirectConnection)

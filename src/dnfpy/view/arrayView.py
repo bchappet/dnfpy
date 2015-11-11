@@ -6,12 +6,8 @@ import dnfpy.view.plotArrayQt as plotArrayQt
 import pyqtgraph as pg
 from scipy import signal
 from scipy import ndimage
+from dnfpy.core.utilsND import moving_average
 
-
-def moving_average(a, n=3) :
-    ret = np.cumsum(a, dtype=float)
-    ret[n:] = ret[n:] - ret[:-n]
-    return ret[n - 1:] / n
 
 
 class ArrayView(QtGui.QLabel):

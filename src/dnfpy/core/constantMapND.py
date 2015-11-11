@@ -2,8 +2,8 @@ from dnfpy.core.mapND import MapND
 import numpy as np
 
 class ConstantMapND(MapND):
-    def __init__(self,name,size,value,**kwargs):
-        MapND.__init__(self,name,size,dim=len(value.shape),dt=1e10,value=value,**kwargs)
+    def __init__(self,name,size,value,clickVal=1,**kwargs):
+        MapND.__init__(self,name,size,dim=len(value.shape),dt=1e10,value=value,clickVal=clickVal,**kwargs)
 
     def _compute(self,value):
         self._data = value
@@ -13,5 +13,11 @@ class ConstantMapND(MapND):
         self.compute()
 
     def reset(self):
-        super(ConstantMapND,self).reset()
+        super().reset()
         self._data = self._init_kwargs['value']
+
+
+
+    def onClick(self,x,y):
+        clickVal = self.getArg('clickVal') 
+        self._data[y,x] = clickVal if self._data[y,x] != clickVal else 0

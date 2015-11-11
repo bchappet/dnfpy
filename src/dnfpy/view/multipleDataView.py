@@ -2,71 +2,72 @@ from PyQt4 import QtGui
 import qimage2ndarray #http://kogs-www.informatik.uni-hamburg.de/~meine/software/qimage2ndarray/doc/#converting-ndarrays-into-qimages
 from PyQt4 import QtCore
 import numpy as np
-import plotArrayQt
+import dnfpy.view.plotArrayQt
+from dnfpy.view.arrayView import ArrayView
 
-class MultipleDataView(QtGui.QLabel):
-    triggerOnClick = QtCore.pyqtSignal(str,int,int)#Will be triggered on click
-    triggerOnRClick = QtCore.pyqtSignal(str,int,int)#Will be triggered on click
-    triggerOnParamChanged = QtCore.pyqtSignal()
-    #map name coord x y
-    def __init__(self,  map, runner,mapView):
-        super(MulipleDataView,  self).__init__()
-        self.map = map
-        self.updateArray()
-        self.runner = runner
-        self.triggerOnClick.connect(runner.onClick)
-        self.triggerOnRClick.connect(runner.onRClick)
-        self.triggerOnParamChanged.connect(mapView.onParamsChanged)
-        self.img = None
 
-    def reset(self):
-        pass
+
+def colStr(color):
+    return str(color.red())+","+str(color.green())+","+str(color.blue())+","+str(color.alpha())
+
+
+def getColorTables(colors):
+        li = []
+        for col in colors:
+            li.append(getColorTable(col))
+        return li
+
+def getColorTable(color):
+        li = []
+        col = QtGui.QColor(color)
+        for i in range(256):
+            col.setAlpha(i)
+            li.append(col.rgba())
+
+        #print("color : %s : %s"%(colStr(QtGui.QColor(li[1])),colStr(QtGui.QColor(li[-1]))))
+        return li
+
+
+
+
+
+class MultipleDataView(ArrayView):
+    """
+    Only 2D for now
+    """
+    def __init__(self,map,runner,mapView):
+            self.liCT = None
+            self.compositionMode = QtGui.QPainter.CompositionMode_Multiply
+            super().__init__(map,runner,mapView)
+            self.images = []
 
     def updateArray(self):
-        self.viewData = self.map.getViewData()
+        self.viewData = self.map.getViewData() #should be tuple
+        if not(self.liCT):
+                self.liCT = getColorTables(self.map.getColors())
 
+        if self.viewData is None:
+            self.viewData = (self.map.getData(),)
+        self.array = self.viewData[0]
 
-        if isinstance(self.array,np.ndarray):
-            if self.array.shape == (1,1,3):
-                #assume hsv
-                self.img = QtGui.QImage(1,1,QtGui.QImage.Format_RGB32)
-                hsv = [self.array[0,0,0]*2,self.array[0,0,1],self.array[0,0,2]]
-                rgbCol = QtGui.QColor.fromHsv(*hsv)
-                self.img.fill(rgbCol)
-            elif self.array.dtype == np.bool and len(self.array.shape) > 2:
-                #it a 2D map of boolean. We sum the 3d dimension leayers
-                stackedArray = np.sum(self.array,axis=2)
-                self.img = plotArrayQt.npToQImage(stackedArray,self.max,self.min)
-            else:
-                self.img = plotArrayQt.npToQImage(self.array,self.max,self.min)
-        else:
-            pass
+        self.images = []
+        for i in range(len(self.viewData)):
+            data = self.viewData[i]
+            img = qimage2ndarray.gray2qimage(data,(0,np.max(data)))
+            img.setColorTable(self.liCT[i])
+            self.images.append(img)
 
+        #now merge the image with différent color
 
     def paintEvent(self, event):
         qp = QtGui.QPainter(self)
-        if self.img:
-            qp.drawImage(event.rect(), self.img)
-        qp.setPen(QtGui.QColor(0,0,0))
-        qp.drawText(event.rect(),  QtCore.Qt.AlignTop,  "%.2f" %
-                    self.max)
-        qp.drawText(event.rect(),  QtCore.Qt.AlignBottom,  "%.2f" %
-                    self.min)
+        qp.setCompositionMode(self.compositionMode)
+        for img in self.images:
+            qp.drawImage(event.rect(), img)
 
-    def mousePressEvent(self,  event):
-        labXY = np.array([event.x(), event.y()], dtype=np.float32)
-        size = self.rect().size()
-        labWH = np.array([size.width(), size.height()]) - 1
-        shapeWH = np.array([self.array.shape[0],
-                            self.array.shape[1]]) - 1
-        arrXY = (labXY / labWH) * shapeWH
-        arrXY = np.round(arrXY).astype(int)
-        #value = self.array[arrXY[1], arrXY[0]]
-        #print arrXY
-        #print value
-        if event.buttons() == QtCore.Qt.LeftButton:
-            self.triggerOnClick.emit(self.map.getName(),arrXY[0],arrXY[1])
-        elif event.button() == QtCore.Qt.RightButton:
-            self.triggerOnRClick.emit(self.map.getName(),arrXY[0],arrXY[1])
 
-        self.triggerOnParamChanged.emit()#TDOD dirty
+
+
+
+
+

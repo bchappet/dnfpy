@@ -23,8 +23,10 @@ class PSO(QtCore.QThread):
     #             phiP=2.,phiG=2.,nbThread=8,argv=[""]):
     #def __init__(self,view,swarmSize=100,nbEvaluationMax=1000,omega=-0.2144,
     #             phiP=-0.4040,phiG=2.03249,nbThread=8,argv=[""]): good
-    def __init__(self,view,swarmSize=100,nbEvaluationMax=1000,omega=0.2,
-                 phiP=1.0,phiG=1.0,nbThread=8,argv=[""]):
+    #def __init__(self,view,swarmSize=100,nbEvaluationMax=1000,omega=0.9,
+    #             phiP=1.0,phiG=1.0,nbThread=8,argv=[""]):
+    def __init__(self,view,swarmSize=100,nbEvaluationMax=1000,omega=0.721347,
+                 phiP=1.193147,phiG=1.193147,nbThread=8,argv=[""]):
         super(PSO,self).__init__()
         self.triggerUpdate.connect(view.updateData,type=QtCore.Qt.DirectConnection)
         #self.triggerUpdate.connect(view.updateData)

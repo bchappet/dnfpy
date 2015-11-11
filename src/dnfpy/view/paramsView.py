@@ -137,11 +137,11 @@ class ParamsView(QtGui.QScrollArea):
 
         def onParamUpdate(self):
                 for p in self.spinnerList:
-                    name = unicode(p.prefix())[:-2]
-                    p.setValue(self.map.getArg(unicode(name)))
+                    name = str(p.prefix())[:-2]
+                    p.setValue(self.map.getArg(str(name)))
                 for p in self.labelList:
-                    name = unicode(p.text().split(": ")[0])
-                    p.setText(name + ": " +unicode(self.map.getArg(name)))
+                    name = str(p.text().split(": ")[0])
+                    p.setText(name + ": " +str(self.map.getArg(name)))
 
 
 

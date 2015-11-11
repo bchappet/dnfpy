@@ -16,6 +16,7 @@ class Convolution(Map2D):
                                          **kwargs)
 
     def _compute(self,source,size,kernel,wrap):
+        #TODO for reasons (opencv3) wrap does not work for kern size < 8
         border = cv2.BORDER_WRAP if wrap else cv2.BORDER_DEFAULT
         self._data = cv2.filter2D(source,-1,cv2.flip(kernel,-1),
                                   anchor=(-1,-1),borderType=border)

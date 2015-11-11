@@ -57,8 +57,8 @@ class InputMap(FuncWithoutKeywords):
         #self.traj = []
 
         if straight:
-            self.track1 = StraightTrack("input",size,dim,dt,wrap,1.,width=0.1,
-                                    direction=np.float32([1,0]),start=[0,0.5],speed=0.04)
+            self.track1 = StraightTrack(self.getName()+"_track0",size=size,dim=dim,dt=tck_dt,wrap=wrap,intensity=iStim1,width=0.1,
+                                    direction=np.float32([1,1]),start=[0,0.5],speed=0.04)
             #self.track2 = self.newTrack(1,size,tck_dt,wrap,iStim2,wStim,tck_radius,periodStim)
             self.track2 = None
         else:

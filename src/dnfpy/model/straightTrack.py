@@ -1,12 +1,12 @@
 import numpy as np
-from dnfpy.core.funcMap2D import FuncMap2D
-import dnfpy.core.utils as utils
-from dnfpy.core.map2D import Map2D
+from dnfpy.core.funcMapND import FuncMapND
+import dnfpy.core.utilsND as utils
+from dnfpy.core.mapND import MapND
 
 
 
-
-class StraightTrack(Map2D):
+#TODO super class for track
+class StraightTrack(MapND):
     """
     Straight gaussian shaped trajectory
     ====================================
@@ -22,44 +22,47 @@ class StraightTrack(Map2D):
     width_
     speed_
     """
-    def __init__(self,name,size,dt=0.1,wrap=True,intensity=1.,width=0.1,
-                 direction=np.float32([1,1]),start = np.float32([0,0]),
-                 speed=0.01,speedX_=1.,speedY_=1.):
-        super(StraightTrack,self).__init__(name=name,size=size,
+    def __init__(self,name,size,dim=1,dt=0.1,wrap=True,intensity=1.,width=0.1,
+                 direction=np.float32((1,)*10),start = np.float32((0,)*10),
+                 speed=0.01,speed_=(1,)*10):
+        super(StraightTrack,self).__init__(name=name,size=size,dim=dim,
                                            dt=dt,wrap=wrap,intensity=intensity,
                                            width=width,direction=direction,
                                            start=start,
-                                           speed=speed,speedX_=speedX_,
-                                           speedY_=speedY_)
+                                           speed=speed,
+                                           speed_=speed_)
 
 
-        self.cX = FuncMap2D(utils.affTraj,name+"_cX",1,dt=dt,speed=speedX_,origin=start[1]*size,
-                        wrap=wrap,wrapSize=size)
-        self.cY = FuncMap2D(utils.affTraj,name+"_cY",1,dt=dt,speed=speedY_,origin=start[0]*size,
-                        wrap=wrap,wrapSize=size)
+        
+        self.centerTraj = []
+        for d in range(dim):
+            self.centerTraj.append(FuncMapND(utils.affTraj,name+"_c"+str(d),1,dim=0,dt=dt,speed=speed_[d],origin=start[d]*size,
+                        wrap=wrap,wrapSize=size))
 
-        self.addChildren(centerX=self.cX,centerY=self.cY)
+        for trajI,i in zip(self.centerTraj,range(len(self.centerTraj))):
+                self.addChildren(**{'center'+str(i):trajI})
 
     def _onParamsUpdate(self,size,width,speed,direction):
         width_ = width * size
-        speedY_ = speed * size*direction[0] #pixel per sec
-        speedX_ = speed * size*direction[1] #pixel per sec
-        return dict(width_=width_,speedX_=speedX_,speedY_=speedY_)
+        speed_ = []
+        for i in range(len(direction)):
+            speed_.append(speed * size*direction[i]) #pixel per sec
+        return dict(width_=width_,speed_=speed_)
 
-    def _childrenParamsUpdate(self,speedX_,speedY_):
-        self.cX.setParams(speed=speedX_)
-        self.cY.setParams(speed=speedY_)
+    def _childrenParamsUpdate(self,speed_):
+        for trajI,i in zip(self.centerTraj,range(len(speed_))):
+            trajI.setParams(speed=speed_[i])
 
-    def _compute(self,size,wrap,width_,intensity,centerX,centerY):
-        self._data = utils.gauss2d(size,wrap,intensity,width_,centerX,centerY)
+    def _compute(self,size,wrap,width_,intensity):
+        center = self.getCenter()
+        self._data = utils.gaussNd(size,wrap,intensity,width_,center)
 
     def getTracks(self):
         return [self,]
 
-    def getWidth(self):
-        return self.getArg('width_')
+    def getShape(self):
+            return self.getArg('intensity'),self.getArg('width_')
 
-    def getIntensity(self):
-        return self.getArg('intensity')
-
+    def getCenter(self):
+        return np.array([traj.getData() for traj in self.centerTraj])
 

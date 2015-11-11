@@ -11,8 +11,8 @@ class GameOfLife2(MultiLayerMap):
         X = self._data
         # Count neighbours
         N = (X[0:-2,0:-2] + X[0:-2,1:-1] + X[0:-2,2:] +
-            X[1:-1,0:-2]                + X[1:-1,2:] +
-            X[2:  ,0:-2] + X[2:  ,1:-1] + X[2:  ,2:])
+             X[1:-1,0:-2]                + X[1:-1,2:] +
+             X[2:  ,0:-2] + X[2:  ,1:-1] + X[2:  ,2:])
 
         # Apply rules
         birth = (N==3) & (X[1:-1,1:-1]==0)

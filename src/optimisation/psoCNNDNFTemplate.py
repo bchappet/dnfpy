@@ -9,6 +9,7 @@ from dnfpyUtils.stats.statsTemplate import StatsTemplate
 from dnfpyUtils.stats.statsMetaModel import StatsMetaModel
 from dnfpyUtils.models.modelDNF import ModelDNF
 from dnfpyUtils.models.modelDNF1D import ModelDNF1D
+from dnfpyUtils.models.modelCNNDNF import ModelCNNDNF
 from pso import PSO
 from pso import QtApp
 from PyQt4 import QtGui
@@ -20,20 +21,20 @@ class PSODNF(PSO):
 
 
     def getListParam(self):
-        return ["iExc","iInh","wExc"]
+        return ["iExc","iInh","wExc","wInh"]
 
     def getBounds(self):
         """return (lowerBounds,upperBounds"""
         z = 1e-10
-        lowerBounds = np.array([z,z,z,])
-        upperBounds = np.array([20,20,1,])
+        lowerBounds = np.array([z,z,z,z])
+        upperBounds = np.array([300,100,3,3])
         return (lowerBounds,upperBounds)
 
     def getStartBounds(self):
         return self.getBounds()
 
     def getConstantParamsDict(self):
-        return dict(size=49,model='cnft',activation='step',dim=2,wInh=1.0,h=0,th=0.64)
+        return dict(size=49,model='cnft',activation='id',dim=2,h=0,th=0.64)
 
     def getEvaluationParamsDict(self):
         return dict(timeEnd=20,allowedTime=10e10)
@@ -47,7 +48,7 @@ class PSODNF(PSO):
         #paramList[1] = indiv[1] *indiv[0]
         paramList[1] = indiv[1]
         paramList[2] = indiv[2]
-        #paramList[3] = indiv[3]
+        paramList[3] = indiv[3]
         #paramList[4] = indiv[4]*indiv[3]
         #paramList[2] = indiv[2]#*indiv[3]
         #paramList[3] = indiv[3]
@@ -55,73 +56,11 @@ class PSODNF(PSO):
         return self.indivToDict(paramList)
         #return self.indivToDict(indiv)
 
-    @staticmethod
-    def curveCrossesZero(Y):
-            """
-            Return indices of elements after which a crossing occurs
-            """
-            return np.where(np.diff(np.sign(Y)))[0]
-
-
-
-    def constraints(self,indiv):
-            """
-            indiv dictinary
-            We are applying constrains to the individual given to the model
-
-            return 0 if constraints are satisfied
-            """
-            #th = 0.75
-            h = 0
-            alpha = 10
-            dim = 1
-            size = 49
-
-            kE = indiv['iExc']
-            kI = indiv['iInh']
-            wE = indiv['wExc']
-            wI = indiv['wInh']
-            th = indiv['th']
-            h = indiv['h']
-
-            if(h >= th) or (kE <= kI):
-                return 100000
-
-
-
-
-            kE2 = kE*40**dim/alpha
-            kI2 = kI*40**dim/alpha
-
-
-
-            a = np.linspace(0,size,1000)
-
-            assert(wE > 0)
-            assert(wI > 0)
-            solution =  dogSolution(a,kE2,kI2,wE,wI)
-
-
-
-            zeroCross  = np.where(np.diff(np.sign(solution-th+h)))[0]#solution - th == 0?
-            derivative = np.gradient(solution)
-            if np.any(derivative[zeroCross] < 0):
-                    #stable point
-                    return 0
-            else:
-                    if(len(zeroCross) == 0):
-                        #no fixed point, return the minimal distance from 0 
-                        mini =  np.min(np.abs(solution -th + h))
-                        return mini
-                    else:
-                        #fixed point but unstable, return the slope of the derivative?
-                        derivative = np.sum(derivative[zeroCross])
-                        return derivative
 
 
 
     def getModel(self,indiv):
-        return ModelDNF1D(**indiv)
+        return ModelCNNDNF(**indiv)
 
     def evaluate(self,indiv):
         nbRepet = 1
@@ -150,8 +89,13 @@ class PSODNF(PSO):
                     for scenario in scenarioList:
                         #errorShape,errorDist = runner.launch(model, stats,scenario, timeEnd,allowedTime)
                         #fitness = (errorDist*100 + errorShape)/2
-                        errorShape = runner.launch(model, stats,scenario, timeEnd,allowedTime)
-                        fitness =  errorShape
+                        errorShape,nanRatio,timeEnd = runner.launch(model, stats,scenario, timeEnd,allowedTime)
+                        assert(timeEnd>=20.0)
+                        fitness =  (errorShape + nanRatio*0.1)
+                        if fitness <= 0.0:
+                                #print("Problem for indiv",indiv," the fitness was ", fitness," with ",errorShape,",",nanRatio,",",timeEnd)
+                                fitness = 1000000
+                                
                         fitnessList.append(fitness)
 
                 fitness =  np.mean(np.array(fitnessList))
@@ -160,14 +104,6 @@ class PSODNF(PSO):
         if np.isnan(fitness):
             fitness = 1000000
         return fitness
-
-
-def gaussSolution(x,k,w):
-    return np.sqrt(np.pi)/2 * k * w *erf(x/w)
-
-
-def dogSolution(x,kE,kI,wE,wI):
-    return gaussSolution(x,kE,wE) - gaussSolution(x,kI,wI)
 
 
 

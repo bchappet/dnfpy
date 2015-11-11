@@ -26,10 +26,9 @@ toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=1, indpb=0.2)
 toolbox.register("select", tools.selTournament, tournsize=3)
 toolbox.register("evaluate", evaluate)
 
-pop =toolbox.population(n=10)
+pop =toolbox.population(n=100)
 
-print pop
 popEnd = algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=10)
-print popEnd[0]
+print(popEnd[0])
 
 

@@ -1,3 +1,4 @@
+import warnings
 import numpy as np
 import sys
 import math
@@ -10,8 +11,16 @@ class MapND(Computable):
     The MapND will be updated when simuTime = self.time + self.dt
     The allowed precision for the time values is 1e-10
 
+    The data is an numpy array of shape (size,)*dim
+    Except if:
+        dim = 0 or size = 0 : scalar
+        dim = n and size = 0 : tuple of n element (used to represent coordinates)
+
+        TODO we will probably need to extend the capabilities to shape n x m x...
+
+
     Attributes:
-        'size': the data is of shape (size,)*dim
+        'size': the data is of shape (size,)*dim size 0 for scalar size 1 and dim != 0 for tuple
         'dim': dimentionality (0 is for scalar) default 1
         'dt':  the update will be done every dt (second)
         'time': simulation time
@@ -38,7 +47,8 @@ class MapND(Computable):
 
     def __init__(self,name,size,dim=1,dtype=np.float32,**kwargs):
         Computable.__init__(self,size=size,dim=dim,dtype=dtype,**kwargs)
-        """Init a 2D numpy array of shape (size,size) dtype float32"""
+        assert(type(size) == int)
+        assert(type(dim) == int)
         self.name = name
         self.reset() #init self._data
         self.__precision = 7 #allowed precision
@@ -128,6 +138,9 @@ class MapND(Computable):
             if abs(self.__getNextUpdateTime() - simuTime) <= allowed_error :
                  self.setArg(time = round(simuTime,self.__precision))
                  self._computationStep()
+            else:
+                 pass
+                 #warnings.warn("update time is ahead self.time + self.dt Computation was not made")
             self.__lock = False
         else:
                 pass
@@ -240,8 +253,10 @@ class MapND(Computable):
         size = self._init_kwargs['size']
         dim = self._init_kwargs['dim']
         dtype = self._init_kwargs['dtype']
-        if dim == 0:
-            self._data = 0.
+        if dim == 0 and size == 0:
+            self._data = 0.#scalar
+        elif size == 0 and dim != 0:
+            self._data = np.zeros((dim),dtype=dtype) #tuple
         else:
             self._data = np.zeros((size,)*dim,dtype=dtype)
             #print self, self._data.dtype

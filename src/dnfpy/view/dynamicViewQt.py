@@ -29,6 +29,7 @@ class GlobalParams(QtGui.QWidget):
             bPlay.clicked.connect(runner.playSlot)
             bStep = QtGui.QPushButton("Step")
             bStep.clicked.connect(runner.stepSlot)
+            bStep.setShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Space))
             bReset = QtGui.QPushButton("Reset")
             bReset.clicked.connect(runner.resetSlot)
             bReset.clicked.connect(view.reset)
@@ -149,10 +150,12 @@ class DisplayMapsQt(QtGui.QWidget):
             Add all arrays of renderable
         """
         maps = renderable.getArrays()
+
         self.size += len(maps)
         self.__updateGridSize()
         for map in maps:
             self.addMap( map)
+        self.__reorganizeGrid() #dirty trick for now. (otherwise bug when we add several renderable TODO)
 
     @pyqtSlot(str)
     def addChildrenMap(self,mapName):
@@ -171,7 +174,7 @@ class DisplayMapsQt(QtGui.QWidget):
             self.__reorganizeGrid()
 
     def __placeWidgetOnGrid(self,index,widg):
-        row = index / self.nbCols
+        row = index // self.nbCols
         col = index % self.nbCols
         self.grid.addWidget(widg, row, col)
 
@@ -224,7 +227,11 @@ class DisplayMapsQt(QtGui.QWidget):
 
 
     def updateParams(self,mapName):
-            label = self.dictLabels[mapName]
-            label.onParamsChanged()
-            label.updateArray()
-            label.repaint()
+            try:
+                label = self.dictLabels[mapName]
+                label.onParamsChanged()
+                label.updateArray()
+                label.repaint()
+            except:
+                pass
+

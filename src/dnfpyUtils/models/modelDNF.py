@@ -1,6 +1,7 @@
 from dnfpy.model.inputMap import InputMap
 from dnfpy.view.renderable import Renderable
 from dnfpy.model.model import Model
+from dnfpy.model.mapDNFND import MapDNFND
 from dnfpy.model.mapDNF import MapDNF
 
 class ModelDNF(Model,Renderable):
@@ -16,16 +17,16 @@ class ModelDNF(Model,Renderable):
 
     """
     def initMaps(self,size=49,model="cnft",activation="step",nbStep=0,
-                 iExc=1.25,iInh=0.7,wExc=0.1,wInh=10.,alpha=10.,th=0.75,h=0,lateral='dog',
+                 iExc=1.25,iInh=0.7,wExc=0.1,wInh=10.,alpha=10.,th=0.75,h=0,lateral='dog',noiseI=0.01,
                  dt=0.1,
                  ):
         """We initiate the map and link them"""
        # print("iExc : %s, iInh: %s, wExc %s, wInh %s"%(iExc,iInh,wExc,wInh))
         #Create maps
-        self.aff = InputMap("Inputs",size,dt=dt)
+        self.aff = InputMap("Inputs",size,dt=dt,noiseI=noiseI)
                             #iStim1 = 0, iStim2 = 0,noiseI=1.,noise_dt=1e10)
                
-        self.field = MapDNF("Potential",size,dt=dt,model=model,activation=activation,nbStep=nbStep, \
+        self.field = MapDNFND("Potential",size,dt=dt,dim=2,model=model,activation=activation,nbStep=nbStep, \
                         iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,th=th,h=h,lateral=lateral)
         self.field.addChildren(aff=self.aff)
         #return the roots

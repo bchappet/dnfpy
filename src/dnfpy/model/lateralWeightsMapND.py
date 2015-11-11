@@ -43,37 +43,23 @@ class LateralWeightsMapND(MapND):
         self._data = ret
 
     @staticmethod
-    def getScaledParams(size,globalSize,mapSize,alpha,iExc,iInh,wExc,wInh):
+    def getScaledParams(size,globalSize,mapSize,dim,alpha,iExc,iInh,wExc,wInh):
         wExc_ = wExc*globalSize
         wInh_ = wInh*globalSize
         size = mapSize *  globalSize
         size = int(((math.floor(size/2.)) * 2) + 1)#Ensure odd
-        iExc_ = iExc/(globalSize) * (40**2)/alpha
-        iInh_ = iInh/(globalSize) * (40**2)/alpha
-        print(iExc_,iInh_,wExc_,wInh_)
+        iExc_ = iExc/(globalSize**dim) * (40**dim)/alpha
+        iInh_ = iInh/(globalSize**dim) * (40**dim)/alpha
+        #print(size,globalSize,mapSize,dim,alpha,iExc,iInh,wExc,wInh)
 
-        return dict(size=size,wExc_=wExc_,wInh_=wInh_,iExc_=iExc_,iInh_=iInh_)
-
-
-    def _onParamsUpdate(self,size,globalSize,mapSize,alpha,iExc,iInh,wExc,wInh):
-        return LateralWeightsMap.getScaledParams(self,size,globalSize,mapSize,alpha,iExc,iInh,wExc,wInh)
-
-
-    def _onParamsUpdate(self,size,globalSize,mapSize,alpha,iExc,iInh,wExc,wInh,dim):
-        wExc_ = wExc*globalSize
-        wInh_ = wInh*globalSize
-        size = mapSize *  globalSize
-        size = int(((math.floor(size/2.)) * 2) + 1)#Ensure odd
-        iExc_ = iExc/(globalSize) * (40**dim)/alpha
-        iInh_ = iInh/(globalSize) * (40**dim)/alpha
-        #print("globalSize",globalSize)
         #print(iExc_,iInh_,wExc_,wInh_)
-        #print("iExc_",iExc_)
-        #print("iInh_",iInh_)
-        #print("WExc_",wExc_)
-        #print("WInh_",wInh_)
 
         return dict(size=size,wExc_=wExc_,wInh_=wInh_,iExc_=iExc_,iInh_=iInh_)
+
+
+    def _onParamsUpdate(self,size,globalSize,mapSize,dim,alpha,iExc,iInh,wExc,wInh):
+        return LateralWeightsMapND.getScaledParams(size,globalSize,mapSize,dim,alpha,iExc,iInh,wExc,wInh)
+
 
     def _childrenParamsUpdate(self,iExc_,iInh_,wExc_,wInh_):
         self.kernelExc.setParams(intensity=iExc_,width=wExc_)

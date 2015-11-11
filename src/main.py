@@ -12,53 +12,41 @@ Scenario: str ScenarioTracking...
 
 """
 @begin.start
-def main(model = "ModelDNF",size="101",tr="0.3",stats="None",params="{}"):
+def main(model = "ModelDNF",size="101",tr="0.5",stats="None",scenario="None",params="{}",pause="False"):
     """
     model : name of the model
     size : resolution for the simulation
     tr : time ratio or period of the simulation (in seconds)
     stats : [None|StatsTemplate]
+    scenario  : [None|ScenarioSwitch]
     params : dictinonary : "{'k':p}"
+    pause : start in pause?
 
     """
     #modelName = sys.argv[1]
     size = eval(size)
     timeRatio = eval(tr)
+    pause = eval(pause)
 
     modelClass = getClassFromName(model, "models")
-    contextClass = None
-    scenarioClass = None
-    statsClass = None
+    scenarioInstance = None
+    statsInstance = None
     statsName = stats
     if statsName != "None":
-            statsClass = getClassFromName(statsName,'stats')
-   # timeRatio = 0.3
-    #if len(sys.argv) > 4:
-        #we put the following args in a dict to give to the model
-        #except if we have scenario:'scenarioName'
+        statsClass = getClassFromName(statsName,'stats')
+        statsInstance = statsClass()
+    scenarioName = scenario
+    if scenarioName != "None":
+        scenarioClass = getClassFromName(scenarioName, 'scenarios')
+        scenarioInstance = scenarioClass()
 
-     #   params = eval((sys.argv[4]))
     params = eval(params)
-    if 'scenario' in params:
-            scenarioName = params['scenario']
-            scenarioClass = getClassFromName(scenarioName, 'scenarios')
-            del params['scenario']
-
-    if scenarioClass:
-        scenario = scenarioClass()
-    else:
-        scenario = None
-
-    if statsClass:
-        stats = statsClass()
-    else:
-        stats = None
 
     kwparams = dict(size=size)
     kwparams.update(params)
 
 
-    print(kwparams)
+    #print(kwparams)
     model = modelClass(**kwparams)
 
-    runner.launch(model, scenario,stats, timeRatio)
+    runner.launch(model, scenarioInstance,statsInstance, timeRatio,pause=pause)

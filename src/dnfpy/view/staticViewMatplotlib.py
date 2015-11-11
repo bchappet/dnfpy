@@ -13,9 +13,9 @@ def egaliseColorBar(egal,bar):
                 bar.set_ticks([__roundUp(-egal),0,__roundDown(+egal)])
 
 def __roundDown(x):
-        return math.floor(x*PRECISION)/PRECISION
+        return math.floor(x*PRECISION)//PRECISION
 def __roundUp(x):
-        return math.ceil(x*PRECISION)/PRECISION
+        return math.ceil(x*PRECISION)//PRECISION
 def __finalize():
         plt.xticks([])
         plt.yticks([])
@@ -55,9 +55,9 @@ def plotArrays(name_array_dict):
         gs = gridspec.GridSpec(height, width)
         for name in name_array_dict:
                 if( i == size-1): #last fig
-                        ax = plt.subplot(gs[i/width,i%width :])
+                        ax = plt.subplot(gs[i//width,i%width :])
                 else:
-                        ax = plt.subplot(gs[i/width,i%width])
+                        ax = plt.subplot(gs[i//width,i%width])
                 array = name_array_dict[name]
                 if len(array.shape) < 3:
                     plotArray(array)

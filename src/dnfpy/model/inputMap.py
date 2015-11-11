@@ -57,7 +57,7 @@ class InputMap(FuncWithoutKeywords):
         #self.traj = []
 
         if straight:
-            self.track1 = StraightTrack("input",size,dt,wrap,1.,width=0.1,
+            self.track1 = StraightTrack(self.getName()+"_track0",size,2,dt,wrap,1.,width=0.1,
                                     direction=np.float32([1,0]),start=[0,0.5],speed=0.04)
             #self.track2 = self.newTrack(1,size,tck_dt,wrap,iStim2,wStim,tck_radius,periodStim)
             self.track2 = None
@@ -136,7 +136,7 @@ class InputMap(FuncWithoutKeywords):
         name = self.getName() +  "_track"+str(index)
         phase = index/2.
         period  = periodStim
-        track = CircularTrack(name,size,dt=tck_dt,wrap=wrap,intensity=iStim,
+        track = CircularTrack(name,size,dim=2,dt=tck_dt,wrap=wrap,intensity=iStim,
                     width=wStim,radius=tck_radius,period=period,phase=phase)
 
         return track
