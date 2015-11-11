@@ -1,7 +1,7 @@
-from dnfpy.core.map2D import Map2D
+from dnfpy.core.mapND import MapND
 
 
-class Statistic(Map2D):
+class Statistic(MapND):
     """
     Interface for statistics
     """

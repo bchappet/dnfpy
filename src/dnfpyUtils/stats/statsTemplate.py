@@ -1,4 +1,5 @@
 from dnfpyUtils.stats.simpleShapeMap import SimpleShapeMap
+import numpy as np
 from dnfpyUtils.stats.errorShape import ErrorShape
 from dnfpy.model.activationMap import ActivationMap
 from dnfpyUtils.stats.stats import Stats
@@ -19,12 +20,13 @@ class StatsTemplate(Stats):
         inputMap = self.runner.getMap("Inputs")
         size = inputMap.getArg("size")
         dim = inputMap.getArg("dim")
+        dt = activationMap.getArg('dt')
 
         self.targetList = [0,]
-        self.targetListMap = ConstantMap("TargetList",size=size,dim=dim,value=self.targetList)
-        self.simpleShape = SimpleShapeMap("SimpleShape",size=size,dim=dim,dt=self.dt,inputMap=inputMap,shapeThreshold=shapeThreshold)
+        self.targetListMap = ConstantMap("TargetList",size=size,value=self.targetList)
+        self.simpleShape = SimpleShapeMap("SimpleShape",size=size,dim=dim,dt=dt,inputMap=inputMap,shapeThreshold=shapeThreshold)
         self.simpleShape.addChildren(targetList=self.targetListMap)
-        self.errorShape = ErrorShape("errorShape",dim=dim,dt=self.dt)
+        self.errorShape = ErrorShape("errorShape",dt=dt)
         self.errorShape.addChildren(shapeMap=self.simpleShape,activationMap=activationMap)
 
         return [self.errorShape,]
@@ -43,5 +45,9 @@ class StatsTemplate(Stats):
 
 
     def finalize(self):
-        return [self.errorShape.getArg("mean"),]
+        timeEnd = self.errorShape.getArg('time')
+        lenTrace = len(self.errorShape.trace)
+        nbNan = np.sum(np.isnan(self.errorShape.getTrace()))
+        nanRatio = 1-(lenTrace - nbNan)/lenTrace
+        return [self.errorShape.getMean(),nanRatio,timeEnd]
 

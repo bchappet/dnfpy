@@ -5,7 +5,7 @@ import numpy as np
 
 
 
-ERROR = 1.
+ERROR = np.nan
 class ErrorDist(Statistic):
     def __init__(self,name,size=0,dt=0.1,sizeArray=20,canSwitch=True,
                  coherencyTime=1.,distMax=0.3,**kwargs):
