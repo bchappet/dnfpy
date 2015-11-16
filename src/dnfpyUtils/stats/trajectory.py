@@ -18,6 +18,9 @@ class Trajectory(Statistic):
     def getMean(self):
         return np.nanmean(self.trace)
 
+    def getRMSE(self):
+        return np.sqrt(np.nanmean(self.trace))
+
     def getCount(self):
         return np.sum(~np.isnan(self.trace))
     

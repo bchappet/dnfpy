@@ -23,19 +23,19 @@ class ModelDNF(Model,Renderable):
         """We initiate the map and link them"""
        # print("iExc : %s, iInh: %s, wExc %s, wInh %s"%(iExc,iInh,wExc,wInh))
         #Create maps
-        self.aff = InputMap("Inputs",size,dt=dt,noiseI=noiseI)
+        #self.aff = InputMap("Inputs",size,dt=dt,noiseI=noiseI)
                             #iStim1 = 0, iStim2 = 0,noiseI=1.,noise_dt=1e10)
                
         self.field = MapDNFND("Potential",size,dt=dt,dim=2,model=model,activation=activation,nbStep=nbStep, \
                         iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,th=th,h=h,lateral=lateral)
-        self.field.addChildren(aff=self.aff)
+        #self.field.addChildren(aff=self.aff)
         #return the roots
         roots =  [self.field]
         return roots
 
     #override Renderable
     def getArrays(self):
-        ret =  [self.aff,self.field,self.field.kernel]
+        ret =  [self.field,self.field.kernel]
         ret.extend(self.field.getArrays())
         return ret
 

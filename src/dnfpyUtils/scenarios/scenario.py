@@ -1,4 +1,5 @@
 import time
+from dnfpy.model.inputMap1D import InputMap
 from dnfpy.controller.runnable import Runnable
 from dnfpyUtils.stats.statsTracking import StatsTracking
 from dnfpy.core.mapND import MapND
@@ -11,35 +12,54 @@ class Scenario(Runnable,MapND):
     """
     precision = 10e-5
     def __init__(self,dt=0.1,**kwargs):
-        MapND.__init__(self,size=1,name="Scenario",dt=dt,**kwargs)
+        MapND.__init__(self,size=1,name="Scenario",dt=dt)
         self.nbIteration = 0
         self.time = 0
         self.processorTime = time.clock()
 
         self.mapDict = {"scenario":self}
+        self.kwargs = kwargs #save for initialization
+
+    def init(self,runner):
+        self.runner = runner
+        self.root = self.initMaps(**self.kwargs)
+        self._addMapsToDict(self.root) #recursively add map to mapDict
+
+    def initMaps(self,size=49,dim=2,dt=0.1,**kwargs):
+        """
+        Initialize the maps and return the roots
+        """
+        self.input = InputMap("Inputs",size,dt=dt,dim=dim)
+        return [self.input,]
+
+
 
     def getRoot(self):
             return self
 
+    def getMapDict(self):
+            return self.mapDict
 
 
     def resetRunnable(self):
-        MapND.reset(self)
+        super().resetRunnable()
         self.nbIteration = 0
         self.processorTime = time.clock()
         
 
 
-
-
-    def init(self,runner):
-        """
-        If we need to change parameters of the model
-        """
-        self.runner = runner
-
     def applyContext(self):
-        pass
+        """
+        When everything is constructed or when reset
+        """
+        field = self.runner.getMap("Potential")
+        field.addChildren(aff=self.input)
+
+
+    def getArrays(self):
+        return [self.input,]
+
+
 
     def isTime(self,time):
         currentTime = self.getArg('time')

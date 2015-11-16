@@ -104,7 +104,8 @@ def expNd(size,wrap,intensity,proba,center):
 def linNd(size,wrap,alpha,beta,center):
     """Make an linear kernel """
     distX = generateWrappedDistance(size,center,wrap);
-    return np.clip(-alpha*(distX) + beta,0,sys.float_info.max)
+    print("alpha :",alpha," beta ",beta)
+    return np.maximum(-alpha*(np.fabs(distX)) + beta,0)
 
 
 def cosTraj(time,center,radius,period,phase):

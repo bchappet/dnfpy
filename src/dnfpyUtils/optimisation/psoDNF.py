@@ -1,20 +1,35 @@
 import numpy as np
 import dnfpy.controller.runner as runner
 from dnfpyUtils.scenarios.scenarioRobustness import ScenarioRobustness
-from dnfpyUtils.scenarios.scenarioSwitch import ScenarioSwitch
 from dnfpyUtils.scenarios.scenarioNoise import ScenarioNoise
 from dnfpyUtils.scenarios.scenarioTracking import  ScenarioTracking
 from dnfpyUtils.scenarios.scenarioDistracters import ScenarioDistracters
 from dnfpyUtils.scenarios.scenarioStatic2 import ScenarioStatic2
 from dnfpyUtils.models.modelDNF import ModelDNF
+from dnfpyUtils.models.modelDNF1D import ModelDNF1D
 
 from dnfpyUtils.stats.statsMetaModel import StatsMetaModel
 
-from pso import PSO
-from pso import QtApp
-from PyQt4 import QtGui
+from dnfpyUtils.optimisation.pso import PSO
 class PSODNF(PSO):
     """Particle swarm optimisation class"""
+
+    def __init__(self,**kwargs):
+        super().__init__(**kwargs)
+        self.modelClass = self.getModelClass()
+        self.scenarioClass = self.getScenarioClass()
+
+    def setModelClass(self,modelClass):
+        self.modelClass = modelClass
+
+    def getModelClass(self):
+        return ModelDNF1D
+
+    def setScenarioClass(self,scenarioClass):
+        self.scenarioClass = scenarioClass
+
+    def getScenarioClass(self):
+        return ScenarioTracking
 
     def getExecutionBounds(self):
         return (1)
@@ -36,6 +51,9 @@ class PSODNF(PSO):
     def getConstantParamsDict(self):
         return dict(size=49,model='spike',activation='step')
 
+    def setConstantParamsDict(self,constantParamsDict):
+        self.constantParamsDict = constantParamsDict
+
     def getEvaluationParamsDict(self):
         return dict(timeEnd=20,allowedTime=10e10)
 
@@ -53,7 +71,7 @@ class PSODNF(PSO):
 
 
     def getModel(self,indiv):
-        return ModelDNF(**indiv)
+        return self.modelClass(**indiv)
 
     def evaluate(self,indiv):
         scenarioR = ScenarioRobustness()
@@ -119,14 +137,8 @@ class PSODNF(PSO):
 
 if __name__ == "__main__":
     import sys
-    app = QtGui.QApplication([""])
-    view = QtApp()
-    model = PSODNF(view,swarmSize=100,nbEvaluationMax=30000,nbThread=8,omega=0.9,phiP=0.9,phiG=0.5)
-    view.setModel(model)
-    model.start()
-    sys.exit(app.exec_())
-    res = (model.bestX,model.bestFitness)
-    print(res)
+    model = PSODNF(swarmSize=100,nbEvaluationMax=30000,nbThread=8,omega=0.9,phiP=0.9,phiG=0.5)
+    model.run()
 
 
 

@@ -37,14 +37,14 @@ class InputMap(FuncWithoutKeywords):
     def __init__(self,name,size,dim=1,dt=0.1,wrap=True,distr_dt=1.,noise_dt=0.1,noiseI=0.01,
                  tck_dt=0.1,iStim1=0.99,iStim2=0.99,wStim=0.1,nbDistr=0,iDistr=0.99,tck_radius=0.3,
                  wDistr=0.1,wStim_=1.0,wDistr_=1.0,tck_radius_=1,periodStim=36,normalize=True,iStim=1.0,
-                 straight=False,
+                 straight=False,speed=0.04,
                  **kwargs):
         super(InputMap,self).__init__(utils.sumArrays,name,size,dim=dim,dt=dt,
                 wrap=wrap,distr_dt=distr_dt,noise_dt=noise_dt,noiseI=noiseI,
                 tck_dt = tck_dt,iStim1 = iStim1, iStim2 = iStim2, wStim = wStim ,wDistr=wDistr,
                 nbDistr = nbDistr ,iDistr=iDistr,tck_radius = tck_radius,
                 wStim_=wStim_,wDist_=wDistr_,tck_radius_=tck_radius_,periodStim=periodStim,
-                                      iStim=iStim,straight=straight,
+                                      iStim=iStim,straight=straight,speed=speed,
                 normalize=normalize,
                 **kwargs)
 
@@ -57,21 +57,21 @@ class InputMap(FuncWithoutKeywords):
         #self.traj = []
 
         if straight:
-            self.track1 = StraightTrack(self.getName()+"_track0",size=size,dim=dim,dt=tck_dt,wrap=wrap,intensity=iStim1,width=0.1,
-                                    direction=np.float32([1,1]),start=[0,0.5],speed=0.04)
-            #self.track2 = self.newTrack(1,size,tck_dt,wrap,iStim2,wStim,tck_radius,periodStim)
-            self.track2 = None
+            direction = np.float32([1]*dim)
+            self.track1 = StraightTrack(self.getName()+"_track0",size=size,dim=dim,dt=tck_dt,wrap=wrap,intensity=iStim1,width=wStim,
+                                    direction=direction,start=np.array([0.2,]),speed=speed)
+            self.track2 = StraightTrack(self.getName()+"_track1",size=size,dim=dim,dt=tck_dt,wrap=wrap,intensity=iStim2,width=wStim,
+                                    direction=direction,start=np.array([0.6,]),speed=speed)
         else:
             self.track1 = self.newTrack(0,size,dim,tck_dt,wrap,iStim1,wStim,tck_radius,periodStim)
             self.track2 = self.newTrack(1,size,dim,tck_dt,wrap,iStim2,wStim,tck_radius,periodStim)
-            self.addChildren(self.track2)
 
 
 
 
 
 
-        self.addChildren(self.track1,self.noise,self.distrs)
+        self.addChildren(self.track1,self.track2,self.noise,self.distrs)
 
 
     def _compute(self,args):

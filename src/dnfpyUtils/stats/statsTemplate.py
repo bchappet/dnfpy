@@ -14,30 +14,26 @@ class StatsTemplate(Stats):
         inputMap
 
     """
-    def initMaps(self,shapeThreshold=0.4):
+    def initMaps(self,size=49,dim=1,dt=0.1,shapeThreshold=0.6,**kwargs):
 
-        activationMap = self.runner.getMap("Activation")
-        inputMap = self.runner.getMap("Inputs")
-        size = inputMap.getArg("size")
-        dim = inputMap.getArg("dim")
-        dt = activationMap.getArg('dt')
 
         self.targetList = [0,]
         self.targetListMap = ConstantMap("TargetList",size=size,value=self.targetList)
-        self.simpleShape = SimpleShapeMap("SimpleShape",size=size,dim=dim,dt=dt,inputMap=inputMap,shapeThreshold=shapeThreshold)
+        self.simpleShape = SimpleShapeMap("SimpleShape",size=size,dim=dim,dt=dt,shapeThreshold=shapeThreshold)
         self.simpleShape.addChildren(targetList=self.targetListMap)
         self.errorShape = ErrorShape("errorShape",dt=dt)
-        self.errorShape.addChildren(shapeMap=self.simpleShape,activationMap=activationMap)
+        self.errorShape.addChildren(shapeMap=self.simpleShape)
 
         return [self.errorShape,]
 
 
     def applyContext(self):
         #We make sure that the target 0 is focused on
-        self.track0 = self.runner.getMap("Inputs_track0")
-        self.track1 = self.runner.getMap("Inputs_track1")
-        self.track0.setParams(intensity=1.)
-        self.track1.setParams(intensity=0.95)
+        inputMap = self.runner.getMap("Inputs")
+        self.simpleShape.addChildren(inputMap=inputMap)
+
+        activationMap = self.runner.getMap("Activation")
+        self.errorShape.addChildren(shapeMap=self.simpleShape,activationMap=activationMap)
 
     def getArrays(self):
         return [self.simpleShape,self.errorShape]
@@ -49,5 +45,5 @@ class StatsTemplate(Stats):
         lenTrace = len(self.errorShape.trace)
         nbNan = np.sum(np.isnan(self.errorShape.getTrace()))
         nanRatio = 1-(lenTrace - nbNan)/lenTrace
-        return [self.errorShape.getMean(),nanRatio,timeEnd]
+        return [self.errorShape.getRMSE(),nanRatio,timeEnd]
 

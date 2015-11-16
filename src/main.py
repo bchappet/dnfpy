@@ -1,5 +1,6 @@
 import sys
-import dnfpy.controller.runnerView as runner
+import dnfpy.controller.runnerView as runnerView
+import dnfpy.controller.runner as runner
 from getClassUtils import getClassFromName
 import begin #very usefull arg parsing library
 
@@ -12,7 +13,7 @@ Scenario: str ScenarioTracking...
 
 """
 @begin.start
-def main(model = "ModelDNF",size="101",tr="0.5",stats="None",scenario="None",params="{}",pause="False"):
+def main(model = "ModelDNF1D",size="101",dim="2",tr="0.5",stats="None",scenario="ScenarioTracking",params="{}",pause="False",gui="True",timeEnd="40.0"):
     """
     model : name of the model
     size : resolution for the simulation
@@ -27,6 +28,15 @@ def main(model = "ModelDNF",size="101",tr="0.5",stats="None",scenario="None",par
     size = eval(size)
     timeRatio = eval(tr)
     pause = eval(pause)
+    dim = eval(dim)
+    gui = eval(gui)
+    timeEnd = eval(timeEnd)
+
+
+
+    params = eval(params)
+    kwparams = dict(size=size,dim=dim)
+    kwparams.update(params)
 
     modelClass = getClassFromName(model, "models")
     scenarioInstance = None
@@ -34,19 +44,18 @@ def main(model = "ModelDNF",size="101",tr="0.5",stats="None",scenario="None",par
     statsName = stats
     if statsName != "None":
         statsClass = getClassFromName(statsName,'stats')
-        statsInstance = statsClass()
+        statsInstance = statsClass(**kwparams)
     scenarioName = scenario
     if scenarioName != "None":
         scenarioClass = getClassFromName(scenarioName, 'scenarios')
-        scenarioInstance = scenarioClass()
+        scenarioInstance = scenarioClass(**kwparams)
 
-    params = eval(params)
-
-    kwparams = dict(size=size)
-    kwparams.update(params)
 
 
     #print(kwparams)
     model = modelClass(**kwparams)
 
-    runner.launch(model, scenarioInstance,statsInstance, timeRatio,pause=pause)
+    if gui:
+        print(runnerView.launch(model, scenarioInstance,statsInstance, timeRatio,pause=pause,timeEnd=timeEnd))
+    else:
+        print(runner.launch(model, scenarioInstance,statsInstance, timeEnd=timeEnd))

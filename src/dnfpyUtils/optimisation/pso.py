@@ -1,14 +1,17 @@
 import math
+import sys
 from PyQt4.QtCore import pyqtSlot
 import numpy as np
 import random
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui, QtCore
-from worker import Worker
+from dnfpyUtils.optimisation.worker import Worker
 import time
 from multiprocessing import Queue
-class PSO(QtCore.QThread):
-    triggerUpdate = QtCore.pyqtSignal()
+
+
+
+class PSO():
     """
     Particle swarm optimisation class
     Omega : inertia
@@ -25,13 +28,11 @@ class PSO(QtCore.QThread):
     #             phiP=-0.4040,phiG=2.03249,nbThread=8,argv=[""]): good
     #def __init__(self,view,swarmSize=100,nbEvaluationMax=1000,omega=0.9,
     #             phiP=1.0,phiG=1.0,nbThread=8,argv=[""]):
-    def __init__(self,view,swarmSize=100,nbEvaluationMax=1000,omega=0.721347,
-                 phiP=1.193147,phiG=1.193147,nbThread=8,argv=[""]):
-        super(PSO,self).__init__()
-        self.triggerUpdate.connect(view.updateData,type=QtCore.Qt.DirectConnection)
+    def __init__(self,swarmSize=100,nbEvaluationMax=1000,omega=0.721347,
+                 phiP=1.193147,phiG=1.193147,nbThread=8,verbose=False):
         #self.triggerUpdate.connect(view.updateData)
-        print(r"\omega,\phi_p,\phi_g")
-        print(omega,phiP,phiG)
+
+        self.verbose = verbose
 
         self.listParam = self.getListParam()
         self.constantParamsDict = self.getConstantParamsDict()
@@ -94,7 +95,6 @@ class PSO(QtCore.QThread):
         y = indiv['y']
         time.sleep(0.2)
 
-        #print("evaluate %s"%indiv)
         return x**2 + (1-y)**2 +(2-indiv["z"])**2 + \
                     (5-indiv["a"])**2 + (10 - indiv["b"])**2
         #rosenbrock function
@@ -119,14 +119,12 @@ class PSO(QtCore.QThread):
         return kwargs
 
     def requestWorker(self,i,waitingTask):
-       # print self.inProcessPart
         if i not in self.inProcessPart:
             while(not(self.workerResultsQueue.empty())):
                 tup = self.workerResultsQueue.get()
                 waitingTask(*tup)
 
             for i_worker in range(len(self.workerList)):
-                #print("i_worker %s"%i_worker)
                 worker = self.workerList[i_worker]
                 if not(worker.is_alive()):
                     newWorker =  self.initWorker(i_worker)
@@ -136,7 +134,6 @@ class PSO(QtCore.QThread):
 
            #we treat the queue instead of sleeping
             else:
-                #print("sleep")
                 time.sleep(0.1)
         else:
             return
@@ -165,7 +162,6 @@ class PSO(QtCore.QThread):
 
 
     def addFitness(self,i,newFitness):
-        print(i)
         self.inProcessPart.remove(i)
         self.fitness[i] = newFitness
 
@@ -175,29 +171,21 @@ class PSO(QtCore.QThread):
                 #update particle's best known fitness
                 self.fitness[i] = newFitness
                 #update particle's best known position
-                #print("i : %s x[i,:] : %s "%(i,x[i,:]))
-                #print("p before : \n%s"%p)
                 self.p[i,:] = self.x[i,:]
-                #print("p after : \n%s"%p)
-                #print("part best position : i: %s, position : %s"%(i,p[i,:]))
                 #update swarm's best-known position
                 if newFitness < self.bestFitness :
                     self.bestIndex = i
                     self.bestXList.append(self.p[self.bestIndex,:])
                     self.bestXTimeList.append(self.evaluationNb)
                     self.bestFitness = newFitness
-                    print("##bestFitness : %s, indiv: %s"%(self.bestFitness,self.indivToParams(self.x[self.bestIndex,:])))
-
-        if self.evaluationNb % self.swarmSize/10 == 0:
-            print("evaluationNb : %s"%self.evaluationNb)
-            self.savePart.append(np.copy(self.x))
-            self.timeStamps.append(self.evaluationNb)
-            self.triggerUpdate.emit()
+                    if self.verbose:
+                        print("##bestFitness : %s, indiv: %s"%(self.bestFitness,self.indivToParams(self.x[self.bestIndex,:])))
 
         self.inProcessPart.remove(i)
 
-        #print("evaluationNb : %s"%self.evaluationNb)
         self.evaluationNb += 1
+        if not(self.verbose):
+            print(self.evaluationNb,",",newFitness,",",self.indivToParams(self.x[i,:]),",",self.fitness[i],",",self.indivToParams(self.p[i,:]),",",self.bestFitness,",",self.indivToParams(self.p[self.bestFitness]))
 
 
 
@@ -229,7 +217,6 @@ class PSO(QtCore.QThread):
 
         #determine fitness and index of best particles
         (self.bestFitness, self.bestIndex) = self.getMinIndex(self.fitness)
-        print("!!bestFitness %s, bestIndiv %s"%(self.bestFitness,self.indivToParams(self.p[self.bestIndex,:])))
 
         #perform optimization iteration until acceptable fitness is achived
         #or the maximum of fitness evaluation has been performed
@@ -238,8 +225,14 @@ class PSO(QtCore.QThread):
         self.bestXTimeList.append(self.evaluationNb)
 
 
+        if self.verbose:
+                print("initBest",",",self.bestFitness,",",self.indivToParams(self.p[self.bestIndex,:]))
+
+
         while self.evaluationNb < self.nbEvaluationMax and self.bestFitness > self.acceptableFitness:
             #pick index from a random particle in the swarm
+            if self.verbose and self.evaluationNb % 100 == 0:
+                    print("Eval : ",self.evaluationNb)
             i = -1
             while(i not in self.inProcessPart and i== -1):
                 i = random.randint(0,self.swarmSize-1)
@@ -268,8 +261,7 @@ class PSO(QtCore.QThread):
         #print("best index : %s, bestX : %s"%(bestIndex,self.bestX))
         #self.drawFig()
         #plt.show()
-        print(self.bestFitness,self.indivToParams(self.bestX))
-        self.triggerUpdate.emit()
+        print("BEST",",",self.bestFitness,",",self.indivToParams(self.bestX))
 
     def applyBounds(self,x,low,up):
         return np.minimum(up,np.maximum(low,x))
@@ -356,14 +348,39 @@ class QtApp(pg.GraphicsWindow):
                 jj += 1
             self.curves[i][-1].setData(self.XBest,self.arrBest[:,i])
 
+class PSOView(QtCore.QThread,PSO):
+    triggerUpdate = QtCore.pyqtSignal()
+    def __init__(self,view,swarmSize=100,nbEvaluationMax=1000,omega=0.721347,
+                 phiP=1.193147,phiG=1.193147,nbThread=8,argv=[""]):
+        super(PSO,self).__init__()
+        PSO.__init__(self,swarmSize=100,nbEvaluationMax=1000,omega=0.721347,
+                 phiP=1.193147,phiG=1.193147,nbThread=8,argv=[""])
+
+        self.triggerUpdate.connect(view.updateData,type=QtCore.Qt.DirectConnection)
+
+    def run(self):
+        PSO.run(self)
+        self.triggerUpdate.emit()
+        sys.exit()
+
+
+    def handleFitness(self,i,newFitness):
+        PSO.handleFitness(self,i,newFitness)
+        print("evaluationNb : %s"%self.evaluationNb)
+        self.savePart.append(np.copy(self.x))
+        self.timeStamps.append(self.evaluationNb)
+        self.triggerUpdate.emit()
+
+
 
 
 
 if __name__ == "__main__":
     import sys
     app = QtGui.QApplication([""])
-    view = QtApp()
-    model = PSO(view,swarmSize=100,nbEvaluationMax=10000000000,nbThread=8)
-    view.setModel(model)
-    model.start()
-    sys.exit(app.exec_())
+    #view = QtApp()
+    model = PSO(swarmSize=100,nbEvaluationMax=10000,nbThread=8,verbose=True)
+    model.run()
+    #view.setModel(model)
+    #model.start()
+    #sys.exit(app.exec_())

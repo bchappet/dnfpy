@@ -9,7 +9,7 @@ import numpy as np
 class ModelDNF1D(Model,Renderable):
     def initMaps(self,size=49,model="cnft",activation="step",nbStep=0,dim=2,
                  iExc=1.25,iInh=0.7,wExc=0.1,wInh=10.,alpha=10.,th=0.75,h=0,noiseI=0.01,
-                 iStim1=0.1,
+                 iStim1=0.1,beta=8,tau=0.64,
                  ):
         """We initiate the map and link them"""
        # print("iExc : %s, iInh: %s, wExc %s, wInh %s"%(iExc,iInh,wExc,wInh))
@@ -20,7 +20,7 @@ class ModelDNF1D(Model,Renderable):
         #self.aff = ConstantMapND("Inputs",size,value=input)
                
         self.field = MapDNFND("Potential",size,dim=dim,model=model,activation=activation,nbStep=nbStep,
-               iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,alpha=alpha,th=th,h=h)
+               iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,alpha=alpha,th=th,h=h,beta=beta,tau=tau)
         self.field.addChildren(aff=self.aff)
         #return the roots
         roots =  [self.field]

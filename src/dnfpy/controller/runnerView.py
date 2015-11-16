@@ -150,6 +150,14 @@ class RunnerView(QtCore.QThread, Runner):
                 time.sleep(0.1)
             self.step()
             self.__slowDown()
+        self.play =False
+        print(self.finalize())
+        while self.simuTime < 100000000000000:
+            while not(self.play):
+                time.sleep(0.1)
+            self.step()
+            self.__slowDown()
+        
 
     def __slowDown(self):
         """
@@ -167,19 +175,20 @@ class RunnerView(QtCore.QThread, Runner):
         self.lastUpdateTime = now
 
 
-def launch(model, scenario,stats, timeRatio, record=False,pause=False):
+def launch(model, scenario,stats, timeRatio, record=False,pause=False,timeEnd=0):
     defaultQSS = "stylesheet/default.qss"
     app = QtGui.QApplication([""])
     app.setStyleSheet(open(defaultQSS, 'r').read())
     view = DisplayModelQt()
     model.resetRunnable()
-    runner = RunnerView(view, timeRatio=timeRatio, record=record,pause=pause)
+    runner = RunnerView(view, timeRatio=timeRatio, record=record,pause=pause,timeEnd=timeEnd)
     view.setRunner(runner)
     view.addRenderable(model)
     runner.addRunnable(model)
     if scenario:
         scenario.init(runner)
         runner.addRunnable(scenario)
+        view.addRenderable(scenario)
     if stats:
         stats.init(runner)
         runner.addRunnable(stats)

@@ -253,13 +253,28 @@ class MapND(Computable):
         size = self._init_kwargs['size']
         dim = self._init_kwargs['dim']
         dtype = self._init_kwargs['dtype']
-        if dim == 0 and size == 0:
-            self._data = 0.#scalar
-        elif size == 0 and dim != 0:
-            self._data = np.zeros((dim),dtype=dtype) #tuple
+
+        #Give the possibility to set an initial value TODO update constantMap with that
+        try:
+            dataInit = self._init_kwargs['init']
+        except:
+            dataInit = None
+
+        if not(dataInit):
+            if dim == 0 and size == 0:
+                self._data = 0.#scalar
+            elif size == 0 and dim != 0:
+                self._data = np.zeros((dim),dtype=dtype) #tuple
+            else:
+                self._data = np.zeros((size,)*dim,dtype=dtype)
         else:
-            self._data = np.zeros((size,)*dim,dtype=dtype)
-            #print self, self._data.dtype
+            self._data = dataInit
+
+        if size==0 and dim != 0 :
+            assert(self._data.shape[0] == dim)
+        elif dim != 0:
+            assert(len(self._data.shape) == dim and self._data.shape[0] == size)
+
 
     def resetParams(self):
         if not(self.__lockReset):

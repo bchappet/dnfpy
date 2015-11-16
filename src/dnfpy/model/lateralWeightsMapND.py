@@ -44,8 +44,8 @@ class LateralWeightsMapND(MapND):
 
     @staticmethod
     def getScaledParams(size,globalSize,mapSize,dim,alpha,iExc,iInh,wExc,wInh):
-        wExc_ = wExc*globalSize
-        wInh_ = wInh*globalSize
+        wExc_ = (wExc*globalSize)
+        wInh_ = (wInh*globalSize)
         size = mapSize *  globalSize
         size = int(((math.floor(size/2.)) * 2) + 1)#Ensure odd
         iExc_ = iExc/(globalSize**dim) * (40**dim)/alpha

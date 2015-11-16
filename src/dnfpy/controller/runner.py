@@ -57,6 +57,9 @@ class Runner(object):
 
 
     def onClose(self):
+        return self.finalize()
+
+    def finalize(self):
         ret = []
         for r in self.runnables:
             ret.extend( r.finalize())

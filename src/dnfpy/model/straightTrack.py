@@ -4,6 +4,12 @@ import dnfpy.core.utilsND as utils
 from dnfpy.core.mapND import MapND
 
 
+class StraightTraj(MapND):
+    def _compute(self,speed,dt,wrap,wrapSize):
+        self._data = (self._data + dt*speed)
+        if wrap:
+            self._data = self._data % wrapSize
+
 
 #TODO super class for track
 class StraightTrack(MapND):
@@ -36,8 +42,9 @@ class StraightTrack(MapND):
         
         self.centerTraj = []
         for d in range(dim):
-            self.centerTraj.append(FuncMapND(utils.affTraj,name+"_c"+str(d),1,dim=0,dt=dt,speed=speed_[d],origin=start[d]*size,
-                        wrap=wrap,wrapSize=size))
+            origin = start[d]*size
+            self.centerTraj.append(StraightTraj(name+"_c"+str(d),size=0,dim=0,dt=dt,speed=speed_[d],
+                        wrap=wrap,wrapSize=size,init=origin))
 
         for trajI,i in zip(self.centerTraj,range(len(self.centerTraj))):
                 self.addChildren(**{'center'+str(i):trajI})
@@ -65,4 +72,6 @@ class StraightTrack(MapND):
 
     def getCenter(self):
         return np.array([traj.getData() for traj in self.centerTraj])
+
+   
 

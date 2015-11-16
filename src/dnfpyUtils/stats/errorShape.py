@@ -18,8 +18,21 @@ class ErrorShape(Trajectory):
         error =  np.nan
 
     """
-
     def _compute(self,shapeMap,activationMap):
+        """
+        15/11/15
+        RMSE : np.sqrt(np.sum((y^ - y)^2/n)
+        """
+        n = shapeMap.size
+        sum = np.sum((shapeMap - activationMap)**2)
+        error = sum/n
+        self._data = error
+        self.trace.append(error)
+
+
+
+
+    def _compute2(self,shapeMap,activationMap,dim):
         if np.all(shapeMap == 0):
             error = np.nan
         elif np.all(activationMap == 0):
@@ -29,7 +42,7 @@ class ErrorShape(Trajectory):
             #error = np.sum(shapeMap == activationMap)/np.sum(shapeMap)
             outsideAct = np.sum((shapeMap - activationMap) == -1)
             badAct = (np.sum(shapeMap == 1) - np.sum(activationMap[shapeMap == 1]))
-            error = (badAct+outsideAct) / np.sum(shapeMap) * 2
+            error = (badAct+outsideAct) / np.sum(shapeMap) * dim
 
         self._data = error
         self.trace.append(error)

@@ -30,11 +30,12 @@ statsClass = getClassFromName(statsName,"stats")
 if args_scenario:
     scenario = scenarioClass(**args_scenario)
 else:
-    scenario = scenarioClass()
+    scenario = scenarioClass(**indiv)
 
 
 model = modelClass(**indiv)
-stats = statsClass()
+stats = statsClass(**indiv)
+
 if withView:
     #view
     timeRatio = time
