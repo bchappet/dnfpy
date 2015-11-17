@@ -12,6 +12,9 @@ src/dnfpyUtils/robots/VRep/vrep.py
 *.dropbox.attr
 
 
+src/expPSO
+
+
 
 *.txt
 
