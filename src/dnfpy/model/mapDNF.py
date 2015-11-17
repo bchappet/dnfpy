@@ -38,6 +38,8 @@ class MapDNF(FieldMap):
         self.act = ActivationMap("Activation",size,dt=dt,type=activation,th=th)
         self.lat =Convolution("Lateral",size,dt=dt,wrap=wrap)
         
+
+        
         if lateral=='dog':
             self.kernel = LateralWeightsMap(name+"Kernel",mapSize=mapSize,
                                         globalSize=size,wrap=wrap,

@@ -79,6 +79,15 @@ def gaussNd(size,wrap,intensity,width,center):
             sumDistSquared += dist**2
     return intensity * np.exp( -( sumDistSquared) / (width**2))
 
+def gaussFix(size,wrap,intensity,width,center):
+    dim = len(center) #nb Dim
+    distI = generateWrappedDistance(size,center,wrap);
+    sumDistSquared = np.zeros((size,)*dim)
+    for dist in distI:
+            sumDistSquared += dist**2
+    return intensity * np.exp(-sumDistSquared/(2.0 * width**2))
+
+
 def gaussian(x,intensity,width):
     """Gaussian kernel V2"""
     return intensity/(width*np.sqrt(np.pi))*np.exp(-x**2/(2*width**2))
@@ -100,6 +109,22 @@ def expNd(size,wrap,intensity,proba,center):
     for dist in distI:
             sumDistSquared += dist
     return intensity * (proba ** (sumDistSquared ) )
+
+
+def expFix(size,wrap,intensity,proba,center):
+    """Make an Exponential kernel """
+    w = proba
+    k = intensity
+    dim = len(center) #nb Dim
+    distI = generateWrappedDistance(size,center,wrap);
+    sumDistSquared = np.zeros((size,)*dim)
+    for dist in distI:
+            sumDistSquared += dist
+
+    return k * np.exp(-4.0 * np.fabs(sumDistSquared)/(w**2))
+
+
+
 
 def linNd(size,wrap,alpha,beta,center):
     """Make an linear kernel """

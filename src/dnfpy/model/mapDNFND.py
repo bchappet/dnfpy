@@ -2,29 +2,56 @@ from dnfpy.model.activationMapND import ActivationMapND
 import numpy as np
 from dnfpy.model.fieldMapND import FieldMapND
 from dnfpy.model.lateralWeightsMapND import LateralWeightsMapND
+from dnfpy.model.lateralWeightsMapExpND import LateralWeightsMapExpND
+from dnfpy.model.lateralWeightsMapLinND import LateralWeightsMapLinND
 from dnfpy.model.convolutionND import ConvolutionND
 from dnfpy.core.constantMapND import ConstantMapND
 import matplotlib.pyplot as plt
 
 class MapDNFND(FieldMapND):
+    """
+    lateral: 'dog','doe','dol' difference of gaussian, difference of exponential or diferrence of linear function
+    fashion : 'chappet,'fix' fix fashion is designed to have similar parameters for the kernels
+    """
     def __init__(self,name,size,dim=1,dt=0.1,wrap=True,
                  tau=0.64,h=0,
                  model='cnft',th=0.75,delta=1.,activation='step',
                  iExc=1.25,iInh=0.7,wExc=0.1,wInh=1,alpha=10,
-                 mapSize=1.,nbStep=0,noiseI=0.0,
+                 mapSize=1.,nbStep=0,noiseI=0.0,lateral='dog',
+                 fashion='chappet',
                  **kwargs):
         super(MapDNFND,self).__init__(name,size,dim=dim,dt=dt,wrap=wrap,
                     tau=tau,h=h,delta=delta,
                     model=model,th=th,activation=activation,
-                    noiseI=noiseI,
+                    noiseI=noiseI,lateral=lateral,
                     **kwargs)
 
         self.act = ActivationMapND("Activation",size,dim=dim,dt=dt,type=activation,th=th)
         self.lat =ConvolutionND("Lateral",size,dim=dim,dt=dt,wrap=wrap)
-        self.kernel = LateralWeightsMapND(name+"Kernel",mapSize=mapSize,
-                                        globalSize=size,dim=dim,wrap=wrap,
+        #self.kernel = LateralWeightsMapND(name+"Kernel",mapSize=mapSize,
+        #                               globalSize=size,dim=dim,wrap=wrap,
+        #                              iExc=iExc,iInh=iInh,wExc=wExc,
+        #                             wInh=wInh,alpha=alpha,nbStep=nbStep)
+
+
+        if lateral=='dog':
+            self.kernel = LateralWeightsMapND(name+"Kernel",mapSize=mapSize,
+                                        globalSize=size,wrap=wrap,
                                         iExc=iExc,iInh=iInh,wExc=wExc,
-                                        wInh=wInh,alpha=alpha,nbStep=nbStep)
+                                        wInh=wInh,alpha=alpha,nbStep=nbStep,fashion=fashion)
+        elif lateral=='doe':
+            self.kernel = LateralWeightsMapExpND(name+"Kernel",mapSize=mapSize,
+                                        globalSize=size,wrap=wrap,
+                                        iExc=iExc,iInh=iInh,pExc=wExc,
+                                        pInh=wInh,alpha=alpha,nbStep=nbStep,fashion=fashion)
+        elif lateral=='dol':
+            self.kernel = LateralWeightsMapLinND(name+"Kernel",mapSize=mapSize,
+                                        globalSize=size,wrap=wrap,
+                                        betaExc=iExc,betaInh=iInh,alphaExc=wExc,
+                                        alphaInh=wInh,alpha=alpha,nbStep=nbStep,fashion=fashion)
+        else:
+            raise("Parameter lateral should be 'dog', 'doe' or 'dol'. %s invalid"%(lateral))
+ 
         self.act.addChildren(field=self)
         self.addChildren(lat=self.lat)
         self.lat.addChildren(source=self.act,kernel=self.kernel)

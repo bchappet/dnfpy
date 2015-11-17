@@ -4,7 +4,7 @@ set dir 'expPSO'
 
 set kernel 'DOG'
 set scenario 'WorkingMemory'
-set repet 50
+set repet 100
 set name $kernel\_$scenario\_$repet
 
 mkdir $dir/$name

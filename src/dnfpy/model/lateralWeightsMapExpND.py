@@ -1,28 +1,32 @@
-import dnfpy.core.utils as utils
+import dnfpy.core.utilsND as utils
 import math
-from dnfpy.core.funcMap2D import FuncMap2D
-from dnfpy.core.map2D import Map2D
+from dnfpy.core.funcMapND import FuncMapND
+from dnfpy.core.mapND import MapND
 
-class LateralWeightsMapExpND(Map2D):
+class LateralWeightsMapExpND(MapND):
 
-    def __init__(self,name,globalSize,mapSize=1,dt=1e10,wrap=True,
+    def __init__(self,name,globalSize,dim=1,mapSize=1,dt=1e10,wrap=True,
                  iExc=1.25,iInh=0.7,pExc=0.1,pInh=10,alpha=10.0,
-                pExc_=1,pInh_=1,iExc_=1,iInh_=1,nbStep=0,
-                 **kwargs):
-        super(LateralWeightsMapExp,self).__init__(
+                pExc_=1,pInh_=1,iExc_=1,iInh_=1,nbStep=0,fashion='chappet',**kwargs):
+        super().__init__(
             name=name,size=globalSize,globalSize=globalSize,
             mapSize = mapSize,nbStep=nbStep,
             dt=dt,wrap=wrap,
             iExc_=iExc_,iInh_=iInh_,pExc_=pExc_,pInh_=pInh_,
             pExc=pExc, pInh=pInh,iExc=iExc,iInh=iInh,alpha=alpha,
-            **kwargs)
-        size = self.getArg('size')
-        center = (size - 1)/2
+            fashion=fashion,**kwargs)
 
-        self.kernelExc = FuncMap2D(utils.exp2d,name+"_exc",size,dt=dt,centerX=center,
-                              centerY=center,wrap=wrap,intensity=iExc,proba=pExc)
-        self.kernelInh = FuncMap2D(utils.exp2d,name+"_inh",size,dt=dt,centerX=center,
-                              centerY=center,wrap=wrap,intensity=iInh,proba=pInh)
+        size = self.getArg('size')
+        dim = self.getArg('dim')
+        center = ((size//2),)*dim
+
+        if fashion == 'chappet':
+            kernFunc = utils.expNd
+        elif fashion == 'fix':
+            kernFunc = utils.expFix
+
+        self.kernelExc = FuncMapND(kernFunc,name+"_exc",size,dim,dt=dt,center=center,wrap=wrap,intensity=iExc,proba=pExc)
+        self.kernelInh = FuncMapND(kernFunc,name+"_inh",size,dim,dt=dt,center=center,wrap=wrap,intensity=iInh,proba=pInh)
         self.addChildren(exc=self.kernelExc,inh=self.kernelInh)
 
     def _compute(self,exc,inh,nbStep):
@@ -34,18 +38,18 @@ class LateralWeightsMapExpND(Map2D):
         self._data = ret
 
     @staticmethod
-    def getScaledParams(size,globalSize,mapSize,alpha,iExc,iInh,pExc,pInh):
+    def getScaledParams(size,globalSize,mapSize,alpha,iExc,iInh,pExc,pInh,dim):
         pExc_ = pExc**(1./globalSize)
         pInh_ = pInh**(1./globalSize)
         size = mapSize *  globalSize
         size = int(((math.floor(size/2.)) * 2) + 1)#Ensure odd
-        iExc_ = iExc/(globalSize) * (40**2)/alpha
-        iInh_ = iInh/(globalSize) * (40**2)/alpha
+        iExc_ = iExc/(globalSize**dim) * (40**dim)/alpha
+        iInh_ = iInh/(globalSize**dim) * (40**dim)/alpha
 
         return dict(size=size,pExc_=pExc_,pInh_=pInh_,iExc_=iExc_,iInh_=iInh_)
 
-    def _onParamsUpdate(self,size,globalSize,mapSize,alpha,iExc,iInh,pExc,pInh):
-        return  getScaledParams(size,globalSize,mapSize,alpha,iExc,iInh,pExc,pInh)
+    def _onParamsUpdate(self,size,globalSize,mapSize,alpha,iExc,iInh,pExc,pInh,dim):
+        return  LateralWeightsMapExpND.getScaledParams(size,globalSize,mapSize,alpha,iExc,iInh,pExc,pInh,dim)
         
 
     def _childrenParamsUpdate(self,iExc_,iInh_,pExc_,pInh_):

@@ -18,7 +18,7 @@ import begin
 
 
 @begin.start
-def main(pso="PsoDNFTemplate",meta="{'omega':0.9,'phiP':1.2,'phiG':1.2}",model="ModelDNF1D",scenario="Competition",params="{'size':49,'model':'cnft','activation':'step','dim':1}" ,nbEval="10000",swarmSize="100",nbThread="8"):
+def main(pso="PsoDNFTemplate",meta="{'omega':0.9,'phiP':1.2,'phiG':1.2}",model="ModelDNF1D",scenario="Competition",params="{'size':49,'model':'cnft','activation':'step','dim':1,'kernel':}" ,nbEval="10000",swarmSize="100",nbThread="8"):
 
 
     psoClass = getClassFromName(pso, "optimisation")

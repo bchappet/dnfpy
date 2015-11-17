@@ -10,10 +10,10 @@ Parameter:
 ModelName: str: ModelNSpike...
 Scenario: str ScenarioTracking...
 
-
+python3 main.py --dim 1 --lat dog --fashion fix --params "{'iExc':1.0,'wExc':2.5,'iInh':0.5,'wInh':4.0}"
 """
 @begin.start
-def main(model = "ModelDNF1D",size="101",dim="2",tr="0.5",stats="None",scenario="ScenarioTracking",params="{}",pause="False",gui="True",timeEnd="40.0"):
+def main(model = "ModelDNF1D",size="101",dim="2",tr="0.5",stats="None",scenario="ScenarioTracking",params="{}",pause="False",gui="True",timeEnd="40.0",lat="dog",fashion='chappet'):
     """
     model : name of the model
     size : resolution for the simulation
@@ -22,6 +22,10 @@ def main(model = "ModelDNF1D",size="101",dim="2",tr="0.5",stats="None",scenario=
     scenario  : [None|ScenarioSwitch]
     params : dictinonary : "{'k':p}"
     pause : start in pause?
+    gui : bool
+    timeEnd, float in second
+    lat : lateralWeights function \in {'dog','doe','dol'}
+    fashion : \in {chappet,fix}
 
     """
     #modelName = sys.argv[1]
@@ -35,7 +39,7 @@ def main(model = "ModelDNF1D",size="101",dim="2",tr="0.5",stats="None",scenario=
 
 
     params = eval(params)
-    kwparams = dict(size=size,dim=dim)
+    kwparams = dict(size=size,dim=dim,lateral=lat,fashion=fashion)
     kwparams.update(params)
 
     modelClass = getClassFromName(model, "models")

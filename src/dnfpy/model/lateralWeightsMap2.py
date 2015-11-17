@@ -5,13 +5,8 @@ import numpy as np
 from dnfpy.core.funcMapND import FuncMapND
 
 
-class LateralWeightsMapND(MapND):
+class LateralWeightsMap2(MapND):
     """
-    Map describing the lateral weights of the dynamic neural fields
-    The lateral weights are usually a sum of excitatory and inhibitory weights
-    In this case the lateral weights is a difference of Gaussiana
-
-    fashion : string \in {chappet,fix} change the way of computing lateral kernel (refer to dnfpy.core.utils to see the functions)
 
     """
     def __init__(self,name,globalSize,dim=1,mapSize=1,dt=1e10,wrap=True,
