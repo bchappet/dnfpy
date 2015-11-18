@@ -9,6 +9,23 @@ from dnfpyUtils.optimisation.worker import Worker
 import time
 from multiprocessing import Queue
 
+def rosen(indiv,*args):
+        x = indiv['x']
+        y = indiv['y']
+        #time.sleep(0.0)
+
+        return x**2 + (1-y)**2 +(2-indiv["z"])**2 + \
+                    (5-indiv["a"])**2 + (10 - indiv["b"])**2
+        #rosenbrock function
+        #return (1 - x)**2 + 100*(y - x**2)**2
+
+def testConstr(indiv,cst):
+#    print(cst)
+#    print(indiv['x'] ,indiv['y'])
+    ret =  np.abs(indiv['x'] - indiv['y']) < cst
+    return 0 if ret  else 1
+
+
 
 
 class PSO():
@@ -29,7 +46,7 @@ class PSO():
     #def __init__(self,view,swarmSize=100,nbEvaluationMax=1000,omega=0.9,
     #             phiP=1.0,phiG=1.0,nbThread=8,argv=[""]):
     def __init__(self,swarmSize=100,nbEvaluationMax=1000,omega=0.721347,
-                 phiP=1.193147,phiG=1.193147,nbThread=8,verbose=False):
+                 phiP=1.193147,phiG=1.193147,nbThread=8,verbose=0,objective=0.0):
         #self.triggerUpdate.connect(view.updateData)
 
         self.verbose = verbose
@@ -38,10 +55,13 @@ class PSO():
         self.constantParamsDict = self.getConstantParamsDict()
         self.evaluationParamsDict = self.getEvaluationParamsDict()
         self.bounds = self.getBounds()
-        self.startingBounds = self.getStartBounds()
+
+        self.func = self.getFunc()
+        self.constraintsFunc = self.getConsFunc()
+        self.args = self.getArgs()
 
         #Bound execution nbIteration
-        self.acceptableFitness = self.getObjectiveFitness()
+        self.acceptableFitness = objective
         self.nbEvaluationMax = nbEvaluationMax
 
         self.swarmSize = swarmSize #swarmSize
@@ -51,10 +71,6 @@ class PSO():
         self.nbDim = len(self.listParam)
 
         #save for plot
-        self.savePart = []
-        self.timeStamps = []
-        self.bestXList = []
-        self.bestXTimeList = []
 
         self.workerList = []
         for i in range(nbThread):
@@ -63,13 +79,41 @@ class PSO():
         self.workerResultsQueue = Queue() #will store tuple: (particleId,fitness)
         self.inProcessPart = []
 
+
     def initWorker(self,i):
-        return Worker(i,self.evaluate,self.onWorkerResult)
+        return Worker(i,self.evaluate,self.constraintsFunc,self.onWorkerResult,self.args)
+
+
+    def getFunc(self):
+        return rosen
+
+    def setFunc(self,func):
+        self.func = func
+
+    def setArgs(self,args):
+        self.args = args
+        for worker in self.workerList:
+            worker.args = args
+
+    def getArgs(self):
+        return (1,)
 
 
 
-    def getObjectiveFitness(self):
-        return 10e-10
+    def getConsFunc(self):
+        """
+        By default constraints is always true
+        """
+        #return lambda x:True
+        return testConstr
+
+    def setConsFunc(self,func):
+        self.constraintsFunc = func
+        for worker in self.workerList:
+            worker.constrFunc = func
+
+
+
 
 
     def getListParam(self):
@@ -90,15 +134,6 @@ class PSO():
         upperBounds = np.array([10,10,10,10,10])
         return (lowerBounds,upperBounds)
 
-    def evaluate(self,indiv):
-        x = indiv['x']
-        y = indiv['y']
-        time.sleep(0.2)
-
-        return x**2 + (1-y)**2 +(2-indiv["z"])**2 + \
-                    (5-indiv["a"])**2 + (10 - indiv["b"])**2
-        #rosenbrock function
-        #return (1 - x)**2 + 100*(y - x**2)**2
 
     def getConstantParamsDict(self):
         return {}
@@ -134,7 +169,7 @@ class PSO():
 
            #we treat the queue instead of sleeping
             else:
-                time.sleep(0.1)
+                time.sleep(0.01)
         else:
             return
 
@@ -159,33 +194,46 @@ class PSO():
         if worker:
             worker.evaluate(i,indiv)
 
+    def evaluate(self,indiv,*args):
+        return self.func(indiv,*args)
+
 
 
     def addFitness(self,i,newFitness):
         self.inProcessPart.remove(i)
-        self.fitness[i] = newFitness
+        if not(np.isnan(newFitness)):
+            self.fitness[i] = newFitness
+            self.p[i,:] = self.x[i,:]
+        else:
+            pass
 
     def handleFitness(self,i,newFitness):
         #update best known position
-        if newFitness < self.fitness[i]:
+        if not(np.isnan(newFitness)) and newFitness < self.fitness[i]:
                 #update particle's best known fitness
                 self.fitness[i] = newFitness
                 #update particle's best known position
                 self.p[i,:] = self.x[i,:]
                 #update swarm's best-known position
-                if newFitness < self.bestFitness :
+                if newFitness < self.bestFitness or np.isnan(self.bestFitness) :
                     self.bestIndex = i
                     self.bestXList.append(self.p[self.bestIndex,:])
                     self.bestXTimeList.append(self.evaluationNb)
                     self.bestFitness = newFitness
-                    if self.verbose:
-                        print("##bestFitness : %s, indiv: %s"%(self.bestFitness,self.indivToParams(self.x[self.bestIndex,:])))
+                    if self.verbose == 1:
+                        print("##bestFitness : %s, indiv: %s, i : %s"%(self.bestFitness,self.indivToParams(self.x[self.bestIndex,:]),i))
 
         self.inProcessPart.remove(i)
 
         self.evaluationNb += 1
-        if not(self.verbose):
-            print(self.evaluationNb,",",newFitness,",",self.indivToParams(self.x[i,:]),",",self.fitness[i],",",self.indivToParams(self.p[i,:]),",",self.bestFitness,",",self.indivToParams(self.p[self.bestFitness]))
+        if self.verbose == 2:
+            indivX  = np.nan if np.any(np.isnan(self.x[i,:])) else self.indivToParams(self.x[i,:])
+            indivXBest = np.nan if np.any(np.isnan(self.p[i,:])) else self.indivToParams(self.p[i,:])
+            indivBest = np.nan if np.isnan(self.bestIndex) else self.indivToParams(self.p[self.bestIndex,:])
+ 
+            print(self.evaluationNb,",",newFitness,",",indivX,",",self.fitness[i],",",indivXBest,",",self.bestFitness,",",indivBest)
+        elif self.verbose == 1 and self.evaluationNb % 100 == 0:
+            print("Eval : ",self.evaluationNb)
 
 
 
@@ -193,46 +241,51 @@ class PSO():
 
     def run(self):
         (lowerBounds,upperBounds)= self.bounds
-        (startLow,startUp) = self.startingBounds
+        (startLow,startUp) = self.bounds
         #initiaize the velocity boundaries
         rangeVelocity =  upperBounds - lowerBounds
         lowerVelocity = - 0.5 * rangeVelocity
         upperVelocity = + 0.5 * rangeVelocity
+        self.bestFitness,self.bestIndex = (np.nan,np.nan)
 
         #Initialize Swarm
         self.x = self.initPopulation(self.swarmSize,self.nbDim,startLow,startUp) #particles positions
         #print("x : %s"%x)
-        self.p = np.copy(self.x) #best known positions
+        self.p = np.ones_like(self.x)*np.nan#
         v = self.initPopulation(self.swarmSize,self.nbDim,lowerVelocity,upperVelocity) #Velocities
         #print("v : %s"%v)
 
         #compute fitness of initial particle position
-        self.fitness = np.zeros((self.swarmSize))
+        self.fitness = np.ones((self.swarmSize))*np.nan
         for i in range(self.swarmSize):
             worker = self.requestWorker(i,waitingTask=self.addFitness)
             if worker:
-                worker.evaluate(i,self.indivToParams(self.x[i,:]))
+               worker.evaluate(i,self.indivToParams(self.x[i,:]))
 
         self.finishWork(self.addFitness)
 
         #determine fitness and index of best particles
-        (self.bestFitness, self.bestIndex) = self.getMinIndex(self.fitness)
+        if np.all(np.isnan(self.fitness)):
+            self.bestFitness,self.bestIndex = (np.nan,np.nan)
+        else:
+            (self.bestFitness, self.bestIndex) = self.getMinIndex(self.fitness)
 
         #perform optimization iteration until acceptable fitness is achived
         #or the maximum of fitness evaluation has been performed
-        self.evaluationNb = self.swarmSize#the iterations above is counted as iteartion
-        self.bestXList.append(self.p[self.bestIndex,:])
-        self.bestXTimeList.append(self.evaluationNb)
+        self.evaluationNb = self.swarmSize#the iterations above is counted as iteration
+        #self.bestXList.append(self.p[self.bestIndex,:])
+        #self.bestXTimeList.append(self.evaluationNb)
 
 
-        if self.verbose:
+        if self.verbose == 1:
+            if np.isnan(self.bestIndex):
+                print("NO Part was outside counstraints")
+            else:
                 print("initBest",",",self.bestFitness,",",self.indivToParams(self.p[self.bestIndex,:]))
 
 
-        while self.evaluationNb < self.nbEvaluationMax and self.bestFitness > self.acceptableFitness:
+        while self.evaluationNb < self.nbEvaluationMax and (np.isnan(self.bestFitness) or  self.bestFitness > self.acceptableFitness):
             #pick index from a random particle in the swarm
-            if self.verbose and self.evaluationNb % 100 == 0:
-                    print("Eval : ",self.evaluationNb)
             i = -1
             while(i not in self.inProcessPart and i== -1):
                 i = random.randint(0,self.swarmSize-1)
@@ -240,10 +293,14 @@ class PSO():
             rP = random.random()
             rG = random.random()
 
+            cst = 1.0
+            distFromBestP = (random.random() - 0.5)*cst if np.any(np.isnan(self.p[i,:])) else (self.p[i,:] - self.x[i,:] ) 
+            distFromBestG = (random.random() - 0.5)*cst if np.isnan(self.bestFitness) else (self.p[self.bestIndex,:] - self.x[i,:] ) 
+        
             #update velocity for i'th particle
             v[i,:] = self.omega * v[i,:] + \
-                rP * self.phiP * (self.p[i,:] - self.x[i,:] ) + \
-                rG * self.phiG * (self.p[self.bestIndex,:] - self.x[i,:])
+                rP * self.phiP * distFromBestP + \
+                rG * self.phiG * distFromBestG \
 
             #bound velocity
             v[i,:] = self.applyBounds(v[i,:],lowerVelocity,upperVelocity)
@@ -253,15 +310,20 @@ class PSO():
             self.x[i,:] = self.applyBounds(self.x[i,:],lowerBounds,upperBounds)
             #compute fitness
 
-            self.runEvaluation(i,self.indivToParams(self.x[i,:]))
+            params = self.indivToParams(self.x[i,:])
+            self.runEvaluation(i,params)
             #self.handleFitness(i,self.evaluate(self.indivToDict(self.x[i,:])))
 
         #return best solution
-        self.bestX = self.p[self.bestIndex,:]
         #print("best index : %s, bestX : %s"%(bestIndex,self.bestX))
         #self.drawFig()
         #plt.show()
-        print("BEST",",",self.bestFitness,",",self.indivToParams(self.bestX))
+        #print("BEST",",",self.bestFitness,",",self.indivToParams(self.bestX))
+        if np.isnan(self.bestFitness):
+            return np.nan,np.nan
+        else:
+            self.bestX = self.p[self.bestIndex,:]
+            return self.bestFitness,self.indivToParams(self.bestX)
 
     def applyBounds(self,x,low,up):
         return np.minimum(up,np.maximum(low,x))
@@ -269,7 +331,7 @@ class PSO():
 
     def getMinIndex(self,array):
         """return (min,minIndex)"""
-        return (np.min(array),np.argmin(array))
+        return (np.nanmin(array),np.nanargmin(array))
 
     def initPopulation(self,nb,dim,lower,upper):
         """Init random pop"""
@@ -377,10 +439,10 @@ class PSOView(QtCore.QThread,PSO):
 
 if __name__ == "__main__":
     import sys
-    app = QtGui.QApplication([""])
+    #app = QtGui.QApplication([""])
     #view = QtApp()
-    model = PSO(swarmSize=100,nbEvaluationMax=10000,nbThread=8,verbose=True)
-    model.run()
+    model = PSO(swarmSize=100,nbEvaluationMax=1000,nbThread=1,verbose=1)
+    print(model.run())
     #view.setModel(model)
     #model.start()
     #sys.exit(app.exec_())
