@@ -5,7 +5,7 @@ import numpy as np
 from dnfpy.core.funcMapND import FuncMapND
 
 
-class LateralWeightsMap2(MapND):
+class LateralWeightsMapSpace(MapSpace):
     """
 
     """

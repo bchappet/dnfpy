@@ -18,7 +18,7 @@ import begin
 
 
 @begin.start
-def main(pso="PsoDNFTemplate",meta="{'omega':0.9,'phiP':1.2,'phiG':1.2}",model="ModelDNF1D",scenario="Competition",params="{'size':49,'model':'cnft','activation':'step','dim':1,'kernel':}" ,nbEval="10000",swarmSize="100",nbThread="8"):
+def main(pso="PsoDNFTemplate",meta="{'omega':0.9,'phiP':1.2,'phiG':1.2}",model="ModelDNFSpace",scenario="Competition",params="{'size':49,'model':'cnft','activation':'step','dim':1}" ,nbEval="10000",swarmSize="100",nbThread="8",verbose="False",lateral="dog",objective='0'):
 
 
     psoClass = getClassFromName(pso, "optimisation")
@@ -29,9 +29,18 @@ def main(pso="PsoDNFTemplate",meta="{'omega':0.9,'phiP':1.2,'phiG':1.2}",model="
     nbEval = eval(nbEval)
     swarmSize = eval(swarmSize)
     nbThread = eval(nbThread)
+    verbose = eval(verbose)
+    objective = eval(objective)
 
 
-    pso = psoClass(swarmSize=swarmSize,nbEvaluationMax=nbEval,nbThread=nbThread,**metaDict) 
+    paramsDict.update({'lateral':lateral})
+
+
+    if verbose:
+        print("lauching ",pso," with params ", metaDict, "on model ",modelClass, " with cst params ",paramsDict)
+        print("scenario : ",scenarioClass)
+
+    pso = psoClass(swarmSize=swarmSize,nbEvaluationMax=nbEval,nbThread=nbThread,verbose=verbose,objective=objective,**metaDict) 
 
     pso.setModelClass(modelClass)
     pso.setConstantParamsDict(paramsDict)

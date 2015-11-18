@@ -49,6 +49,7 @@ class MapND(Computable):
         Computable.__init__(self,size=size,dim=dim,dtype=dtype,**kwargs)
         assert(type(size) == int)
         assert(type(dim) == int)
+        assert(type(name) == str)
         self.name = name
         self.reset() #init self._data
         self.__precision = 7 #allowed precision

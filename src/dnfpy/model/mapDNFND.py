@@ -1,3 +1,6 @@
+
+
+
 from dnfpy.model.activationMapND import ActivationMapND
 import numpy as np
 from dnfpy.model.fieldMapND import FieldMapND

@@ -87,6 +87,27 @@ def gaussFix(size,wrap,intensity,width,center):
             sumDistSquared += dist**2
     return intensity * np.exp(-sumDistSquared/(2.0 * width**2))
 
+def pos_part_s(x):
+    if(x >= 0):
+        return x
+    else:
+        return 0
+pos_part = np.vectorize(pos_part_s, otypes=[np.float]) 
+
+def weightsFix(space,lat,k,w):
+    x = space[0]
+    
+    if(lat == 'dog'):
+        y = k * np.exp(-x**2/(2.0 * w**2))
+    if(lat == 'doe'):
+        y = k * np.exp(-4.0 * np.fabs(x)/(w**2))
+    elif(lat == 'dol'):
+        y = k * pos_part(1.0 - np.fabs(x)/(2.0 * w)) 
+    elif(lat == 'step'):
+        y = k * np.piecewise(x, [np.fabs(x) < w], [1])
+
+    return y
+
 
 def gaussian(x,intensity,width):
     """Gaussian kernel V2"""

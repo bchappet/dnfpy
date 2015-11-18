@@ -6,8 +6,6 @@ import dnfpy.controller.runner as runner
 
 
 
-#indiv DNF: [1.25,0.7,0.1,10,10,0.64]
-
 
 
 indiv = eval((sys.argv[1]))
@@ -38,12 +36,11 @@ stats = statsClass(**indiv)
 
 if withView:
     #view
-    timeRatio = time
-    res = runnerView.launch(model, scenario,stats, timeRatio)
+    res = runnerView.launch(model, scenario,stats,timeEnd=time,timeRatio=0.5)
 else:
     #no view
     timeEnd = time
-    res = runner.launch(model,scenario,stats,timeEnd)
+    res = runner.launch(model,scenario,stats,time)
     print(res)
 
 

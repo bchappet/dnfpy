@@ -13,7 +13,7 @@ Scenario: str ScenarioTracking...
 python3 main.py --dim 1 --lat dog --fashion fix --params "{'iExc':1.0,'wExc':2.5,'iInh':0.5,'wInh':4.0}"
 """
 @begin.start
-def main(model = "ModelDNF1D",size="101",dim="2",tr="0.5",stats="None",scenario="ScenarioTracking",params="{}",pause="False",gui="True",timeEnd="40.0",lat="dog",fashion='chappet'):
+def main(model = "ModelDNF1D",size="101",dim="2",tr="0.5",stats="None",scenario="ScenarioTracking",params="{}",pause="False",gui="True",timeEnd="400000000",lat="dog",fashion='chappet'):
     """
     model : name of the model
     size : resolution for the simulation

@@ -13,6 +13,7 @@ from dnfpyUtils.stats.statsTemplate import StatsTemplate
 from dnfpyUtils.stats.statsMetaModel import StatsMetaModel
 from dnfpyUtils.models.modelDNF import ModelDNF
 from dnfpyUtils.models.modelDNF1D import ModelDNF1D
+from dnfpyUtils.models.modelDNFSpace import ModelDNFSpace
 from dnfpyUtils.optimisation.psoDNF import PSODNF
 class PsoDNFTemplate(PSODNF):
     """Particle swarm optimisation class"""
@@ -22,13 +23,13 @@ class PsoDNFTemplate(PSODNF):
 
 
     def getListParam(self):
-        return ["iExc","iInh","wExc","wInh","h","th","tau"]#,"beta"]
+        return ["iExc","iInh","wExc","wInh","tau","h"]#"h","th","tau"]#,"beta"]
 
     def getBounds(self):
         """return (lowerBounds,upperBounds"""
         z = 1e-10
-        lowerBounds = np.array([z,z,0.01,0.01,-1,0,0]) #if w = 0.00000000001 , we have only one pixel at 1 in the lateral weights
-        upperBounds = np.array([1000,1,1,1,1,1,10])
+        lowerBounds = np.array([0.0,0.0,0.01,0.01,0.1,-1.0])#-1,0,0]) #if w = 0.00000000001 , we have only one pixel at 1 in the lateral weights
+        upperBounds = np.array([5.0,1,1,10,10,1.0])#1,1,10])
         return (lowerBounds,upperBounds)
 
     def getStartBounds(self):
@@ -51,7 +52,7 @@ class PsoDNFTemplate(PSODNF):
         paramList[3] = indiv[3]
         paramList[4] = indiv[4]
         paramList[5] = indiv[5]
-        paramList[6] = indiv[6]
+#        paramList[6] = indiv[6]
         #paramList[3] = indiv[3]
         #paramList[4] = indiv[4]*indiv[3]
         #paramList[2] = indiv[2]#*indiv[3]
@@ -64,7 +65,7 @@ class PsoDNFTemplate(PSODNF):
         return WorkingMemory
 
     def getModelClass(self):
-        return ModelDNF1D
+        return ModelDNFSpace
 
 
     def evaluate(self,indiv):
