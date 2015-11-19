@@ -1,4 +1,5 @@
 import sys
+import math
 import dnfpy.controller.runner as runner
 from getClassUtils import getClassFromName
 import logging
@@ -117,15 +118,15 @@ class BatchRunner(object):
 
                                             threadList = [] #list of threads
                                             for threadId in range(nbThread):
-                                                try:
-                                                    model = modelClass(**parameterDictModel)
-                                                    scenario = scenarioClass(**parameterDictScenario)
-                                                    stat = statClass(**parameterDictStat)
-                                                    th = MyThread(self,threadId,nbThread,nbIterationPerThread[threadId],model,scenario,stat,timeEnd,self.q)
-                                                    threadList.append(th)
-                                                    th.start()
-                                                except:
-                                                    print("Error unable to start thread %s error %s"%(threadId,sys.exc_info()))
+                                                model = modelClass(**parameterDictModel)
+                                                scenario = scenarioClass(**parameterDictScenario)
+                                                stat = statClass(**parameterDictStat)
+                                                th = MyThread(self,threadId,nbThread,nbIterationPerThread[threadId],model,scenario,stat,timeEnd,self.q)
+                                                threadList.append(th)
+                                                #try:
+                                                th.start()
+                                                #except:
+                                                #    print("Error unable to start thread %s error %s"%(threadId,sys.exc_info()))
                                             for th in threadList:
                                                 th.join()
 
@@ -170,8 +171,8 @@ class MyThread (Process):
             resultString = self.batchRunner.printData(res,globalRepetition)
             self.q.put(resultString)
 
-            self.model.reset() #reset time
-            self.model.resetParams() #reset params
+            self.model.resetRunnable() #reset time
+            self.model.resetParamsRunnable() #reset params
             self.scenario.reset()
 
 
@@ -189,7 +190,7 @@ def strToCsv(string):
 
 @begin.start
 def main(models = "['ModelDNF1D',]",size="49",dim="2",stats="['StatsTracking1',]",scenarios="['ScenarioTracking',]",params="{}",timeEnd="30",lat="dog",fashion='chappet',dt='0.1',nbRepet='50',prefix='model_scenario_repet',log='default.log',nbThread='8',kwmodel="{}",kwscenario="{}",kwstat="{}"):
-    lock = Lock()
+    #lock = Lock()
     toPrint = []
 
     modelNameList = eval(models)
@@ -200,6 +201,12 @@ def main(models = "['ModelDNF1D',]",size="49",dim="2",stats="['StatsTracking1',]
     savePrefix = prefix
     logfile = log
     nbThread = eval(nbThread)
+
+    dt = eval(dt)
+    dim = eval(dim)
+    size = eval(size)
+    size = int(((math.floor(size/2.)) * 2) + 1)#Ensure size is odd for convolution
+    
 
     kwparams = dict(size=size,dim=dim,lateral=lat,fashion=fashion,dt=dt)
     paramDictModel = eval(kwmodel)

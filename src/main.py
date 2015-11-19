@@ -30,14 +30,14 @@ def main(model = "ModelDNF1D",size="101",dim="2",tr="0.5",stats="None",scenario=
 
     """
     #modelName = sys.argv[1]
-    size = eval(size)
-    size = int(((math.floor(size/2.)) * 2) + 1)#Ensure size is odd for convolution
     timeRatio = eval(tr)
     pause = eval(pause)
-    dim = eval(dim)
     gui = eval(gui)
     timeEnd = eval(timeEnd)
     dt = eval(dt)
+    dim = eval(dim)
+    size = eval(size)
+    size = int(((math.floor(size/2.)) * 2) + 1)#Ensure size is odd for convolution
 
 
 
