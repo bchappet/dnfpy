@@ -217,8 +217,6 @@ class PSO():
                 #update swarm's best-known position
                 if newFitness < self.bestFitness or np.isnan(self.bestFitness) :
                     self.bestIndex = i
-                    self.bestXList.append(self.p[self.bestIndex,:])
-                    self.bestXTimeList.append(self.evaluationNb)
                     self.bestFitness = newFitness
                     if self.verbose == 1:
                         print("##bestFitness : %s, indiv: %s, i : %s"%(self.bestFitness,self.indivToParams(self.x[self.bestIndex,:]),i))

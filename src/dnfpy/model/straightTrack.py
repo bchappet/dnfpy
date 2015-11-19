@@ -31,7 +31,7 @@ class StraightTrack(MapND):
     def __init__(self,name,size,dim=1,dt=0.1,wrap=True,intensity=1.,width=0.1,
                  direction=np.float32((1,)*10),start = np.float32((0,)*10),
                  speed=0.01,speed_=(1,)*10):
-        super(StraightTrack,self).__init__(name=name,size=size,dim=dim,
+        super().__init__(name=name,size=size,dim=dim,
                                            dt=dt,wrap=wrap,intensity=intensity,
                                            width=width,direction=direction,
                                            start=start,

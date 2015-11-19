@@ -12,6 +12,8 @@ from dnfpyUtils.stats.barycenterMap import BarycenterMap
 from dnfpyUtils.stats.movingAverage import MovingAverage
 from dnfpyUtils.stats.derivative import Derivative
 from dnfpyUtils.stats.errorDistSimple import ErrorDistSimple
+
+from dnfpyUtils.stats.activationSize import ActivationSize
 class StatsMetaModel(Stats):
     """
 
@@ -20,7 +22,7 @@ class StatsMetaModel(Stats):
         inputMap
 
     """
-    def initMaps(self,shapeThreshold=0.4):
+    def initMaps(self,shapeThreshold=0.4,**kwargs):
 
         activationMap = self.runner.getMap("Activation")
         inputMap = self.runner.getMap("Inputs")
@@ -61,13 +63,18 @@ class StatsMetaModel(Stats):
         self.errorDist = ErrorDistSimple("ErrorDist",dt=dt,sizeMap=size,wrap=True)
         self.errorDist.addChildren(target=self.metaModel,mesured=self.barycenter)
 
+        #TODO temporrary
+        dx = 20./size
+        self.sizeA = ActivationSize("SizeAct",dt=dt,dx=dx)
+        self.sizeA.addChildren(act=activationMap)
 
 
 
 
 
 
-        return [self.errorShape,self.errorDist]
+
+        return [self.errorShape,self.errorDist,self.sizeA]
 
 
     def applyContext(self):
@@ -77,14 +84,9 @@ class StatsMetaModel(Stats):
         self.track0.compute()
         z = self.track0.getCenter()/self.track0.getArg("size")
         self.metaModel.initPos(z)
-        try:
-            self.track1 = self.runner.getMap("Inputs_track1")
-            self.track1.setParams(intensity=0.95)
-        except:
-                pass #TODO adapt to n tracks
 
     def getArrays(self):
-        return [self.metaModel,self.metaBubble,self.errorShape,self.barycenter,self.errorDist]
+        return [self.metaModel,self.metaBubble,self.errorShape,self.barycenter,self.errorDist,self.sizeA]
 
 
 
