@@ -9,8 +9,7 @@ class PotentialTarget(Map2D):
     def _compute(self):
         coords = []
         for target in self.input.getTracks():
-            coords.append(np.array([target.getChild("centerX").getData(),
-                          target.getChild("centerY").getData()]))
+            coords.append(target.getCenter())
 
         self._data = np.array(coords)
 

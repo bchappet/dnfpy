@@ -11,7 +11,7 @@ class Scenario(Runnable,MapND):
 
     """
     precision = 10e-5
-    def __init__(self,dt=0.1,**kwargs):
+    def __init__(self,dt=0.1,iStim1=1.0,iStim2=0.95,**kwargs):
         MapND.__init__(self,size=1,name="Scenario",dt=dt)
         self.nbIteration = 0
         self.time = 0
@@ -25,11 +25,11 @@ class Scenario(Runnable,MapND):
         self.root = self.initMaps(**self.kwargs)
         self._addMapsToDict(self.root) #recursively add map to mapDict
 
-    def initMaps(self,size=49,dim=2,dt=0.1,**kwargs):
+    def initMaps(self,size=49,dim=2,dt=0.1,iStim1=1.0,iStim2=0.95,**kwargs):
         """
         Initialize the maps and return the roots
         """
-        self.input = InputMap("Inputs",size,dt=dt,dim=dim)
+        self.input = InputMap("Inputs",size,dt=dt,dim=dim,iStim1=iStim1,iStim2=iStim2)
         return [self.input,]
 
 

@@ -52,10 +52,13 @@ class TrackedTargetView(ArrayView):
         sizeClusterArr = np.array([self.sizeCluster,self.sizeCluster])
         circleRadius = np.round(sizeClusterArr/(shapeWH+1)*(labWH+1)/2.)
         for coor in self.clusters:
-            coorLab = np.round(coor / shapeWH * labWH)
-            center = QtCore.QPoint(coorLab[0],coorLab[1])
-            qp.drawEllipse(center,2,2)
-            qp.drawEllipse(center,circleRadius[0],circleRadius[1])
+            if any(np.isnan(coor)):
+                    pass
+            else:
+                coorLab = np.round(coor / shapeWH * labWH)
+                center = QtCore.QPoint(coorLab[0],coorLab[1])
+                qp.drawEllipse(center,2,2)
+                qp.drawEllipse(center,circleRadius[0],circleRadius[1])
 
         qp.setPen(QtGui.QPen(QtGui.QColor(0,0,0),3))
         for i in range(len(self.trackedTargets)):

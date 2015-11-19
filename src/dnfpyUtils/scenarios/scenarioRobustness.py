@@ -8,6 +8,6 @@ class ScenarioRobustness(ScenarioTracking):
 
     def _apply(self):
        super()._apply()
-       if self.isTime(1.0):
+       if self.isTime(2.0):
             self.runner.getMap("Inputs").setParamsRec(
                 noiseI=self.noiseI,nbDistr=self.nbDistr)

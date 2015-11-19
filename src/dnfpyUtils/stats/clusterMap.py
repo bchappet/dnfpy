@@ -34,7 +34,7 @@ class ClusterMap(Map2D):
     "nbDiscontinuousCluster": int nb cluster which where outliners
 
     """
-    def __init__(self,name,size=0,dt=0.1,threshold=0.4,min_samples=1,
+    def __init__(self,name,size=0,dt=0.1,threshold=0.4,min_samples=3,
                  clustSize=0.15,sizeNpArr=1,continuity=1.0,expectedNumberOfCluster=1,
                  **kwargs):
         super(ClusterMap,self).__init__(name=name,size=size,dt=dt,threshold=threshold,
@@ -45,7 +45,7 @@ class ClusterMap(Map2D):
 
 
     def reset(self):
-        super(ClusterMap,self).reset()
+        super().reset()
         self.clusters = []#cluster coords saved
         #if continuity > 0, the cluster shoul not be off for more than continuity seconds
         self.clusterOff = [] #we save the number of iteration that the cluster is off in this list
@@ -59,6 +59,7 @@ class ClusterMap(Map2D):
         self.nbActList = []
         self.nbActivation = 0
         self.diffNbClusterSum = 0 #add |nbClust - expectedNumberOfCluster| at every step
+        self._data = []
 
 
     def _compute(self,size,np_arr,threshold,min_samples,clustSize_,continuity,expectedNumberOfCluster,dt):
@@ -203,6 +204,7 @@ class ClusterMap(Map2D):
         else:
             #to many activation we don't compute cluster
             self._data = np.array([np.array([-1,-1])])
+
 
 
     def __getBarycenter(self,coordsArrayNp,labels,lab):

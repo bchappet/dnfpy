@@ -1,4 +1,5 @@
 from dnfpy.core.map2D import Map2D
+from dnfpyUtils.stats.trajectory import Trajectory
 from scipy.spatial import distance
 from dnfpyUtils.stats.statistic import Statistic
 import numpy as np
@@ -6,16 +7,7 @@ import numpy as np
 
 
 ERROR = np.nan
-class ErrorDist(Statistic):
-    def __init__(self,name,size=0,dt=0.1,sizeArray=20,canSwitch=True,
-                 coherencyTime=1.,distMax=0.3,**kwargs):
-        super(ErrorDist,self).__init__(name=name,size=size,dt=dt,
-                sizeArray=sizeArray,
-                canSwitch=canSwitch,distMax=distMax,
-                coherencyTime=coherencyTime,
-                **kwargs)
-        self.meanErrorSave = []
-        self.setArg(mean=0.0)
+class ErrorDist(Trajectory):
 
     def _compute(self,sizeArray,trackedTarget,clusterMap):
         error = []
@@ -27,9 +19,6 @@ class ErrorDist(Statistic):
                 coorClust = clusterMap[i]/float(sizeArray)
                 coorTarget = trackedTarget[i]/float(sizeArray)
                 error.append(distance.euclidean(coorClust,coorTarget))
-        self.meanErrorSave.append(np.sum(error))
-        self.setArg(mean=np.mean(self.meanErrorSave))
         self._data = error
+        self.trace.append(np.sum(error))
 
-    def getTrace(self):
-        return self.meanErrorSave

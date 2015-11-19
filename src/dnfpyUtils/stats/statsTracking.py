@@ -17,7 +17,7 @@ class StatsTracking(Stats):
         inputMap
 
     """
-    def initMaps(self,clustSize=0.2,expectedNbCluster=1):
+    def initMaps(self,clustSize=0.2,expectedNbCluster=1,**kwargs):
         self.processorTime = time.clock()
 
 
@@ -74,7 +74,7 @@ class StatsTracking(Stats):
 
 
         clusterMap = self.clusters
-        error = self.errorDist.getArg("mean")
+        error = self.errorDist.getRMSE()
         nbClusterSum = clusterMap.getArg("nbClusterSum")
         simuTime = clusterMap.getArg('time')
         nbIt = simuTime/self.dt
@@ -83,7 +83,7 @@ class StatsTracking(Stats):
         maxNbAct = clusterMap.getMaxNbAct()
         meanNbAct = clusterMap.getMeanNbAct()
         elapsedTime = endProcessorTime - self.processorTime
-        errorShape  = self.errorShape.getArg("mean")
+        errorShape  = self.errorShape.getRMSE()
         compEmpty = clusterMap.getArg("nbComputationEmpty")/float(nbIt)
         nbClusterEnd = len(clusterMap.getData())
         if (clusterMap.nbActivation == 0 or clusterMap.getData()[0][0] == -1 ):
