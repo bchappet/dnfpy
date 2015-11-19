@@ -22,6 +22,8 @@ class LateralWeightsMapSpace(MapSpace):
             iInh=iInh,wExc=wExc,wInh=wInh,
             globalInh=globalInh,
             **kwargs)
+
+
         
 
 
@@ -35,7 +37,7 @@ class LateralWeightsMapSpace(MapSpace):
 
         self.addChildren(exc=self.kernelExc,inh=self.kernelInh)
 
-    def _compute(self,exc,inh,nbStep,globalInh):
+    def _compute(self,exc,inh,nbStep,globalInh,space):
         ret = exc - inh - globalInh
         if nbStep > 0:
             ret = utils.discretize(ret,nbStep=nbStep)
