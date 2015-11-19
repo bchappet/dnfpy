@@ -38,17 +38,17 @@ class MapDNFND(FieldMapND):
 
 
         if lateral=='dog':
-            self.kernel = LateralWeightsMapND(name+"Kernel",mapSize=mapSize,
+            self.kernel = LateralWeightsMapND(name+"Kernel",mapSize=mapSize,dim=dim,
                                         globalSize=size,wrap=wrap,
                                         iExc=iExc,iInh=iInh,wExc=wExc,
                                         wInh=wInh,alpha=alpha,nbStep=nbStep,fashion=fashion)
         elif lateral=='doe':
-            self.kernel = LateralWeightsMapExpND(name+"Kernel",mapSize=mapSize,
+            self.kernel = LateralWeightsMapExpND(name+"Kernel",mapSize=mapSize,dim=dim,
                                         globalSize=size,wrap=wrap,
                                         iExc=iExc,iInh=iInh,pExc=wExc,
                                         pInh=wInh,alpha=alpha,nbStep=nbStep,fashion=fashion)
         elif lateral=='dol':
-            self.kernel = LateralWeightsMapLinND(name+"Kernel",mapSize=mapSize,
+            self.kernel = LateralWeightsMapLinND(name+"Kernel",mapSize=mapSize,dim=dim,
                                         globalSize=size,wrap=wrap,
                                         betaExc=iExc,betaInh=iInh,alphaExc=wExc,
                                         alphaInh=wInh,alpha=alpha,nbStep=nbStep,fashion=fashion)

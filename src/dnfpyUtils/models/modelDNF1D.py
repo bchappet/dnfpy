@@ -9,7 +9,7 @@ import numpy as np
 class ModelDNF1D(Model,Renderable):
     def initMaps(self,size=49,model="cnft",activation="step",nbStep=0,dim=2,
                  iExc=1.25,iInh=0.7,wExc=0.1,wInh=10.,alpha=10.,th=0.75,h=0,noiseI=0.01,
-                 iStim1=0.1,beta=8,tau=0.64,lateral='dog',fashion='chappet',
+                 iStim1=0.1,beta=8,tau=0.64,lateral='dog',fashion='chappet',**kwargs
                  ):
         """We initiate the map and link them"""
        # print("iExc : %s, iInh: %s, wExc %s, wInh %s"%(iExc,iInh,wExc,wInh))
