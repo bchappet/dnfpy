@@ -5,7 +5,6 @@ import dnfpy.controller.runner as runner
 from getClassUtils import getClassFromName
 import begin #very usefull arg parsing library
 
-
 """
 Parameter:
 ModelName: str: ModelNSpike...

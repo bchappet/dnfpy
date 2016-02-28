@@ -13,6 +13,10 @@ class Trajectory(Statistic):
 
     def getViewData(self):
         return self._data#,self.getMean()
+
+    def reset(self):
+        super().reset()
+        self.trace = []
     
 
     def getMean(self):

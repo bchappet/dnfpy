@@ -97,8 +97,9 @@ class Runner(object):
                 plt.savefig(fileName, dpi=300)
                 plt.close()
 
-            except:
-                print("could not plot: %s" % fileName)
+            except Exception as e:
+                print("could not plot: ",fileName)
+                raise e
 
     def saveArr(self):
         import numpy as np
@@ -181,10 +182,7 @@ class Runner(object):
         ret = self.onClose()
         return ret
 
-def launch(model,scenario,stats,timeEnd,allowedTime=10e10):
-    """
-
-    """
+def constructRunner(model,scenario,stats,timeEnd,allowedTime=10e10):
     runner = Runner(timeEnd=timeEnd,allowedTime=allowedTime)
     runner.addRunnable(model)
     if scenario:
@@ -193,7 +191,16 @@ def launch(model,scenario,stats,timeEnd,allowedTime=10e10):
     if stats:
         stats.init(runner)
         runner.addRunnable(stats)
+    return runner
 
+
+
+
+def launch(model,scenario,stats,timeEnd,allowedTime=10e10):
+    """
+
+    """
+    runner = constructRunner(model,scenario,stats,timeEnd,allowedTime)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=RuntimeWarning)
         return runner.run()

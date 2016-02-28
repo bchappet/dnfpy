@@ -10,9 +10,8 @@ class Stats(Runnable):
     in the runner.
     The scenario initilize the statistics, change the execution context before starting(in apply context) or during the execution in _apply
     """
-    def __init__(self,dt=0.1,**kwargs):
+    def __init__(self,**kwargs):
         self.mapDict = {}
-        self.dt = dt
         self.kwargs = kwargs #save for initialization
 
     def init(self,runner):

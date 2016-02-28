@@ -10,7 +10,10 @@ import matplotlib.gridspec as gridspec
 
 PRECISION = 10000000
 def egaliseColorBar(egal,bar):
-                bar.set_ticks([__roundUp(-egal),0,__roundDown(+egal)])
+    try:
+        bar.set_ticks([__roundUp(-egal),0,__roundDown(+egal)])
+    except Exception as e:
+        print("Warning : ", e)
 
 def __roundDown(x):
         return math.floor(x*PRECISION)//PRECISION
@@ -36,6 +39,7 @@ def plotArray(data,showBar=True):
             Plot a np.array, with egalised colorbar
         """
         egal = getEgal(data)
+        print("egal : " ,egal)
 
         ret = plt.imshow(data,interpolation='nearest',cmap='RdYlBu_r',vmin=-egal,vmax=+egal)
         if showBar  and np.sum(data) != 0:

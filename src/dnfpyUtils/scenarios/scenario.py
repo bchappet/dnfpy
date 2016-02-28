@@ -11,8 +11,8 @@ class Scenario(Runnable,MapND):
 
     """
     precision = 10e-5
-    def __init__(self,dt=0.1,iStim1=1.0,iStim2=0.95,**kwargs):
-        MapND.__init__(self,size=1,name="Scenario",dt=dt)
+    def __init__(self,size=1,**kwargs):
+        MapND.__init__(self,size=1,name="Scenario",**kwargs)
         self.nbIteration = 0
         self.time = 0
         self.processorTime = time.clock()
@@ -29,7 +29,7 @@ class Scenario(Runnable,MapND):
         """
         Initialize the maps and return the roots
         """
-        self.input = InputMap("Inputs",size,dt=dt,dim=dim,iStim1=iStim1,iStim2=iStim2)
+        self.input = InputMap("Inputs",size,dt=dt,dim=dim,iStim1=iStim1,iStim2=iStim2,noise_dt=dt,tck_dt=dt)
         return [self.input,]
 
 

@@ -19,7 +19,7 @@ class NSpikeMap(Map2D):
             if self.getArg('reproductible'):
                 self.lib.initSeed(0)
             else:
-                seed = random.randint(0, sys.maxint)
+                seed = random.randint(0, sys.maxsize)
                 self.lib.initSeed(seed)
 
 

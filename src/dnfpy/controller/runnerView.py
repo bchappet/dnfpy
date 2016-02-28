@@ -87,7 +87,7 @@ class RunnerView(QtCore.QThread, Runner):
                     for map in mapToUpdate:
                         self.triggerParamsUpdate.emit(map.getName())
                 else:
-                    self.triggerParamsUpdate.emit(mapToUpdate.getName())
+                    self.triggerParamsUpdate.emit(map)
 
     @pyqtSlot(str, int, int)
     def onRClickSlot(self, mapName, x, y):

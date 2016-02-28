@@ -18,7 +18,7 @@ class ModelDNF(Model,Renderable):
     """
     def initMaps(self,size=49,model="cnft",activation="step",nbStep=0,
                  iExc=1.25,iInh=0.7,wExc=0.1,wInh=10.,alpha=10.,th=0.75,h=0,lateral='dog',noiseI=0.01,
-                 dt=0.1,**kwargs,
+                 dt=0.1,**kwargs
                  ):
         """We initiate the map and link them"""
        # print("iExc : %s, iInh: %s, wExc %s, wInh %s"%(iExc,iInh,wExc,wInh))

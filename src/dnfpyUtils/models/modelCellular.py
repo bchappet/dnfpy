@@ -22,7 +22,7 @@ class ModelCellular(Model,Renderable):
     By default comp is 'gameOfLife'
 
     """
-    def initMaps(self,size,comp=None,model=None,**kwargs):
+    def initMaps(self,size,dim=2,dt=0.1,comp=None,model=None,**kwargs):
 
         if not(comp):
                 comp = 'gameOfLife' 
@@ -34,7 +34,7 @@ class ModelCellular(Model,Renderable):
         else:
             TheModel = CellularMap
 
-        self.map = TheModel("CellMap",size,dt=0.1,computation=computationFunction,**kwargs)
+        self.map = TheModel("CellMap",size,dt=dt,computation=computationFunction,**kwargs)
         return self.map
     #override Renderable
     def getArrays(self):

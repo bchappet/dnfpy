@@ -8,10 +8,10 @@ import dnfpy.core.utils as utils
 
 
 
-#python3 main.py --model ModelCellular --params "{'model':'DiffusionCA'}" --scenario None
+#python3 main.py --model ModelCellular --params "{'model':'DiffusionLinCA'}" --scenario None
 
 
-class DiffusionCA(CellularMap):
+class DiffusionLinCA(CellularMap):
     """
 
     m : state max (when activated)
@@ -20,7 +20,7 @@ class DiffusionCA(CellularMap):
     activation : child (boolean) if true, cell is excited
     obstacle : child (boolean) if true there is obstacle => cell is always 0
     """
-    def __init__(self,name,size,pt=1.0,m=4,activation=None,obstacle=None,**kwargs):
+    def __init__(self,name,size,pt=1.0,m=100,activation=None,obstacle=None,**kwargs):
         super().__init__(name=name,size=size,pt=pt,m=m,activation=activation,obstacle=obstacle,**kwargs)
 
     def init(self,size):
@@ -31,21 +31,29 @@ class DiffusionCA(CellularMap):
 
     def _compute(self,size,pt,m,activation,obstacle):
         X = self._data
-        # Count neighbours
-        M = (X == m)
-        N = (M[0:-2,0:-2] | M[0:-2,1:-1] | M[0:-2,2:] |
-             M[1:-1,0:-2]                | M[1:-1,2:] |
-             M[2:  ,0:-2] | M[2:  ,1:-1] | M[2:  ,2:])
+
+        N = X[0:-2,1:-1]  
+        W = X[1:-1,0:-2] 
+        E = X[1:-1,2:]
+        S = X[2:  ,1:-1] 
 
         x = X[1:-1,1:-1]
 
-        random = np.random.random((size-2,size-2)) < pt
-        transmission = (x == 0) & N & random #if neutral and neignbour excited, pt proba to become activated
-        decrement = (x > 0) & ~transmission
+        #random = np.random.random((size-2,size-2)) < pt
 
-        x[transmission] = m
+        getN = (N > 0) & ((N != x+1) & (N != x-1))
+        getE = (E > 0) & ((E != x+1) & (E != x-1)) & (E != N)
+        getW = (W > 0) & ((W != x+1) & (W != x-1)) & (W != N) & (W != E)
+        getS = (S > 0) & ((S != x+1) & (S != x-1)) & (S != N) & (S != E) & (S != W)
 
-        x[decrement] -= 1
+
+
+        x[getN] += N[getN] - 1
+        x[getE] += E[getE] - 1
+        x[getW] += W[getW] - 1
+        x[getS] += S[getS] - 1
+
+        #x[decrement] -= 1
 
         if activation:
             X[activation & (X==0)] = m

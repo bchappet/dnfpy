@@ -56,7 +56,7 @@ class HardLib:
         if param:
             self.__idMap = self.C.initSimuParam(sizeX,sizeY,cellType,connecterType,param)
         else:
-            self.__idMap = self.C.initSimu(sizeX,sizeY,cellType,connecterType)
+            self.__idMap = self.C.initSimu(sizeX,sizeY,str.encode(cellType),str.encode(connecterType))
 
     def __useMap(self):
         self.C.useMap(self.__idMap)
