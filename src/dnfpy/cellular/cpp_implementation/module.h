@@ -89,6 +89,18 @@ public:
 
     }
 
+    size_t getSubModuleCount(){
+        return this->subModules.size();
+    }
+
+    void setSubModuleState(int subModuleIndex,int regIndex,int value){
+        this->subModules[subModuleIndex].get()->setRegState(regIndex,value);
+    }
+
+    int getSubModuleState(int subModuleIndex,int regIndex){
+        return this->subModules[subModuleIndex].get()->getRegState(regIndex);
+    }
+
 
     ModulePtr getSubModule(int index){
         //std::cout << "getting sub module" << index << std::endl;

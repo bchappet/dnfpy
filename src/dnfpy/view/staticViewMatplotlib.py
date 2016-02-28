@@ -39,7 +39,6 @@ def plotArray(data,showBar=True):
             Plot a np.array, with egalised colorbar
         """
         egal = getEgal(data)
-        print("egal : " ,egal)
 
         ret = plt.imshow(data,interpolation='nearest',cmap='RdYlBu_r',vmin=-egal,vmax=+egal)
         if showBar  and np.sum(data) != 0:

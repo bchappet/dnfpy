@@ -11,6 +11,7 @@
 #include "rsdnfconnecter.h"
 #include "nspikeconnecter.h"
 #include "rsdnfconnecter2layer.h"
+#include "sequenceConnecter.h"
 #include "connecter.h"
 #include <string.h>
 #include "cellbsrsdnf.h"
@@ -74,6 +75,11 @@ int initSimuParam(int width,int height,char* cellName,char* connecterName,char* 
     connecterFromName(theNewMap,connecterName);
     mapSimuVec.push_back(theNewMap);
     return mapSimuVec.size()-1;
+}
+
+void addConnection(char *connecterName){
+    connecterFromName(mapSimu,connecterName);
+
 }
 
 
@@ -178,11 +184,20 @@ void setCellBool(int x,int y,int index,bool val){
     mapSimu->setCellState(x,y,index,val);
 }
 
+void getArraySubState(int index,int * array){
+    mapSimu->getArraySubState(index,array);
+}
+void setArraySubState(int index,int * array){
+    mapSimu->setArraySubState(index,array);
+}
+
 
 
 void initCellArrayFromNameWithParam(Map2D* map,char* name,char* param){
     if(strcmp(name,"cellbsrsdnf")==0){
         map->initCellArray<CellBsRsdnf>(param);
+    }else if(strcmp(name,"cellrsdnf")==0){
+        map->initCellArray<CellRsdnf>(param);
     }else{
         std::cerr << "unvalid cell name " << name << std::endl;
     }
@@ -229,8 +244,14 @@ void connecterFromName(Map2D* map,char* name){
     }else if(strcmp(name,"rsdnfconnecter2layer")==0){
         RsdnfConnecter2layer c;
         map->connect(c);
+    }else if(strcmp(name,"sequenceconnecter")==0){
+        SequenceConnecter c;
+        map->connect(c);
     }else{
         std::cerr << "unvalid connecter name " << name << std::endl;
     }
 
 }
+
+
+

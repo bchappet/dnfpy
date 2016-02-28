@@ -11,8 +11,8 @@ class Scenario(Runnable,MapND):
 
     """
     precision = 10e-5
-    def __init__(self,size=1,**kwargs):
-        MapND.__init__(self,size=1,name="Scenario",**kwargs)
+    def __init__(self,**kwargs):
+        MapND.__init__(self,name="Scenario",**kwargs)
         self.nbIteration = 0
         self.time = 0
         self.processorTime = time.clock()

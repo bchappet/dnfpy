@@ -1,24 +1,45 @@
 #include "cellrsdnf.h"
 #include "router.h"
+#include "routerSequence.h"
 #include <iostream>
 #include "bitstreamutils.h"
 
-CellRsdnf::CellRsdnf() : Module()
+CellRsdnf::CellRsdnf(std::string typeRouter) : Module()
 {
 
 
     this->nbBitReceived = 0;
     this->activated = false;
     this->dead = false;
-    this->initRouters();
+    this->initRouters(typeRouter);
 
    // std::cout << "constructing cellrsdnf " << std::endl;
 }
 
-void CellRsdnf::initRouters(){
+
+void CellRsdnf::reset(){
+    Module::reset();
+    //reset atribbutes as well
+    this->nbBitReceived = 0;
+    this->activated = false;
+    this->dead = false;
+
+}
+
+void CellRsdnf::initRouters(std::string typeRouter){
 
     for(int i = 0 ; i < 4 ;i ++){
-        ModulePtr r = ModulePtr(new Router());
+        ModulePtr r= NULL;
+        if(typeRouter.compare("prng") == 0){
+            r = ModulePtr(new Router());
+        }else if(typeRouter.compare("sequence") == 0){
+            r = ModulePtr(new RouterSequence());
+        }else{
+            std::cout << "invalid router name "<< typeRouter << std::endl;
+            exit(-1);
+        }
+
+
         this->subModules.push_back(r);
     }
 }

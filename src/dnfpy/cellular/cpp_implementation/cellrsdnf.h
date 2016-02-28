@@ -1,15 +1,16 @@
 #ifndef CELLRSDNF_H
 #define CELLRSDNF_H
 #include "module.h"
+#include <string>
 
 class CellRsdnf : public Module
 {
 public:
-    CellRsdnf();
+    CellRsdnf(std::string typeRouter="prng");
     virtual void computeState() override;
     virtual void setDefaultParams(ParamsPtr params) override;
 
-    virtual void initRouters();
+    virtual void initRouters(std::string typeRouter);
 
     enum CellRsdnf_Attributes{NB_BIT_RECEIVED,ACTIVATED,DEAD};
     enum CellRsdnf_Params {NB_SPIKE,PROBA,PRECISION_PROBA};
@@ -19,6 +20,8 @@ public:
 
 
     virtual void setAttribute(int index, void* value) override;
+
+    virtual void reset() override;
 
 protected:
     /**

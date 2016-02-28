@@ -15,7 +15,7 @@ public:
     Map2D();
 
     /**
-     * @brief Map construct a width*heigth map of module
+     * @brief Map construct a width*height map of module
      * @param width
      * @param height
      */
@@ -31,8 +31,8 @@ public:
     template <class M>
     void initCellArray(){
 
-        //std::cout << "init cell of size " << this->heigth <<"," << this->width << std::endl;
-        for(int i = 0 ; i < this->heigth ; i++){
+        //std::cout << "init cell of size " << this->height <<"," << this->width << std::endl;
+        for(int i = 0 ; i < this->height ; i++){
             for(int j = 0 ; j < this->width ; j++){
                 this->cellArray[i][j] = Module::ModulePtr(new M());
                 this->cellArray[i][j]->setParams(this->params);
@@ -49,8 +49,8 @@ public:
     template <class M>
     void initCellArray(std::string param){
 
-        //std::cout << "init cell of size " << this->heigth <<"," << this->width << std::endl;
-        for(int i = 0 ; i < this->heigth ; i++){
+        //std::cout << "init cell of size " << this->height <<"," << this->width << std::endl;
+        for(int i = 0 ; i < this->height ; i++){
             for(int j = 0 ; j < this->width ; j++){
                 this->cellArray[i][j] = Module::ModulePtr(new M(param));
                 this->cellArray[i][j]->setParams(this->params);
@@ -86,7 +86,7 @@ public:
 
     template <typename T>
     void getArrayAttribute(int index, T* array){
-        for(int i = 0 ; i < this->heigth ; i++){
+        for(int i = 0 ; i < this->height ; i++){
             for(int j = 0 ; j < this->width ; j++){
                 this->cellArray[i][j]->getAttribute(index,array +(i*this->width + j));
                 // std::cout << "(" << i << "," << j << "):" << *(int*)(array +(i*this->width + j)) <<  std::endl;
@@ -95,7 +95,7 @@ public:
     }
     template <typename T>
     void setArrayAttribute(int index, T* array){
-        for(int i = 0 ; i < this->heigth ; i++){
+        for(int i = 0 ; i < this->height ; i++){
             for(int j = 0 ; j < this->width ; j++){
                 this->cellArray[i][j]->setAttribute(index,array +(i*this->width + j));
             }
@@ -134,7 +134,7 @@ public:
     void getArrayState(int index,int* array){
 
 
-        for(int i = 0 ; i < this->heigth ; i++){
+        for(int i = 0 ; i < this->height ; i++){
             for(int j = 0 ; j < this->width ; j++){
                 array[i*this->width + j] = this->cellArray[i][j]->getRegState(index);
             }
@@ -147,13 +147,35 @@ public:
              * @param val
              */
     void setArrayState(int index,int* array){
-        for(int i = 0 ; i < this->heigth ; i++){
+        for(int i = 0 ; i < this->height ; i++){
             for(int j = 0 ; j < this->width ; j++){
                 this->cellArray[i][j]->setRegState(index,array[i*this->width + j]);
             }
         }
     }
 
+
+    void setArraySubState(int regIndex,int* array){
+        size_t subModuleCount = this->cellArray[0][0]->getSubModuleCount();
+        for(int i = 0 ; i < this->height ; ++i){
+            for( int j = 0 ; j < this->width ; ++j){
+                for(size_t k = 0 ; k < subModuleCount ; ++k){
+                    this->cellArray[i][j]->setSubModuleState(k,regIndex,array[i*(this->width*subModuleCount) + j*subModuleCount + k]);
+                }
+            }
+        }
+    }
+
+    void getArraySubState(int regIndex,int* array){
+        size_t subModuleCount = this->cellArray[0][0]->getSubModuleCount();
+        for(int i = 0 ; i < this->height ; ++i){
+            for( int j = 0 ; j < this->width ; ++j){
+                for(size_t k = 0 ; k < subModuleCount ; ++k){
+                    array[i*(this->width*subModuleCount) + j*subModuleCount + k] = this->cellArray[i][j]->getSubModuleState(k,regIndex);
+                }
+            }
+        }
+    }
 
 
 
@@ -174,7 +196,7 @@ public:
              * @param cellC
              */
     void connect(const Connecter& c){
-        c.connect(this->width,this->heigth,this->cellArray);
+        c.connect(this->width,this->height,this->cellArray);
     }
 
     Module::ModulePtr getCell(int x,int y){
@@ -185,7 +207,7 @@ public:
 protected:
 
     int width;
-    int heigth;
+    int height;
     std::vector<std::vector<Module::ModulePtr>> cellArray;
 
 

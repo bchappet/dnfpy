@@ -28,6 +28,7 @@ extern "C" {
      * @return
      */
     int initSimuParam(int width,int height,char* cellName,char* connecterName,char* param);
+    void addConnection(char *connecterName);
 
 
     /**
@@ -86,6 +87,10 @@ extern "C" {
     void setCellInt(int x,int y,int index,int val);
     void setCellBool(int x,int y,int index,bool val);
     void setCellFloat(int x,int y,int index,float val);
+
+    //subStates to access sub module
+    void getArraySubState(int index,int * array);
+    void setArraySubState(int index,int * array);
 
 }
 

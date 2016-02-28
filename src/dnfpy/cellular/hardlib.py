@@ -5,6 +5,7 @@ ffi = FFI()
 ffi.cdef("""
     int initSimu(int width,int height,char* cellName,char* connecterName);
     int initSimuParam(int width,int height,char* cellName,char* connecterName,char* param);
+    void addConnection(char *connecterName);
     int useMap(int idMap);
 
     void preCompute();
@@ -46,6 +47,12 @@ ffi.cdef("""
     void setCellInt(int x,int y,int index,int val);
     void setCellBool(int x,int y,int index,bool val);
     void setCellFloat(int x,int y,int index,float val);
+
+    void getArraySubState(int index,int * array);
+    void setArraySubState(int index,int * array);
+
+
+
 """)
 
 
@@ -53,10 +60,18 @@ ffi.cdef("""
 class HardLib:
     def __init__(self,sizeX,sizeY,cellType,connecterType,param=None):
         self.C = ffi.dlopen("libhardsimu.so")
+        cellType = str.encode(cellType)
+        connecterType = str.encode(connecterType)
+        
         if param:
+            param = str.encode(param)
             self.__idMap = self.C.initSimuParam(sizeX,sizeY,cellType,connecterType,param)
         else:
-            self.__idMap = self.C.initSimu(sizeX,sizeY,str.encode(cellType),str.encode(connecterType))
+            self.__idMap = self.C.initSimu(sizeX,sizeY,cellType,connecterType)
+
+    def addConnection(self,connecterName):
+        self.__useMap()
+        self.C.addConnection(str.encode(connecterName))
 
     def __useMap(self):
         self.C.useMap(self.__idMap)
@@ -192,3 +207,12 @@ class HardLib:
             self.C.getArrayBool(regIndex,ffi.cast("bool *",npArray.ctypes.data))
         else:
             raise AttributeError("Expecting int bool or float as dtype. Was %s"%dtype)
+
+
+    def getArraySubState(self,regIndex,npArrayInt):
+        self.__useMap()
+        self.C.getArraySubState(regIndex,ffi.cast("int *",npArrayInt.ctypes.data))
+
+    def setArraySubState(self,regIndex,npArrayInt):
+        self.__useMap()
+        self.C.setArraySubState(regIndex,ffi.cast("int *",npArrayInt.ctypes.data))

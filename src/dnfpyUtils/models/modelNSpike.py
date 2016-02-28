@@ -2,17 +2,25 @@ from dnfpy.model.inputMap import InputMap
 from dnfpy.view.renderable import Renderable
 from dnfpy.model.model import Model
 from dnfpy.cellular.mapDNFNSpike import MapDNFNSpike
+from dnfpy.cellular.mapDNFRsdnf import MapDNFRsdnf
+import warnings
 import numpy as np
 
 class ModelNSpike(Model,Renderable):
     def initMaps(self,size,nspike=10,dt=0.1,rFaults=0.0,
                  iExc=1.25,iInh=0.7,pExc=0.0043,pInh=0.9,alpha=10,
-                 model='spike',reproductible=True,
+                 model='spike',reproductible=True,cell='NSpike',
                  **kwarg
                  ):
         """We initiate the map and link them"""
         #Create maps
-        self.field = MapDNFNSpike("Potential",size,dt=dt,nspike=nspike,iExc=iExc,iInh=iInh,pExc=pExc,pInh=pInh,model=model,reproductible=reproductible)
+        if cell is 'NSpike':
+            self.field = MapDNFNSpike("Potential",size,dt=dt,nspike=nspike,iExc=iExc,iInh=iInh,pExc=pExc,pInh=pInh,model=model,reproductible=reproductible)
+        elif cell is 'Rsdnf':
+            self.field = MapDNFRsdnf("Potential",size,dt=dt,nspike=nspike,iExc=iExc,iInh=iInh,pExc=pExc,pInh=pInh,model=model,reproductible=reproductible)
+        else:
+            warning.warn("the cell ",cell," does not existe")
+
 
         #test faults
         #faults = np.random.random((size,size)) < (rFaults)

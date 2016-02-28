@@ -25,6 +25,7 @@
 #include <assert.h>
 #include <bitset>
 #include "bitstreamuint.h"
+#include "sequenceConnecter.h"
 
 typedef boost::shared_ptr<Module> ModulePtr;
 
@@ -34,9 +35,13 @@ using namespace std;
 
 template <typename T>
 void print_2D_array(T* array,int width,int height);
+template <typename T>
+void print_3D_array(T* array,int width,int height,int third);
 
 template <typename T>
 T* construct_array(int width,int height);
+template <typename T>
+T* construct_array3d(int width,int height,int third);
 
 void assertAlmostEquals(float a,float b,float precision=PRECISION);
 
@@ -65,6 +70,7 @@ void test_SBSFastMap_precision();
 void test_SBSFastMap_2layer();
 void test_stoch_bitStream();
 Module::ParamsPtr newParams();
+void test_sequence_rsdnf_map(int size);
 
 int main()
 {
@@ -82,10 +88,10 @@ int main()
     //            test_rsdnf_map(11);
     //            cout << "test rsdnf map passed" << endl;
 
-    //            test_cell_nspike();
-    //            cout<< "test cell n spike passed" << endl;
-    //            test_map_nspike(11);
-    //            cout << "test map nspike passed" << endl;
+//                test_cell_nspike();
+//                cout<< "test cell n spike passed" << endl;
+//                test_map_nspike(11);
+//                cout << "test map nspike passed" << endl;
     //            test_soft_simu(11);
     //            cout<< "test soft simu passed" <<endl;
     //            test_stochastic_rsdnf_map2(11);
@@ -115,13 +121,106 @@ int main()
 //    cout << "test sbsfastmap precision passed" << endl;
 //    test_SBSFastMap_2layer();
 //    cout << "test sbsFast map 2 layer passed " << endl;
-    test_stoch_bitStream();
-    cout << "test stoch bit stream passed" << endl;
+//    test_stoch_bitStream();
+//    cout << "test stoch bit stream passed" << endl;
+
+    test_sequence_rsdnf_map(11);
+    cout << "test map sequence rsdnf passed" << endl;
+
+
     //    cout << "ALL TEST PASSED " << endl;
     return 0;
 }
 Module::ParamsPtr newParams(){
     return Module::ParamsPtr(new std::vector<void*>());
+}
+
+
+void test_sequence_rsdnf_map(int size){
+    RsdnfConnecter c;
+    SequenceConnecter c2;
+    cout << "start " << endl;
+    Map2D map2d(size,size);
+    map2d.initCellArray<CellRsdnf>("sequence");
+    map2d.connect(c);
+    map2d.connect(c2);
+
+    int* randState = construct_array3d<int>(size,size,4);
+
+    map2d.getArraySubState(2,randState);
+    print_3D_array<int>(randState,size,size,4); 
+
+    randState[0] = 1;
+    randState[size*4-2] = 1;
+    randState[size*size*4-1] = 1;
+    map2d.setArraySubState(2,randState);
+    map2d.synch();
+    map2d.compute();
+    map2d.synch();
+    map2d.compute();
+    map2d.synch();
+    map2d.getArraySubState(2,randState);
+    print_3D_array<int>(randState,size,size,4); 
+    assert(randState[8]==1);//check propagation of random numbers simple
+    assert(randState[7]==1);//check propagation of random numbers end of array
+    assert(randState[size*4+6]==1);//check propagation of random numbers end of row
+    
+    //generate random map with only one
+    for(size_t i =0 ; i < size*size*4 ; ++i)
+        randState[i] = 1;
+    map2d.setArraySubState(2,randState);
+    map2d.synch();
+    map2d.getArraySubState(2,randState);
+    print_3D_array<int>(randState,size,size,4); 
+
+    bool activated = true;
+    map2d.setCellAttribute(5,5,CellRsdnf::ACTIVATED,&activated);
+
+    bool* state = construct_array<bool>(size,size);
+    map2d.getArrayAttribute<bool>(CellRsdnf::ACTIVATED,state);
+    print_2D_array<bool>(state,size,size);
+    cout << endl;
+
+    map2d.compute();
+    map2d.synch();
+    int* stateInt = construct_array<int>(size,size);
+    map2d.getArrayAttribute<int>(CellRsdnf::NB_BIT_RECEIVED,stateInt);
+    print_2D_array<int>(stateInt,size,size);
+    cout << endl;
+
+
+    time_t before = time(0);
+    for(int i = 0 ; i < 10 ; i ++){
+        map2d.compute();
+        map2d.synch();
+    }
+    time_t after = time(0);
+    map2d.getArrayAttribute<int>(CellRsdnf::NB_BIT_RECEIVED,stateInt);
+    print_2D_array<int>(stateInt,size,size);
+    assert(stateInt[0] == 1);
+    assert(stateInt[1] == 2);
+    assert(stateInt[2] == 3);
+    cout <<"time diff : " << difftime(after,before)/200 << endl;
+
+    //generate random map with P = 0.9
+    for(size_t i =0 ; i < size*size*4 ; ++i)
+        randState[i] = rand() % 0x3FFFFFFF < 0.8 * 0x3FFFFFFF;
+    print_3D_array<int>(randState,size,size,4);
+    map2d.reset();
+    map2d.setArraySubState(2,randState);
+    map2d.setCellAttribute(5,5,CellRsdnf::ACTIVATED,&activated);
+    map2d.synch();
+    for(int i = 0 ; i < 10 ; i ++){
+        map2d.compute();
+        map2d.synch();
+    }
+    map2d.getArrayAttribute<int>(CellRsdnf::NB_BIT_RECEIVED,stateInt);
+    print_2D_array<int>(stateInt,size,size);
+    map2d.getArraySubState(2,randState);
+    print_3D_array<int>(randState,size,size,4);
+
+
+
 }
 
 void test_stoch_bitStream(){
@@ -1464,9 +1563,29 @@ void print_2D_array(T* array,int width,int height){
 }
 
 template <typename T>
+void print_3D_array(T* array,int width,int height,int third){
+    for(int i = 0 ; i < height ; i++){
+        for(int j = 0 ; j < width ; j++){
+            cout << "(";
+            for(int k = 0 ; k < third ; k++){
+                cout << array[i*(width*third) + j*third +k] << ",";
+            }
+            cout << ")," ;
+        }
+        cout << endl;
+    }
+}
+template <typename T>
 T* construct_array(int width,int height){
     T * array;
     array = new T[height*width];
+    return array;
+}
+
+template <typename T>
+T* construct_array3d(int width,int height,int third){
+    T * array;
+    array = new T[height*width*third];
     return array;
 }
 
