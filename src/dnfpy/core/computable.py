@@ -39,6 +39,12 @@ class Computable(object):
         self.setArg(**kwargs)
         self.__update_params(**kwargs)
 
+    def updateParams(self):
+        """
+        Recompute the params
+        """
+        self.__update_params(**self.__dictionary)
+
     def getArg(self,key):
         """
         Public:

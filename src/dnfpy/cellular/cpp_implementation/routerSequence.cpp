@@ -33,6 +33,7 @@ void RouterSequence::computeState(){
 
     if(buffer > 0 || nbInput > 0 || activated){
 
+        //std::cout << " test " << std::endl;
         if(this->getRegState(RANDOM_OUT)){
             this->setRegState(SPIKE_OUT,true);
 

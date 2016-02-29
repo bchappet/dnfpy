@@ -51,7 +51,6 @@ class MapND(Computable):
         assert(type(dim) == int)
         assert(type(name) == str)
         self.name = name
-        self.reset() #init self._data
         self.__precision = 7 #allowed precision
         self.__children = {} #dict of str:MapND: the children are computed before self
 
@@ -62,6 +61,7 @@ class MapND(Computable):
         self.__childrenParamsUpdateArgs = inspect.getargspec(\
                         self._childrenParamsUpdate)[0]
         self.__childrenParamsUpdateArgs.remove('self')
+        self.reset() #init self._data the model should do reset as well TODO fix this bad design
 
 
     def getName(self):
@@ -275,6 +275,17 @@ class MapND(Computable):
             assert(self._data.shape[0] == dim)
         elif dim != 0:
             assert(len(self._data.shape) == dim and self._data.shape[0] == size)
+
+        #recompute params in case the reset changed it
+        self.updateParams()
+
+
+    def updateParams(self):
+        """
+        Recompute the params
+        """
+        Computable.updateParams(self)
+
 
 
     def resetParams(self):

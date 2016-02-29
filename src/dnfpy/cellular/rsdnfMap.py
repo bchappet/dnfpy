@@ -1,4 +1,7 @@
 from dnfpy.core.map2D import Map2D
+import logging
+import sys
+import traceback
 import random
 import sys
 import numpy as np
@@ -39,16 +42,17 @@ class RsdnfMap(Map2D):
             RANDOM_OUT = 2 #if routerType = sequence
 
         def __init__(self,name,size,dt=0.1,nspike=20,
-                     proba=1.,
+                     proba=1.0,
                      precisionProba=30,
                      routerType="prng",
                      reproductible=True,
                      nstep=1,
                      **kwargs):
+            print("init :",proba,nspike)
             self.lib = HardLib(size,size,"cellrsdnf","rsdnfconnecter",routerType)
             if routerType is "sequence":
                 self.lib.addConnection("sequenceconnecter")
-            super(RsdnfMap,self).__init__(name=name,size=size,dt=dt,
+            super(RsdnfMap,self).__init__(name=name,size=size,dt=dt,dtype=np.intc,
                                            nspike=nspike,
                                             proba=proba,
                                             precisionProba=precisionProba,
@@ -57,9 +61,13 @@ class RsdnfMap(Map2D):
                                             nstep=nstep,
                                             **kwargs)
 
+            self.newActivation = True #true when we want to get the new activation
 
         def _compute(self,size,activation,nstep):
-            self.setActivation(activation)
+            if self.newActivation:
+                self.newActivation = False
+                self.setActivation(activation)
+
             self.lib.nstep(nstep)
             self.lib.getArrayAttribute(self.Attributes.NB_BIT_RECEIVED,self._data)
 
@@ -71,19 +79,13 @@ class RsdnfMap(Map2D):
             If routerType = sequence it will initialise the random sequence
             npArrayInt must be a size*size*4 array of intc
             """
-            if self.getArg('routerType') is 'sequence':
-                self.lib.setArraySubState(self.SubBuffer.RANDOM_OUT,npArrayInt)
-                self.lib.synch()
-            else:
-                warning.warn("Trying to set random sequence but router is not of the right type. routerType must be sequence")
+            self.lib.setArraySubState(self.SubBuffer.RANDOM_OUT,npArrayInt)
+            self.lib.synch()
 
         def getRandomSequence(self):
             size = self.getArg('size')
             npArrayInt = np.zeros((size,size,4),dtype=np.intc)
-            if self.getArg('routerType') is 'sequence':
-                self.lib.getArraySubState(self.SubBuffer.RANDOM_OUT,npArrayInt)
-            else:
-                warning.warn("Trying to set random sequence but router is not of the right type. routerType must be sequence")
+            self.lib.getArraySubState(self.SubBuffer.RANDOM_OUT,npArrayInt)
             return npArrayInt
 
 
@@ -99,21 +101,26 @@ class RsdnfMap(Map2D):
             at every computation
             """
             size = self.getArg('size')
+            zeros = np.zeros((size,size,4),dtype=np.intc)
             self.lib.setArrayAttribute(self.Attributes.NB_BIT_RECEIVED, \
                                        np.zeros((size,size),dtype=np.bool))
+            #reset buffer
+            self.lib.setArraySubState(self.SubBuffer.BUFFER,zeros)
+            self.lib.setArraySubState(self.SubBuffer.SPIKE_OUT,zeros)
+            self.lib.synch()
+            self.newActivation=True
 
 
         def reset(self):
-            super(RsdnfMap,self).reset()
-            size = self._init_kwargs['size']
-            self._data = np.zeros((size,size),dtype=np.intc)
             if self.lib:
+                print("reset",self.getName())
+                #logging.exception("Something awful happened!")
                 self.lib.reset()
-                self.lib.getArrayAttribute(self.Attributes.NB_BIT_RECEIVED
-                                           ,self._data)
+            super(RsdnfMap,self).reset()
 
         def _onParamsUpdate(self,nspike,proba,
-                            precisionProba,reproductible):
+                            precisionProba,reproductible,size,routerType):
+            print("param update :",proba,nspike)
             self.lib.setMapParam(self.Params.NB_SPIKE,nspike)
             self.lib.setMapParam(self.Params.PROBA,proba)
             self.lib.setMapParam(self.Params.PRECISION_PROBA,2**precisionProba-1)
@@ -123,10 +130,12 @@ class RsdnfMap(Map2D):
                 seed = random.randint(0, sys.maxint)
                 self.lib.initSeed(seed)
             
-            if self.getArg('routerType') is 'sequence':
-                size = self.getArg('size')
-                randomSequence = np.random.random((size,size,4)) <= proba
-                self.setRandomSequence(randomSequence.astype(np.intc))
+            if routerType is 'sequence':
+                randomSequence = (np.random.random((size,size,4)) <= proba).astype(np.intc)
+                self.setRandomSequence(randomSequence)
+                randomSequence2 = self.getRandomSequence()
+                assert(np.array_equal(randomSequence,randomSequence2))
+
 
 
                 

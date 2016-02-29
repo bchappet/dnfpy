@@ -189,6 +189,7 @@ void getArraySubState(int index,int * array){
 }
 void setArraySubState(int index,int * array){
     mapSimu->setArraySubState(index,array);
+
 }
 
 

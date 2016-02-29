@@ -154,6 +154,7 @@ void test_sequence_rsdnf_map(int size){
     randState[size*4-2] = 1;
     randState[size*size*4-1] = 1;
     map2d.setArraySubState(2,randState);
+    
     map2d.synch();
     map2d.compute();
     map2d.synch();
@@ -161,9 +162,9 @@ void test_sequence_rsdnf_map(int size){
     map2d.synch();
     map2d.getArraySubState(2,randState);
     print_3D_array<int>(randState,size,size,4); 
-    assert(randState[8]==1);//check propagation of random numbers simple
-    assert(randState[7]==1);//check propagation of random numbers end of array
-    assert(randState[size*4+6]==1);//check propagation of random numbers end of row
+    assert(randState[10]==1);//check propagation of random numbers simple
+    assert(randState[5]==1);//check propagation of random numbers end of array
+    assert(randState[size*4+4]==1);//check propagation of random numbers end of row
     
     //generate random map with only one
     for(size_t i =0 ; i < size*size*4 ; ++i)
