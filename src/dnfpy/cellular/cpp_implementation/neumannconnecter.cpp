@@ -7,7 +7,7 @@ void NeumannConnecter::cellNeighbourConnection(Module::ModulePtr cell,Module::Mo
 }
 
 
-void NeumannConnecter::connect(int width,int height,std::vector<std::vector<Module::ModulePtr>> &cellArray) const{
+void NeumannConnecter::connect(int width,int height,std::vector<std::vector<Module::ModulePtr>> &cellArray,bool wrap) const{
 
 
     for(int i = 0 ; i < height ; i++){
@@ -16,23 +16,40 @@ void NeumannConnecter::connect(int width,int height,std::vector<std::vector<Modu
             this->cellConnection(cell);
             if(this->within_border(i-1,j,height,width))
                 this->cellNeighbourConnection(cell,cellArray[i-1][j],N);
-            else
-                this->cellNeighbourConnection(cell,nullptr,N);
+            else{
+                if(wrap)
+                    this->cellNeighbourConnection(cell,cellArray[(i-1 + height)%height][j],N);
+                else
+                    this->cellNeighbourConnection(cell,nullptr,N);
+            }
 
             if(this->within_border(i+1,j,height,width))
                 this->cellNeighbourConnection(cell,cellArray[i+1][j],S);
-            else
-                this->cellNeighbourConnection(cell,nullptr,S);
+            else{
+                if(wrap)
+                    this->cellNeighbourConnection(cell,cellArray[(i+1)%height][j],S);
+                else
+                    this->cellNeighbourConnection(cell,nullptr,S);
+            }
+                
 
             if(this->within_border(i,j+1,height,width))
                 this->cellNeighbourConnection(cell,cellArray[i][j+1],E);
-            else
-                this->cellNeighbourConnection(cell,nullptr,E);
+            else{
+                if(wrap)
+                    this->cellNeighbourConnection(cell,cellArray[i][(j+1)%width],E);
+                else
+                    this->cellNeighbourConnection(cell,nullptr,E);
+            }
 
             if(this->within_border(i,j-1,height,width))
                 this->cellNeighbourConnection(cell,cellArray[i][j-1],W);
-            else
-                this->cellNeighbourConnection(cell,nullptr,W);
+            else{
+                if(wrap)
+                    this->cellNeighbourConnection(cell,cellArray[i][(j-1 + width)%width],W);
+                else
+                    this->cellNeighbourConnection(cell,nullptr,W);
+            }
 
 
         }

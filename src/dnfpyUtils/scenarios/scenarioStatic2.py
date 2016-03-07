@@ -1,27 +1,25 @@
 from dnfpyUtils.scenarios.scenario import Scenario
 class ScenarioStatic2(Scenario):
-    def __init__(self,timeStim=2.,noiseI=0.5):
-        super(ScenarioStatic2,self).__init__(expectedNbCluster=2)
+    def __init__(self,timeStim=2.,noiseI=0.5,**kwargs):
+        super(ScenarioStatic2,self).__init__(expectedNbCluster=2,**kwargs)
         self.timeStim = timeStim
         self.noiseI = noiseI
 
     def applyContext(self):
-        """
-        If we need to change parameters before modele instanciation
-        """
+        super().applyContext()
         model = self.runner
         self.input = model.getMap("Inputs")
         self.input.setParamsRec(noiseI=self.noiseI)
 
         period=10e-10 #the target should not move
-        traj1X = model.getMap("Inputs_track0_cX")
+        traj1X = model.getMap("Inputs_track0_c0")
         traj1X.setParams(period=period)
-        traj1Y = model.getMap("Inputs_track0_cY")
+        traj1Y = model.getMap("Inputs_track0_c1")
         traj1Y.setParams(period=period)
 
-        traj2X = model.getMap("Inputs_track1_cX")
+        traj2X = model.getMap("Inputs_track1_c0")
         traj2X.setParams(period=period)
-        traj2Y = model.getMap("Inputs_track1_cY")
+        traj2Y = model.getMap("Inputs_track1_c1")
         traj2Y.setParams(period=period)
 
         self.track0 = model.getMap("Inputs_track0")

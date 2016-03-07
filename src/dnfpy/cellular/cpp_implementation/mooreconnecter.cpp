@@ -6,7 +6,7 @@ void MooreConnecter::cellConnection(Module::ModulePtr cell,Module::ModulePtr nei
     }
 }
 
-void MooreConnecter::connect(int width,int height,std::vector<std::vector<Module::ModulePtr>> &cellArray) const{
+void MooreConnecter::connect(int width,int height,std::vector<std::vector<Module::ModulePtr>> &cellArray,bool wrap) const{
 
     std::vector<Module::ModulePtr> inputs;
     for(int i = 0 ; i < height ; i++){
@@ -23,8 +23,10 @@ void MooreConnecter::connect(int width,int height,std::vector<std::vector<Module
                            // std::cout << "passed" << std::endl;
                             this->cellConnection(cell,cellArray[i+a][j+b],dir);
                         }else{
-                            //TODO wrap if needed
-                            this->cellConnection(cell,nullptr,dir);
+                            if(wrap)
+                                this->cellConnection(cell,cellArray[(i+a)%height][(j+b)%width],dir);
+                            else
+                                this->cellConnection(cell,nullptr,dir);
                         }
                     }
                     dir ++;

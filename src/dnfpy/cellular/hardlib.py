@@ -3,9 +3,9 @@ from cffi import FFI
 
 ffi = FFI()
 ffi.cdef("""
-    int initSimu(int width,int height,char* cellName,char* connecterName);
-    int initSimuParam(int width,int height,char* cellName,char* connecterName,char* param);
-    void addConnection(char *connecterName);
+    int initSimu(int width,int height,char* cellName,char* connecterName,bool wrap);
+    int initSimuParam(int width,int height,char* cellName,char* connecterName,char* param,bool wrap);
+    void addConnection(char *connecterName,bool wrap);
     int useMap(int idMap);
 
     void preCompute();
@@ -58,20 +58,20 @@ ffi.cdef("""
 
 
 class HardLib:
-    def __init__(self,sizeX,sizeY,cellType,connecterType,param=None):
+    def __init__(self,sizeX,sizeY,cellType,connecterType,param=None,wrap=False):
         self.C = ffi.dlopen("libhardsimu.so")
         cellType = str.encode(cellType)
         connecterType = str.encode(connecterType)
         
         if param:
             param = str.encode(param)
-            self.__idMap = self.C.initSimuParam(sizeX,sizeY,cellType,connecterType,param)
+            self.__idMap = self.C.initSimuParam(sizeX,sizeY,cellType,connecterType,param,wrap)
         else:
-            self.__idMap = self.C.initSimu(sizeX,sizeY,cellType,connecterType)
+            self.__idMap = self.C.initSimu(sizeX,sizeY,cellType,connecterType,wrap)
 
-    def addConnection(self,connecterName):
+    def addConnection(self,connecterName,wrap=False):
         self.__useMap()
-        self.C.addConnection(str.encode(connecterName))
+        self.C.addConnection(str.encode(connecterName),wrap)
 
     def __useMap(self):
         self.C.useMap(self.__idMap)

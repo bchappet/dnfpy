@@ -180,23 +180,21 @@ public:
 
 
     /**
-             * @brief getMapParam return the param using path for first cell.
-             * As all the param should be the same, it is relevant
-             * @param index
-             * @param path
-             */
+    * @brief getMapParam return the param using path for first cell.
+    * As all the param should be the same, it is relevant
+    * @param index
+    * @param path
+    */
     void* getMapParam(int index){
         return this->params->at(index);
     }
 
     /**
-             * @brief connect the cell together and the cell sub module to input cell submodules
-             * if cellC is provided
-             * @param c
-             * @param cellC
-             */
-    void connect(const Connecter& c){
-        c.connect(this->width,this->height,this->cellArray);
+    * @brief connect the cell together and the cell sub module to input cell submodules
+    * @param c
+    */
+  void connect(const Connecter& c,bool wrap=false){
+        c.connect(this->width,this->height,this->cellArray,wrap);
     }
 
     Module::ModulePtr getCell(int x,int y){

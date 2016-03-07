@@ -1,24 +1,16 @@
 #ifndef SEQUENCECONNECTER_H
 #define SEQUENCECONNECTER_H
-#include "connecter.h"
+#include "neumannconnecter.h"
 /**
- * Connect the router to each other adding one neigbour for random bit propagation
- * it is a sequence connection:
- * 1 2 3 4 
- * 5 6 7 8
- * 9 ....12
- *
+ * Opposite connection to RSDNF to avoid any correlation with spike propagation
  * 12 linked to 1
  */
-class SequenceConnecter:public Connecter
+class SequenceConnecter:public NeumannConnecter
 {
 public:
 
-    /**
-     * 
-     */
-    virtual void connect(int width,int height,std::vector<std::vector<Module::ModulePtr>> &cellArray) const override;
-    virtual void cellNeighbourConnection(Module::ModulePtr cell,Module::ModulePtr neighCell)const ;
+    virtual void cellConnection(Module::ModulePtr cell)const override;
+    virtual void cellNeighbourConnection(Module::ModulePtr cell,Module::ModulePtr neighCell,int dir)const override;
 
 
 };

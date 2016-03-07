@@ -142,29 +142,31 @@ void test_sequence_rsdnf_map(int size){
     cout << "start " << endl;
     Map2D map2d(size,size);
     map2d.initCellArray<CellRsdnf>("sequence");
-    map2d.connect(c);
-    map2d.connect(c2);
+    map2d.connect(c,true);
+    map2d.connect(c2,true);
 
     int* randState = construct_array3d<int>(size,size,4);
 
     map2d.getArraySubState(2,randState);
-    print_3D_array<int>(randState,size,size,4); 
 
     randState[0] = 1;
     randState[size*4-2] = 1;
     randState[size*size*4-1] = 1;
+
     map2d.setArraySubState(2,randState);
     
     map2d.synch();
-    map2d.compute();
-    map2d.synch();
+    cout << "1" << endl;
+    map2d.getArraySubState(2,randState);
+    print_3D_array<int>(randState,size,size,4); 
     map2d.compute();
     map2d.synch();
     map2d.getArraySubState(2,randState);
+    cout << "2" << endl;
     print_3D_array<int>(randState,size,size,4); 
-    assert(randState[10]==1);//check propagation of random numbers simple
-    assert(randState[5]==1);//check propagation of random numbers end of array
-    assert(randState[size*4+4]==1);//check propagation of random numbers end of row
+    assert(randState[size*4]==1);//north is going south
+    assert(randState[size*4 - 4 - 2]==1);//east is going west
+    assert(randState[size*size*4-size*4+3]==1); //west is going east (wrapped)
     
     //generate random map with only one
     for(size_t i =0 ; i < size*size*4 ; ++i)
@@ -286,7 +288,7 @@ void test_SBSFastMap_2layer(){
     int size = 11;
     int hSize = size/2;
 
-    int mapId = initSimu(size,size,"cellsbsfast2","rsdnfconnecter2layer");
+    int mapId = initSimu(size,size,"cellsbsfast2","rsdnfconnecter2layer",false);
     useMap(mapId);
     setMapParamInt(CellSBSFast::SIZE_STREAM,10);
     setMapParamFloat(CellSBSFast::PROBA_SYNAPSE,1.);
@@ -334,7 +336,7 @@ void test_SBSFastMap_2layer(){
 
     size = 11;
     hSize = size/2;
-    mapId = initSimu(size,size,"cellsbsfast2","rsdnfconnecter2layer");
+    mapId = initSimu(size,size,"cellsbsfast2","rsdnfconnecter2layer",false);
     useMap(mapId);
     setMapParamInt(CellSBSFast::SIZE_STREAM,1000);
     setMapParamFloat(CellSBSFast::PROBA_SPIKE,0.01);
@@ -362,7 +364,7 @@ void test_SBSFastMap_precision(){
     int size = 11;
     int hSize = size/2;
 
-    int mapId = initSimu(size,size,"cellsbsfast","rsdnfconnecter");
+    int mapId = initSimu(size,size,"cellsbsfast","rsdnfconnecter",false);
     useMap(mapId);
     setMapParamInt(CellSBSFast::SIZE_STREAM,10);
     setMapParamInt(CellSBSFast::PRECISION_PROBA,1);
@@ -408,7 +410,7 @@ void test_SBSFastMap(){
     int size = 101;
     int hSize = size/2;
 
-    int mapId = initSimu(size,size,"cellsbsfast","rsdnfconnecter");
+    int mapId = initSimu(size,size,"cellsbsfast","rsdnfconnecter",false);
     useMap(mapId);
     setMapParamInt(CellSBSFast::SIZE_STREAM,10);
     //    setMapParamFloat(CellSBSFast::PROBA_SYNAPSE,0.9,".");
@@ -1043,7 +1045,7 @@ void activateMap2D(Map2D &map2d,int size){
 
 void test_stochastic_soft_simu_nstep(int size){
     int hSize = size/2;
-    int mapId = initSimu(size,size,"cellbsrsdnf","rsdnfconnecter");
+    int mapId = initSimu(size,size,"cellbsrsdnf","rsdnfconnecter",false);
     useMap(mapId);
     initMapSeed(255);//reproductibility
     bool activate = true;
@@ -1332,7 +1334,7 @@ void test_cell_nspike(){
 
 void test_soft_simu(int size)
 {
-    int idMap = initSimu(size,size,"cellrsdnf","rsdnfconnecter");
+    int idMap = initSimu(size,size,"cellrsdnf","rsdnfconnecter",false);
     useMap(idMap);
     int* stateInt = construct_array<int>(size,size);
     bool act = true;
@@ -1344,7 +1346,7 @@ void test_soft_simu(int size)
     getArrayAttributeInt(CellRsdnf::NB_BIT_RECEIVED,stateInt);
     print_2D_array<int>(stateInt,size,size);
 
-    initSimu(size,size,"cellnspike","nspikeconnecter");
+    initSimu(size,size,"cellnspike","nspikeconnecter",false);
     int i = 10;
     setCellAttribute(0,0,0,&i);
     int res = 0;

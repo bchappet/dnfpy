@@ -22,9 +22,9 @@
 std::vector<Map2D*> mapSimuVec;
 Map2D* mapSimu;
 
-void initCellArrayFromName(Map2D* mapSimu,char* name);
-void initCellArrayFromNameWithParam(Map2D* map,char* name,char* param);
-void connecterFromName(Map2D* mapSimu,char* name);
+void initCellArrayFromName(Map2D* mapSimu,const char* name);
+void initCellArrayFromNameWithParam(Map2D* map,const char* name,const char* param);
+void connecterFromName(Map2D* mapSimu,const char* name,bool wrap);
 
 int useMap(int idMap_){
     mapSimu = mapSimuVec[idMap_];
@@ -58,27 +58,27 @@ float getMapParamFloat(int index){
 
 
 //ModuleC* convertModuleToC(Module* mod);
-int initSimu(int width,int height,char* cellName,char* connecterName)
+int initSimu(int width,int height,const char* cellName,const char* connecterName,bool wrap)
 {
     Map2D* theNewMap = new Map2D(width,height);
 
     initCellArrayFromName(theNewMap,cellName);
 
-    connecterFromName(theNewMap,connecterName);
+    connecterFromName(theNewMap,connecterName,wrap);
     mapSimuVec.push_back(theNewMap);
     return mapSimuVec.size()-1;
 }
 
-int initSimuParam(int width,int height,char* cellName,char* connecterName,char* param){
+int initSimuParam(int width,int height,const char* cellName,const char* connecterName,const char* param,bool wrap){
     Map2D* theNewMap = new Map2D(width,height);
     initCellArrayFromNameWithParam(theNewMap,cellName,param);
-    connecterFromName(theNewMap,connecterName);
+    connecterFromName(theNewMap,connecterName,wrap);
     mapSimuVec.push_back(theNewMap);
     return mapSimuVec.size()-1;
 }
 
-void addConnection(char *connecterName){
-    connecterFromName(mapSimu,connecterName);
+void addConnection(char *connecterName,bool wrap){
+    connecterFromName(mapSimu,connecterName,wrap);
 
 }
 
@@ -194,7 +194,7 @@ void setArraySubState(int index,int * array){
 
 
 
-void initCellArrayFromNameWithParam(Map2D* map,char* name,char* param){
+void initCellArrayFromNameWithParam(Map2D* map,const char* name,const char* param){
     if(strcmp(name,"cellbsrsdnf")==0){
         map->initCellArray<CellBsRsdnf>(param);
     }else if(strcmp(name,"cellrsdnf")==0){
@@ -208,7 +208,7 @@ void initCellArrayFromNameWithParam(Map2D* map,char* name,char* param){
 
 
 
-void initCellArrayFromName(Map2D* map,char* name){
+void initCellArrayFromName(Map2D* map,const char* name){
     if(strcmp(name,"cellgof")==0){
         map->initCellArray<CellGof>();
     }else if(strcmp(name,"cellrsdnf")==0){
@@ -228,26 +228,26 @@ void initCellArrayFromName(Map2D* map,char* name){
 
 }
 
-void connecterFromName(Map2D* map,char* name){
+void connecterFromName(Map2D* map,const char* name,bool wrap){
 
     if(strcmp(name,"mooreconnecter")==0){
         MooreConnecter c;
-        map->connect(c);
+        map->connect(c,wrap);
     }else if(strcmp(name,"neumannconnecter")==0){
         NeumannConnecter c;
-        map->connect(c);
+        map->connect(c,wrap);
     }else if(strcmp(name,"rsdnfconnecter")==0){
         RsdnfConnecter c;
-        map->connect(c);
+        map->connect(c,wrap);
     }else if(strcmp(name,"nspikeconnecter")==0){
         NSpikeConnecter c;
-        map->connect(c);
+        map->connect(c,wrap);
     }else if(strcmp(name,"rsdnfconnecter2layer")==0){
         RsdnfConnecter2layer c;
-        map->connect(c);
+        map->connect(c,wrap);
     }else if(strcmp(name,"sequenceconnecter")==0){
         SequenceConnecter c;
-        map->connect(c);
+        map->connect(c,wrap);
     }else{
         std::cerr << "unvalid connecter name " << name << std::endl;
     }

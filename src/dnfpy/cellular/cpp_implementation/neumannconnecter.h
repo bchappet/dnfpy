@@ -17,7 +17,7 @@ public:
 
     virtual void cellNeighbourConnection(Module::ModulePtr cell,Module::ModulePtr neighCell,int dir)const;
 
-    virtual void connect(int width,int height,std::vector<std::vector<Module::ModulePtr>> &cellArray) const override;
+    virtual void connect(int width,int height,std::vector<std::vector<Module::ModulePtr>> &cellArray,bool wrap = false) const override;
 
 };
 

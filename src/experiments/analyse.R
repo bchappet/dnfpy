@@ -21,20 +21,28 @@
 
 
 
-data = read.table("NSpike_Control_modelXnspikeXdt.csv",header=TRUE,sep=",")
-data$ModelName = as.factor(data$ModelName)
-data$ScenarioName = as.factor(data$ScenarioName)
-data$model = as.factor(data$model)
-data$nspike <- as.factor(data$nspike)
-attach(data)
-head(data)
-
+#data = read.table("NSpike_Control_modelXnspikeXdt.csv",header=TRUE,sep=",")
+#data$ModelName = as.factor(data$ModelName)
+#data$ScenarioName = as.factor(data$ScenarioName)
+#data$model = as.factor(data$model)
+#data$nspike <- as.factor(data$nspike)
+#attach(data)
+#head(data)
+#
+#
+#library(ggplot2)
+#a <- ggplot(data,aes(x = nspike,y = ErrorDist,color = model))
+#a <- a + geom_boxplot(outlier.size=.5)
+#a <- a + facet_wrap(~dt)
+#a <- a + ylim(0.025,0.075)
+#a <- a + scale_color_grey() + theme_classic()
+#a <- a + theme(text = element_text(size = 20))
+#ggsave("plot_nspike_dt.png", plot = a, width = 10, height = 10)
 
 library(ggplot2)
-a <- ggplot(data,aes(x = nspike,y = ErrorDist,color = model))
-a <- a + geom_boxplot(outlier.size=.5)
-a <- a + facet_wrap(~dt)
-a <- a + ylim(0.025,0.075)
-a <- a + scale_color_grey() + theme_classic()
-a <- a + theme(text = element_text(size = 20))
-ggsave("plot_nspike_dt.png", plot = a, width = 10, height = 10)
+data1 <- read.table("NSpike_prng_sequence_spike.csv",header=TRUE,sep=",")
+data1$ModelName <- as.factor(data1$ModelName)
+data1$routerType <- as.factor(data1$routerType)
+a <- ggplot(data1,aes(x = routerType,y = ErrorDist))
+a <- a + geom_boxplot()
+ggsave("analyse.png",plot=a,width=10,height=10)

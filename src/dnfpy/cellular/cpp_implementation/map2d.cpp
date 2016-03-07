@@ -50,6 +50,7 @@ void Map2D::reset(){
     }
 }
 
+
 void Map2D::preCompute(){
 //    std::cout << "precompute " << this->height  <<"x"<< this->width << std::endl;
 //    std::cout << "pSpike: " <<this->getParam<float>(0) << std::endl;

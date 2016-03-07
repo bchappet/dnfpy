@@ -16,7 +16,7 @@ extern "C" {
      * @param connecterName
      * @return
      */
-    int initSimu(int width,int height,char* cellName,char* connecterName);
+    int initSimu(int width,int height,const char* cellName,const char* connecterName,bool wrap);
 
     /**
      * @brief initSimu
@@ -27,8 +27,8 @@ extern "C" {
      * @param param will be given on construction of cell
      * @return
      */
-    int initSimuParam(int width,int height,char* cellName,char* connecterName,char* param);
-    void addConnection(char *connecterName);
+    int initSimuParam(int width,int height,const char* cellName,const char* connecterName,const char* param,bool wrap);
+    void addConnection(char *connecterName,bool wrap);
 
 
     /**

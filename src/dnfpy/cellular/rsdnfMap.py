@@ -48,10 +48,9 @@ class RsdnfMap(Map2D):
                      reproductible=True,
                      nstep=1,
                      **kwargs):
-            print("init :",proba,nspike)
             self.lib = HardLib(size,size,"cellrsdnf","rsdnfconnecter",routerType)
             if routerType is "sequence":
-                self.lib.addConnection("sequenceconnecter")
+                self.lib.addConnection("sequenceconnecter",wrap=True)
             super(RsdnfMap,self).__init__(name=name,size=size,dt=dt,dtype=np.intc,
                                            nspike=nspike,
                                             proba=proba,
@@ -113,22 +112,18 @@ class RsdnfMap(Map2D):
 
         def reset(self):
             if self.lib:
-                print("reset",self.getName())
-                #logging.exception("Something awful happened!")
                 self.lib.reset()
             super(RsdnfMap,self).reset()
 
         def _onParamsUpdate(self,nspike,proba,
                             precisionProba,reproductible,size,routerType):
-            print("param update :",proba,nspike)
             self.lib.setMapParam(self.Params.NB_SPIKE,nspike)
             self.lib.setMapParam(self.Params.PROBA,proba)
             self.lib.setMapParam(self.Params.PRECISION_PROBA,2**precisionProba-1)
             if reproductible:
                 self.lib.initSeed(0)
             else:
-                seed = random.randint(0, sys.maxint)
-                self.lib.initSeed(seed)
+                self.lib.initSeed(random.randrange(0,1e9))
             
             if routerType is 'sequence':
                 randomSequence = (np.random.random((size,size,4)) <= proba).astype(np.intc)
