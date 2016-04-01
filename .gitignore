@@ -1,3 +1,8 @@
+
+*.fish.sw*
+*.Rhistory
+
+
 install_tmp.*
 install_tmp.sh
 install_tmp1.sh
