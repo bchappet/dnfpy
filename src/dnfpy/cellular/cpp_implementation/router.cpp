@@ -4,7 +4,7 @@
 #include "param.h"
 #include "bitstreamutils.h"
 
-Router::Router()
+Router::Router(int row,int col) : Module(row,col)
 {
 
     //attribute

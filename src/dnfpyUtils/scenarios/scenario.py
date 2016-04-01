@@ -5,7 +5,7 @@ from dnfpyUtils.stats.statsTracking import StatsTracking
 from dnfpy.core.mapND import MapND
 class Scenario(Runnable,MapND):
     """
-    Mother class for every scenario
+    Abstract class for every scenario
     TODO it is a bit to specific for dnf2D with tracking tasks
     The scenario initilize the statistics, change the execution context before starting(in apply context) or during the execution in _apply
 
@@ -25,12 +25,6 @@ class Scenario(Runnable,MapND):
         self.root = self.initMaps(**self.kwargs)
         self._addMapsToDict(self.root) #recursively add map to mapDict
 
-    def initMaps(self,size=49,dim=2,dt=0.1,iStim1=1.0,iStim2=0.95,**kwargs):
-        """
-        Initialize the maps and return the roots
-        """
-        self.input = InputMap("Inputs",size,dt=dt,dim=dim,iStim1=iStim1,iStim2=iStim2,noise_dt=dt,tck_dt=dt)
-        return [self.input,]
 
 
 
@@ -80,6 +74,8 @@ class Scenario(Runnable,MapND):
         Do something when simulation ends
         and return information
         """
+        for map in self.mapDict.values():
+            map.close()
         return []
 
 

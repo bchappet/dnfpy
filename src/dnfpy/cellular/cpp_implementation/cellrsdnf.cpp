@@ -1,10 +1,12 @@
 #include "cellrsdnf.h"
 #include "router.h"
 #include "routerSequence.h"
+#include "routerSequenceMixte.h"
+#include "routerBit.h"
 #include <iostream>
 #include "bitstreamutils.h"
 
-CellRsdnf::CellRsdnf(std::string typeRouter) : Module()
+CellRsdnf::CellRsdnf(int row,int col,std::string typeRouter) : Module(row,col)
 {
 
 
@@ -31,9 +33,17 @@ void CellRsdnf::initRouters(std::string typeRouter){
     for(int i = 0 ; i < 4 ;i ++){
         ModulePtr r= NULL;
         if(typeRouter.compare("prng") == 0){
-            r = ModulePtr(new Router());
+            r = ModulePtr(new Router(this->row,this->col));
         }else if(typeRouter.compare("sequence") == 0){
-            r = ModulePtr(new RouterSequence());
+            r = ModulePtr(new RouterSequence(this->row,this->col));
+        }else if(typeRouter.compare("sequenceShort") == 0){
+            r = ModulePtr(new RouterSequence(this->row,this->col));
+        }else if(typeRouter.compare("sequenceMixte") == 0){
+            r = ModulePtr(new RouterSequenceMixte(this->row,this->col));
+        }else if(typeRouter.compare("sequenceShortMixte") == 0){
+            r = ModulePtr(new RouterSequenceShortMixte(this->row,this->col,i));
+        }else if(typeRouter.compare("bit") == 0){
+            r = ModulePtr(new RouterBit(this->row,this->col));
         }else{
             std::cout << "invalid router name "<< typeRouter << std::endl;
             exit(-1);

@@ -6,7 +6,7 @@
 class CellSBSFast2 : public CellSBSFast
 {
 public:
-    CellSBSFast2();
+    CellSBSFast2(int row=0,int col=0);
 
     virtual void setDefaultParams(ParamsPtr params) override;
     virtual void preCompute() override;

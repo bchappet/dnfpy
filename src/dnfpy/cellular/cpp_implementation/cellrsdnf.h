@@ -6,7 +6,7 @@
 class CellRsdnf : public Module
 {
 public:
-    CellRsdnf(std::string typeRouter="prng");
+    CellRsdnf(int row=0, int col=0,std::string typeRouter="prng");
     virtual void computeState() override;
     virtual void setDefaultParams(ParamsPtr params) override;
 
@@ -17,8 +17,6 @@ public:
 
 
     virtual void getAttribute(int index,void* value) override;
-
-
     virtual void setAttribute(int index, void* value) override;
 
     virtual void reset() override;

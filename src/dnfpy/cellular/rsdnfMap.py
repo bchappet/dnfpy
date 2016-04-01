@@ -43,15 +43,20 @@ class RsdnfMap(Map2D):
 
         def __init__(self,name,size,dt=0.1,nspike=20,
                      proba=1.0,
-                     precisionProba=30,
-                     routerType="prng",
+                     precisionProba=31,
+                     routerType="prng", #sequence|sequenceShort|sequenceMixte|sequenceShortMixte
                      reproductible=True,
                      nstep=1,
                      **kwargs):
             self.lib = HardLib(size,size,"cellrsdnf","rsdnfconnecter",routerType)
-            if routerType is "sequence":
+            if routerType == "sequence" or routerType == "sequenceMixte":
                 self.lib.addConnection("sequenceconnecter",wrap=True)
-            super(RsdnfMap,self).__init__(name=name,size=size,dt=dt,dtype=np.intc,
+            elif routerType == "sequenceShortMixte" or routerType == "sequenceShort":
+                self.lib.addConnection("sequenceconnecterShort",wrap=True)
+            elif routerType != 'prng':
+                print("unknown router" + routerType)
+                sys.exit(-1)
+            super().__init__(name=name,size=size,dt=dt,dtype=np.intc,
                                            nspike=nspike,
                                             proba=proba,
                                             precisionProba=precisionProba,
@@ -63,9 +68,14 @@ class RsdnfMap(Map2D):
             self.newActivation = True #true when we want to get the new activation
 
         def _compute(self,size,activation,nstep):
+            self._compute2(size,activation,nstep)
+
+        def _compute2(self,size,activation,nstep):
             if self.newActivation:
                 self.newActivation = False
                 self.setActivation(activation)
+                #print("new act ")
+                #print(np.sum(activation))
 
             self.lib.nstep(nstep)
             self.lib.getArrayAttribute(self.Attributes.NB_BIT_RECEIVED,self._data)
@@ -113,7 +123,7 @@ class RsdnfMap(Map2D):
         def reset(self):
             if self.lib:
                 self.lib.reset()
-            super(RsdnfMap,self).reset()
+            super().reset()
 
         def _onParamsUpdate(self,nspike,proba,
                             precisionProba,reproductible,size,routerType):
@@ -125,11 +135,10 @@ class RsdnfMap(Map2D):
             else:
                 self.lib.initSeed(random.randrange(0,1e9))
             
-            if routerType is 'sequence':
+            if routerType == 'sequence' or routerType == "sequenceShort" or routerType == "sequenceMixte" or routerType == "sequenceShortMixte":
+                #TODO reproducible!!!
                 randomSequence = (np.random.random((size,size,4)) <= proba).astype(np.intc)
                 self.setRandomSequence(randomSequence)
-                randomSequence2 = self.getRandomSequence()
-                assert(np.array_equal(randomSequence,randomSequence2))
 
 
 
@@ -137,3 +146,20 @@ class RsdnfMap(Map2D):
 
 
             return {}
+
+if __name__ == "__main__":
+    size = 100
+    activation = np.zeros( ( size,size),np.bool_)
+    uut = RsdnfMap("uut",size,activation=activation)
+    uut.reset()
+    activation[size//2,size//2] = 1
+    uut.setParams(pExc=1,pInh=1,nspike=20)
+    activation[size//2-5:size//2+5,size//2-5:size//2+5] = 1
+    uut.setParams(nspike=20)
+
+    for i in range(100*20 + 200):
+        uut.compute()
+    data = uut.getData()
+    assert(np.sum(data)==100*100*100*20 - 100*20)
+
+

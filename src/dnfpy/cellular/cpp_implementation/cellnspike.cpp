@@ -7,7 +7,7 @@
 #define PRECISION_RAND 1000000
 
 int applyProba(float proba, int n);
-CellNSpike::CellNSpike()
+CellNSpike::CellNSpike(int row , int col): Module(row,col)
 {
 
 

@@ -69,6 +69,7 @@ class StatsTracking(Stats):
         Do something when simulation ends
         and return information
         """
+        super().finalize()
 
         endProcessorTime = time.clock()
 

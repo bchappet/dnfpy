@@ -10,7 +10,7 @@
 class CellSBSFast: public BitStreamGenerator
 {
 public:
-    CellSBSFast();
+    CellSBSFast(int row=0,int col=0);
     virtual void setDefaultParams(ParamsPtr params) override;
 
 

@@ -2,7 +2,7 @@
 #include "bitstreamgenerator.h"
 #include"cellsbsfast.h"
 
-SBSFastRouter::SBSFastRouter()
+SBSFastRouter::SBSFastRouter(int row,int col):BitStreamGenerator(row,col)
 {
     this->sbs.reset();
     this->synSBS.reset();

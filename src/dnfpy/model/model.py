@@ -44,4 +44,12 @@ class Model(Runnable):
 
 
 
+    def finalize(self):
+        """
+        Close properly
+        """
+        for map in self.mapDict.values():
+            map.close()
+        return []
+
 

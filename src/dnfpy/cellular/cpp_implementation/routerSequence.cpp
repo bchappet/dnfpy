@@ -4,7 +4,7 @@
 #include "param.h"
 #include "bitstreamutils.h"
 
-RouterSequence::RouterSequence() : Router()
+RouterSequence::RouterSequence(int row,int col) : Router(row,col)
 {
 
     this->regs.push_back(Register(false));//RANDOM_OUT
@@ -21,7 +21,7 @@ void RouterSequence::computeState(){
     int buffer = this->getRegState(BUFFER);
     int nbInput = 0;
 
-    for(unsigned int i = 1 ; i < this->neighbours.size()-1;i++){
+    for(unsigned int i = 1 ; i < this->neighbours.size()-1;i++){ //-1 because the last neighbour is one giving the next random bit
         nbInput += this->getNeighbour(i).get()->getRegState(SPIKE_OUT);
     }
 

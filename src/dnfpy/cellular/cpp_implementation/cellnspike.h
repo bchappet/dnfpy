@@ -5,7 +5,7 @@
 class CellNSpike: public Module
 {
 public:
-    CellNSpike();
+    CellNSpike(int row,int col);
     virtual void computeState() override;
     /**
      * @brief synch for computational speed we will not use register. So no synch needed

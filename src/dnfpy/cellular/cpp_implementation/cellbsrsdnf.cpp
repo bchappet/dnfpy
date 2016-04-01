@@ -19,7 +19,7 @@ CellBsRsdnf::~CellBsRsdnf(){
     delete this->lastRandomNumber;
 }
 
-CellBsRsdnf::CellBsRsdnf(std::string typeRouter) :Module(){
+CellBsRsdnf::CellBsRsdnf(int row, int col,std::string typeRouter) :Module(row,col){
 
     //allocate the lastRandomNumber
     this->lastRandomNumber= new int;

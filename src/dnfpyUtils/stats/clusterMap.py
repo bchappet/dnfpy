@@ -82,11 +82,11 @@ class ClusterMap(Map2D):
         maxArr = np.max(np_arr)
         coords = np.where(np_arr > maxArr/1.2)
         self.nbActivation = len(coords[0])
+        print(self.nbActivation)
         #if nbActivation > 0 and nbActivation < np_arr.shape[0]*1.6:
         
         #print(expectedNumberOfCluster,clustSize_)
         nbActMax = (np.pi*(clustSize_/2.0)**2)*expectedNumberOfCluster
-        #print("threshold : ",nbActMax)
         if self.nbActivation < nbActMax and (self.nbActivation > 0 or (continuity > 0) and (len(self.clusters)>0)):
             #print("nbActivation : %s"%self.nbActivation)
             self.nbActList.append(self.nbActivation)

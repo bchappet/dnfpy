@@ -46,6 +46,10 @@ class Stats(Runnable):
         return []
  
 
+    def finalize(self):
+        for map in self.mapDict.values():
+            map.close()
+        return []
 
 
 

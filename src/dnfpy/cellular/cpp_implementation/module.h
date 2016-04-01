@@ -17,7 +17,7 @@ public:
     typedef boost::shared_ptr<Module> ModulePtr;
     typedef boost::shared_ptr<std::vector<void*>> ParamsPtr;
 
-    Module(){}
+    Module(int row = 0, int col = 0):row(row),col(col){}
 
     /**
      * @brief preCompute optional and not recursif: is not called on the submodules
@@ -141,11 +141,20 @@ public:
         }
     }
 
+    int getRow(){
+        return this->row;
+    }
+
+    int getCol(){
+        return this->col;
+    }
+
 protected:
     std::vector<Register> regs;//inner state of the module
     std::vector<ModulePtr> neighbours;
     std::vector<ModulePtr> subModules;
     ParamsPtr params;//only one instance will be constructed : in the map
+    int row,col; // coordinate of the module on the grid
 
 
 

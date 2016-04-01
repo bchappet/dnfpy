@@ -14,7 +14,7 @@ class RouterSequence : public Router
 public:
     enum RouterSequenceRegister { BUFFER,SPIKE_OUT,RANDOM_OUT} ;
 
-    RouterSequence();
+    RouterSequence(int row =0, int col =0);
     virtual void computeState() override;
 
     //void setActivated(bool isActivated);

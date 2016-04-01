@@ -1,5 +1,5 @@
-from dnfpyUtils.scenarios.scenario import Scenario
-class ScenarioStatic(Scenario):
+from dnfpyUtils.scenarios.scenarioTracking import ScenarioTracking
+class ScenarioStatic(ScenarioTracking):
     def __init__(self,timeStim=1.5,**kwargs):
         super(ScenarioStatic,self).__init__(**kwargs)
         self.timeStim = timeStim

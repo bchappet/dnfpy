@@ -9,7 +9,7 @@ class CellGof : public Module
 public:
     enum CellGofRegister { STATE} ;
 
-    CellGof(bool state=false);
+    CellGof(int row=0,int col=0,bool state=false);
     virtual void computeState() override;
 };
 

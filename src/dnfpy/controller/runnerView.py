@@ -157,6 +157,7 @@ class RunnerView(QtCore.QThread, Runner):
                 time.sleep(0.1)
             self.step()
             self.__slowDown()
+        print(self.finalize())
         
 
     def __slowDown(self):

@@ -26,6 +26,14 @@ extern "C" {
 
 
 
+    /**
+     * @brief rotation left of the randInt number
+     * @param shift : nb bit for rotation
+     * @param nbBit : nb bit considered in the randomInt number
+     * @param mask : mask of the randomInt number should be 2^nbBit -1
+     */
+    uint32_t rotl32(uint32_t randInt, unsigned int shift, unsigned int nbBit,uint32_t mask);
+
 
     /**
      * @brief generateStochasticBit

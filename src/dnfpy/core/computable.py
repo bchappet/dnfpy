@@ -150,3 +150,6 @@ class Computable(object):
 
     def resetParams(self):
         self.setParams(**self._init_kwargs)
+
+    def close(self):
+        pass

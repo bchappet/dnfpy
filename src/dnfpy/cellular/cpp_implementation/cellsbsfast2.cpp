@@ -1,6 +1,6 @@
 #include "cellsbsfast2.h"
 #include "sbsfastrouter.h"
-CellSBSFast2::CellSBSFast2() : CellSBSFast()
+CellSBSFast2::CellSBSFast2(int row,int col) : CellSBSFast(row,col)
 {
     //Create 4 more routers for inhibitory layer
     for(unsigned int i = 0 ; i < 4 ;++i){

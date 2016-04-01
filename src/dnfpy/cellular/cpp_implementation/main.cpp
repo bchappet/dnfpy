@@ -26,6 +26,7 @@
 #include <bitset>
 #include "bitstreamuint.h"
 #include "sequenceConnecter.h"
+#include "cellrsdnf2.h"
 
 typedef boost::shared_ptr<Module> ModulePtr;
 
@@ -43,6 +44,8 @@ T* construct_array(int width,int height);
 template <typename T>
 T* construct_array3d(int width,int height,int third);
 
+template <typename T>
+int sum_array(T* array,int length);
 void assertAlmostEquals(float a,float b,float precision=PRECISION);
 
 void test_register();
@@ -71,6 +74,10 @@ void test_SBSFastMap_2layer();
 void test_stoch_bitStream();
 Module::ParamsPtr newParams();
 void test_sequence_rsdnf_map(int size);
+void test_rsdnfMap_2layer(int size);
+void test_rsdnf_cell2();
+void test_sequence_rsdnf_mixte_map(int size);
+void test_sequence_rsdnf_short_mixte_map(int size);
 
 int main()
 {
@@ -92,8 +99,8 @@ int main()
 //                cout<< "test cell n spike passed" << endl;
 //                test_map_nspike(11);
 //                cout << "test map nspike passed" << endl;
-    //            test_soft_simu(11);
-    //            cout<< "test soft simu passed" <<endl;
+                  test_soft_simu(11);
+                  cout<< "test soft simu passed" <<endl;
     //            test_stochastic_rsdnf_map2(11);
     //            cout << "test stochastic rsdnf map passed" << endl;
     //            test_stochastic_soft_simu_nstep(49);
@@ -124,8 +131,17 @@ int main()
 //    test_stoch_bitStream();
 //    cout << "test stoch bit stream passed" << endl;
 
-    test_sequence_rsdnf_map(11);
-    cout << "test map sequence rsdnf passed" << endl;
+      test_sequence_rsdnf_map(11);
+      cout << "test map sequence rsdnf passed" << endl;
+//      test_rsdnf_cell2();
+//      cout << "test rdnf cell passed " << endl;
+//      test_rsdnfMap_2layer(11);
+//      cout << "test rsdnf map 2 layer passed" << endl;
+
+      //test_sequence_rsdnf_mixte_map(11);
+      //cout << "test map sequence rsdnf mixte passed" << endl;
+      //test_sequence_rsdnf_short_mixte_map(11);
+      //cout << "test map sequence  short rsdnf mixte passed" << endl;
 
 
     //    cout << "ALL TEST PASSED " << endl;
@@ -134,6 +150,96 @@ int main()
 Module::ParamsPtr newParams(){
     return Module::ParamsPtr(new std::vector<void*>());
 }
+
+void test_sequence_rsdnf_short_mixte_map(int size){
+    RsdnfConnecter c;
+    SequenceConnecterShort c2;
+    cout << "start " << endl;
+    Map2D map2d(size,size);
+    map2d.initCellArray<CellRsdnf>("sequenceShortMixte");
+    map2d.connect(c,true);
+    map2d.connect(c2,true);
+
+    int* randState = construct_array3d<int>(size,size,4);
+
+    map2d.getArraySubState(2,randState);
+    map2d.synch();
+    cout << "1" << endl;
+    map2d.getArraySubState(2,randState);
+    print_3D_array<int>(randState,size,size,4); 
+    for(int i = 0 ; i < size ; i ++ ){
+        map2d.compute();
+        map2d.synch();
+        map2d.getArraySubState(2,randState);
+        cout << i << " " << sum_array<int>(randState,size*size*4) << endl;
+        print_3D_array<int>(randState,size,size,4); 
+        cout << endl;
+    }
+    assert(sum_array<int>(randState,size*size*4) == size*size*4);
+    cout << " random bit generation passed" << endl;
+
+    float proba = 0.0;
+    map2d.setParam<float>(CellRsdnf::PROBA,proba);
+    for(int i = 0 ; i < size ; i ++ ){
+        map2d.compute();
+        map2d.synch();
+        map2d.getArraySubState(2,randState);
+        cout << i << " " << sum_array<int>(randState,size*size*4) << endl;
+        print_3D_array<int>(randState,size,size,4); 
+        cout << endl;
+    }
+    assert(sum_array<int>(randState,size*size*4) == 0);
+    cout << " random bit generation passed with p = 0" << endl;
+
+
+}
+
+
+
+void test_sequence_rsdnf_mixte_map(int size){
+    RsdnfConnecter c;
+    SequenceConnecter c2;
+    cout << "start " << endl;
+    Map2D map2d(size,size);
+    map2d.initCellArray<CellRsdnf>("sequenceMixte");
+    map2d.connect(c,true);
+    map2d.connect(c2,true);
+
+    int* randState = construct_array3d<int>(size,size,4);
+
+    map2d.getArraySubState(2,randState);
+    map2d.synch();
+    cout << "1" << endl;
+    map2d.getArraySubState(2,randState);
+    print_3D_array<int>(randState,size,size,4); 
+    for(int i = 0 ; i < size*size ; i ++ ){
+        map2d.compute();
+        map2d.synch();
+        map2d.getArraySubState(2,randState);
+        cout << i << " " << sum_array<int>(randState,size*size*4) << endl;
+        print_3D_array<int>(randState,size,size,4); 
+        cout << endl;
+    }
+    assert(sum_array<int>(randState,size*size*4) == size*size*4);
+    cout << " random bit generation passed" << endl;
+
+    float proba = 0.0;
+    map2d.setParam<float>(CellRsdnf::PROBA,proba);
+    for(int i = 0 ; i < size*size ; i ++ ){
+        map2d.compute();
+        map2d.synch();
+        map2d.getArraySubState(2,randState);
+        cout << i << " " << sum_array<int>(randState,size*size*4) << endl;
+        print_3D_array<int>(randState,size,size,4); 
+        cout << endl;
+    }
+    assert(sum_array<int>(randState,size*size*4) == 0);
+    cout << " random bit generation passed with p = 0" << endl;
+
+
+}
+
+
 
 
 void test_sequence_rsdnf_map(int size){
@@ -149,9 +255,15 @@ void test_sequence_rsdnf_map(int size){
 
     map2d.getArraySubState(2,randState);
 
-    randState[0] = 1;
-    randState[size*4-2] = 1;
-    randState[size*size*4-1] = 1;
+//    randState[0] = 1; //N
+//    randState[size*4-2] = 1; //E
+//    randState[size*size*4-1] = 1; //W
+//    randState[size*size*4-2] = 1; //E
+//    randState[size*size*4 - ((size-1)*4)-2] = 1; //E
+
+//    randState[size*size*4-3] = 1; //S
+    randState[size*size*4 - ((size-1)*4)-3] = 1; //S
+
 
     map2d.setArraySubState(2,randState);
     
@@ -164,9 +276,10 @@ void test_sequence_rsdnf_map(int size){
     map2d.getArraySubState(2,randState);
     cout << "2" << endl;
     print_3D_array<int>(randState,size,size,4); 
-    assert(randState[size*4]==1);//north is going south
-    assert(randState[size*4 - 4 - 2]==1);//east is going west
-    assert(randState[size*size*4-size*4+3]==1); //west is going east (wrapped)
+    cout << endl;
+    //assert(randState[size*4]==1);//north is going west
+    //assert(randState[size*4 - 4 - 2]==1);//east is going west
+    //assert(randState[size*size*4-size*4+3]==1); //west is going east (wrapped)
     
     //generate random map with only one
     for(size_t i =0 ; i < size*size*4 ; ++i)
@@ -221,6 +334,29 @@ void test_sequence_rsdnf_map(int size){
     print_2D_array<int>(stateInt,size,size);
     map2d.getArraySubState(2,randState);
     print_3D_array<int>(randState,size,size,4);
+
+
+    cout << "Check the period of sequence" << endl;
+
+    for(int router = 0 ; router < 4 ; ++router){
+        randState = construct_array3d<int>(size,size,4);
+        int i = 0;
+        randState[router] = 1;
+        map2d.setArraySubState(2,randState);
+        map2d.synch();
+        randState[router] = 0;
+        while(randState[router] != 1){
+            cout << "compute " << i << endl;
+            map2d.compute();
+            map2d.synch();
+            map2d.getArraySubState(2,randState);
+            print_3D_array<int>(randState,size,size,4);
+            i++;
+        }
+
+        print_3D_array<int>(randState,size,size,4); 
+        cout << " Period : for router " << router << " is "  << i << " size was " << size<<endl;
+    }
 
 
 
@@ -283,6 +419,132 @@ void test_stoch_bitStream(){
 
 }
 
+void test_rsdnf_cell2(){
+
+    ModulePtr cell = ModulePtr(new CellRsdnf2(0,0));
+    ModulePtr neighE = ModulePtr(new CellRsdnf2(0,0));
+    ModulePtr neighI = ModulePtr(new CellRsdnf2(0,0));
+    //Set the params
+    Module::ParamsPtr params = newParams();
+    cell->setDefaultParams(params);
+    cell.get()->setParams(params);
+    neighE.get()->setParams(params);
+
+    //Connect the cells
+    cell->getSubModule(0)->addNeighbour(cell);
+    cell.get()->getSubModule(0)->addNeighbour(neighE.get()->getSubModule(0));
+    cell.get()->addNeighbour(neighE.get()->getSubModule(0));
+    cell.get()->addNeighbour(neighI.get()->getSubModule(0));
+    bool activated = true;
+
+    //activate neigh
+    neighE.get()->setAttribute(CellRsdnf::ACTIVATED,&activated);
+    bool resB;
+    neighE.get()->getAttribute(CellRsdnf::ACTIVATED,&resB);
+    assert(resB);
+
+    neighE.get()->compute();
+    neighE.get()->synch();
+    //cout << "router neigh buffer : " << neigh->getSubModule(0)->getRegState(Router::BUFFER) << endl;
+    assert(neighE.get()->getSubModule(0)->getRegState(Router::BUFFER) == 19);
+
+    //The cell should get the spike from neigh
+    //cout << "compute cell" << endl;
+    cell.get()->compute();
+    cell.get()->synch();
+    assert(cell.get()->getSubModule(0)->getRegState(Router::SPIKE_OUT) == 1);
+    int resI;
+    cell.get()->getAttribute(CellRsdnf::NB_BIT_RECEIVED,&resI);
+    assert(resI == 1);
+
+
+}
+
+
+
+void test_rsdnfMap_2layer(int size){
+    int hSize = size/2;
+    int mapId = initSimu(size,size,"cellrsdnf2","rsdnfconnecter2layer",false);
+    useMap(mapId);
+    initMapSeed(255);
+    setMapParamFloat(CellRsdnf::PROBA,1.);
+    setMapParamFloat(CellRsdnf2::PROBA_INH,1.);
+    assert(getMapParamFloat(CellRsdnf2::PROBA_INH) == 1.);
+
+
+
+    bool activate = true;
+    int* nb_sp = construct_array<int>(size,size);
+    int* nb_spInh = construct_array<int>(size,size);
+
+
+    setCellAttribute(hSize,hSize,CellRsdnf::ACTIVATED,&activate);
+    setCellAttribute(hSize+2,hSize+2,CellRsdnf::ACTIVATED,&activate);
+    setCellAttribute(hSize-2,hSize,CellRsdnf::ACTIVATED,&activate);
+
+    
+
+    preCompute();
+    step();
+    //rsdnf needs two step for one activation
+    preCompute();
+    step();
+
+    getArrayAttributeInt(CellRsdnf::NB_BIT_RECEIVED,nb_sp);
+    getArrayAttributeInt(CellRsdnf2::NB_BIT_INH_RECEIVED,nb_spInh);
+    cout << "Exc : " << endl;
+    print_2D_array<int>(nb_sp,size,size);
+    cout << "Inh : " << endl;
+    print_2D_array<int>(nb_spInh,size,size);
+    assert(nb_sp[hSize*size+hSize] == 0);
+    assert(nb_sp[hSize*size+hSize-1] == 2);
+    assert(nb_sp[hSize*size+hSize+1] == 1);
+    assert(nb_spInh[hSize*size+hSize] == 0);
+    assert(nb_spInh[hSize*size+hSize-1] == 2);
+    assert(nb_spInh[hSize*size+hSize+1] == 1);
+
+
+    int * buffer_exc = construct_array3d<int>(size,size,8);
+    for(unsigned int i = 0 ; i < 3 ; i ++){
+        cout << "new round " << endl;
+        preCompute();
+        step();
+        //debug
+        getArraySubState(Router::SPIKE_OUT,buffer_exc);
+        cout << " buffers " << endl;
+        print_3D_array(buffer_exc,size,size,8);
+
+
+    }
+
+
+    getArrayAttributeInt(CellRsdnf::NB_BIT_RECEIVED,nb_sp);
+    getArrayAttributeInt(CellRsdnf2::NB_BIT_INH_RECEIVED,nb_spInh);
+    cout << "Exc : " << endl;
+    print_2D_array<int>(nb_sp,size,size);
+    cout << "Inh : " << endl;
+    print_2D_array<int>(nb_spInh,size,size);
+
+    assert(nb_sp[hSize*size+hSize+2] == 6);
+
+    reset();
+
+    setMapParamFloat(CellRsdnf::PROBA,0.9);
+    setMapParamFloat(CellRsdnf2::PROBA_INH,0.2);
+    setCellAttribute(hSize,hSize,CellRsdnf::ACTIVATED,&activate);
+    setCellAttribute(hSize+2,hSize+2,CellRsdnf::ACTIVATED,&activate);
+    setCellAttribute(hSize-2,hSize,CellRsdnf::ACTIVATED,&activate);
+    for(unsigned int i = 0 ; i < 100 ; i ++){
+        preCompute();
+        step();
+    }
+    getArrayAttributeInt(CellRsdnf::NB_BIT_RECEIVED,nb_sp);
+    getArrayAttributeInt(CellRsdnf2::NB_BIT_INH_RECEIVED,nb_spInh);
+    cout << "Exc : " << endl;
+    print_2D_array<int>(nb_sp,size,size);
+    cout << "Inh : " << endl;
+    print_2D_array<int>(nb_spInh,size,size);
+}
 
 void test_SBSFastMap_2layer(){
     int size = 11;
@@ -783,7 +1045,7 @@ void test_SBS(){
 }
 
 void test_stochastic_rsdnf_carry_router(){
-    ModulePtr cell = ModulePtr(new CellBsRsdnf("carryRouter"));
+    ModulePtr cell = ModulePtr(new CellBsRsdnf(0,0,"carryRouter"));
     ModulePtr rn,rs,re,rw;
     RsdnfConnecter c;
     rn = ModulePtr(new CellBsRsdnf());
@@ -1262,7 +1524,7 @@ void test_map_nspike(int size){
 }
 
 void test_cell_nspike(){
-    ModulePtr cell = ModulePtr(new CellNSpike());
+    ModulePtr cell = ModulePtr(new CellNSpike(0,0));
     srand(0);
     int nb = 10;
     Module::ParamsPtr params = newParams();
@@ -1285,13 +1547,13 @@ void test_cell_nspike(){
     cell->compute();
 
     ModulePtr cn,cs,ce,cw;
-    cn = ModulePtr(new CellNSpike());
+    cn = ModulePtr(new CellNSpike(0,0));
     cn->setParams(params);
-    cs = ModulePtr(new CellNSpike());
+    cs = ModulePtr(new CellNSpike(0,0));
     cs->setParams(params);
-    ce = ModulePtr(new  CellNSpike());
+    ce = ModulePtr(new  CellNSpike(0,0));
     ce->setParams(params);
-    cw = ModulePtr(new CellNSpike());
+    cw = ModulePtr(new CellNSpike(0,0));
     cw->setParams(params);
     cell->addNeighbour(cn);cn->setAttribute(CellNSpike::DEAD,&dead);
     cell->addNeighbour(cs);cs->setAttribute(CellNSpike::DEAD,&dead);
@@ -1360,8 +1622,8 @@ void test_soft_simu(int size)
 
 void test_rsdnf_cell(){
 
-    ModulePtr cell = ModulePtr(new CellRsdnf());
-    ModulePtr neigh = ModulePtr(new CellRsdnf());
+    ModulePtr cell = ModulePtr(new CellRsdnf(0,0));
+    ModulePtr neigh = ModulePtr(new CellRsdnf(0,0));
     //Set the params
     Module::ParamsPtr params = newParams();
     cell->setDefaultParams(params);
@@ -1596,3 +1858,11 @@ void assertAlmostEquals(float a,float b,float precision){
     assert(a-b <= 1./precision);
 }
 
+template <typename T>
+int sum_array(T* array,int length){
+    int sum = 0;
+    for(int i = 0 ; i < length ; i++){
+        sum = sum + array[i];
+    }
+    return sum;
+}

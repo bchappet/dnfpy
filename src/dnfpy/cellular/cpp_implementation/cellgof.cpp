@@ -2,7 +2,7 @@
 #define STATE 0
 #include <iostream>
 
-CellGof::CellGof(bool state): Module()
+CellGof::CellGof(int row,int col,bool state): Module(row,col)
 {
     this->regs.push_back(Register(state));//STATE
 }

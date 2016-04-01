@@ -13,7 +13,7 @@ public:
 
 
 
-    CellBsRsdnf(std::string typeRouter="orRouter");
+    CellBsRsdnf(int row=0,int col=0,std::string typeRouter="orRouter");
     virtual void setDefaultParams(ParamsPtr params) override;
     ~CellBsRsdnf();
 

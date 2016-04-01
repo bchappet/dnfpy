@@ -17,6 +17,7 @@
 #include "cellbsrsdnf.h"
 #include "cellsbsfast.h"
 #include "cellsbsfast2.h"
+#include "cellrsdnf2.h"
 
 
 std::vector<Map2D*> mapSimuVec;
@@ -221,6 +222,8 @@ void initCellArrayFromName(Map2D* map,const char* name){
         map->initCellArray<CellSBSFast>();
     }else if(strcmp(name,"cellsbsfast2")==0){
         map->initCellArray<CellSBSFast2>();
+    }else if(strcmp(name,"cellrsdnf2")==0){
+        map->initCellArray<CellRsdnf2>();
     }else{
         std::cerr << "unvalid cell name " << name << std::endl;
     }
@@ -247,6 +250,9 @@ void connecterFromName(Map2D* map,const char* name,bool wrap){
         map->connect(c,wrap);
     }else if(strcmp(name,"sequenceconnecter")==0){
         SequenceConnecter c;
+        map->connect(c,wrap);
+    }else if(strcmp(name,"sequenceconnecterShort")==0){
+        SequenceConnecterShort c;
         map->connect(c,wrap);
     }else{
         std::cerr << "unvalid connecter name " << name << std::endl;

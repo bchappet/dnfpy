@@ -4,7 +4,10 @@ EXEC_NAME = test_lib
 INCLUDES =
 LIBS =
 OBJ_FILES = cellgof.o cellrsdnf.o register.o map2d.o mooreconnecter.o neumannconnecter.o rsdnfconnecter.o rsdnfconnecter2layer.o softsimu.o 	cellsbsfast.o cellsbsfast2.o sbsfastrouter.o bitstream.o bitstreamuint.o bitstreamchar.o   cellnspike.o nspikeconnecter.o  cellbsrsdnf.o bsrouter.o carrybsrouter.o bitstreamutils.o router.o param.o routerSequence.o \
-			sequenceConnecter.o
+			routerSequenceMixte.o \
+			sequenceConnecter.o \
+			cellrsdnf2.o \
+			routerBit.o
 
 INSTALL_DIR = /usr/bin
 

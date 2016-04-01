@@ -10,7 +10,7 @@ void NSpikeConnecter::cellNeighbourConnection(Module::ModulePtr cell,Module::Mod
     if(neighCell!=nullptr){
         cell.get()->addNeighbour(neighCell);
     }else{
-        Module::ModulePtr deadCell = Module::ModulePtr(new CellNSpike());
+        Module::ModulePtr deadCell = Module::ModulePtr(new CellNSpike(-1,-1));
         ((CellNSpike*)deadCell.get())->setDead(true);
         cell.get()->addNeighbour(deadCell);
     }

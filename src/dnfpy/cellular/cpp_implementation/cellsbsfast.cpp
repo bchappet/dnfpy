@@ -3,11 +3,11 @@
 #include "sbsfastrouter.h"
 
 
-CellSBSFast::CellSBSFast() : BitStreamGenerator()
+CellSBSFast::CellSBSFast(int row,int col) : BitStreamGenerator(row,col)
 {
     //Create routers
     for(int i = 0 ; i < 4 ;i ++){
-        ModulePtr router =  ModulePtr(new SBSFastRouter());
+        ModulePtr router =  ModulePtr(new SBSFastRouter(row,col));
         this->subModules.push_back(router);
     }
 

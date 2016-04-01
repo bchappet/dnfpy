@@ -34,7 +34,7 @@ public:
         //std::cout << "init cell of size " << this->height <<"," << this->width << std::endl;
         for(int i = 0 ; i < this->height ; i++){
             for(int j = 0 ; j < this->width ; j++){
-                this->cellArray[i][j] = Module::ModulePtr(new M());
+                this->cellArray[i][j] = Module::ModulePtr(new M(i,j));
                 this->cellArray[i][j]->setParams(this->params);
             }
         }
@@ -52,7 +52,7 @@ public:
         //std::cout << "init cell of size " << this->height <<"," << this->width << std::endl;
         for(int i = 0 ; i < this->height ; i++){
             for(int j = 0 ; j < this->width ; j++){
-                this->cellArray[i][j] = Module::ModulePtr(new M(param));
+                this->cellArray[i][j] = Module::ModulePtr(new M(i,j,param));
                 this->cellArray[i][j]->setParams(this->params);
 
             }

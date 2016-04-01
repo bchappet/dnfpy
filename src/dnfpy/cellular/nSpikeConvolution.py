@@ -1,4 +1,5 @@
 from dnfpy.cellular.nSpikeMap import NSpikeMap
+from dnfpy.core.constantMap import ConstantMap
 from dnfpy.cellular.rsdnfMap import RsdnfMap
 import numpy as np
 from dnfpy.core.map2D import Map2D
@@ -50,6 +51,9 @@ class NSpikeConvolution(Map2D):
 
 
     def _compute(self,inhMap,excMap,iInh_,iExc_,activation):
+        self._compute2(inhMap,excMap,iInh_,iExc_,activation)
+
+    def _compute2(self,inhMap,excMap,iInh_,iExc_,activation):
         self._data = excMap *  iExc_ - inhMap * iInh_
 
 
@@ -78,3 +82,37 @@ class NSpikeConvolution(Map2D):
             actMap = kwargs.get("activation")
             self.exc.addChildren(activation=actMap)
             self.inh.addChildren(activation=actMap)
+
+
+
+
+if __name__ == "__main__":
+    size = 100
+    activation = np.zeros( ( size,size),np.bool_)
+    activationMap = ConstantMap("act",size,activation)
+    uut = NSpikeConvolution("uut",size,activation=activation,cell='Rsdnf')
+    uut.addChildren(activation=activationMap)
+
+    uut.reset()
+    activation[size//2,size//2] = 1
+    uut.setParams(pExc=1,pInh=1,nspike=20)
+    activation[size//2-5:size//2+5,size//2-5:size//2+5] = 1
+    uut.setParams(nspike=20,pExc=1.0)
+
+    dtExc = uut.exc.getArg('dt')
+    timeEnd = (100*20 + 200) * dtExc
+    time = 0
+    i = 0
+    while time < timeEnd:
+        time += dtExc
+        uut.update(time)
+        i += 1
+
+    
+    uut.getData()
+    data = uut.exc.getData()
+    print(i)
+    print(np.sum(data))
+    assert(np.sum(data)==100*100*100*20 - 100*20)
+
+

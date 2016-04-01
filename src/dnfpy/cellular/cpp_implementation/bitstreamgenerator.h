@@ -6,6 +6,7 @@
 class BitStreamGenerator : public Module
 {
 public:
+    BitStreamGenerator(int row=0,int col=0) : Module(row,col){};
     virtual BitStreamUint::BSBPtr getSBS() = 0;
 };
 
