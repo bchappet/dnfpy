@@ -82,14 +82,20 @@
 #a <- a + geom_boxplot()
 #ggsave("nspike.png",plot=a,width=10,height=10)
 #
-
+nbExp = 50
 library(ggplot2)
 data1 <- read.table("NSpike_prng_sequencexnspike_spike.csv",header=TRUE,sep=",")
 data1 <- data1[data1$routerType != "sequence",]
+
 data2 <- read.table("NSpike_controle_mixteXshort_nspike1_v2.csv",header=TRUE,sep=",")
+stopifnot(nrow(data2)==2*nbExp)
 data2$nspike = 1
 data3 <- read.table("NSpike_controle_mixteXshort_nspike3_v2.csv",header=TRUE,sep=",")
 data3$nspike = 3
+data5 <- read.table("NSpike_controle_mixteXshort_nspike5_v2.csv",header=TRUE,sep=",")
+data5$nspike = 5
+data10 <- read.table("NSpike_controle_mixteXshort_nspike10_v2.csv",header=TRUE,sep=",")
+data10$nspike = 10
 data <- rbind(data1,data2,data3)
 data$ScenarioName = "ScenarioControl"
 
