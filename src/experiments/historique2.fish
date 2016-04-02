@@ -19,8 +19,10 @@ python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf',
 #sequence 1 period = size
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':['prng','sequence'],'reproductible':False,'nspike':20,'model':'spike','clkRatio':500}" --prefix "NSpike_prng_sequencexscenario_spike"  --nbThread 8  --scenarios "['ScenarioNoise','ScenarioDistracters','ScenarioTracking']"
 
-#prng spike 10 5 1 for distracters tantalum
+#prng spike 10 5 1 for distracters  DONE?
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':'prng','reproductible':False,'nspike':10,'model':'spike','clkRatio':378}" --prefix "NSpike_prngxscenario_nspike10"  --nbThread 8  --scenarios "['ScenarioNoise','ScenarioDistracters']"
+python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':'prng','reproductible':False,'nspike':5,'model':'spike','clkRatio':238}" --prefix "NSpike_prngxscenario_nspike5"  --nbThread 8  --scenarios "['ScenarioNoise','ScenarioDistracters']" 
+python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':'prng','reproductible':False,'nspike':1,'model':'spike','clkRatio':130}" --prefix "NSpike_prngxscenario_nspike1"  --nbThread 8  --scenarios "['ScenarioNoise','ScenarioDistracters']" 
 
 #seauence 2 period = size*size
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':'sequence','reproductible':False,'nspike':20,'model':'spike','clkRatio':500}" --prefix "NSpike_sequencexscenario_spike_period2"  --nbThread 8  --scenarios "['ScenarioNoise','ScenarioDistracters','ScenarioTracking']"
@@ -30,10 +32,9 @@ python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf',
 
 #rsdnf2  
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf2','reproductible':False,'nspike':1,'model':'spike','clkRatio':80}" --prefix "NSpike_rsdnf2Scenario_1spike"  --nbThread 8  --scenarios "['ScenarioNoise','ScenarioDistracters','ScenarioTracking']"
-python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf2','reproductible':False,'nspike':5,'model':'spike','clkRatio':80}" --prefix "NSpike_rsdnf2Scenario_5spike"  --nbThread 8  --scenarios "['ScenarioNoise','ScenarioDistracters','ScenarioTracking']"
+python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf2','reproductible':False,'nspike':5,'model':'spike','clkRatio':238}" --prefix "NSpike_rsdnf2Scenario_5spike"  --nbThread 8  --scenarios "['ScenarioNoise','ScenarioDistracters','ScenarioTracking']"
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf2','reproductible':False,'nspike':10,'model':'spike','clkRatio':378}" --prefix "NSpike_rsdnf2Scenario_10spike"  --nbThread 3  --scenarios "['ScenarioNoise','ScenarioDistracters','ScenarioTracking']"
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf2','reproductible':False,'nspike':20,'model':'spike','clkRatio':500}" --prefix "NSpike_rsdnf2Scenario_20spike"  --nbThread 8  --scenarios "['ScenarioNoise','ScenarioDistracters','ScenarioTracking']"
-#TODO
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf2','reproductible':False,'nspike':1,'model':'spike','clkRatio':130}" --prefix "NSpike_rsdnf2control_1spike"  --nbThread 8  --scenarios "['ScenarioControl',]"
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf2','reproductible':False,'nspike':5,'model':'spike','clkRatio':238}" --prefix "NSpike_rsdnf2control_5spike"  --nbThread 8  --scenarios "['ScenarioControl',]"
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf2','reproductible':False,'nspike':10,'model':'spike','clkRatio':378}" --prefix "NSpike_rsdnf2control_10spike"  --nbThread 8  --scenarios "['ScenarioControl',]"
@@ -53,6 +54,7 @@ python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf',
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':['sequenceShort','sequenceShortMixte'],'reproductible':False,'nspike':3,'model':'spike','clkRatio':182}" --prefix "NSpike_controle_mixteXshort_nspike3_v2"  --nbThread 3  --scenarios "['ScenarioControl',]"
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':['sequenceShort','sequenceShortMixte'],'reproductible':False,'nspike':5,'model':'spike','clkRatio':238}" --prefix "NSpike_controle_mixteXshort_nspike5_v2"  --nbThread 3  --scenarios "['ScenarioControl',]"
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':['sequenceShort','sequenceShortMixte'],'reproductible':False,'nspike':10,'model':'spike','clkRatio':378}" --prefix "NSpike_controle_mixteXshort_nspike10_v2"  --nbThread 3  --scenarios "['ScenarioControl',]"
+python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':'sequenceShortMixte','reproductible':False,'nspike':10,'model':'spike','clkRatio':378}" --prefix "NSpike_controle_mixteXshort_nspike10_v2_part2"  --nbThread 3  --scenarios "['ScenarioControl',]"
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':['sequenceShort','sequenceShortMixte'],'reproductible':False,'nspike':20,'model':'spike','clkRatio':658}" --prefix "NSpike_controle_mixteXshort_nspike20_v2"  --nbThread 8  --scenarios "['ScenarioControl',]"
 
 
@@ -64,6 +66,7 @@ python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf',
 
 #sequence vs distracters
 
+python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':'sequence','reproductible':False,'nspike':1,'model':'spike','clkRatio':130}" --prefix "NSpike_distr_sequence_nspike1"  --nbThread 3  --scenarios "['ScenarioDistracters',]"
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':'sequence','reproductible':False,'nspike':5,'model':'spike','clkRatio':238}" --prefix "NSpike_distr_sequence_nspike5"  --nbThread 4  --scenarios "['ScenarioDistracters',]"
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':'sequence','reproductible':False,'nspike':10,'model':'spike','clkRatio':378}" --prefix "NSpike_distr_sequence_nspike10"  --nbThread 8  --scenarios "['ScenarioDistracters',]"
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':'sequence','reproductible':False,'nspike':20,'model':'spike','clkRatio':658}" --prefix "NSpike_distr_sequence_nspike20"  --nbThread 8  --scenarios "['ScenarioDistracters',]"
