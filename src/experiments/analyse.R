@@ -87,6 +87,7 @@ library(ggplot2)
 data1 <- read.table("NSpike_prng_sequencexnspike_spike.csv",header=TRUE,sep=",")
 data1 <- data1[data1$routerType != "sequence",]
 
+
 data2 <- read.table("NSpike_controle_mixteXshort_nspike1_v2.csv",header=TRUE,sep=",")
 stopifnot(nrow(data2)==2*nbExp)
 data2$nspike = 1
@@ -96,13 +97,61 @@ data5 <- read.table("NSpike_controle_mixteXshort_nspike5_v2.csv",header=TRUE,sep
 data5$nspike = 5
 data10 <- read.table("NSpike_controle_mixteXshort_nspike10_v2.csv",header=TRUE,sep=",")
 data10$nspike = 10
-data <- rbind(data1,data2,data3)
-data$ScenarioName = "ScenarioControl"
+data20 <- read.table("NSpike_controle_mixteXshort_nspike20_v2.csv",header=TRUE,sep=",")
+data20$nspike = 20
+
+#dataSeq5 <- read.table("NSpike_controle_mixteXsequence_nspike5.csv",header=TRUE,sep=",")
+#dataSeq5$nspike <- 5
+dataSeq10 <- read.table("NSpike_controle_mixteXsequence_nspike10.csv",header=TRUE,sep=",")
+dataSeq10$nspike <- 10
+dataSeq20 <- read.table("NSpike_controle_mixteXsequence_nspike20.csv",header=TRUE,sep=",")
+dataSeq20$nspike <- 20
+
+distrSeq5 <- read.table("NSpike_distr_sequence_nspike5.csv",header=TRUE,sep=",")
+distrSeq5$nspike <- 5
+#distrSeq10 <- read.table("NSpike_distr_sequence_nspike10.csv",header=TRUE,sep=",")
+#distrSeq10$nspike <- 10
+distrSeq20 <- read.table("NSpike_distr_sequence_nspike20.csv",header=TRUE,sep=",")
+distrSeq20$nspike <- 20
+
+dataControl <- rbind(data1,data2,data3,data5,data10,data20,
+              #dataSeq5,
+              dataSeq10,dataSeq20)
+dataControl$ScenarioName = "ScenarioControl"
+dataDistr <- rbind(distrSeq5,
+                   #distrSeq10,
+                   distrSeq20)
+dataDistr$ScenarioName = "ScenarioDistracters"
+dataDistr$routerType = "sequence"
+
+prngxScenario <- read.table("NSpike_prng_sequencexscenario_spike.csv",header=TRUE,sep=",")
+prngxScenario <- prngxScenario[prngxScenario$routerType != "sequence",]
+prngxScenario$nspike = 20 #clkPeriod = 500
+head(dataControl)
+head(dataDistr)
+head(prngxScenario)
+
+data <- rbind(dataControl,dataDistr,prngxScenario)
 
 data$routerType <- as.factor(data$routerType)
 data$nspike <- as.factor(data$nspike)
 
-a <-ggplot(data,aes(x = routerType,y = ErrorDist,color=nspike))
+#data <- data[data$ErrorDist < 0.16,]
+dataControl <- data[data$ScenarioName == "ScenarioControl",]
+a <-ggplot(dataControl,aes(x = routerType,y = ErrorDist,color=nspike))
 a <- a + geom_boxplot()
-ggsave("nspike.png",plot=a,width=10,height=10)
+a <- a + scale_color_grey() 
+a <- a + theme_bw() + theme(plot.background = element_blank()) +
+  xlab("Architecture") +
+  ylab("Mean error distance")
+ggsave("control_routerXnspike.png",plot=a,width=6,height=4)
+
+dataDistr <- data[data$ScenarioName == "ScenarioDistracters",]
+a <-ggplot(dataControl,aes(x = routerType,y = ErrorDist,color=nspike))
+a <- a + geom_boxplot()
+a <- a + scale_color_grey() 
+a <- a + theme_bw() + theme(plot.background = element_blank()) +
+  xlab("Architecture") +
+  ylab("Mean error distance")
+ggsave("distracters_routerXnspike.png",plot=a,width=6,height=4)
 
