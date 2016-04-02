@@ -20,7 +20,7 @@ python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf',
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':['prng','sequence'],'reproductible':False,'nspike':20,'model':'spike','clkRatio':500}" --prefix "NSpike_prng_sequencexscenario_spike"  --nbThread 8  --scenarios "['ScenarioNoise','ScenarioDistracters','ScenarioTracking']"
 
 #prng spike 10 5 1 for distracters tantalum
-python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':'prng','reproductible':False,'nspike':10,'model':'spike','clkRatio':378}" --prefix "NSpike_prng_sequencexscenario_nspike10"  --nbThread 8  --scenarios "['ScenarioNoise','ScenarioDistracters']"
+python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':'prng','reproductible':False,'nspike':10,'model':'spike','clkRatio':378}" --prefix "NSpike_prngxscenario_nspike10"  --nbThread 8  --scenarios "['ScenarioNoise','ScenarioDistracters']"
 
 #seauence 2 period = size*size
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':'sequence','reproductible':False,'nspike':20,'model':'spike','clkRatio':500}" --prefix "NSpike_sequencexscenario_spike_period2"  --nbThread 8  --scenarios "['ScenarioNoise','ScenarioDistracters','ScenarioTracking']"
