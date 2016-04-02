@@ -128,8 +128,8 @@ dataSeq10$nspike <- 10
 dataSeq20 <- read.table("NSpike_controle_mixteXsequence_nspike20.csv",header=TRUE,sep=",")
 dataSeq20$nspike <- 20
 
-#distrSeq1 <- read.table("NSpike_distr_sequence_nspike1.csv",header=TRUE,sep=",")#vostro
-#distrSeq1$nspike <- 1
+distrSeq1 <- read.table("NSpike_distr_sequence_nspike1.csv",header=TRUE,sep=",")#vostro
+distrSeq1$nspike <- 1
 distrSeq5 <- read.table("NSpike_distr_sequence_nspike5.csv",header=TRUE,sep=",")
 distrSeq5$nspike <- 5
 distrSeq10 <- read.table("NSpike_distr_sequence_nspike10.csv",header=TRUE,sep=",")
