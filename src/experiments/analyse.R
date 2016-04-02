@@ -70,6 +70,8 @@ library(ggplot2)
 #rsdnf2 : the random bit are shared within a neuron (both exc and inh layer)
 rsdnf2_1 <- read.table("NSpike_rsdnf2Scenario_1spike.csv",header=TRUE,sep=",")
 rsdnf2_1$nspike = 1
+rsdnf2_5 <- read.table("NSpike_rsdnf2Scenario_5spike.csv",header=TRUE,sep=",")
+rsdnf2_5$nspike = 5 #antimony
 rsdnf2_10 <- read.table("NSpike_rsdnf2Scenario_10spike.csv",header=TRUE,sep=",")
 rsdnf2_10$nspike = 10 #vostro
 rsdnf2_20 <- read.table("NSpike_rsdnf2Scenario_20spike.csv",header=TRUE,sep=",")
@@ -86,6 +88,7 @@ rsdnf2_contr_20$nspike = 20 #antomony
 
 
 rsdnf2 <- rbind(rsdnf2_1,
+                rsdnf2_5,
                 rsdnf2_10,
                 rsdnf2_20,
                 rsdnf2_contr_1,rsdnf2_contr_5,rsdnf2_contr_10,rsdnf2_contr_20)
@@ -125,8 +128,8 @@ dataSeq10$nspike <- 10
 dataSeq20 <- read.table("NSpike_controle_mixteXsequence_nspike20.csv",header=TRUE,sep=",")
 dataSeq20$nspike <- 20
 
-distrSeq1 <- read.table("NSpike_distr_sequence_nspike1.csv",header=TRUE,sep=",")#vostro
-distrSeq1$nspike <- 1
+#distrSeq1 <- read.table("NSpike_distr_sequence_nspike1.csv",header=TRUE,sep=",")#vostro
+#distrSeq1$nspike <- 1
 distrSeq5 <- read.table("NSpike_distr_sequence_nspike5.csv",header=TRUE,sep=",")
 distrSeq5$nspike <- 5
 distrSeq10 <- read.table("NSpike_distr_sequence_nspike10.csv",header=TRUE,sep=",")
@@ -141,9 +144,26 @@ dataDistr <- rbind(distrSeq5,distrSeq10,distrSeq20)
 dataDistr$ScenarioName = "ScenarioDistracters"
 dataDistr$routerType = "sequence"
 
-prngxScenario <- read.table("NSpike_prng_sequencexscenario_spike.csv",header=TRUE,sep=",")
-prngxScenario <- prngxScenario[prngxScenario$routerType != "sequence",]
-prngxScenario$nspike = 20 #clkPeriod = 500
+
+prngxScenario1 <- read.table("NSpike_prngxscenario_nspike1.csv",header=TRUE,sep=",")
+prngxScenario1$nspike = 1
+prngxScenario1$routerType = "prng"
+prngxScenario5 <- read.table("NSpike_prngxscenario_nspike5.csv",header=TRUE,sep=",")
+prngxScenario5$nspike = 5
+prngxScenario5$routerType = "prng"
+#prngxScenario10 <- read.table("NSpike_prngxscenario_nspike10.csv",header=TRUE,sep=",")
+#prngxScenario10$nspike = 10
+#prngxScenario10$routerType = "prng"
+prngxScenario20 <- read.table("NSpike_prng_sequencexscenario_spike.csv",header=TRUE,sep=",")
+prngxScenario20 <- prngxScenario20[prngxScenario20$routerType != "sequence",]
+prngxScenario20$nspike = 20 #clkPeriod = 500
+
+prngxScenario <- rbind(prngxScenario1,prngxScenario5,
+                       #prngxScenario10,
+                       prngxScenario20)
+
+
+
 head(dataControl)
 head(dataDistr)
 head(prngxScenario)
@@ -162,24 +182,28 @@ a <-ggplot(dataControl,aes(x = routerType,y = ErrorDist,color=nspike))
 a <- a + geom_boxplot()
 #a <- a + scale_color_grey() 
 a <- a + theme_bw() + theme(plot.background = element_blank()) +
-  xlab("Architecture") +
-  ylab("Mean error distance")
-ggsave("routerXnspike_control.png",plot=a,width=6,height=4)
+  xlab("Architecture") + ylab("Mean error distance")+
+  scale_x_discrete(limits=c("prng","shared","sequenceShort","sequence","sequenceShortMixte","sequenceMixte"),
+                   labels=c("Control", "shared", "short","long","shrtCmb","lngCmb"))
+ 
+ggsave("routerXnspike_control.png",plot=a,width=6,height=4,dpi=1200)
 
 dataDistr <- data[data$ScenarioName == "ScenarioDistracters",]
 a <-ggplot(dataDistr,aes(x = routerType,y = ErrorDist,color=nspike))
 a <- a + geom_boxplot()
 a <- a + theme_bw() + theme(plot.background = element_blank()) +
-  xlab("Architecture") +
-  ylab("Mean error distance")
-ggsave("routerXnspike_distr.png",plot=a,width=6,height=4)
+  xlab("Architecture") + ylab("Mean error distance")+
+  scale_x_discrete(limits=c("prng","shared","sequence"),
+                   labels=c("Control", "shared", "long"))
+ggsave("routerXnspike_distr.png",plot=a,width=6,height=4,dpi=1200)
 
 dataNoise <- data[data$ScenarioName == "ScenarioNoise",]
 a <-ggplot(dataNoise,aes(x = routerType,y = ErrorDist,color=nspike))
 a <- a + geom_boxplot()
 #a <- a + scale_color_grey() 
 a <- a + theme_bw() + theme(plot.background = element_blank()) +
-  xlab("Architecture") +
-  ylab("Mean error distance")
-ggsave("routerXnspike_noise.png",plot=a,width=6,height=4)
+  xlab("Architecture") + ylab("Mean error distance")+
+  scale_x_discrete(limits=c("prng","shared","sequence"),
+                   labels=c("Control", "shared", "long"))
+ggsave("routerXnspike_noise.png",plot=a,width=6,height=4,dpi=1200)
 
