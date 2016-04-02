@@ -47,7 +47,7 @@ python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf',
 
 
 #sequence vs sequenceMixte version2
-python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':['sequence','sequenceMixte'],'reproductible':False,'nspike':5,'model':'spike','clkRatio':238}" --prefix "NSpike_controle_mixteXsequence_nspike5"  --nbThread 3  --scenarios "['ScenarioControl',]"
+python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':['sequence','sequenceMixte'],'reproductible':False,'nspike':5,'model':'spike','clkRatio':238}" --prefix "NSpike_controle_mixteXsequence_nspike5"  --nbThread 8  --scenarios "['ScenarioControl',]"
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':['sequence','sequenceMixte'],'reproductible':False,'nspike':10,'model':'spike','clkRatio':378}" --prefix "NSpike_controle_mixteXsequence_nspike10"  --nbThread 8  --scenarios "['ScenarioControl',]"
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':['sequence','sequenceMixte'],'reproductible':False,'nspike':20,'model':'spike','clkRatio':658}" --prefix "NSpike_controle_mixteXsequence_nspike20"  --nbThread 8  --scenarios "['ScenarioControl',]"
 
