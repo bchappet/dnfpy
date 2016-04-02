@@ -65,25 +65,25 @@
 #a <- a + ylim(0.025,0.075)
 #ggsave("nspike.png",plot=a,width=10,height=10)
 
+nbExp = 50
+library(ggplot2)
 #rsdnf2 : the random bit are shared within a neuron (both exc and inh layer)
-#library(ggplot2)
-#data1 <- read.table("NSpike_rsdnf2Scenario_1spike.csv",header=TRUE,sep=",")
-#data1$nspike = 1
-#data2 <- read.table("NSpike_rsdnf2Scenario_20spike.csv",header=TRUE,sep=",")
-#data2$nspike = 20
-#head(data1)
-#head(data2)
-#data <- rbind(data1,data2)
-#data$nspike <- as.factor(data$nspike)
-#head(data)
-#attach(data)
+rsdnf2_1 <- read.table("NSpike_rsdnf2Scenario_1spike.csv",header=TRUE,sep=",")
+rsdnf2_1$nspike = 1
+#rsdnf2_10 <- read.table("NSpike_rsdnf2Scenario_10spike.csv",header=TRUE,sep=",")
+#rsdnf2_10$nspike = 10
+rsdnf2_20 <- read.table("NSpike_rsdnf2Scenario_20spike.csv",header=TRUE,sep=",")
+rsdnf2_20$nspike = 20
+rsdnf2 <- rbind(rsdnf2_1,
+                #rsdnf2_10,
+                rsdnf2_20)
+rsdnf2$routerType = "shared"
+head(rsdnf2)
 #
 #a <- ggplot(data,aes(x = ScenarioName,y = ErrorDist,color=nspike))
 #a <- a + geom_boxplot()
 #ggsave("nspike.png",plot=a,width=10,height=10)
 #
-nbExp = 50
-library(ggplot2)
 data1 <- read.table("NSpike_prng_sequencexnspike_spike.csv",header=TRUE,sep=",")
 data1 <- data1[data1$routerType != "sequence",]
 
@@ -131,27 +131,28 @@ head(dataControl)
 head(dataDistr)
 head(prngxScenario)
 
-data <- rbind(dataControl,dataDistr,prngxScenario)
+data <- rbind(dataControl,dataDistr,prngxScenario,rsdnf2)
 
 data$routerType <- as.factor(data$routerType)
 data$nspike <- as.factor(data$nspike)
+data$ScenarioName <- as.factor(data$ScenarioName)
+summary(data)
 
 #data <- data[data$ErrorDist < 0.16,]
 dataControl <- data[data$ScenarioName == "ScenarioControl",]
 a <-ggplot(dataControl,aes(x = routerType,y = ErrorDist,color=nspike))
 a <- a + geom_boxplot()
-a <- a + scale_color_grey() 
+#a <- a + scale_color_grey() 
 a <- a + theme_bw() + theme(plot.background = element_blank()) +
   xlab("Architecture") +
   ylab("Mean error distance")
-ggsave("control_routerXnspike.png",plot=a,width=6,height=4)
+ggsave("routerXnspike_control.png",plot=a,width=6,height=4)
 
 dataDistr <- data[data$ScenarioName == "ScenarioDistracters",]
-a <-ggplot(dataControl,aes(x = routerType,y = ErrorDist,color=nspike))
+a <-ggplot(dataDistr,aes(x = routerType,y = ErrorDist,color=nspike))
 a <- a + geom_boxplot()
-a <- a + scale_color_grey() 
 a <- a + theme_bw() + theme(plot.background = element_blank()) +
   xlab("Architecture") +
   ylab("Mean error distance")
-ggsave("distracters_routerXnspike.png",plot=a,width=6,height=4)
+ggsave("routerXnspike_distr.png",plot=a,width=6,height=4)
 
