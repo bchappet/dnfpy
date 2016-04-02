@@ -65,8 +65,13 @@ python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf',
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':['sequence','sequenceMixte'],'reproductible':False,'nspike':20,'model':'spike','clkRatio':658}" --prefix "NSpike_controle_mixteXsequence_nspike20"  --nbThread 8  --scenarios "['ScenarioControl',]"
 
 #sequence vs distracters
-
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':'sequence','reproductible':False,'nspike':1,'model':'spike','clkRatio':130}" --prefix "NSpike_distr_sequence_nspike1"  --nbThread 3  --scenarios "['ScenarioDistracters',]"
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':'sequence','reproductible':False,'nspike':5,'model':'spike','clkRatio':238}" --prefix "NSpike_distr_sequence_nspike5"  --nbThread 4  --scenarios "['ScenarioDistracters',]"
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':'sequence','reproductible':False,'nspike':10,'model':'spike','clkRatio':378}" --prefix "NSpike_distr_sequence_nspike10"  --nbThread 8  --scenarios "['ScenarioDistracters',]"
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':'sequence','reproductible':False,'nspike':20,'model':'spike','clkRatio':658}" --prefix "NSpike_distr_sequence_nspike20"  --nbThread 8  --scenarios "['ScenarioDistracters',]"
+
+#sequence vs noise
+python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':'sequence','reproductible':False,'nspike':1,'model':'spike','clkRatio':130}" --prefix "NSpike_noise_sequence_nspike1"  --nbThread 3  --scenarios "['ScenarioNoise',]"
+python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':'sequence','reproductible':False,'nspike':5,'model':'spike','clkRatio':238}" --prefix "NSpike_noise_sequence_nspike5"  --nbThread 4  --scenarios "['ScenarioNoise',]"
+python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':'sequence','reproductible':False,'nspike':10,'model':'spike','clkRatio':378}" --prefix "NSpike_noise_sequence_nspike10"  --nbThread 8  --scenarios "['ScenarioNoise',]"
+python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf','routerType':'sequence','reproductible':False,'nspike':20,'model':'spike','clkRatio':658}" --prefix "NSpike_noise_sequence_nspike20"  --nbThread 8  --scenarios "['ScenarioNoise',]"
