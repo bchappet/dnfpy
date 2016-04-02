@@ -27,8 +27,12 @@ python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf',
 #rsdnf2  
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf2','reproductible':False,'nspike':1,'model':'spike','clkRatio':80}" --prefix "NSpike_rsdnf2Scenario_1spike"  --nbThread 8  --scenarios "['ScenarioNoise','ScenarioDistracters','ScenarioTracking']"
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf2','reproductible':False,'nspike':5,'model':'spike','clkRatio':80}" --prefix "NSpike_rsdnf2Scenario_5spike"  --nbThread 8  --scenarios "['ScenarioNoise','ScenarioDistracters','ScenarioTracking']"
-python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf2','reproductible':False,'nspike':10,'model':'spike','clkRatio':378}" --prefix "NSpike_rsdnf2Scenario_10spike"  --nbThread 8  --scenarios "['ScenarioNoise','ScenarioDistracters','ScenarioTracking']"
+python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf2','reproductible':False,'nspike':10,'model':'spike','clkRatio':378}" --prefix "NSpike_rsdnf2Scenario_10spike"  --nbThread 3  --scenarios "['ScenarioNoise','ScenarioDistracters','ScenarioTracking']"
 python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf2','reproductible':False,'nspike':20,'model':'spike','clkRatio':500}" --prefix "NSpike_rsdnf2Scenario_20spike"  --nbThread 8  --scenarios "['ScenarioNoise','ScenarioDistracters','ScenarioTracking']"
+#TODO
+python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf2','reproductible':False,'nspike':5,'model':'spike','clkRatio':238}" --prefix "NSpike_rsdnf2control_5spike"  --nbThread 8  --scenarios "['ScenarioControl',]"
+python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf2','reproductible':False,'nspike':10,'model':'spike','clkRatio':378}" --prefix "NSpike_rsdnf2control_10spike"  --nbThread 8  --scenarios "['ScenarioControl',]"
+python3 runExperiment2.py --models "['ModelNSpike']" --kwmodel "{'cell':'Rsdnf2','reproductible':False,'nspike':20,'model':'spike','clkRatio':500}" --prefix "NSpike_rsdnf2control_20spike"  --nbThread 8  --scenarios "['ScenarioControl',]"
 
 #sequence mixte
 #base pi = 28
