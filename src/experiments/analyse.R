@@ -137,12 +137,32 @@ distrSeq10$nspike <- 10
 distrSeq20 <- read.table("NSpike_distr_sequence_nspike20.csv",header=TRUE,sep=",")
 distrSeq20$nspike <- 20
 
+
+noiseSeq1 <- read.table("NSpike_noise_sequence_nspike1.csv",header=TRUE,sep=",")
+noiseSeq1$nspike <- 1
+noiseSeq5 <- read.table("NSpike_noise_sequence_nspike5.csv",header=TRUE,sep=",")
+noiseSeq5$nspike <- 5
+noiseSeq10 <- read.table("NSpike_noise_sequence_nspike10.csv",header=TRUE,sep=",")
+noiseSeq10$nspike <- 10
+noiseSeq20 <- read.table("NSpike_noise_sequence_nspike20.csv",header=TRUE,sep=",")
+noiseSeq20$nspike <- 20
+
+
+
+
+
 dataControl <- rbind(data1,data2,data3,data5,data10,data20,
               dataSeq1,dataSeq5,dataSeq10,dataSeq20)
 dataControl$ScenarioName = "ScenarioControl"
-dataDistr <- rbind(distrSeq5,distrSeq10,distrSeq20)
+
+dataDistr <- rbind(distrSeq1,distrSeq5,distrSeq10,distrSeq20)
 dataDistr$ScenarioName = "ScenarioDistracters"
 dataDistr$routerType = "sequence"
+
+dataNoise <- rbind(noiseSeq1,noiseSeq5,noiseSeq10,noiseSeq20)
+dataNoise$ScenarioName = "ScenarioNoise"
+dataNoise$routerType = "sequence"
+summary(dataNoise)
 
 
 prngxScenario1 <- read.table("NSpike_prngxscenario_nspike1.csv",header=TRUE,sep=",")
@@ -166,43 +186,95 @@ prngxScenario <- rbind(prngxScenario1,prngxScenario5,
 
 head(dataControl)
 head(dataDistr)
+head(dataNoise)
 head(prngxScenario)
 
-data <- rbind(dataControl,dataDistr,prngxScenario,rsdnf2)
+data <- rbind(dataControl,dataDistr,dataNoise,prngxScenario,rsdnf2)
 data <- data[data$nspike !=2 & data$nspike != 3,]
 
 data$routerType <- as.factor(data$routerType)
+data$routerType <- factor(data$routerType,levels=c("prng","shared","sequenceShort","sequence","sequenceShortMixte","sequenceMixte"))
 data$nspike <- as.factor(data$nspike)
 data$ScenarioName <- as.factor(data$ScenarioName)
 summary(data)
+attach(data)
 
-#data <- data[data$ErrorDist < 0.16,]
-#dataControl <- data[data$ScenarioName == "ScenarioControl",]
-#a <-ggplot(dataControl,aes(x = routerType,y = ErrorDist,color=nspike))
-#a <- a + geom_boxplot()
-##a <- a + scale_color_grey() 
-#a <- a + theme_bw() + theme(plot.background = element_blank()) +
-#  xlab("Architecture") + ylab("Mean error distance")+
-#  scale_x_discrete(limits=c("prng","shared","sequenceShort","sequence","sequenceShortMixte","sequenceMixte"),
-#                   labels=c("Control", "shared", "short","long","shrtCmb","lngCmb"))
-# 
-#ggsave("routerXnspike_control.png",plot=a,width=6,height=4,dpi=1200)
+
+
+
+
+
+
+
+dataControl <- data[data$ScenarioName == "ScenarioControl",]
+dataControl <- dataControl[dataControl$ErrorDist < 0.06,]
+a <-ggplot(dataControl,aes(x = nspike,y = ErrorDist,fill=routerType))
+a <- a + geom_boxplot(outlier.shape=NA)
+a <- a + scale_fill_manual(
+                   values=c("#ffffff","#dddddd","#bbbbbb","#999999","#777777","#555555"),
+                   limits=c("prng","shared","sequenceShort","sequence","sequenceShortMixte","sequenceMixte"),
+                   breaks=c("prng","shared","sequenceShort","sequence","sequenceShortMixte","sequenceMixte"),
+                   labels=c("Control", "shared", "short","long","shrtCmb","lngCmb"))
+#a <- a + scale_fill_grey()
+#a <- a + scale_fill_grey(start = 0, end = .9)
+a <- a + theme_bw() + theme(plot.background = element_blank()) 
+a <- a + xlab("Number of sub-spike") + ylab("Mean error distance")
+ 
+ggsave("routerXnspike_control.png",plot=a,width=6,height=3,dpi=1200)
+
+
 
 dataDistr <- data[data$ScenarioName == "ScenarioDistracters",]
-a <-ggplot(dataDistr,aes(x = routerType,y = ErrorDist,color=nspike))
-a <- a + geom_boxplot()
-a <- a + theme_bw() + theme(plot.background = element_blank()) +
-  xlab("Architecture") + ylab("Mean error distance")+
-  scale_x_discrete(limits=c("prng","shared","sequence"),
+dataDistr <- dataDistr[dataDistr$ErrorDist < 0.06,]
+a <-ggplot(dataDistr,aes(x = nspike,y = ErrorDist,fill=routerType))
+a <- a + geom_boxplot(outlier.shape=NA)
+a <- a + scale_fill_manual(
+                   values=c("#ffffff","#dddddd","#bbbbbb","#999999","#777777","#555555"),
                    labels=c("Control", "shared", "long"))
-ggsave("routerXnspike_distr.png",plot=a,width=6,height=4,dpi=1200)
+a <- a + theme_bw() + theme(plot.background = element_blank()) 
+a <- a + xlab("Number of sub-spike") + ylab("Mean error distance")
+ggsave("routerXnspike_distr.png",plot=a,width=6,height=3,dpi=1200)
+
+
+
+
 
 dataNoise <- data[data$ScenarioName == "ScenarioNoise",]
-a <-ggplot(dataNoise,aes(x = routerType,y = ErrorDist,color=nspike))
-a <- a + geom_boxplot()
-a <- a + theme_bw() + theme(plot.background = element_blank()) +
-  xlab("Architecture") + ylab("Mean error distance")+
-  scale_x_discrete(limits=c("prng","shared","sequence"),
+dataNoise <- dataNoise[dataNoise$ErrorDist < 0.06,]
+a <-ggplot(dataNoise,aes(x = nspike,y = ErrorDist,fill=routerType))
+a <- a + geom_boxplot(outlier.shape=NA)
+a <- a + scale_fill_manual(
+                   values=c("#ffffff","#dddddd","#bbbbbb","#999999","#777777","#555555"),
                    labels=c("Control", "shared", "long"))
-ggsave("routerXnspike_noise.png",plot=a,width=6,height=4,dpi=1200)
+a <- a + theme_bw() + theme(plot.background = element_blank()) 
+a <- a + xlab("Number of sub-spike") + ylab("Mean error distance")
+ggsave("routerXnspike_noise.png",plot=a,width=6,height=3,dpi=1200)
+
+##################### Pairwise test####################
+
 #
+
+controlSpike1 <-dataControl[dataControl$nspike == 20,]
+attach(controlSpike1)
+#Box plot 
+png('tmp1.png',width=800,height=600)
+boxplot(controlSpike1$ErrorDist ~ controlSpike1$routerType)
+dev.off()
+
+png('tmp1o.png',width=800,height=600)
+boxplot(controlSpike1$ErrorDist ~ controlSpike1$routerType,outline = FALSE)
+dev.off()
+
+#test for normality
+png('tmp2.png')
+qqnorm(ErrorDist)
+qqline(ErrorDist)
+dev.off()
+shapiro.test(ErrorDist)
+
+
+#relaxing variance equality with pairwise welch t-test
+oneway.test(ErrorDist ~ routerType)
+pairwise.t.test(ErrorDist,routerType,pool.sd=F)
+
+
