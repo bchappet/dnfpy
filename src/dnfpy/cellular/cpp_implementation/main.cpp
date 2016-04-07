@@ -81,70 +81,70 @@ void test_sequence_rsdnf_short_mixte_map(int size);
 
 int main()
 {
-    //            cout << "Hello World!" << endl;
-    //            test_register();
-    //            cout << "test register passed" << endl;
-    //            test_cellgof();
-    //            cout << "test cell gof passed" << endl;
-    //            test_Map2D(10);
-    //            cout << "test Map2D passed" << endl;
-    //            test_neumann_connecter(10);
-    //            cout << "test neumann connecter passed" << endl;
-    //            test_rsdnf_cell();
-    //            cout << "test rsdnf passed" << endl;
-    //            test_rsdnf_map(11);
-    //            cout << "test rsdnf map passed" << endl;
+                cout << "Hello World!" << endl;
+                test_register();
+                cout << "test register passed" << endl;
+                test_cellgof();
+                cout << "test cell gof passed" << endl;
+                test_Map2D(10);
+                cout << "test Map2D passed" << endl;
+                test_neumann_connecter(10);
+                cout << "test neumann connecter passed" << endl;
+                test_rsdnf_cell();
+                cout << "test rsdnf passed" << endl;
+                test_rsdnf_map(11);
+                cout << "test rsdnf map passed" << endl;
 
-//                test_cell_nspike();
-//                cout<< "test cell n spike passed" << endl;
-//                test_map_nspike(11);
-//                cout << "test map nspike passed" << endl;
-                  test_soft_simu(11);
+                test_cell_nspike();
+                cout<< "test cell n spike passed" << endl;
+                test_map_nspike(11);
+                cout << "test map nspike passed" << endl;
+                test_soft_simu(11);
                   cout<< "test soft simu passed" <<endl;
-    //            test_stochastic_rsdnf_map2(11);
-    //            cout << "test stochastic rsdnf map passed" << endl;
-    //            test_stochastic_soft_simu_nstep(49);
-    //            cout << "test test_stochastic_soft_simu_nstep passed " << endl;
-    //            test_stochastic_rsdnf();
-    //            cout << "test stochastic rsdnf passed" << endl;
-    //            test_stochastic_rsdnf_map_carry_router(11);
-    //            cout << "test stochastic rsdnf map carry router passed" << endl;
-    //            test_stochastic_rsdnf_carry_router();
-    //            cout << "test stochastic rsdnf carry router passed" << endl;
+                test_stochastic_rsdnf_map2(11);
+                cout << "test stochastic rsdnf map passed" << endl;
+                test_stochastic_soft_simu_nstep(49);
+                cout << "test test_stochastic_soft_simu_nstep passed " << endl;
+                test_stochastic_rsdnf();
+                cout << "test stochastic rsdnf passed" << endl;
+                test_stochastic_rsdnf_map_carry_router(11);
+                cout << "test stochastic rsdnf map carry router passed" << endl;
+                test_stochastic_rsdnf_carry_router();
+                cout << "test stochastic rsdnf carry router passed" << endl;
 
-    //                test_stochastic_rsdnf_precision();
-    //                cout << "test stochastic rsdnf precision passed" << endl;
-    //                test_SBS();
-    //                cout << " test SBS passed " << endl;
-    //                test_SBSChar();
-    //                cout << " test SBS char passed " << endl;
-//    test_SBSUint();
-//    cout << " test SBS Uint passed " << endl;
-//    test_SBSUint_precision();
-//    cout << "test SBS uint precision passed " << endl;
-//    test_SBSFastMap();
-//    cout << " test sbs fast map passed" << endl;
-//    test_SBSFastMap_precision();
-//    cout << "test sbsfastmap precision passed" << endl;
-//    test_SBSFastMap_2layer();
-//    cout << "test sbsFast map 2 layer passed " << endl;
-//    test_stoch_bitStream();
-//    cout << "test stoch bit stream passed" << endl;
+                    test_stochastic_rsdnf_precision();
+                    cout << "test stochastic rsdnf precision passed" << endl;
+                    test_SBS();
+                    cout << " test SBS passed " << endl;
+                    //test_SBSChar();
+                    //cout << " test SBS char passed " << endl;
+    //test_SBSUint();
+    //cout << " test SBS Uint passed " << endl;
+    test_SBSUint_precision();
+    cout << "test SBS uint precision passed " << endl;
+    test_SBSFastMap();
+    cout << " test sbs fast map passed" << endl;
+    test_SBSFastMap_precision();
+    cout << "test sbsfastmap precision passed" << endl;
+    test_SBSFastMap_2layer();
+    cout << "test sbsFast map 2 layer passed " << endl;
+    test_stoch_bitStream();
+    cout << "test stoch bit stream passed" << endl;
 
       test_sequence_rsdnf_map(11);
       cout << "test map sequence rsdnf passed" << endl;
-//      test_rsdnf_cell2();
-//      cout << "test rdnf cell passed " << endl;
-//      test_rsdnfMap_2layer(11);
-//      cout << "test rsdnf map 2 layer passed" << endl;
+      test_rsdnf_cell2();
+      cout << "test rdnf cell passed " << endl;
+      test_rsdnfMap_2layer(11);
+      cout << "test rsdnf map 1 layer passed" << endl;
 
-      //test_sequence_rsdnf_mixte_map(11);
-      //cout << "test map sequence rsdnf mixte passed" << endl;
-      //test_sequence_rsdnf_short_mixte_map(11);
-      //cout << "test map sequence  short rsdnf mixte passed" << endl;
+      test_sequence_rsdnf_mixte_map(11);
+      cout << "test map sequence rsdnf mixte passed" << endl;
+      test_sequence_rsdnf_short_mixte_map(11);
+      cout << "test map sequence  short rsdnf mixte passed" << endl;
 
 
-    //    cout << "ALL TEST PASSED " << endl;
+        cout << "ALL TEST PASSED " << endl;
     return 0;
 }
 Module::ParamsPtr newParams(){
@@ -615,8 +615,8 @@ void test_SBSFastMap_2layer(){
     print_2D_array<int>(nb_sp,size,size);
     cout << "Inh : " << endl;
     print_2D_array<int>(nb_spInh,size,size);
-    assert(nb_sp[hSize*size+hSize] == 19);
-    assert(nb_spInh[hSize*size+hSize] == 19);
+    assert(nb_sp[hSize*size+hSize] == 21);
+    assert(nb_spInh[hSize*size+hSize] == 21);
 
 
 
@@ -1794,7 +1794,7 @@ void test_cellgof(){
     assert(ptr1.get()->getRegState(0));
     assert(ptr2.get()->getRegState(0));
 
-    ModulePtr ptr3 = ModulePtr(new CellGof(true));
+    ModulePtr ptr3 = ModulePtr(new CellGof(0,0,true));
     assert(ptr3.get()->getRegState(0) == 1);
 
 
