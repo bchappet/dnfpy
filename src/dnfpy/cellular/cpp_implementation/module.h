@@ -79,10 +79,6 @@ public:
         return this->regs.at(index).get();
     }
 
-    virtual void getAttribute(int index,void* value){}
-
-    virtual void setAttribute(int index, void* value){}
-
 
     virtual void synch(){
 
@@ -134,6 +130,10 @@ public:
         return *((T*)this->params->at(index));
     }
 
+    //Redifine if the model is so high level that hardware synch is senselless
+    virtual void getAttribute(int index,void* value){}
+    virtual void setAttribute(int index, void* value){}
+
 
     /**
      * @brief reset the register and the submodules
@@ -153,6 +153,48 @@ public:
 
     int getCol(){
         return this->col;
+    }
+
+
+    virtual int getTotalRegSize(){
+        int sum = 0;
+        for(unsigned int i = 0; i < this->regs.size() ; i++){
+            sum += this->regs[i].getSize();
+        }
+        for(unsigned int i = 0; i < this->subModules.size() ; ++i){
+            sum += this->subModules[i]->getTotalRegSize();
+        }
+        return sum;
+    }
+
+    /**
+     * @brief set the error mask from a bool array for each register
+     * and the subModule register
+     * msb -> lsb
+     * return a pointer to the next unused bool
+     */
+    virtual bool* setErrorMaskFromArray(bool * bits){
+        bool* bit = bits;
+        for(unsigned int i = 0; i < this->regs.size() ; i++){
+            bit =  this->regs[i].setErrorMaskFromArray(bit);
+        }
+        for(unsigned int i = 0; i < this->subModules.size() ; ++i){
+            bit = this->subModules[i]->setErrorMaskFromArray(bit);
+        }
+        return bit;
+ 
+    }
+
+
+
+    void addReg(int val,int size = 16){
+
+        this->regs.push_back(Register(val,size));
+    }
+
+
+    void addSubModule(const ModulePtr & mod){
+        this->subModules.push_back(mod);
     }
 
 protected:

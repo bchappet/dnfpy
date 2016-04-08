@@ -46,6 +46,19 @@ void Register::setErrorMask(int errorMask){
     this->errorMask = errorMask;
 }
 
+bool *  Register::setErrorMaskFromArray(bool * bits){
+    this->errorMask = 0;
+    bool * bit = bits;
+    for( int i = this->size-1 ; i >= 0 ; --i){
+        this->errorMask = this->errorMask | (*(bit) << i);
+        bit++;
+    }
+    return bit;
+}
+
+int Register::getErrorMask(){
+    return this->errorMask;
+}
 
 /**
  * @brief set the nextState

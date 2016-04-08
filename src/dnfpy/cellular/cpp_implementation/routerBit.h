@@ -12,6 +12,7 @@ public:
 
     RouterBit(int row = 0, int col = 0);
     virtual void computeState() override;
+    virtual void setDefaultParams(Module::ParamsPtr params) override;
 
 
 

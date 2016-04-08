@@ -11,8 +11,8 @@ CellRsdnf::CellRsdnf(int row,int col,std::string typeRouter) : Module(row,col)
 
 
     //registres
-    this->regs.push_back(Register(false));//ACTIVATED
-    this->regs.push_back(Register(0));//NB_BIT_RECEIVED
+    this->regs.push_back(Register(false,1));//ACTIVATED
+    this->regs.push_back(Register(0,10));//NB_BIT_RECEIVED
 
     this->initRouters(typeRouter);
 
@@ -44,6 +44,7 @@ void CellRsdnf::initRouters(std::string typeRouter){
 
 
         this->subModules.push_back(r);
+        r->initParams();
     }
 }
 

@@ -35,6 +35,14 @@ public:
     void setErrorMask(int errorMask);
 
     /**
+     * @brief set the error mask from a bool array
+     * msb -> lsb
+     * return a pointer to the next unused bool
+     */
+    bool* setErrorMaskFromArray(bool * bits);
+
+    int getErrorMask();
+    /**
      * @brief reset get back to initState
      */
     void reset();

@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -std=c++11 -fPIC -O2 -s -g
+CFLAGS = -Wall -std=c++11 -fPIC -O2 -s
 EXEC_NAME = test_lib
 INCLUDES =
 LIBS =

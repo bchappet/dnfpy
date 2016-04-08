@@ -16,22 +16,11 @@ public:
     virtual void setDefaultParams(ParamsPtr params) override;
 
 
-    enum CellRsdnf2_Attributes{NB_BIT_INH_RECEIVED=3};
-    enum CellRsdnf2_Params {PROBA_INH=3,PRECISION_RANDOM=4,NB_BIT_RANDOM=5,SHIFT=6};
+    enum CellRsdnf2_Reg{NB_BIT_INH_RECEIVED=3};
+    enum CellRsdnf2_Params {PROBA=1,PRECISION_PROBA=2,PROBA_INH=3,PRECISION_RANDOM=4,NB_BIT_RANDOM=5,SHIFT=6};
 
 
-    virtual void getAttribute(int index,void* value) override;
 
-
-    virtual void setAttribute(int index, void* value) override;
-
-    virtual void reset() override;
-
-protected:
-    /**
-     * @brief nbBitInhReceived nb bit received since last reset
-     */
-    int nbBitInhReceived;
 };
 
 #endif // CELLRSDNF2_H

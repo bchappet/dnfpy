@@ -12,6 +12,11 @@ RouterBit::RouterBit(int row,int col) : Router(row,col)
 
 
 
+void RouterBit::setDefaultParams(Module::ParamsPtr params){
+    //there are no params in this rrouter
+
+}
+
 void RouterBit::computeState(){
 
     int buffer = this->getRegState(BUFFER);

@@ -32,11 +32,11 @@ Map2D::Map2D(int width,int height) : Map2D()
    this->initMemory(width,height);
 }
 
-void Map2D::getCellAttribute(int x,int y,int index,void* value){
-    return this->cellArray[y][x]->getAttribute(index,value);
+int Map2D::getCellReg(int x,int y,int index){
+    return this->cellArray[y][x]->getRegState(index);
 }
-void Map2D::setCellAttribute(int x,int y,int index,void* value){
-    return this->cellArray[y][x]->setAttribute(index,value);
+void Map2D::setCellReg(int x,int y,int index,int value){
+    return this->cellArray[y][x]->setRegState(index,value);
 }
 
 
@@ -85,5 +85,32 @@ void Map2D::synch(){
 }
    
 
+void Map2D::getCellAttribute(int x,int y,int index,void* value){
+    return this->cellArray[y][x]->getAttribute(index,value);
+}
+void Map2D::setCellAttribute(int x,int y,int index,void* value){
+    return this->cellArray[y][x]->setAttribute(index,value);
+}
 
+int Map2D::getTotalRegSize(){
+    int sum = Module::getTotalRegSize();
+    for(int i = 0 ; i < this->height ; i++){
+        for(int j = 0 ; j < this->width ; j++){
+            sum += this->cellArray[i][j]->getTotalRegSize();
+        }
+    }
+    return sum;
+}
+
+bool* Map2D::setErrorMaskFromArray(bool * bits){
+
+    bool* bit = Module::setErrorMaskFromArray(bits);
+    for(int i = 0 ; i < this->height ; i++){
+        for(int j = 0 ; j < this->width ; j++){
+            bit = this->cellArray[i][j]->setErrorMaskFromArray(bit);
+        }
+    }
+    return bit;
+
+} 
  

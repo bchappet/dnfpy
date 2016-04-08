@@ -35,8 +35,11 @@ public:
         for(int i = 0 ; i < this->height ; i++){
             for(int j = 0 ; j < this->width ; j++){
                 this->cellArray[i][j] = Module::ModulePtr(new M(i,j));
+                this->cellArray[i][j]->initParams();
+                //this->cellArray[i][j]->setParams(this->params);
             }
         }
+        //this->cellArray[0][0]->setDefaultParams(this->params);
 
 
     }
@@ -51,8 +54,11 @@ public:
         for(int i = 0 ; i < this->height ; i++){
             for(int j = 0 ; j < this->width ; j++){
                 this->cellArray[i][j] = Module::ModulePtr(new M(i,j,param));
+                this->cellArray[i][j]->initParams();
+                //this->cellArray[i][j]->setParams(this->params);
             }
         }
+        //this->cellArray[0][0]->setDefaultParams(this->params);
     }
 
     virtual void preCompute() override;
@@ -67,17 +73,27 @@ public:
 
 
 
+    int getCellReg(int x,int y,int index);
+
+    void setCellReg(int x,int y,int index, int value);
+
+
+
+    virtual int getTotalRegSize() override;
+    virtual bool* setErrorMaskFromArray(bool * bits) override;
+
     /**
-             * @brief getCellAttribute to access attribute of cells
-             * @param x
-             * @param y
-             * @param index
-             * @param value
-             */
+    * @brief getCellAttribute to access attribute of cells
+    * @param x
+    * @param y
+    * @param index
+    * @param value
+    */
     void getCellAttribute(int x,int y,int index,void* value);
 
     void setCellAttribute(int x,int y,int index, void* value);
 
+    
 
     template <typename T>
     void getArrayAttribute(int index, T* array){
@@ -99,36 +115,43 @@ public:
 
 
 
-    /**
-             * @brief getCellState return the state of a cell at x,y
-             * @param x
-             * @param y
-             * @return
-             */
+    template < typename T>
+    T getCellParam(int x,int y,int index){
+        return this->cellArray[y][x]->getParam<T>(index);
+    }
 
+    template < typename T>
+    T getCellSubParam(int x,int y,int z,int index){
+        return this->cellArray[y][x]->getSubModule(z)->getParam<T>(index);
+    }
+
+
+    /**
+    * @brief getCellState return the state of a cell at x,y
+    * @param x
+    * @param y
+    * @return
+    */
     int getCellState(int x,int y,int index){
         return this->cellArray[y][x]->getRegState(index);
     }
 
     /**
-             * @brief setCellState set a pecific cell state at x,y
-             * @param x
-             * @param y
-             * @param val
-             */
-
+    * @brief setCellState set a pecific cell state at x,y
+    * @param x
+    * @param y
+    * @param val
+    */
     void setCellState(int x,int y,int index,int val){
         this->cellArray[y][x]->setRegState(index,val);
     }
 
     /**
-             * @brief getArrayState
-             * @param index
-             * @return
-             */
+    * @brief getArrayState
+    * @param index
+    * @return
+    */
     void getArrayState(int index,int* array){
-
-
         for(int i = 0 ; i < this->height ; i++){
             for(int j = 0 ; j < this->width ; j++){
                 array[i*this->width + j] = this->cellArray[i][j]->getRegState(index);
@@ -137,10 +160,10 @@ public:
     }
 
     /**
-             * @brief setArrayState
-             * @param index
-             * @param val
-             */
+    * @brief setArrayState
+    * @param index
+    * @param val
+    */
     void setArrayState(int index,int* array){
         for(int i = 0 ; i < this->height ; i++){
             for(int j = 0 ; j < this->width ; j++){
@@ -173,6 +196,36 @@ public:
     }
 
 
+    /**
+     * @brief set the *same* param for all the array
+     */
+    template <typename T>
+    void setArrayParam(int paramIndex,T value){
+        for(int i = 0 ; i < this->height ; ++i){
+            for(int j = 0 ; j < this->width ; ++j){
+                this->cellArray[i][j]->setParam<T>(paramIndex,value);
+            }
+        }
+    }
+
+    /**
+     * @brief set the *same* param for all the array sub modules
+     */
+    template <typename T>
+    void setArraySubParam(int paramIndex,T value){
+        size_t subModuleCount = this->cellArray[0][0]->getSubModuleCount();
+        for(int i = 0 ; i < this->height ; ++i){
+            for(int j = 0 ; j < this->width ; ++j){
+                for(size_t k = 0 ; k < subModuleCount ; ++k){
+                    Module::ModulePtr mod = this->cellArray[i][j]->getSubModule(k);
+                    mod->setParam<T>(paramIndex,value);
+                }
+            }
+        }
+    }
+
+
+
 
     /**
     * @brief getMapParam return the param using path for first cell.
@@ -180,10 +233,9 @@ public:
     * @param index
     * @param path
     */
-    void* getMapParam(int index){
-        //TODO change
-        return this->params->at(index);
-    }
+    //void* getMapParam(int index){
+    //    return this->params->at(index);
+    //}
 
     /**
     * @brief connect the cell together and the cell sub module to input cell submodules

@@ -3,6 +3,18 @@
 #include <register.h>
 
 
+TEST_CASE("set error mask form char"){
+
+    Register* reg = new Register(0,10);
+    reg->set(100);
+    //char tab[10] = {'\0','\0','\0','\x01','\x01','\x01','\x01','\x01','\0','\0'};
+    bool tab[10] = {0,0,0,1,1,1,1,1,0,0};//msb -> lsb
+    reg->setErrorMaskFromArray(tab);
+    REQUIRE(reg->getErrorMask() == 124);
+
+
+}
+
 TEST_CASE("register update"){
 
     Register* reg = new Register(0);

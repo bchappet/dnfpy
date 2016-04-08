@@ -33,29 +33,56 @@ int useMap(int idMap_){
 }
 
 void setMapParamInt(int index,int value){
-    mapSimu->setParam<int>(index,value);
+    mapSimu->setArrayParam<int>(index,value);
 }
 
 void setMapParamBool(int index,bool value){
-    mapSimu->setParam<bool>(index,value);
+    mapSimu->setArrayParam<bool>(index,value);
 }
 
 void setMapParamFloat(int index,float value){
-    mapSimu->setParam<float>(index,value);
+    mapSimu->setArrayParam<float>(index,value);
 }
 
 int getMapParamInt(int index){
-    return mapSimu->getParam<int>(index);
+    return mapSimu->getCellParam<int>(0,0,index);
 }
 
 
 bool getMapParamBool(int index){
-    return mapSimu->getParam<bool>(index);
+    return mapSimu->getCellParam<bool>(0,0,index);
 }
 
 float getMapParamFloat(int index){
-    return mapSimu->getParam<float>(index);
+    return mapSimu->getCellParam<float>(0,0,index);
 }
+
+
+void setMapSubParamInt(int index,int value){
+    mapSimu->setArraySubParam<int>(index,value);
+}
+
+void setMapSubParamBool(int index,bool value){
+    mapSimu->setArraySubParam<bool>(index,value);
+}
+
+void setMapSubParamFloat(int index,float value){
+    mapSimu->setArraySubParam<float>(index,value);
+}
+
+int getMapSubParamInt(int index){
+    return mapSimu->getCellSubParam<int>(0,0,0,index);
+}
+
+
+bool getMapSubParamBool(int index){
+    return mapSimu->getCellSubParam<bool>(0,0,0,index);
+}
+
+float getMapSubParamFloat(int index){
+    return mapSimu->getCellSubParam<float>(0,0,0,index);
+}
+
 
 
 //ModuleC* convertModuleToC(Module* mod);
@@ -193,6 +220,14 @@ void setArraySubState(int index,int * array){
 
 }
 
+
+int getTotalRegSize(){
+ return mapSimu->getTotalRegSize();
+}
+
+void setErrorMaskFromArray(bool * bits){
+    mapSimu->setErrorMaskFromArray(bits);
+}
 
 
 void initCellArrayFromNameWithParam(Map2D* map,const char* name,const char* param){

@@ -58,12 +58,17 @@ extern "C" {
     void setMapParamInt(int index,int value);
     void setMapParamBool(int index,bool value);
     void setMapParamFloat(int index,float value);
-
-
     int getMapParamInt(int index);
     bool getMapParamBool(int index);
     float getMapParamFloat(int index);
 
+
+    void setMapSubParamInt(int index,int value);
+    void setMapSubParamBool(int index,bool value);
+    void setMapSubParamFloat(int index,float value);
+    int getMapSubParamInt(int index);
+    bool getMapSubParamBool(int index);
+    float getMapSubParamFloat(int index);
 
     void getCellAttribute(int x,int y,int index,void* value);
     void setCellAttribute(int x,int y,int index, void* value);
@@ -91,6 +96,10 @@ extern "C" {
     //subStates to access sub module
     void getArraySubState(int index,int * array);
     void setArraySubState(int index,int * array);
+
+    //to study fault tolerence of transient orpermanent single event effect
+    int getTotalRegSize() ;
+    void setErrorMaskFromArray(bool * bits) ;
 
 }
 

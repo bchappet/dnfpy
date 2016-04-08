@@ -6,7 +6,7 @@
 CellRsdnf2::CellRsdnf2(int row,int col): CellRsdnf(row,col,"bit")
 {
 
-    this->nbBitInhReceived = 0;
+    this->regs.push_back(Register(0,10));//NB_BIT_INH_RECEIVED
 
    // std::cout << "constructing cellrsdnf " << std::endl;
     //Create 4 more routers for inhibitory layer
@@ -18,17 +18,14 @@ CellRsdnf2::CellRsdnf2(int row,int col): CellRsdnf(row,col,"bit")
 }
 
 
-void CellRsdnf2::reset(){
-    CellRsdnf::reset();
-    //reset atribbutes as well
-    this->nbBitInhReceived = 0;
-}
 
 
 
 void CellRsdnf2::setDefaultParams(Module::ParamsPtr params){
     CellRsdnf::setDefaultParams(params);
 
+    params->push_back(new float(1.0));//PROBA
+    params->push_back(new long int(PRECISION_MAX));//PRECISION_PROBA
     params->push_back(new float(1.0));//PROBA_SYNAPSE_INH
     params->push_back(new unsigned int(PRECISION_MAX)); //PRECISION_RANDOM
     params->push_back(new unsigned int(31)); //NB_BIT_PROBA
@@ -41,9 +38,9 @@ void CellRsdnf2::setDefaultParams(Module::ParamsPtr params){
  * We will set the random bits of the 8 routers
  */
 void CellRsdnf2::preCompute(){
-    float probaSynapseExc = this->getParam<float>(CellRsdnf::PROBA);
+    float probaSynapseExc = this->getParam<float>(CellRsdnf2::PROBA);
     float probaSynapseInh = this->getParam<float>(CellRsdnf2::PROBA_INH);
-    unsigned long int probaPrecisionMask = this->getParam<uint32_t>(CellRsdnf::PRECISION_PROBA);
+    unsigned long int probaPrecisionMask = this->getParam<uint32_t>(CellRsdnf2::PRECISION_PROBA);
     unsigned long int randomBitPrecisionMask = this->getParam<uint32_t>(CellRsdnf2::PRECISION_RANDOM);
     unsigned int nbBitProba = this->getParam<unsigned int>(CellRsdnf2::NB_BIT_RANDOM);
     unsigned int shift = this->getParam<unsigned int>(CellRsdnf2::SHIFT);
@@ -80,44 +77,18 @@ void CellRsdnf2::computeState(){
 //    if(nbSpikeReceived > 0){
 //        std::cout << "nbSpikeReceived : " << nbSpikeReceived << std::endl;
 //    }
-    this->nbBitReceived += nbSpikeReceived;
-    this->nbBitInhReceived += nbSpikeReceivedInh;
+    this->setRegState(CellRsdnf::NB_BIT_RECEIVED,this->getRegState(CellRsdnf::NB_BIT_RECEIVED) + nbSpikeReceived);
+    this->setRegState(CellRsdnf2::NB_BIT_INH_RECEIVED,this->getRegState(CellRsdnf2::NB_BIT_INH_RECEIVED) + nbSpikeReceivedInh);
 
-    if(this->activated){
+    if(this->getRegState(CellRsdnf::ACTIVATED)){
        // std::cout << "switch off activation" << std::endl;
-        this->activated = false;
+        this->setRegState(CellRsdnf::ACTIVATED,false);
         for(ModulePtr mod:this->subModules){
-         ((Router*)mod.get())->setActivated(false);
+            Router* r = ((Router*)mod.get());
+            r->setRegState(Router::BUFFER,r->getRegState(Router::BUFFER)+this->getParam<int>(NB_SPIKE));
         }
 
     }
 }
 
 
-void CellRsdnf2::getAttribute(int index,void* value){
-    switch(index){
-    case NB_BIT_RECEIVED:
-        *((int*)value) = this->nbBitReceived;
-        //std::cout << "val : "<< *((int*)value) << std::endl;
-        return;
-    case ACTIVATED:*((bool*)value) = this->activated;return;
-    case DEAD:*((bool*)value) = this->dead;return;
-    case NB_BIT_INH_RECEIVED : 
-        *((int*)value) = this->nbBitInhReceived;
-        return;
-    }
-}
-
-
-void CellRsdnf2::setAttribute(int index, void* value){
-    switch(index){
-    case NB_BIT_RECEIVED:this->nbBitReceived = *((int*)value);return;
-    case ACTIVATED:this->activated = *((bool*)value);
-        for(ModulePtr mod:this->subModules){
-            ((Router*)mod.get())->setActivated(this->activated);
-        }
-        return;
-    case DEAD:this->dead=*((bool*)value);return;
-    case NB_BIT_INH_RECEIVED:this->nbBitInhReceived = *((int*)value);return;
-    }
-}

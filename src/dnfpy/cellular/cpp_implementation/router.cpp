@@ -5,8 +5,8 @@
 
 Router::Router(int row,int col) : Module(row,col)
 {
-    this->regs.push_back(Register(0));//BUFFER
-    this->regs.push_back(Register(false));//SPIKE_OUT
+    this->regs.push_back(Register(0,10));//BUFFER
+    this->regs.push_back(Register(false,1));//SPIKE_OUT
 }
 
 void Router::setDefaultParams(Module::ParamsPtr params){
