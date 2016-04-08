@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -std=c++11 -fPIC -O2 -s
+CFLAGS = -Wall -std=c++11 -fPIC -O2 -s -g
 EXEC_NAME = test_lib
 INCLUDES =
 LIBS =
@@ -20,7 +20,7 @@ clean :
 	  rm $(EXEC_NAME) $(OBJ_FILES)
 
 $(EXEC_NAME) : $(OBJ_FILES) main.o
-	  $(CC) -o $(EXEC_NAME) $? $(LIBS)
+	  $(CC) $(CFLAGS) -o $(EXEC_NAME) $? $(LIBS)
 
 %.o: %.cpp
 	  $(CC) $(CFLAGS) $(INCLUDES) -o $@ -c $<

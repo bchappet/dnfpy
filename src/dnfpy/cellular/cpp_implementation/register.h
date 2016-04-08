@@ -10,8 +10,10 @@ public:
     /**
      * @brief Register init state and next state with val
      * @param val
+     * @param size : number of bit of this register. No size check is done for now.
      */
-    Register(const int& val);
+    Register(const int& val,const int size=16);
+
     /**
      * @brief synch state = nextState
      */
@@ -20,15 +22,17 @@ public:
      * @brief get the state
      * @return
      */
+
     int get();
-
-
-
     /**
      * @brief set the nextState
      * @param val
      */
     void set(int val);
+
+    int getSize();
+
+    void setErrorMask(int errorMask);
 
     /**
      * @brief reset get back to initState
@@ -38,6 +42,8 @@ private:
     int initState;
     int nextState;
     int state;
+    int size;
+    int errorMask; //state = nextState ^ errorMask
 };
 
 #endif // REGISTER_H

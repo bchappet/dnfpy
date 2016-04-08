@@ -6,10 +6,12 @@
  * @param val
  */
 
-Register::Register(const int& val){
+Register::Register(const int& val,const int size){
     this->state = val;
     this->nextState = val;
     this->initState = val;
+    this->size = size;
+    this->errorMask = 0;
 }
 
 
@@ -23,7 +25,7 @@ void Register::reset(){
  */
 
 void Register::synch(){
-    this->state = nextState;
+    this->state = nextState ^ errorMask;
 }
 
 /**
@@ -35,6 +37,14 @@ int Register::get(){
     return this->state;
 }
 
+int Register::getSize(){
+    return this->size;
+}
+
+
+void Register::setErrorMask(int errorMask){
+    this->errorMask = errorMask;
+}
 
 
 /**

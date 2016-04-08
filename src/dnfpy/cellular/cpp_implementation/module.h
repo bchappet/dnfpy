@@ -17,7 +17,9 @@ public:
     typedef boost::shared_ptr<Module> ModulePtr;
     typedef boost::shared_ptr<std::vector<void*>> ParamsPtr;
 
-    Module(int row = 0, int col = 0):row(row),col(col){}
+    Module(int row = 0, int col = 0):row(row),col(col){
+        this->params = ParamsPtr(new std::vector<void*>());
+    }
 
     /**
      * @brief preCompute optional and not recursif: is not called on the submodules
@@ -30,6 +32,10 @@ public:
             this->subModules[i].get()->compute();
         }
         this->computeState();
+    }
+
+    void initParams(){
+        this->setDefaultParams(this->params);
     }
 
     void setParams(ParamsPtr params){
@@ -123,7 +129,7 @@ public:
 
 
     template <typename T> T getParam(int index){
-       // std::cout << "size params : " << this->params->size() << std::endl;
+        //std::cout << "size params : " << this->params->size() << std::endl;
         //std::cout << "getting param " << index << std::endl;
         return *((T*)this->params->at(index));
     }

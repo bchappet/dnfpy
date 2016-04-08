@@ -19,13 +19,8 @@ void  RouterSequenceMixte::computeState(){
         nbInput += this->getNeighbour(i).get()->getRegState(SPIKE_OUT);
     }
 
-    bool activated = this->activated;
 
-//    if(nbInput > 0){
-//        std::cout << "nbInput : " << nbInput << std::endl;
-//    }
-
-    if(buffer > 0 || nbInput > 0 || activated){
+    if(buffer > 0 || nbInput > 0 ){
 
         //std::cout << " test " << std::endl;
         if(this->getRegState(RANDOM_OUT)){
@@ -35,11 +30,6 @@ void  RouterSequenceMixte::computeState(){
             this->setRegState(SPIKE_OUT,false);
         }
         int toAdd = buffer+nbInput-1;
-        if(activated){
-            toAdd += this->getParam<int>(CellRsdnf::NB_SPIKE);
-
-            //std::cout << "Activated to add : " << toAdd <<  std::endl;
-        }
         this->setRegState(BUFFER,toAdd);
     }else{
         this->setRegState(SPIKE_OUT,false);
@@ -47,8 +37,8 @@ void  RouterSequenceMixte::computeState(){
 
     //update the random bit from the neighbour unless coords are 0,0 (for even row and col)or 1,1 (for odd row and col)
     if( (this->row == 0 and this->col == 0)or(this->row == 1 and this->col == 1)){
-        bool randomBit = generateStochasticBit(this->getParam<float>(CellRsdnf::PROBA),
-                this->getParam<int>(CellRsdnf::PRECISION_PROBA));
+        bool randomBit = generateStochasticBit(this->getParam<float>(Router::PROBA),
+                this->getParam<int>(Router::PRECISION_PROBA));
         this->setRegState(RANDOM_OUT,randomBit);
     }else{
         this->setRegState(RANDOM_OUT,this->getNeighbour(this->neighbours.size()-1).get()->getRegState(RANDOM_OUT));
@@ -67,13 +57,8 @@ void  RouterSequenceShortMixte::computeState(){
         nbInput += this->getNeighbour(i).get()->getRegState(SPIKE_OUT);
     }
 
-    bool activated = this->activated;
 
-//    if(nbInput > 0){
-//        std::cout << "nbInput : " << nbInput << std::endl;
-//    }
-
-    if(buffer > 0 || nbInput > 0 || activated){
+    if(buffer > 0 || nbInput > 0 ){
 
         //std::cout << " test " << std::endl;
         if(this->getRegState(RANDOM_OUT)){
@@ -83,11 +68,6 @@ void  RouterSequenceShortMixte::computeState(){
             this->setRegState(SPIKE_OUT,false);
         }
         int toAdd = buffer+nbInput-1;
-        if(activated){
-            toAdd += this->getParam<int>(CellRsdnf::NB_SPIKE);
-
-            //std::cout << "Activated to add : " << toAdd <<  std::endl;
-        }
         this->setRegState(BUFFER,toAdd);
     }else{
         this->setRegState(SPIKE_OUT,false);
@@ -96,8 +76,8 @@ void  RouterSequenceShortMixte::computeState(){
     //update the random bit from the neighbour unless coords are 0,0
     if( (this->row == 0 and (this->dir == NeumannConnecter::E or this->dir == NeumannConnecter::W)) 
             or (this->col == 0 and(this->dir == NeumannConnecter::N or this-> dir == NeumannConnecter::S)) ){
-        bool randomBit = generateStochasticBit(this->getParam<float>(CellRsdnf::PROBA),
-                this->getParam<int>(CellRsdnf::PRECISION_PROBA));
+        bool randomBit = generateStochasticBit(this->getParam<float>(Router::PROBA),
+                this->getParam<int>(Router::PRECISION_PROBA));
         this->setRegState(RANDOM_OUT,randomBit);
     }else{
         this->setRegState(RANDOM_OUT,this->getNeighbour(this->neighbours.size()-1).get()->getRegState(RANDOM_OUT));

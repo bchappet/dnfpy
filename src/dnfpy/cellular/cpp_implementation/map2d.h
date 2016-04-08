@@ -35,10 +35,8 @@ public:
         for(int i = 0 ; i < this->height ; i++){
             for(int j = 0 ; j < this->width ; j++){
                 this->cellArray[i][j] = Module::ModulePtr(new M(i,j));
-                this->cellArray[i][j]->setParams(this->params);
             }
         }
-        this->cellArray[0][0]->setDefaultParams(this->params);
 
 
     }
@@ -53,11 +51,8 @@ public:
         for(int i = 0 ; i < this->height ; i++){
             for(int j = 0 ; j < this->width ; j++){
                 this->cellArray[i][j] = Module::ModulePtr(new M(i,j,param));
-                this->cellArray[i][j]->setParams(this->params);
-
             }
         }
-        this->cellArray[0][0]->setDefaultParams(this->params);
     }
 
     virtual void preCompute() override;
@@ -186,6 +181,7 @@ public:
     * @param path
     */
     void* getMapParam(int index){
+        //TODO change
         return this->params->at(index);
     }
 

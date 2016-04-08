@@ -8,15 +8,11 @@
 class RouterBit : public Router
 {
 public:
-    enum RouterBitAttribute {RANDOM_BIT};
+    enum RouterBitRegistre {RANDOM_BIT=2};
 
     RouterBit(int row = 0, int col = 0);
     virtual void computeState() override;
 
-    virtual void getAttribute(int index,void* value) override;
-    virtual void setAttribute(int index, void* value) override;
-protected:
-    bool randomBit;
 
 
 };

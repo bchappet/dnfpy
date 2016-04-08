@@ -12,28 +12,11 @@ public:
 
     virtual void initRouters(std::string typeRouter);
 
-    enum CellRsdnf_Attributes{NB_BIT_RECEIVED,ACTIVATED,DEAD};
-    enum CellRsdnf_Params {NB_SPIKE,PROBA,PRECISION_PROBA};
+    enum CellRsdnf_Params {NB_SPIKE};
+    enum CellRsdnf_Register {ACTIVATED,NB_BIT_RECEIVED};
 
-
-    virtual void getAttribute(int index,void* value) override;
-    virtual void setAttribute(int index, void* value) override;
-
-    virtual void reset() override;
 
 protected:
-    /**
-     * @brief nbBitReceived nb bit received since last reset
-     */
-    int nbBitReceived;
-    /**
-     * @brief activated if true the cell will emmit NB_SPIKE spikes and will set this.activated at false
-     */
-    bool activated;
-    /**
-     * @brief dead if true, the cell will do nothing on spike reception
-     */
-    bool dead;
 };
 
 #endif // CELLRSDNF_H

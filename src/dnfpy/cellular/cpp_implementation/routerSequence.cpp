@@ -25,13 +25,8 @@ void RouterSequence::computeState(){
         nbInput += this->getNeighbour(i).get()->getRegState(SPIKE_OUT);
     }
 
-    bool activated = this->activated;
 
-//    if(nbInput > 0){
-//        std::cout << "nbInput : " << nbInput << std::endl;
-//    }
-
-    if(buffer > 0 || nbInput > 0 || activated){
+    if(buffer > 0 || nbInput > 0 ){
 
         //std::cout << " test " << std::endl;
         if(this->getRegState(RANDOM_OUT)){
@@ -41,11 +36,6 @@ void RouterSequence::computeState(){
             this->setRegState(SPIKE_OUT,false);
         }
         int toAdd = buffer+nbInput-1;
-        if(activated){
-            toAdd += this->getParam<int>(CellRsdnf::NB_SPIKE);
-
-            //std::cout << "Activated to add : " << toAdd <<  std::endl;
-        }
         this->setRegState(BUFFER,toAdd);
     }else{
         this->setRegState(SPIKE_OUT,false);

@@ -17,9 +17,8 @@ public:
     RouterSequence(int row =0, int col =0);
     virtual void computeState() override;
 
-    //void setActivated(bool isActivated);
 protected:
-    //bool activated;//controled by cell
+ //   virtual bool bernouilliTrial(float proba,int precision_proba) override;
 
 
 };

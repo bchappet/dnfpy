@@ -1,59 +1,39 @@
 #include "router.h"
-#include "cellrsdnf.h"
 #include <iostream>
 #include "param.h"
 #include "bitstreamutils.h"
 
 Router::Router(int row,int col) : Module(row,col)
 {
-
-    //attribute
-    this->activated = false;
-
-    //registres
     this->regs.push_back(Register(0));//BUFFER
     this->regs.push_back(Register(false));//SPIKE_OUT
+}
 
+void Router::setDefaultParams(Module::ParamsPtr params){
+    params->push_back(new float(1.0));//PROBA
+    params->push_back(new long int(PRECISION_MAX));//PRECISION_PROBA
 }
 
 
-
-
-
-void Router::setActivated(bool isActivated){
-    this->activated = isActivated;
+bool Router::bernouilliTrial(float proba,int precision_proba){
+    return generateStochasticBit(proba,precision_proba);
 }
 
 void Router::computeState(){
-
     int buffer = this->getRegState(BUFFER);
     int nbInput = 0;
-
-    for(unsigned int i = 1 ; i < this->neighbours.size();i++){
+    for(unsigned int i = 1 ; i < this->neighbours.size();i++){//first neigh is this neuron the other are predecessors in spike routing graph
         nbInput += this->getNeighbour(i).get()->getRegState(SPIKE_OUT);
     }
 
-    bool activated = this->activated;
-
-//    if(nbInput > 0){
-//        std::cout << "nbInput : " << nbInput << std::endl;
-//    }
-
-    if(buffer > 0 || nbInput > 0 || activated){
-
-        if(generateStochasticBit(this->getParam<float>(CellRsdnf::PROBA),this->getParam<int>(CellRsdnf::PRECISION_PROBA))){
+    if(buffer > 0 || nbInput > 0){
+        if(this->bernouilliTrial(this->getParam<float>(PROBA),this->getParam<int>(PRECISION_PROBA))){
             this->setRegState(SPIKE_OUT,true);
-
         }else{
             this->setRegState(SPIKE_OUT,false);
         }
-        int toAdd = buffer+nbInput-1;
-        if(activated){
-            toAdd += this->getParam<int>(CellRsdnf::NB_SPIKE);
-
-            //std::cout << "Activated to add : " << toAdd <<  std::endl;
-        }
-        this->setRegState(BUFFER,toAdd);
+        buffer += nbInput-1;
+        this->setRegState(BUFFER,buffer);
     }else{
         this->setRegState(SPIKE_OUT,false);
     }
