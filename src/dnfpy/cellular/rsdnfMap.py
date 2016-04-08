@@ -27,16 +27,17 @@ class RsdnfMap(Map2D):
         """
         class Params:
             NB_SPIKE=0
-            PROBA=1
-            PRECISION_PROBA=2
+
+        class SubParams:
+            PROBA=0
+            PRECISION_PROBA=1
 
 
-        class Attributes:
-            NB_BIT_RECEIVED=0
-            ACTIVATED=1
-            DEAD=2
+        class Reg:
+            ACTIVATED=0
+            NB_BIT_RECEIVED=1
 
-        class SubBuffer:
+        class SubReg:
             BUFFER = 0
             SPIKE_OUT = 1
             RANDOM_OUT = 2 #if routerType = sequence
@@ -46,7 +47,8 @@ class RsdnfMap(Map2D):
                      precisionProba=31,
                      routerType="prng", #sequence|sequenceShort|sequenceMixte|sequenceShortMixte
                      reproductible=True,
-                     nstep=1,
+                     errorType = 'none', #'none' | 'transient'|'permanent'
+                     errorProb = 0.0001,#the error probability for every register bit
                      **kwargs):
             self.lib = HardLib(size,size,"cellrsdnf","rsdnfconnecter",routerType)
             if routerType == "sequence" or routerType == "sequenceMixte":
@@ -62,39 +64,51 @@ class RsdnfMap(Map2D):
                                             precisionProba=precisionProba,
                                             routerType=routerType,
                                             reproductible=reproductible,
-                                            nstep=nstep,
+                                            errorType=errorType,
+                                            errorProb = errorProb,
                                             **kwargs)
 
             self.newActivation = True #true when we want to get the new activation
+            self.errorBitSize = self.lib.getTotalRegSize()
+            if errorType == 'permanent':
+                self.setFaults(errorProb)
 
-        def _compute(self,size,activation,nstep):
-            self._compute2(size,activation,nstep)
+        def _compute(self,size,activation,errorType,errorProb):
+            self._compute2(size,activation,errorType,errorProb)
 
-        def _compute2(self,size,activation,nstep):
+        def _compute2(self,size,activation,errorType,errorProb):
             if self.newActivation:
                 self.newActivation = False
                 self.setActivation(activation)
-                #print("new act ")
-                #print(np.sum(activation))
 
-            self.lib.nstep(nstep)
-            self.lib.getArrayAttribute(self.Attributes.NB_BIT_RECEIVED,self._data)
+            if errorType == 'transient':
+                self.setFaults(errorProb)
+
+            self.lib.nstep(1)
+            self.lib.getRegArray(self.Reg.NB_BIT_RECEIVED,self._data)
 
         def setActivation(self,activation):
-            self.lib.setArrayAttribute(self.Attributes.ACTIVATED,activation)
+            self.lib.setRegArray(self.Reg.ACTIVATED,activation)
+            self.lib.synch()
+
+        def setFaults(self,errorProb):
+            bits = np.random.random((self.errorBitSize)) < errorProb
+            print("nb fault = ",np.sum(bits))
+            self.lib.setErrorMaskFromArray(bits)
+            
 
         def setRandomSequence(self,npArrayInt):
             """
             If routerType = sequence it will initialise the random sequence
             npArrayInt must be a size*size*4 array of intc
             """
-            self.lib.setArraySubState(self.SubBuffer.RANDOM_OUT,npArrayInt)
+            self.lib.setArraySubState(self.SubReg.RANDOM_OUT,npArrayInt)
             self.lib.synch()
 
         def getRandomSequence(self):
             size = self.getArg('size')
             npArrayInt = np.zeros((size,size,4),dtype=np.intc)
-            self.lib.getArraySubState(self.SubBuffer.RANDOM_OUT,npArrayInt)
+            self.lib.getArraySubState(self.SubReg.RANDOM_OUT,npArrayInt)
             return npArrayInt
 
 
@@ -111,11 +125,11 @@ class RsdnfMap(Map2D):
             """
             size = self.getArg('size')
             zeros = np.zeros((size,size,4),dtype=np.intc)
-            self.lib.setArrayAttribute(self.Attributes.NB_BIT_RECEIVED, \
-                                       np.zeros((size,size),dtype=np.bool))
+            self.lib.setRegArray(self.Reg.NB_BIT_RECEIVED, \
+                                       np.zeros((size,size),dtype=np.intc))
             #reset buffer
-            self.lib.setArraySubState(self.SubBuffer.BUFFER,zeros)
-            self.lib.setArraySubState(self.SubBuffer.SPIKE_OUT,zeros)
+            self.lib.setArraySubState(self.SubReg.BUFFER,zeros)
+            self.lib.setArraySubState(self.SubReg.SPIKE_OUT,zeros)
             self.lib.synch()
             self.newActivation=True
 
@@ -125,11 +139,15 @@ class RsdnfMap(Map2D):
                 self.lib.reset()
             super().reset()
 
+            self.errorBitSize = self.lib.getTotalRegSize()
+            if self.getArg('errorType') == 'permanent':
+                self.setFaults(self.getArg('errorProb'))
+
         def _onParamsUpdate(self,nspike,proba,
                             precisionProba,reproductible,size,routerType):
             self.lib.setMapParam(self.Params.NB_SPIKE,nspike)
-            self.lib.setMapParam(self.Params.PROBA,proba)
-            self.lib.setMapParam(self.Params.PRECISION_PROBA,2**precisionProba-1)
+            self.lib.setMapSubParam(self.SubParams.PROBA,proba)
+            self.lib.setMapSubParam(self.SubParams.PRECISION_PROBA,2**precisionProba-1)
             if reproductible:
                 self.lib.initSeed(0)
             else:
@@ -149,7 +167,7 @@ class RsdnfMap(Map2D):
 
 if __name__ == "__main__":
     size = 100
-    activation = np.zeros( ( size,size),np.bool_)
+    activation = np.zeros( ( size,size),np.intc)
     uut = RsdnfMap("uut",size,activation=activation)
     uut.reset()
     activation[size//2,size//2] = 1

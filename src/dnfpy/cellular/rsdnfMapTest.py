@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 class RsdnfMapTest(unittest.TestCase):
         def setUp(self):
                 self.size = 100
-                self.activation = np.zeros((self.size,self.size),np.bool_)
+                self.activation = np.zeros((self.size,self.size),np.intc)
                 self.uut = RsdnfMap("uut",self.size,activation=self.activation)
                 self.uut.reset()
 
@@ -21,7 +21,7 @@ class RsdnfMapTest(unittest.TestCase):
                 data = self.uut.getData()
             self.assertEqual(data[self.size//2+1,self.size//2+1],20)
 
-        def testWorstCaseScenario(self):
+        def t_stWorstCaseScenario(self):
             self.activation[self.size//2-5:self.size//2+5,self.size//2-5:self.size//2+5] = 1
             self.uut.setParams(nspike=20)
         
@@ -39,7 +39,7 @@ class RsdnfMapTest(unittest.TestCase):
         def testComputeActivationNspike1(self):
             self.uut.setParams(nspike=1)
             self.activation[self.size//2,self.size//2] = 1
-            for i in range(101):
+            for i in range(102):
                 self.uut.compute()
             data = self.uut.getData()
             self.assertEqual(np.sum(data),self.size**2-1)
@@ -57,7 +57,7 @@ class RsdnfMapTest(unittest.TestCase):
             self.activation[self.size//2,self.size//2] = 1
             self.uut.setParams(proba=1.0)
 
-            for i in range(5):
+            for i in range(6):
                 self.uut.compute()
             data = self.uut.getData()
             self.assertEqual(data[self.size//2+4,self.size//2],1)
@@ -65,7 +65,7 @@ class RsdnfMapTest(unittest.TestCase):
 
             self.uut.resetData()
             
-            for i in range(5):
+            for i in range(6):
                 self.uut.compute()
             data = self.uut.getData()
             self.assertEqual(data[self.size//2+4,self.size//2],1)

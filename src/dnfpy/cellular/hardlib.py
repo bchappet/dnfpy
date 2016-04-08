@@ -19,10 +19,19 @@ ffi.cdef("""
     void setMapParamInt(int index,int value);
     void setMapParamBool(int index,bool value);
     void setMapParamFloat(int index,float value);
-
     int getMapParamInt(int index);
     bool getMapParamBool(int index);
     float getMapParamFloat(int index);
+
+
+    void setMapSubParamInt(int index,int value);
+    void setMapSubParamBool(int index,bool value);
+    void setMapSubParamFloat(int index,float value);
+    int getMapSubParamInt(int index);
+    bool getMapSubParamBool(int index);
+    float getMapSubParamFloat(int index);
+
+
 
     void getCellAttribute(int x,int y,int index,void* value);
     void setCellAttribute(int x,int y,int index, void* value);
@@ -37,12 +46,7 @@ ffi.cdef("""
 
 
     void getArrayInt(int index,int* array);
-    void getArrayBool(int index,bool * array);
-    void getArrayFloat(int index,float * array);
-
     void setArrayInt(int index, int* array);
-    void setArrayBool(int index, bool* array);
-    void setArrayFloat(int index, float* array);
 
     void setCellInt(int x,int y,int index,int val);
     void setCellBool(int x,int y,int index,bool val);
@@ -51,6 +55,10 @@ ffi.cdef("""
     void getArraySubState(int index,int * array);
     void setArraySubState(int index,int * array);
 
+
+    //to study fault tolerence of transient orpermanent single event effect
+    int getTotalRegSize() ;
+    void setErrorMaskFromArray(bool * bits) ;
 
 
 """)
@@ -128,6 +136,42 @@ class HardLib:
         else:
             raise AttributeError("Expecting int bool or float as dtype. %s (id: %s) was %s"%(val,idParam,dtype))
 
+    def getMapSubParam(self,idParam,dtype):
+        self.__useMap()
+        if dtype == int:
+            return self.C.getMapSubParamInt(idParam)
+        elif dtype == bool:
+            return self.C.getMapSubParamBool(idParam)
+        elif dtype == float:
+            return self.C.getMapSubParamFloat(idParam)
+        else:
+            raise AttributeError("Expecting int bool or float as dtype. Was %s"%dtype)
+
+
+
+
+    def setMapSubParam(self,idParam,val):
+        self.__useMap()
+        dtype = type(val)
+        if dtype == int:
+            self.C.setMapSubParamInt(idParam,val)
+        elif dtype == bool:
+            self.C.setMapSubParamBool(idParam,val)
+        elif dtype == float:
+            self.C.setMapSubParamFloat(idParam,val)
+        elif dtype == np.float64:
+            self.C.setMapSubParamFloat(idParam,val)
+        else:
+            raise AttributeError("Expecting int bool or float as dtype. %s (id: %s) was %s"%(val,idParam,dtype))
+
+
+    def getTotalRegSize(self):
+        return self.C.getTotalRegSize()
+
+    def setErrorMaskFromArray(self,npArray):
+        self.C.setErrorMaskFromArray(ffi.cast("bool *",npArray.ctypes.data))
+
+
 
     def setCellAttribute(self,x,y,idAttribute,val):
         self.__useMap()
@@ -201,12 +245,17 @@ class HardLib:
         dtype = npArray.dtype
         if dtype == np.intc:
             self.C.getArrayInt(regIndex,ffi.cast("int *",npArray.ctypes.data))
-        elif dtype == np.float:
-            self.C.getArrayFloat(regIndex,ffi.cast("float *",npArray.ctypes.data))
-        elif dtype == np.bool:
-            self.C.getArrayBool(regIndex,ffi.cast("bool *",npArray.ctypes.data))
         else:
-            raise AttributeError("Expecting int bool or float as dtype. Was %s"%dtype)
+            raise AttributeError("Expecting intc as dtype. Was %s"%dtype)
+
+    def setRegArray(self,regIndex,npArray):
+        self.__useMap()
+        dtype = npArray.dtype
+        if dtype == np.intc:
+            self.C.setArrayInt(regIndex,ffi.cast("int *",npArray.ctypes.data))
+        else:
+            raise AttributeError("Expecting intc as dtype. Was %s"%dtype)
+
 
 
     def getArraySubState(self,regIndex,npArrayInt):

@@ -24,11 +24,13 @@ class NSpikeConvolution(Map2D):
                  iExc_=1.,iInh_=1.,pInh_=0.,pExc_=0.,
                  reproductible=True,cell='NSpike',clkRatio=50,#if cellular model, the cells will be computed 100 time betwenn each computation
                  routerType='prng',
+                 errorType='none',errorProb=0.0001,
                  **kwargs):
         super(NSpikeConvolution,self).__init__(name,size,dt=dt,nspike=nspike,
                 iExc=iExc,iInh=iInh,pExc=pExc,pInh=pInh,alpha=alpha,
                  iExc_=iExc_,iInh_=iInh_,pInh_=pInh_,pExc_=pExc_,
                 reproductible=reproductible,cell=cell,clkRatio=clkRatio,routerType=routerType,
+                errorType=errorType,errorProb=errorProb,
                                                **kwargs)
         if cell is 'NSpike':
             self.inh = NSpikeMap(name+"_inh",size,dt=dt,nspike=nspike,
@@ -40,9 +42,11 @@ class NSpikeConvolution(Map2D):
            
 
             self.inh = RsdnfMap(name+"_inh",size,dt=dtCellular,nspike=nspike,
-                                proba=pInh_,reproductible=reproductible,clkRatio=clkRatio,routerType=routerType)
+                                proba=pInh_,reproductible=reproductible,clkRatio=clkRatio,routerType=routerType,
+                                errorType=errorType,errorProb=errorProb)
             self.exc = RsdnfMap(name+"_exc",size,dt=dtCellular,nspike=nspike,
-                                proba=pExc_,reproductible=reproductible,clkRatio=clkRatio,routerType=routerType)
+                                proba=pExc_,reproductible=reproductible,clkRatio=clkRatio,routerType=routerType,
+                                errorType=errorType,errorProb=errorProb)
         else:
             raise NameError("the cell "+str(cell)+" does not exist. Try NSpike or Rsdnf." )
 
