@@ -94,7 +94,10 @@ class RsdnfMap(Map2D):
         def setFaults(self,errorProb):
             bits = np.random.random((self.errorBitSize)) < errorProb
             print("nb fault = ",np.sum(bits))
-            self.lib.setErrorMaskFromArray(bits)
+            self.setErrorMaskFromArray(bits)
+
+        def setErrorMaskFromArray(self,array):
+            self.lib.setErrorMaskFromArray(array)
             
 
         def setRandomSequence(self,npArrayInt):
