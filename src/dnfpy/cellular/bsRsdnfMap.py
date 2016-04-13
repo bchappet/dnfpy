@@ -24,16 +24,21 @@ class BsRsdnfMap(Map2D):
         class Params:
             PROBA_SPIKE=0
             SIZE_STREAM=1
-            PROBA_SYNAPSE=2
-            PRECISION_PROBA = 3
+            PRECISION_PROBA_SPIKE = 2
+            NB_NEW_RANDOM_BIT = 3
 
-        class Registers:
+        class SubParams:
+            PROBA_SYNAPSE = 0
+            PRECISION_PROBA = 1
+
+        class Reg:
             SPIKE_BS=0
+            NB_BIT_RECEIVED=1
+            ACTIVATED=2
+            NB_BIT_TO_GEN=3
 
-        class Attributes:
-            NB_BIT_RECEIVED=0
-            ACTIVATED=1
-            DEAD=2
+        class SubReg:
+            BS_OUT = 0
 
         def __init__(self,name,size,dt=0.1,sizeStream=20,probaSpike=1.,
                      probaSynapse=1.,
@@ -57,13 +62,15 @@ class BsRsdnfMap(Map2D):
 
         def _compute(self,size,activation,nstep):
             if self.newActivation:
-                self.lib.setArrayAttribute(self.Attributes.ACTIVATED,activation)
+                self.setActivation(activation)
                 self.newActivation = False
+
             self.lib.nstep(nstep)
-            self.lib.getArrayAttribute(self.Attributes.NB_BIT_RECEIVED,self._data)
+            self.lib.getRegArray(self.Reg.NB_BIT_RECEIVED,self._data)
 
         def setActivation(self,activation):
-            self.lib.setArrayAttribute(self.Attributes.ACTIVATED,activation)
+            self.lib.setRegArray(self.Reg.ACTIVATED,activation)
+            self.lib.synch()
 
 
         def resetData(self):
@@ -76,8 +83,8 @@ class BsRsdnfMap(Map2D):
             at every computation
             """
             size = self.getArg('size')
-            self.lib.setArrayAttribute(self.Attributes.NB_BIT_RECEIVED, \
-                                       np.zeros((size,size),dtype=np.bool))
+            self.lib.setRegArray(self.Reg.NB_BIT_RECEIVED, \
+                                       np.zeros((size,size),dtype=np.intc))
             self.newActivation=True
 
 
@@ -87,18 +94,18 @@ class BsRsdnfMap(Map2D):
             self._data = np.zeros((size,size),dtype=np.intc)
             if self.lib:
                 self.lib.reset()
-                self.lib.getArrayAttribute(self.Attributes.NB_BIT_RECEIVED
-                                           ,self._data)
+                self.lib.getRegArray(self.Reg.NB_BIT_RECEIVED,self._data)
 
         def _onParamsUpdate(self,sizeStream,probaSpike,probaSynapse,
                             precisionProba,reproductible):
             self.lib.setMapParam(self.Params.SIZE_STREAM,sizeStream)
             self.lib.setMapParam(self.Params.PROBA_SPIKE,probaSpike)
-            self.lib.setMapParam(self.Params.PROBA_SYNAPSE,probaSynapse)
-            self.lib.setMapParam(self.Params.PRECISION_PROBA,2**precisionProba-1)
+            self.lib.setMapSubParam(self.SubParams.PROBA_SYNAPSE,probaSynapse)
+            self.lib.setMapParam(self.Params.PRECISION_PROBA_SPIKE,2**precisionProba-1)
+            self.lib.setMapSubParam(self.SubParams.PRECISION_PROBA,2**precisionProba-1)
             if reproductible:
                 self.lib.initSeed(0)
             else:
-                seed = random.randint(0, sys.maxint)
+                seed = random.randint(0, 1e10)
                 self.lib.initSeed(seed)
             return {}

@@ -1,7 +1,7 @@
 from dnfpy.core.constantMap import ConstantMap
 import unittest
 import numpy as np
-from rsdnfMap import RsdnfMap
+from dnfpy.cellular.rsdnfMap import RsdnfMap
 import dnfpy.view.staticViewMatplotlib as view
 import matplotlib.pyplot as plt
 

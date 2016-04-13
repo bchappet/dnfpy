@@ -86,7 +86,6 @@ extern "C" {
 
     void setCellInt(int x,int y,int index,int val);
     void setCellBool(int x,int y,int index,bool val);
-    void setCellFloat(int x,int y,int index,float val);
 
     //subStates to access sub module
     void getArraySubState(int index,int * array);

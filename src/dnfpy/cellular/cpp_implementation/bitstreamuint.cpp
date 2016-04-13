@@ -22,11 +22,7 @@ BitStreamUint::BitStreamUint(unsigned int size):BitStream(size)
 BitStreamUint::BitStreamUint(float proba,unsigned int size,u_int32_t probaMask):BitStreamUint(size){
     if(proba >= 1. || proba <= 0.){
         this->simpleValue = true;
-        if(proba >= 1){
-            this->value = true;
-        }else{
-            this->value = false;
-        }
+        this->value = proba >= 1.0;
     }else{ //proba is not simple
         this->simpleValue = false;
         this->data = std::vector<u_int32_t>(this->vecSize);

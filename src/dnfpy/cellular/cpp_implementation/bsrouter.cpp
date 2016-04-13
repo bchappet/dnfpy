@@ -11,18 +11,23 @@ BSRouter::BSRouter()
 }
 
 
+void BSRouter::setDefaultParams(Module::ParamsPtr params){
+    params->push_back(new float(1.0));//PROBA_SYNAPSE
+    params->push_back(new long int(PRECISION_MAX));//PRECISION_PROBA
+}
+
 
 void BSRouter::computeState(){
     bool res = false;
     //multiplication per synaptic weight
 
-    bool synaptiWeightBS = generateStochasticBit(this->getParam<float>(CellBsRsdnf::PROBA_SYNAPSE),
-                                                this->getParam<int>(CellBsRsdnf::PRECISION_PROBA));
+    bool synaptiWeightBS = generateStochasticBit(this->getParam<float>(BSRouter::PROBA_SYNAPSE),
+                                                this->getParam<int>(BSRouter::PRECISION_PROBA));
 
     if(synaptiWeightBS){
         //int i = 0;
         for(ModulePtr mod:this->neighbours){
-            res |= mod.get()->getRegState(0);//rough addition of inputs
+            res |= mod.get()->getRegState(0);//TODO massive gotcha THE BS_OUT registre has to be the first one!
            // std::cout << "i: " << i << " res : " << res << std::endl;
            // i++;
 

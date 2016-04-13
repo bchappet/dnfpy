@@ -196,6 +196,7 @@ data$routerType <- as.factor(data$routerType)
 data$routerType <- factor(data$routerType,levels=c("prng","shared","sequenceShort","sequence","sequenceShortMixte","sequenceMixte"))
 data$nspike <- as.factor(data$nspike)
 data$ScenarioName <- as.factor(data$ScenarioName)
+
 summary(data)
 attach(data)
 
@@ -214,7 +215,7 @@ a <- a + scale_fill_manual(
                    values=c("#ffffff","#dddddd","#bbbbbb","#999999","#777777","#555555"),
                    limits=c("prng","shared","sequenceShort","sequence","sequenceShortMixte","sequenceMixte"),
                    breaks=c("prng","shared","sequenceShort","sequence","sequenceShortMixte","sequenceMixte"),
-                   labels=c("Control", "shared", "short","long","shrtCmb","lngCmb"))
+                   labels=c("Control", "shared", "short","long","shrtOpen","longOpen"))
 #a <- a + scale_fill_grey()
 #a <- a + scale_fill_grey(start = 0, end = .9)
 a <- a + theme_bw() + theme(plot.background = element_blank()) 

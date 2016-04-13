@@ -179,7 +179,7 @@ void test_sequence_rsdnf_short_mixte_map(int size){
     cout << " random bit generation passed" << endl;
 
     float proba = 0.0;
-    map2d.setParam<float>(CellRsdnf::PROBA,proba);
+    map2d.setArraySubParam<float>(Router::PROBA,proba);
     for(int i = 0 ; i < size ; i ++ ){
         map2d.compute();
         map2d.synch();
@@ -224,7 +224,7 @@ void test_sequence_rsdnf_mixte_map(int size){
     cout << " random bit generation passed" << endl;
 
     float proba = 0.0;
-    map2d.setParam<float>(CellRsdnf::PROBA,proba);
+    map2d.setArraySubParam<float>(Router::PROBA,proba);
     for(int i = 0 ; i < size*size ; i ++ ){
         map2d.compute();
         map2d.synch();
@@ -467,7 +467,7 @@ void test_rsdnfMap_2layer(int size){
     int mapId = initSimu(size,size,"cellrsdnf2","rsdnfconnecter2layer",false);
     useMap(mapId);
     initMapSeed(255);
-    setMapParamFloat(CellRsdnf::PROBA,1.);
+    setMapParamFloat(CellRsdnf2::PROBA,1.);
     setMapParamFloat(CellRsdnf2::PROBA_INH,1.);
     assert(getMapParamFloat(CellRsdnf2::PROBA_INH) == 1.);
 
@@ -529,7 +529,7 @@ void test_rsdnfMap_2layer(int size){
 
     reset();
 
-    setMapParamFloat(CellRsdnf::PROBA,0.9);
+    setMapParamFloat(CellRsdnf2::PROBA,0.9);
     setMapParamFloat(CellRsdnf2::PROBA_INH,0.2);
     setCellAttribute(hSize,hSize,CellRsdnf::ACTIVATED,&activate);
     setCellAttribute(hSize+2,hSize+2,CellRsdnf::ACTIVATED,&activate);
@@ -1773,7 +1773,7 @@ void test_Map2D(int size){
 }
 
 void test_register(){
-    Register regInt(10);
+    Register regInt(10,10);
     assert(regInt.get() == 10);
     regInt.set(20);
     assert(regInt.get() == 10);

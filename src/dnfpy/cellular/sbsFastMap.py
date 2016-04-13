@@ -62,6 +62,6 @@ class SbsFastMap(Map2D):
             if reproductible:
                 self.lib.initSeed(0)
             else:
-                seed = random.randint(0, sys.maxint)
+                seed = random.randint(0, 1e10)
                 self.lib.initSeed(seed)
             return {}

@@ -30,8 +30,19 @@ public:
      */
     void set(int val);
 
+    /**
+     * utility function to increment or decrement easyly
+     */
+    void incr(int toAdd);
+
+    /**
+     * Return the size of the register
+     */
     int getSize();
 
+    /**
+     * Set the error mask msb -> lsb
+     */
     void setErrorMask(int errorMask);
 
     /**

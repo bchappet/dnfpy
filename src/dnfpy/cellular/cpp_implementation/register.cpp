@@ -37,6 +37,10 @@ int Register::get(){
     return this->state;
 }
 
+void Register::incr(int toAdd){
+    this->set(this->get() + toAdd);
+}
+
 int Register::getSize(){
     return this->size;
 }

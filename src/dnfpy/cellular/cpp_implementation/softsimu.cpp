@@ -209,7 +209,7 @@ void setCellInt(int x,int y,int index,int val){
 }
 
 void setCellBool(int x,int y,int index,bool val){
-    mapSimu->setCellState(x,y,index,val);
+    mapSimu->setCellState(x,y,index,(int)val);
 }
 
 void getArraySubState(int index,int * array){

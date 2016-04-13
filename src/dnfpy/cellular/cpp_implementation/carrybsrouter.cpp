@@ -8,8 +8,13 @@ CarryBsRouter::CarryBsRouter()
 
 
     //registres
-    this->regs.push_back(Register(0));//BS_OUT
-    this->regs.push_back(Register(0));//CARRY
+    this->regs.push_back(Register(0,1));//BS_OUT
+    this->regs.push_back(Register(0,1));//CARRY
+}
+
+void CarryBsRouter::setDefaultParams(Module::ParamsPtr params){
+    params->push_back(new float(1.0));//PROBA_SYNAPSE
+    params->push_back(new long int(PRECISION_MAX));//PRECISION_PROBA
 }
 
 void CarryBsRouter::computeState(){
@@ -17,8 +22,8 @@ void CarryBsRouter::computeState(){
     bool carry = this->getRegState(CarryBSRouter_Registers::CARRY);
     bool nextCarry = carry;
     //multiplication per synaptic weight
-    bool synaptiWeightBS = generateStochasticBit(this->getParam<float>(CellBsRsdnf::PROBA_SYNAPSE),
-                                                this->getParam<int>(CellBsRsdnf::PRECISION_PROBA));
+    bool synaptiWeightBS = generateStochasticBit(this->getParam<float>(CarryBsRouter::PROBA_SYNAPSE),
+                                                this->getParam<int>(CarryBsRouter::PRECISION_PROBA));
 
     if(synaptiWeightBS){
         bool neigh = false;

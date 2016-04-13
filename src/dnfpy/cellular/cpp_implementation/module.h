@@ -79,6 +79,10 @@ public:
         return this->regs.at(index).get();
     }
 
+    void incrReg(int index,int toAdd){
+        this->regs.at(index).incr(toAdd);
+    }
+
 
     virtual void synch(){
 

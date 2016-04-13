@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from hardlib import HardLib
+from dnfpy.cellular.hardlib import HardLib
 
 
 class TestHardLibParameters(unittest.TestCase):

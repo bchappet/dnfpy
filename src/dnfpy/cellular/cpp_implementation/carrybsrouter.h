@@ -19,7 +19,9 @@ public:
      * PRECISION_PROBA_SYNAPSE : precision use to generate the probability
      * NB_NEW_RANDOM_BIT
      */
-    enum CarryBSRouter_Parameters{PROBA_SYNAPSE,PRECISION_PROBA_SYNAPSE,NB_NEW_RANDOM_BIT};
+    enum CarryBSRouter_Parameters{PROBA_SYNAPSE,PRECISION_PROBA};
+
+    virtual void setDefaultParams(Module::ParamsPtr params) override;
 
 
     void setLastRandomNumber(int* intp);

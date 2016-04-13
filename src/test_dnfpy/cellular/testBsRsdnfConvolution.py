@@ -53,13 +53,13 @@ class TestBsRsdnfConvolutionMap(unittest.TestCase):
             diags.append(diag)
 
         (mean,std) = self.computeStatsDiag(diags)
-        print mean
-        print std
+        print(mean)
+        print(std)
 
     def getData(self,repet):
         for i in range(-1,2,1):
             for j in range(-1,2,1):
-                self.activation[self.size/2+i][self.size/2+j] = 1;
+                self.activation[self.size//2+i][self.size//2+j] = 1;
         start = time.clock()
         for i in range(repet):
             self.uut.compute()

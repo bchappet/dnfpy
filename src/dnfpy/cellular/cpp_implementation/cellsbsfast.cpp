@@ -9,6 +9,7 @@ CellSBSFast::CellSBSFast(int row,int col) : BitStreamGenerator(row,col)
     for(int i = 0 ; i < 4 ;i ++){
         ModulePtr router =  ModulePtr(new SBSFastRouter(row,col));
         this->subModules.push_back(router);
+        router->initParams();//TODO this is a massive gotcha
     }
 
     //attributes

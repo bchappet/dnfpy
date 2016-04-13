@@ -233,10 +233,8 @@ class HardLib:
             self.C.setCellInt(x,y,regIndex,val)
         elif ty == bool:
             self.C.setCellBool(x,y,regIndex,val)
-        elif ty == float:
-            self.C.setCellFloat(x,y,regIndex,val)
         else:
-            raise AttributeError("Expecting int bool or float as dtype. Was %s"%dtype)
+            raise AttributeError("Expecting int or bool as dtype. Was %s"%dtype)
 
 
 

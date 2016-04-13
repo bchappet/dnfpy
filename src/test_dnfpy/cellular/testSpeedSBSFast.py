@@ -7,7 +7,7 @@ from dnfpy.core.constantMap import ConstantMap
 class TestSpeedSBSFast(unittest.TestCase):
     def setUp(self):
         self.size = 101
-        self.hsize = self.size/2
+        self.hsize = self.size//2
         self.uut = SbsFastMap("uut",self.size)
         self.uut.lib.initSeed(255)
         self.activation = np.zeros((self.size,self.size),np.intc)
@@ -38,7 +38,7 @@ class TestSpeedSBSFast(unittest.TestCase):
         end = time.clock()
         print("elapsed time %s"%(end-start))
         data =  self.uut.getData()
-        print data
+        print(data)
 
 
 
@@ -51,7 +51,7 @@ class TestSpeedSBSFast(unittest.TestCase):
     def activate2(self):
           for i in range(-2,3,1):
             for j in range(-2,3,1):
-                self.activation[self.size/2+i][self.size/2+j] = 1;
+                self.activation[self.size//2+i][self.size//2+j] = 1;
 
 
 

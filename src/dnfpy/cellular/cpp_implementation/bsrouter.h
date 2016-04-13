@@ -7,6 +7,9 @@ public:
     BSRouter();
     virtual void computeState() override;
 
+    enum BSRouter_Parameter{PROBA_SYNAPSE,PRECISION_PROBA};
+    virtual void setDefaultParams(Module::ParamsPtr params) override;
+
     /**
      * @brief The BSRouter_Registers enum
      * BS_OUT : stochastic bit stream outputed

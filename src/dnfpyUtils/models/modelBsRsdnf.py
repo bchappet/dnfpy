@@ -2,12 +2,11 @@ from dnfpy.model.inputMap import InputMap
 from dnfpy.view.renderable import Renderable
 from dnfpy.model.model import Model
 from dnfpy.cellular.mapDNFBsRsdnf import MapDNFBsRsdnf
-from dnfpy.stats.statsList import StatsList
 
 class ModelBsRsdnf(Model,Renderable):
     def initMaps(self,size,dt=0.1,sizeStream=100,pSpike=0.1,routerType="uniformCell",
             precisionProba=31,reproductible=False,iExc=1.57,iInh=0.74,pExc=1.3e-5,pInh=0.9,
-                 mapType="fast",shift=5,nbSharedBit=31):
+                 mapType="fast",shift=5,nbSharedBit=31,**kwargs):
         """We initiate the map and link them"""
 
         """
@@ -35,7 +34,6 @@ class ModelBsRsdnf(Model,Renderable):
             print("double fast : nbSharedBit %s, shift %s"%(nbSharedBit,shift))
 
         #Create maps
-        self.aff = InputMap("Inputs",size,dt=dt,tck_dt=dt)
         #WM
         #self.field = MapDNFBsRsdnf("DNF",size,dt=dt,sizeStream=100,iExc=0.9,pInh=0.02)
         if mapType == "slow":
@@ -43,7 +41,7 @@ class ModelBsRsdnf(Model,Renderable):
         else:
             dtPropagation = dt;
         print("sizeStream %s, dtPropagation %s pSpike %s"%(sizeStream,dtPropagation,pSpike))
-        self.field = MapDNFBsRsdnf("DNF",size,dt=dt,dtPropagation=dtPropagation,
+        self.field = MapDNFBsRsdnf("Potential",size,dt=dt,dtPropagation=dtPropagation,
                                     precisionProba=precisionProba,
                                     reproductible=reproductible,
                                    sizeStream=sizeStream,
@@ -54,19 +52,14 @@ class ModelBsRsdnf(Model,Renderable):
                                    shift=shift,nbSharedBit=nbSharedBit,
                                    mapType=mapType
                                    )
-        self.field.addChildren(aff=self.aff)
-        #stats
-        self.stats = StatsList(size,self.aff,self.field.getActivation()
-                               ,self.field,shapeType='exp',dt=dt)
         #return the roots
         roots =  [self.field]
-        roots.extend(self.stats.getRoots())
         return roots
+
     #override Renderable
     def getArrays(self):
-        ret =  [self.aff,self.field]
+        ret =  [self.field]
         ret.extend(self.field.getArrays())
-        ret.extend(self.stats.getArrays())
         return ret
 
     def onClick(self,mapName,x,y):

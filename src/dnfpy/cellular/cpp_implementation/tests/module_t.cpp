@@ -2,6 +2,17 @@
 #include <catch.hpp>
 #include <module.h>
 
+
+TEST_CASE("incr reg"){
+
+    Module::ModulePtr module = Module::ModulePtr(new Module());
+    module->addReg(7,8);
+    module->incrReg(0,10);
+    module->synch();
+    REQUIRE(module->getRegState(0) == 17);
+
+}
+
 TEST_CASE("setErrorMaskFromArray"){
  
     Module::ModulePtr module = Module::ModulePtr(new Module());

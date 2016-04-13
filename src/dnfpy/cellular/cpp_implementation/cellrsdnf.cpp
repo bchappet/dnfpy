@@ -44,7 +44,7 @@ void CellRsdnf::initRouters(std::string typeRouter){
 
 
         this->subModules.push_back(r);
-        r->initParams();
+        r->initParams();//TODO this is a massive gotcha
     }
 }
 

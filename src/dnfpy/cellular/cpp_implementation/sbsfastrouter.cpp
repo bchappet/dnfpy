@@ -15,6 +15,10 @@ void SBSFastRouter::reset(){
    this->synSBS.reset();
 }
 
+void SBSFastRouter::setDefaultParams(Module::ParamsPtr params){
+    params->push_back(new int(20));//SIZE_STREAM
+}
+
 void SBSFastRouter::setSynSBS(BitStreamUint::BSBPtr sbs){
     this->synSBS = sbs;
 }
@@ -25,7 +29,7 @@ BitStreamUint::BSBPtr SBSFastRouter::getSBS(){
     if (this->sbs){
         return this->sbs;
     }else{
-        int sizeStream = this->getParam<int>(CellSBSFast::SIZE_STREAM);
+        int sizeStream = this->getParam<int>(SBSFastRouter::SIZE_STREAM);
         this->sbs = BitStreamUint::BSBPtr(new BitStreamUint(sizeStream));
         int i = 0;
         for(ModulePtr pred : this->neighbours){

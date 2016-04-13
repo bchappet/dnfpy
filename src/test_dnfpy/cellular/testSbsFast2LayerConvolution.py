@@ -50,8 +50,8 @@ class TestSbsFast2LayerConvolution(unittest.TestCase):
             diags.append(diag)
 
         (mean,std) = self.computeStatsDiag(diags)
-        print mean
-        print std
+        print( mean)
+        print(std)
 
     def getData(self):
         for i in range(-1,2,1):

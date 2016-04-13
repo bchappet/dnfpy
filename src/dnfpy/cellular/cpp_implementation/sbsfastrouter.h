@@ -9,9 +9,13 @@ public:
 
     SBSFastRouter(int row =0,int col = 0);
 
+    enum SBSFastRouter_params{SIZE_STREAM};
+
     virtual void computeState() override{}
 
     virtual void reset() override;
+    
+    virtual void setDefaultParams(Module::ParamsPtr params) override;
 
     virtual BitStreamUint::BSBPtr getSBS() override;
 

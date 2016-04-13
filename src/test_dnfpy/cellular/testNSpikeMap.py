@@ -6,7 +6,7 @@ class TestNSpikeMap(unittest.TestCase):
     def setUp(self):
         self.size = 11
         self.activation = np.zeros((self.size,self.size),np.intc)
-        self.uut = NSpikeMap("uut",self.size,activation=self.activation)
+        self.uut = NSpikeMap("uut",self.size,activation=self.activation,reproductible=True)
 
     def test_update(self):
         self.uut.compute()

@@ -21,17 +21,17 @@ class TestBsRsdnfMap(unittest.TestCase):
         self.uut.compute()#router of cel set state 1
         self.uut.compute()#at last neigh cell receive bit
         res = self.uut.getData()
-        self.assertEquals(res[5][5],0)
-        self.assertEquals(res[6][5],1)
-        self.assertEquals(res[5][6],1)
-        self.assertEquals(res[4][5],1)
-        self.assertEquals(res[5][4],1)
+        self.assertEqual(res[5][5],0)
+        self.assertEqual(res[6][5],1)
+        self.assertEqual(res[5][6],1)
+        self.assertEqual(res[4][5],1)
+        self.assertEqual(res[5][4],1)
         self.uut.compute()#at last neigh cell receive bit
         res = self.uut.getData()
-        self.assertEquals(res[6][5],2)
-        self.assertEquals(res[5][6],2)
-        self.assertEquals(res[4][5],2)
-        self.assertEquals(res[5][4],2)
+        self.assertEqual(res[6][5],2)
+        self.assertEqual(res[5][6],2)
+        self.assertEqual(res[4][5],2)
+        self.assertEqual(res[5][4],2)
 
     def test_2activation(self):
         self.activation[4][5] = 1
@@ -40,7 +40,7 @@ class TestBsRsdnfMap(unittest.TestCase):
         self.uut.compute()
         self.uut.compute()
         res = self.uut.getData()
-        self.assertEquals(res[5][5],1)
+        self.assertEqual(res[5][5],1)
 
     def test_proba_0(self):
         self.uut.setParams(probaSynapse=0.)
@@ -49,8 +49,8 @@ class TestBsRsdnfMap(unittest.TestCase):
         self.uut.compute()
         self.uut.compute()
         res = self.uut.getData()
-        self.assertEquals(res[2][5],0)
-        self.assertEquals(res[0][0],0)
+        self.assertEqual(res[2][5],0)
+        self.assertEqual(res[0][0],0)
 
 
 
@@ -62,19 +62,19 @@ class TestBsRsdnfMap(unittest.TestCase):
         for i in range(11):
             self.uut.compute()
         res = self.uut.getData()
-        self.assertEquals(res[6,5] ,10)
-        self.assertEquals(res[5,6] ,10)
-        self.assertEquals(res[0,0] ,1)
+        self.assertEqual(res[6,5] ,10)
+        self.assertEqual(res[5,6] ,10)
+        self.assertEqual(res[0,0] ,1)
         self.uut.resetData()
         self.uut.compute()
-        self.assertEquals(res[6,5] ,1)
-        self.assertEquals(res[5,6] ,1)
-        self.assertEquals(res[0,0] ,1)
+        self.assertEqual(res[6,5] ,1)
+        self.assertEqual(res[5,6] ,1)
+        self.assertEqual(res[0,0] ,1)
         for i in range(9):
             self.uut.compute()
-        self.assertEquals(res[6,5] ,10)
-        self.assertEquals(res[5,6] ,10)
-        self.assertEquals(res[0,0] ,10)
+        self.assertEqual(res[6,5] ,10)
+        self.assertEqual(res[5,6] ,10)
+        self.assertEqual(res[0,0] ,10)
         for i in range(10):
             self.uut.compute()
 
@@ -86,9 +86,9 @@ class TestBsRsdnfMap(unittest.TestCase):
         for i in range(1000):
             self.uut.compute()
         res = self.uut.getData()
-        self.assertEquals(res[0,0] ,20)
-        self.assertEquals(res[0,1] ,20)
-        self.assertEquals(res[self.size-1,1] ,20)
+        self.assertEqual(res[0,0] ,20)
+        self.assertEqual(res[0,1] ,20)
+        self.assertEqual(res[self.size-1,1] ,20)
 
     def test_100_computation_visual(self):
         sizeStream = 200
@@ -103,7 +103,7 @@ class TestBsRsdnfMap(unittest.TestCase):
         sizePatch = 2
         for i in range(-1,sizePatch,1):
             for j in range(-1,sizePatch,1):
-                self.activation[self.size/2+i][self.size/2+j] = 1;
+                self.activation[self.size//2+i][self.size//2+j] = 1;
 
         #10.331086 s before
         #7.96 after
@@ -132,8 +132,8 @@ class TestBsRsdnfMap(unittest.TestCase):
         self.uut.compute()
         self.uut.compute()
         res = self.uut.getData()
-        print res
-        self.assertEquals(res[5][5],2)
+        print( res)
+        self.assertEqual(res[5][5],2)
 
     def test_Precision1(self):
         self.uut.setParams(precisionProba=1)
@@ -147,7 +147,7 @@ class TestBsRsdnfMap(unittest.TestCase):
         self.uut.compute()
         res = self.uut.getData()
         #print res
-        self.assertEquals(res[5][5],2)
+        self.assertEqual(res[5][5],2)
 
 
 
@@ -162,7 +162,7 @@ class TestBsRsdnfMap(unittest.TestCase):
         self.uut.compute()
         res = self.uut.getData()
         #print res
-        self.assertEquals(res[5][5],4)
+        self.assertEqual(res[5][5],4)
 
 
 if __name__ == "__main__":

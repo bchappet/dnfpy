@@ -26,24 +26,17 @@ public:
      * PRECISION_PROBA: precision used to generate probability Cannot be dynamically changed
      * NB_NEW_RANDOM_BIT: how many new random bit we generate
      */
-    enum CellBsRsdnf_Parameters{PROBA_SPIKE,SIZE_STREAM,PROBA_SYNAPSE,PRECISION_PROBA,NB_NEW_RANDOM_BIT};
+    enum CellBsRsdnf_Parameters{PROBA_SPIKE,SIZE_STREAM,PRECISION_PROBA_SPIKE,NB_NEW_RANDOM_BIT};
 
     /**
      * @brief The CellBsRsdnf_Registers enum
      * SPIKE_BS: the stochastic bit stream of the spike, sent on activation
      */
-    enum CellBsRsdnf_Registers{SPIKE_BS};
+    enum CellBsRsdnf_Registers{SPIKE_BS,NB_BIT_RECEIVED,ACTIVATED,NB_BIT_TO_GEN};
 
 
-    enum CellRsdnf_Attributes{NB_BIT_RECEIVED,ACTIVATED,DEAD};
 
     virtual void computeState() override;
-
-
-    virtual void getAttribute(int index,void* value) override;
-
-
-    virtual void setAttribute(int index, void* value) override;
 
 
 

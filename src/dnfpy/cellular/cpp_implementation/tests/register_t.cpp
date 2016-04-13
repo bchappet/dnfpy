@@ -3,6 +3,21 @@
 #include <register.h>
 
 
+TEST_CASE("increment register"){
+
+    Register* reg = new Register(10,10);
+    reg->incr(23);
+    REQUIRE(reg->get() == 10);
+    reg->synch();
+    REQUIRE(reg->get() == 33);
+
+    reg->incr(-3);
+    reg->synch();
+        REQUIRE(reg->get() == 30);
+
+}
+
+
 TEST_CASE("set error mask form char"){
 
     Register* reg = new Register(0,10);

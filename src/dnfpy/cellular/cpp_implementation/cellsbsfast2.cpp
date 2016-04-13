@@ -6,6 +6,7 @@ CellSBSFast2::CellSBSFast2(int row,int col) : CellSBSFast(row,col)
     for(unsigned int i = 0 ; i < 4 ;++i){
         ModulePtr router =  ModulePtr(new SBSFastRouter());
         this->subModules.push_back(router);
+        router->initParams();//TODO this is a massive gotcha
     }
 
    // std::cout << "nb router : " << this->subModules.size() << std::endl;
