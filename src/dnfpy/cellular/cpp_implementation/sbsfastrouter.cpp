@@ -25,21 +25,21 @@ void SBSFastRouter::setSynSBS(BitStreamUint::BSBPtr sbs){
 
 
 BitStreamUint::BSBPtr SBSFastRouter::getSBS(){
-    //std::cout << "getSBSRouter : " << std::endl;
     if (this->sbs){
         return this->sbs;
     }else{
+        //std::cout << "getSBSRouter : " << std::endl;
         int sizeStream = this->getParam<int>(SBSFastRouter::SIZE_STREAM);
         this->sbs = BitStreamUint::BSBPtr(new BitStreamUint(sizeStream));
         int i = 0;
         for(ModulePtr pred : this->neighbours){
             //std::cout << "sbs: " << *this->sbs << std::endl;
-           // std::cout << "pred : " << ((BitStreamGenerator*)pred.get()) << std::endl;
+            //std::cout << "pred : " << ((BitStreamGenerator*)pred.get()) << std::endl;
             *(this->sbs) |= *(((BitStreamGenerator*)pred.get())->getSBS());
             //std::cout << "pred : " << i << " : "<< this->sbs->count_ones() << std::endl;
             i++;
         }
-       // std::cout << "synSBS : " << i << " : "<< synSBS.count_ones() << std::endl;
+        //std::cout << "synSBS : " << i << " : "<< synSBS->count_ones() << std::endl;
          *(this->sbs) &= *(this->synSBS);
         //std::cout << "set Router " << this->sbs->count_ones() << std::endl;
         return this->sbs;

@@ -22,7 +22,7 @@ extern "C" {
 
     std::vector<uint32_t> generateRotatedBitChunck32(unsigned int nb,std::vector<float> probaVec, unsigned int shift,unsigned int nbCommonBit,
                                                       uint32_t randomBitMask=PRECISION_MAX,uint32_t precisionMask=PRECISION_MAX);
-    uint32_t generateBitChunck32(float proba,uint32_t precisionMask,unsigned int nbBit = 31);
+    uint32_t generateBitChunck32(float proba,uint32_t precisionMask,unsigned int nbBit = 32);
 
 
 

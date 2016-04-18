@@ -39,6 +39,7 @@ extern "C" {
     int useMap(int idMap);
 
     void preCompute();
+    void compute();
     void step();
     void nstep(unsigned int n);
     void synch();

@@ -38,6 +38,7 @@ uint32_t rotl32(uint32_t randInt, unsigned int shift, unsigned int nbBit,uint32_
 
 u_int32_t generateBitChunck32(float proba,u_int32_t precisionMask,unsigned int nbBit){
     u_int32_t res = 0;
+    //std::cout << "GENERATE BIT CHUNCK 32 " << nbBit << std::endl;
     for(unsigned int i = 0 ; i < nbBit; ++i){
         bool randBit =  generateStochasticBit(proba,precisionMask);
         res = res << 1;

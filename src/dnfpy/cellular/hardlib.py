@@ -9,6 +9,7 @@ ffi.cdef("""
     int useMap(int idMap);
 
     void preCompute();
+    void compute();
     void step();
     void nstep(unsigned int n);
     void synch();
@@ -91,6 +92,10 @@ class HardLib:
     def preCompute(self):
         self.__useMap()
         self.C.preCompute()
+
+    def compute(self):
+        self.__useMap()
+        self.C.compute()
 
     def step(self):
         self.__useMap()
@@ -192,7 +197,7 @@ class HardLib:
         dtype = npArray.dtype
         if dtype == np.intc:
             self.C.setArrayAttributeInt(idAttribute,ffi.cast("int *",npArray.ctypes.data))
-        elif dtype == np.float:
+        elif dtype == np.float32:
             self.C.setArrayAttributeFloat(idAttribute,ffi.cast("float *",npArray.ctypes.data))
         elif dtype == np.bool:
             self.C.setArrayAttributeBool(idAttribute,ffi.cast("bool *",npArray.ctypes.data))
@@ -204,7 +209,7 @@ class HardLib:
         dtype = npArray.dtype
         if dtype == np.intc:
             self.C.getArrayAttributeInt(idAttribute,ffi.cast("int *",npArray.ctypes.data))
-        elif dtype == np.float:
+        elif dtype == np.float32:
             self.C.getArrayAttributeFloat(idAttribute,ffi.cast("float *",npArray.ctypes.data))
         elif dtype == np.bool:
             self.C.getArrayAttributeBool(idAttribute,ffi.cast("bool *",npArray.ctypes.data))

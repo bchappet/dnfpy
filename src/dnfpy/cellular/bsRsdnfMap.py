@@ -45,6 +45,8 @@ class BsRsdnfMap(Map2D):
                      precisionProba=30,
                      routerType="orRouter",
                      reproductible=True,
+                     errorType = 'none', #'none' | 'transient'|'permanent'
+                     errorProb = 0.0001,#the error probability for every register bit
                      nstep=1,
                      **kwargs):
             self.lib = HardLib(size,size,"cellbsrsdnf","rsdnfconnecter",routerType)
@@ -55,15 +57,19 @@ class BsRsdnfMap(Map2D):
                                             precisionProba=precisionProba,
                                             routerType=routerType,
                                             reproductible=reproductible,
-                                            nstep=nstep,
+                                            nstep=nstep,errorType=errorType,errorProb=errorProb,
                                             **kwargs)
 
             self.newActivation = True #true when we want to get the new activation
+            self.errorBitSize = self.lib.getTotalRegSize()
 
-        def _compute(self,size,activation,nstep):
+        def _compute(self,size,activation,nstep,errorType,errorProb):
             if self.newActivation:
                 self.setActivation(activation)
                 self.newActivation = False
+
+            if errorType == 'transient':
+                self.setFaults(errorProb)
 
             self.lib.nstep(nstep)
             self.lib.getRegArray(self.Reg.NB_BIT_RECEIVED,self._data)
@@ -71,6 +77,16 @@ class BsRsdnfMap(Map2D):
         def setActivation(self,activation):
             self.lib.setRegArray(self.Reg.ACTIVATED,activation)
             self.lib.synch()
+
+
+        def setFaults(self,errorProb):
+            bits = np.random.random((self.errorBitSize)) < errorProb
+            print("nb fault = ",np.sum(bits))
+            self.setErrorMaskFromArray(bits)
+
+        def setErrorMaskFromArray(self,array):
+            self.lib.setErrorMaskFromArray(array)
+ 
 
 
         def resetData(self):

@@ -6,7 +6,7 @@ BSRouter::BSRouter()
 {
 
     //registres
-    this->regs.push_back(Register(0));//BS_OUT
+    this->regs.push_back(Register(0,1));//BS_OUT
 
 }
 

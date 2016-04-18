@@ -57,6 +57,8 @@ int sum_array(T* array,int length){
 
 template void print_2D_array<bool>(bool* array,int width,int height);
 template bool* construct_array<bool>(int width,int height);
+template void print_2D_array<float>(float* array,int width,int height);
+template float* construct_array<float>(int width,int height);
 template int sum_array<bool>(bool* array,int length);
 template void print_2D_array<int>(int* array,int width,int height);
 template int* construct_array<int>(int width,int height);

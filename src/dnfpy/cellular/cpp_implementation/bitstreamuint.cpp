@@ -1,26 +1,97 @@
 #include "bitstreamuint.h"
+#include <assert.h>
 #include "bitstreamutils.h"
 #include <math.h>
 #include <bitset>
 
-BitStreamUint::BitStreamUint(unsigned int size):BitStream(size)
-{
+const u_int32_t ONE_BIT[32] = {0x1,0x2,0x4,0x8,
+                       0x10,0x20,0x40,0x80,
+                       0x100,0x200,0x400,0x800,
+                       0x1000,0x2000,0x4000,0x8000,
+                       0x10000,0x20000,0x40000,0x80000,
+                       0x100000,0x200000,0x400000,0x800000,
+                       0x1000000,0x2000000,0x4000000,0x8000000,
+                       0x10000000,0x20000000,0x40000000,0x80000000
+};
 
+const u_int32_t LOW_MASK[32] = {0x1,0x3,0x7,0xf,
+                                0x1f,0x3f,0x7f,0xff,
+                                0x1ff,0x3ff,0x7ff,0xfff,
+                                0x1fff,0x3fff,0x7fff,0xffff,
+                                0x1ffff,0x3ffff,0x7ffff,0xfffff,
+                                0x1fffff,0x3fffff,0x7fffff,0xffffff,
+                                0x1ffffff,0x3ffffff,0x7ffffff,0xfffffff,
+                                0x1fffffff,0x3fffffff,0x7fffffff,0xffffffff,
+};
+
+const u_int32_t HIGH_MASK[32] = {
+    0x80000000,
+    0xc0000000,
+    0xe0000000,
+    0xf0000000,
+    0xf8000000,
+    0xfc000000,
+    0xfe000000,
+    0xff000000,
+    0xff800000,
+    0xffc00000,
+    0xffe00000,
+    0xfff00000,
+    0xfff80000,
+    0xfffc0000,
+    0xfffe0000,
+    0xffff0000,
+    0xffff8000,
+    0xffffc000,
+    0xffffe000,
+    0xfffff000,
+    0xfffff800,
+    0xfffffc00,
+    0xfffffe00,
+    0xffffff00,
+    0xffffff80,
+    0xffffffc0,
+    0xffffffe0,
+    0xfffffff0,
+    0xfffffff8,
+    0xfffffffc,
+    0xfffffffe,
+    0xffffffff,
+};
+
+BitStreamUint::BitStreamUint(unsigned int size,bool initMem):BitStream(size)
+{
+    this->index = 0;//by default
     this->vecSize = ceil(size/32.);
+    //std::cout << "vec size " << this->vecSize << std::endl;
     //The mask will be applied to the last chunck only for decoding
-    this->mask = pow(2,size % 32)-1;
-    if(this->mask == 0){
-        this->mask = 0xffffffff; //2^32-1
+    this->mask = LOW_MASK[(size-1)%32];
+    //std::cout << "mask " << std::bitset<32>(this->mask) << std::endl;
+    if(initMem){
+        this->simpleValue = false;
+        this->data = std::vector<u_int32_t>(this->vecSize);
+    }else{ 
+        this->simpleValue = true;
+        this->value = false;
     }
-    this->simpleValue = true;
-    this->value = false;
 
     // std::cout << " masks " << std::bitset<32>(this->mask) << std::endl;
 }
 
+BitStreamUint::BitStreamUint(const BitStreamUint& sbs):BitStreamUint(sbs.size,false){
+    this->simpleValue = sbs.simpleValue;
+    this->index = sbs.index;
+    this->mask = sbs.mask;
+    this->value = sbs.value;
+    this->data = std::vector<u_int32_t>(sbs.data.size());
+    for(unsigned int i = 0 ; i < sbs.data.size(); ++i){
+        this->data[i] = sbs.data[i];
+    }
+}
 
-BitStreamUint::BitStreamUint(float proba,unsigned int size,u_int32_t probaMask):BitStreamUint(size){
-    if(proba >= 1. || proba <= 0.){
+
+BitStreamUint::BitStreamUint(float proba,unsigned int size,u_int32_t probaMask):BitStreamUint(size,false){
+    if(proba >= 1. or proba <= 0.){
         this->simpleValue = true;
         this->value = proba >= 1.0;
     }else{ //proba is not simple
@@ -28,11 +99,42 @@ BitStreamUint::BitStreamUint(float proba,unsigned int size,u_int32_t probaMask):
         this->data = std::vector<u_int32_t>(this->vecSize);
         for(unsigned int i = 0 ; i < this->vecSize-1 ; ++i){
             this->data[i] = generateBitChunck32(proba,probaMask,32);
+            //std::cout << std::bitset<32>(this->data[i]) << std::endl;
         }
-        this->data[this->vecSize-1] = generateBitChunck32(proba,probaMask,this->size%32);
+        //std::cout << "SIZE : " << this->size << std::endl ;
+        this->data[this->vecSize-1] = generateBitChunck32(proba,probaMask,(this->size-1)%32+1);
+        //std::cout << std::bitset<32>(this->data[this->vecSize-1]) << std::endl;
     }
 }
 
+void BitStreamUint::setIndex(int index){
+    this->index = index;
+}
+int BitStreamUint::getIndex(){
+    return this->index;
+}
+
+/**switch on one of the 32 bits randomly**/
+u_int32_t getRandBit32(){
+    int index = rand() % 32;
+    return ONE_BIT[index];
+
+}
+
+BitStreamUint BitStreamUint::applyCounter(const unsigned int threshold, const unsigned int size){
+    BitStreamUint res = BitStreamUint(size,true);
+    //TODO for now we simplify the computation by applying the threshold to chunck
+    for(unsigned int i = 0 ; i < this->data.size()-1 ; ++i){
+        if(__builtin_popcount(this->data[i]) > threshold){
+            res.data[i] = getRandBit32();
+        }        
+    }
+    //last chunk: we apply mask
+    if( __builtin_popcount(this->data[this->data.size()-1] & this->mask) > threshold){
+        res.data[this->data.size()-1] = getRandBit32();
+    }
+    return res;
+}
 
 
 unsigned int BitStreamUint::count_ones(){
@@ -62,6 +164,7 @@ float BitStreamUint::mean(){
  * @param sbs
  */
 void BitStreamUint::copy(const BitStreamUint  &sbs){
+    this->index = sbs.index;
     this->size = sbs.size;
     this->mask = sbs.mask;
     this->simpleValue = sbs.simpleValue;
@@ -121,34 +224,168 @@ BitStreamUint& BitStreamUint::operator|= (const BitStreamUint &left){
     return *this;
 }
 
+u_int32_t rotatedChunck(const BitStreamUint &sbs,unsigned int chunckIndex, unsigned int shift) const{
+    u_int32_t result;
+
+        unsigned int chk1 = (shift / 32 + chunckIndex)%sbs.data.size();
+        unsigned int chk2 = (chk1 + 1) % sbs.data.size();
+        u_int32_t i32 = shift%32;
+        //exemple for i32 = 2
+        //111111111100 mask 1  HIGH_MASK[29]
+        //000000000011 mask 2  LOW_MASK[1]
+        u_int32_t mask1 = HIGH_MASK[32-1-i32]; //low bits
+        u_int32_t mask2 = LOW_MASK[i32-1];//high bit
+
+        //std::cout << "mask 1 " << std::bitset<32>(mask1) << std::endl;
+        //std::cout << "mask 2 " << std::bitset<32>(mask2) << std::endl;
+
+        u_int32_t res1 = (sbs.data[chk1] & mask1) >> i32;
+        u_int32_t res2 = (sbs.data[chk2] & mask2) << (32 - i32);
+        //std::cout << std::bitset<32>(res1) << std::endl;
+        //std::cout << std::bitset<32>(res2) << std::endl;
+
+        result = res1 | res2;
+
+
+
+
+} 
+
+
+BitStreamUint BitStreamUint::operator<< (const unsigned int shift) const{
+    if(this->simpleValue){
+        //will not change the value
+        return BitStreamUint(this);
+    }else{
+        BitStreamUint res = BitStreamUint(this->size,true);
+        for(unsigned int i = 0 ; i < this->data.size() ; ++i){
+
+        return res;
+        }
+        
+    }
+
+}
 
 
 
 
 BitStreamUint operator&(const BitStreamUint &right, const BitStreamUint &left){
-    BitStreamUint res = BitStreamUint(right.size);
+    if(right.simpleValue){
+        if(right.value)
+            return BitStreamUint(left);
+        else
+            return BitStreamUint(0.0f,right.size);
+    }else if(left.simpleValue){
+        if(left.value)
+            return BitStreamUint(right);
+        else
+            return BitStreamUint(0.0f,right.size);
+    }else{
+
+        BitStreamUint res = BitStreamUint(right.size,true);
+        for(unsigned int i = 0 ; i < right.data.size() ; ++i){
+            res.data[i] = right.data[i] & left.data[i];
+        }
+        return res;
+    }
+}
+
+BitStreamUint operator|(const BitStreamUint &right, const BitStreamUint &left){
+    if(right.simpleValue){
+        if(right.value)
+            return BitStreamUint(1.0f,right.size);
+        else
+            return BitStreamUint(left);
+    }else if(left.simpleValue){
+        if(left.value)
+            return BitStreamUint(1.0f,right.size);
+        else
+            return BitStreamUint(right);
+    }else{
+        BitStreamUint res = BitStreamUint(right.size,true);
+        for(unsigned int i = 0 ; i < right.data.size() ; ++i){
+            res.data[i] = right.data[i] | left.data[i];
+        }
+        return res;
+    }
+}
+
+
+
+BitStreamUint operator^(const BitStreamUint &right, const BitStreamUint &left){
+    if(right.simpleValue){
+        if(right.value) // 1 xor left gives ~left
+            return ~left;
+        else //0 xor left gives left
+            return BitStreamUint(left);
+    }else if(left.simpleValue){
+        if(left.value) //1 xor right give ~right
+            return ~right;
+        else// 0 xor right gives right
+            return BitStreamUint(right);
+    }else{
+        BitStreamUint res = BitStreamUint(right.size,true);
+        for(unsigned int i = 0 ; i < right.data.size() ; ++i){
+            res.data[i] = right.data[i] ^ left.data[i];
+        }
+        return res;
+    }
+}
+
+BitStreamUint operator+(const BitStreamUint &right, const BitStreamUint &left){
+    BitStreamUint res = BitStreamUint(right.size,true);//force creation of data
+    BitStreamUint rand = BitStreamUint(0.5,right.size); //sel bit
     for(unsigned int i = 0 ; i < right.data.size() ; ++i){
-        res.data[i] = right.data[i] & left.data[i];
+        res.data[i] = (right.data[i]&rand.data[i]) | (left.data[i]&(~rand.data[i]));
     }
     return res;
 }
 
-BitStreamUint operator|(const BitStreamUint &right, const BitStreamUint &left){
-    BitStreamUint res = BitStreamUint(right.size);
-    for(unsigned int i = 0 ; i < right.data.size() ; ++i){
-        res.data[i] = right.data[i] | left.data[i];
+BitStreamUint operator~(const BitStreamUint &bs){
+    if(bs.simpleValue){
+        return BitStreamUint(not(bs.value),bs.size);
+    }else{
+        BitStreamUint res = BitStreamUint(bs.size,true);
+        for(unsigned int i = 0 ; i < bs.data.size() ; ++i){
+            res.data[i] = ~bs.data[i];
+        }
+        return res;
     }
-    return res;
 }
+
+/**
+ *Return a 32b chunck of bits from the bitstream starting from index
+ *mask the last chunck using this->mask
+ * If this->index = 0 return this->data[chunckIndex] (fast)
+ * access is wrapped so as any stream can be processed against any other stream
+ * even if the size is different
+ * 
+ */
+u_int32_t BitStreamUint::getData(unsigned int chunckIndex) const{
+    u_int32_t result;
+    unsigned int chkI = chunckIndex % this->data.size();
+    if(this->index == 0){
+        if(chkI == this->data.size()-1)
+            result = this->data[chkI] & this->mask;
+        else
+            result = this->data[chkI];
+    }else{
+        assert(false); //NOT IMPLEMENTED
+    }
+
+    return result;
+
+}
+
 
 std::ostream& operator<< (std::ostream &os, const BitStreamUint& sbs){
     if(sbs.simpleValue){
         os << sbs.value;
     }else{
-        for(unsigned int i = 0 ; i < sbs.data.size()-1 ; ++i){
-            os << std::bitset<32>(sbs.data[i]);
+        for(unsigned int i = 0 ; i < sbs.data.size() ; ++i){
+            os << std::bitset<32>(sbs.getData(i));
         }
-        os << std::bitset<32>(sbs.data[sbs.data.size()-1] & sbs.mask);
     }
     return os;
 }

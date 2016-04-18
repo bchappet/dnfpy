@@ -18,6 +18,15 @@ Map2D initTest(int size){
     map2d.connect(c);
     return map2d;
 }
+
+TEST_CASE("map2d getTotalRegSize "){
+    Map2D map2d = initTest(SIZE);
+    REQUIRE(map2d.getTotalRegSize() == 3146);
+}
+
+
+
+
 TEST_CASE("BsRsdnf  spike accumulation"){
 
     Map2D map2d = initTest(SIZE);
@@ -34,40 +43,40 @@ TEST_CASE("BsRsdnf  spike accumulation"){
     map2d.compute();
     map2d.synch();
     map2d.getArrayState(CellBsRsdnf::NB_BIT_RECEIVED,state);
-    print_2D_array(state,SIZE,SIZE);
-    cout << endl;
+    //print_2D_array(state,SIZE,SIZE);
+    //cout << endl;
     sum = sum_array<int>(state,SIZE*SIZE);
     REQUIRE(sum == 0);
 
     map2d.compute();
     map2d.synch();
     map2d.getArrayState(CellBsRsdnf::NB_BIT_RECEIVED,state);
-    print_2D_array(state,SIZE,SIZE);
-    cout << endl;
+    //print_2D_array(state,SIZE,SIZE);
+    //cout << endl;
     sum = sum_array<int>(state,SIZE*SIZE);
     REQUIRE(sum == 0);
 
     map2d.compute();
     map2d.synch();
     map2d.getArrayState(CellBsRsdnf::NB_BIT_RECEIVED,state);
-    print_2D_array(state,SIZE,SIZE);
-    cout << endl;
+    //print_2D_array(state,SIZE,SIZE);
+    //cout << endl;
     sum = sum_array<int>(state,SIZE*SIZE);
     REQUIRE(sum == 4);
 
     map2d.compute();
     map2d.synch();
     map2d.getArrayState(CellBsRsdnf::NB_BIT_RECEIVED,state);
-    print_2D_array(state,SIZE,SIZE);
-    cout << endl;
+    //print_2D_array(state,SIZE,SIZE);
+    //cout << endl;
     sum = sum_array<int>(state,SIZE*SIZE);
     REQUIRE(sum == 16);
     
     map2d.compute();
     map2d.synch();
     map2d.getArrayState(CellBsRsdnf::NB_BIT_RECEIVED,state);
-    print_2D_array(state,SIZE,SIZE);
-    cout << endl;
+    //print_2D_array(state,SIZE,SIZE);
+    //cout << endl;
     sum = sum_array<int>(state,SIZE*SIZE);
     REQUIRE(sum == 40);
 

@@ -18,7 +18,7 @@
 #include "cellsbsfast.h"
 #include "cellsbsfast2.h"
 #include "cellrsdnf2.h"
-
+#include "neuroncasasfast.h"
 
 std::vector<Map2D*> mapSimuVec;
 Map2D* mapSimu;
@@ -125,6 +125,10 @@ void preCompute(){
    // diff = clock() - start;
   //  int msec = diff * 1000 / CLOCKS_PER_SEC;
    // printf("Precompute time taken %d seconds %d milliseconds\n", msec/1000, msec%1000);
+}
+
+void compute(){
+    mapSimu->compute();
 }
 
 void step(){
@@ -259,6 +263,8 @@ void initCellArrayFromName(Map2D* map,const char* name){
         map->initCellArray<CellSBSFast2>();
     }else if(strcmp(name,"cellrsdnf2")==0){
         map->initCellArray<CellRsdnf2>();
+    }else if(strcmp(name,"neuroncasasfast")==0){
+        map->initCellArray<NeuronCasasFast>();
     }else{
         std::cerr << "unvalid cell name " << name << std::endl;
     }
