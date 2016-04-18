@@ -56,6 +56,10 @@ public:
 
 protected:
 
+    /**
+     * Return a rotated version of a chunck
+     */
+    u_int32_t rotatedChunck(const BitStreamUint &sbs,unsigned int chunckIndex, unsigned int shift) const;
     u_int32_t getData(unsigned int chunckIndex) const;
 
     bool simpleValue;//true if we want to store p=1 or p=0

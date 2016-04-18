@@ -224,7 +224,7 @@ BitStreamUint& BitStreamUint::operator|= (const BitStreamUint &left){
     return *this;
 }
 
-u_int32_t rotatedChunck(const BitStreamUint &sbs,unsigned int chunckIndex, unsigned int shift) const{
+u_int32_t BitStreamUint::rotatedChunck(const BitStreamUint &sbs,unsigned int chunckIndex, unsigned int shift) const{
     u_int32_t result;
 
         unsigned int chk1 = (shift / 32 + chunckIndex)%sbs.data.size();
@@ -245,7 +245,9 @@ u_int32_t rotatedChunck(const BitStreamUint &sbs,unsigned int chunckIndex, unsig
         //std::cout << std::bitset<32>(res2) << std::endl;
 
         result = res1 | res2;
+        //TODO finish
 
+        return result;
 
 
 
@@ -253,16 +255,17 @@ u_int32_t rotatedChunck(const BitStreamUint &sbs,unsigned int chunckIndex, unsig
 
 
 BitStreamUint BitStreamUint::operator<< (const unsigned int shift) const{
+    //TODO finish
     if(this->simpleValue){
         //will not change the value
-        return BitStreamUint(this);
+        return BitStreamUint(*this);
     }else{
         BitStreamUint res = BitStreamUint(this->size,true);
         for(unsigned int i = 0 ; i < this->data.size() ; ++i){
 
-        return res;
         }
         
+        return res;
     }
 
 }
