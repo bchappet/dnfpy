@@ -177,13 +177,13 @@ public:
      * msb -> lsb
      * return a pointer to the next unused bool
      */
-    virtual bool* setErrorMaskFromArray(bool * bits){
+    virtual bool* setErrorMaskFromArray(bool * bits,Register::ErrorType errorType){
         bool* bit = bits;
         for(unsigned int i = 0; i < this->regs.size() ; i++){
-            bit =  this->regs[i].setErrorMaskFromArray(bit);
+            bit =  this->regs[i].setErrorMaskFromArray(bit,errorType);
         }
         for(unsigned int i = 0; i < this->subModules.size() ; ++i){
-            bit = this->subModules[i]->setErrorMaskFromArray(bit);
+            bit = this->subModules[i]->setErrorMaskFromArray(bit,errorType);
         }
         return bit;
  

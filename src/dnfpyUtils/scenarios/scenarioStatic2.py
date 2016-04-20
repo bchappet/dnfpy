@@ -1,16 +1,15 @@
-from dnfpyUtils.scenarios.scenario import Scenario
-class ScenarioStatic2(Scenario):
-    def __init__(self,timeStim=2.,noiseI=0.5,**kwargs):
-        super(ScenarioStatic2,self).__init__(expectedNbCluster=2,**kwargs)
+from dnfpyUtils.scenarios.scenarioTracking import ScenarioTracking
+class ScenarioStatic2(ScenarioTracking):
+    def __init__(self,timeStim=1.5,**kwargs):
+        super().__init__(**kwargs)
         self.timeStim = timeStim
-        self.noiseI = noiseI
 
     def applyContext(self):
+        """
+        If we need to change parameters before modele instanciation
+        """
         super().applyContext()
         model = self.runner
-        self.input = model.getMap("Inputs")
-        self.input.setParamsRec(noiseI=self.noiseI)
-
         period=10e-10 #the target should not move
         traj1X = model.getMap("Inputs_track0_c0")
         traj1X.setParams(period=period)
@@ -28,19 +27,10 @@ class ScenarioStatic2(Scenario):
         self.track1 = model.getMap("Inputs_track1")
         self.track1.setParams(intensity=1.)
 
+        #model.getMap("Inputs").setParamsRec(noiseI=0.)
 
-        try:
-            self.runner.getMap("TargetList").setData([0,1])
-        except(KeyError):
-            pass
 
     def _apply(self):
         if self.isTime(self.timeStim):
             self.track0.setParams(intensity=0.)
             self.track1.setParams(intensity=0.)
-
-
-
-
-
-

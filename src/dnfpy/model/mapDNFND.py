@@ -1,6 +1,3 @@
-
-
-
 from dnfpy.model.activationMapND import ActivationMapND
 import numpy as np
 from dnfpy.model.fieldMapND import FieldMapND
@@ -9,7 +6,7 @@ from dnfpy.model.lateralWeightsMapExpND import LateralWeightsMapExpND
 from dnfpy.model.lateralWeightsMapLinND import LateralWeightsMapLinND
 from dnfpy.model.convolutionND import ConvolutionND
 from dnfpy.core.constantMapND import ConstantMapND
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 class MapDNFND(FieldMapND):
     """

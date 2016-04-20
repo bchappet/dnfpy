@@ -229,8 +229,8 @@ int getTotalRegSize(){
  return mapSimu->getTotalRegSize();
 }
 
-void setErrorMaskFromArray(bool * bits){
-    mapSimu->setErrorMaskFromArray(bits);
+void setErrorMaskFromArray(bool * bits,int errorType){
+    mapSimu->setErrorMaskFromArray(bits,static_cast<Register::ErrorType>(errorType));
 }
 
 

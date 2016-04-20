@@ -1,4 +1,5 @@
 #include "register.h"
+#include <iostream>
 #include <vector>
 
 /**
@@ -11,7 +12,9 @@ Register::Register(const int& val,const int size){
     this->nextState = val;
     this->initState = val;
     this->size = size;
-    this->errorMask = 0;
+    this->transientErrorMask = 0;
+    this->permanentHigh = 0;
+    this->permanentLow = 0;
 }
 
 
@@ -25,7 +28,10 @@ void Register::reset(){
  */
 
 void Register::synch(){
-    this->state = nextState ^ errorMask;
+    this->state = this->nextState ^ this->transientErrorMask;
+    this->state = this->state | this->permanentHigh;
+    this->state = this->state & (~this->permanentLow);
+    this->nextState = this->state; //by default
 }
 
 /**
@@ -46,22 +52,32 @@ int Register::getSize(){
 }
 
 
-void Register::setErrorMask(int errorMask){
-    this->errorMask = errorMask;
+void Register::setErrorMask(int errorMask,Register::ErrorType errorType){
+    switch(errorType){
+        case TRANSIENT : this->transientErrorMask = errorMask;break;
+        case PERMANENT_HIGH : this->permanentHigh = errorMask;break;
+        case PERMANENT_LOW : this->permanentLow = errorMask;break;
+    }
 }
 
-bool *  Register::setErrorMaskFromArray(bool * bits){
-    this->errorMask = 0;
+bool *  Register::setErrorMaskFromArray(bool * bits,Register::ErrorType errorType){
+    int errorMask = 0;
     bool * bit = bits;
     for( int i = this->size-1 ; i >= 0 ; --i){
-        this->errorMask = this->errorMask | (*(bit) << i);
+        errorMask = errorMask | (*(bit) << i);
         bit++;
     }
+    this->setErrorMask(errorMask,errorType);
     return bit;
 }
 
-int Register::getErrorMask(){
-    return this->errorMask;
+int Register::getErrorMask(Register::ErrorType errorType){
+    switch(errorType){
+        case TRANSIENT :return this->transientErrorMask;
+        case PERMANENT_HIGH :return this->permanentHigh;
+        case PERMANENT_LOW : return this->permanentLow;
+        default: std::cout << "errorType " << errorType << " does not exist" <<std::endl;return -1;
+    }
 }
 
 /**

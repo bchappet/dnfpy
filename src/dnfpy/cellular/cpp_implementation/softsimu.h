@@ -94,7 +94,7 @@ extern "C" {
 
     //to study fault tolerence of transient orpermanent single event effect
     int getTotalRegSize() ;
-    void setErrorMaskFromArray(bool * bits) ;
+    void setErrorMaskFromArray(bool * bits,int errorType) ;
 
 }
 

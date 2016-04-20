@@ -439,7 +439,7 @@ if __name__ == "__main__":
     import sys
     #app = QtGui.QApplication([""])
     #view = QtApp()
-    model = PSO(swarmSize=100,nbEvaluationMax=1000,nbThread=1,verbose=1)
+    model = PSO(swarmSize=100,nbEvaluationMax=1000,nbThread=1,verbose=2)
     print(model.run())
     #view.setModel(model)
     #model.start()

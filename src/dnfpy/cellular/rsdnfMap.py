@@ -41,13 +41,13 @@ class RsdnfMap(Map2D):
             BUFFER = 0
             SPIKE_OUT = 1
             RANDOM_OUT = 2 #if routerType = sequence
-
+        
         def __init__(self,name,size,dt=0.1,nspike=20,
                      proba=1.0,
                      precisionProba=31,
                      routerType="prng", #sequence|sequenceShort|sequenceMixte|sequenceShortMixte
                      reproductible=True,
-                     errorType = 'none', #'none' | 'transient'|'permanent'
+                     errorType = 'none', #'none' | 'transient'|'permanent_high'|'permanent_low'
                      errorProb = 0.0001,#the error probability for every register bit
                      **kwargs):
             self.lib = HardLib(size,size,"cellrsdnf","rsdnfconnecter",routerType)
@@ -70,8 +70,9 @@ class RsdnfMap(Map2D):
 
             self.newActivation = True #true when we want to get the new activation
             self.errorBitSize = self.lib.getTotalRegSize()
-            if errorType == 'permanent':
-                self.setFaults(errorProb)
+            self.errorType = errorType
+            if errorType == 'permanent_high' or errorType == 'permanent_low':
+                self.setFaults(errorProb,errorType)
 
         def _compute(self,size,activation,errorType,errorProb):
             self._compute2(size,activation,errorType,errorProb)
@@ -82,7 +83,7 @@ class RsdnfMap(Map2D):
                 self.setActivation(activation)
 
             if errorType == 'transient':
-                self.setFaults(errorProb)
+                self.setFaults(errorProb,self.errorType)
 
             self.lib.nstep(1)
             self.lib.getRegArray(self.Reg.NB_BIT_RECEIVED,self._data)
@@ -94,10 +95,10 @@ class RsdnfMap(Map2D):
         def setFaults(self,errorProb):
             bits = np.random.random((self.errorBitSize)) < errorProb
             print("nb fault = ",np.sum(bits))
-            self.setErrorMaskFromArray(bits)
+            self.setErrorMaskFromArray(bits,self.errorType)
 
-        def setErrorMaskFromArray(self,array):
-            self.lib.setErrorMaskFromArray(array)
+        def setErrorMaskFromArray(self,array,errorType):
+            self.lib.setErrorMaskFromArray(array,errorType)
             
 
         def setRandomSequence(self,npArrayInt):
@@ -144,7 +145,7 @@ class RsdnfMap(Map2D):
 
             self.errorBitSize = self.lib.getTotalRegSize()
             if self.getArg('errorType') == 'permanent':
-                self.setFaults(self.getArg('errorProb'))
+                self.setFaults(self.getArg('errorProb'),self.routerType)
 
         def _onParamsUpdate(self,nspike,proba,
                             precisionProba,reproductible,size,routerType):

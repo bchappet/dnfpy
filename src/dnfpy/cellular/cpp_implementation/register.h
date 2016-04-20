@@ -14,6 +14,9 @@ public:
      */
     Register(const int& val,const int size=16);
 
+
+    enum ErrorType {TRANSIENT,PERMANENT_HIGH,PERMANENT_LOW};
+
     /**
      * @brief synch state = nextState
      */
@@ -43,16 +46,16 @@ public:
     /**
      * Set the error mask msb -> lsb
      */
-    void setErrorMask(int errorMask);
+    void setErrorMask(int errorMask,ErrorType errorType);
 
     /**
      * @brief set the error mask from a bool array
      * msb -> lsb
      * return a pointer to the next unused bool
      */
-    bool* setErrorMaskFromArray(bool * bits);
+    bool* setErrorMaskFromArray(bool * bits,ErrorType errorType);
 
-    int getErrorMask();
+    int getErrorMask(ErrorType errorType);
     /**
      * @brief reset get back to initState
      */
@@ -62,7 +65,9 @@ private:
     int nextState;
     int state;
     int size;
-    int errorMask; //state = nextState ^ errorMask
+    int transientErrorMask; //state = nextState ^ errorMask then is 0
+    int permanentHigh; //state = nextState | permanentHigh
+    int permanentLow;  //state = nextState & permanentLow
 };
 
 #endif // REGISTER_H

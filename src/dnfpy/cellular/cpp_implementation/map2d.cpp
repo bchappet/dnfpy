@@ -102,12 +102,12 @@ int Map2D::getTotalRegSize(){
     return sum;
 }
 
-bool* Map2D::setErrorMaskFromArray(bool * bits){
+bool* Map2D::setErrorMaskFromArray(bool * bits,Register::ErrorType errorType){
 
-    bool* bit = Module::setErrorMaskFromArray(bits);
+    bool* bit = Module::setErrorMaskFromArray(bits,errorType);
     for(int i = 0 ; i < this->height ; i++){
         for(int j = 0 ; j < this->width ; j++){
-            bit = this->cellArray[i][j]->setErrorMaskFromArray(bit);
+            bit = this->cellArray[i][j]->setErrorMaskFromArray(bit,errorType);
         }
     }
     return bit;

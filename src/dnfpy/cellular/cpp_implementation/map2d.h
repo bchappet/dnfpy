@@ -80,7 +80,7 @@ public:
 
 
     virtual int getTotalRegSize() override;
-    virtual bool* setErrorMaskFromArray(bool * bits) override;
+    virtual bool* setErrorMaskFromArray(bool * bits,Register::ErrorType errorType) override;
 
     /**
     * @brief getCellAttribute to access attribute of cells

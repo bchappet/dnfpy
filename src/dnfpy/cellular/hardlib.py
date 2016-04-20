@@ -1,5 +1,20 @@
 import numpy as np
 from cffi import FFI
+class ErrorType:
+    TRANSIENT = 0
+    PERMANENT_HIGH = 1
+    PERMANENT_LOW = 2
+
+    @staticmethod
+    def fromString(str):
+        if str == "transient":
+            return ErrorType.TRANSIENT
+        elif str == "permanent_high":
+            return ErrorType.PERMANENT_HIGH
+        elif str == "permanent_low":
+            return ErrorType.PERMANENT_LOW
+
+
 
 ffi = FFI()
 ffi.cdef("""
@@ -59,7 +74,7 @@ ffi.cdef("""
 
     //to study fault tolerence of transient orpermanent single event effect
     int getTotalRegSize() ;
-    void setErrorMaskFromArray(bool * bits) ;
+    void setErrorMaskFromArray(bool * bits,int errorType) ;
 
 
 """)
@@ -173,8 +188,11 @@ class HardLib:
     def getTotalRegSize(self):
         return self.C.getTotalRegSize()
 
-    def setErrorMaskFromArray(self,npArray):
-        self.C.setErrorMaskFromArray(ffi.cast("bool *",npArray.ctypes.data))
+    def setErrorMaskFromArray(self,npArray,errorTypeStr):
+        errorType = ErrorType.fromString(errorTypeStr)
+        if npArray.dtype != np.bool:
+            raise AttributeError("Execting array of bool was %s"%(npArray.dtype))
+        self.C.setErrorMaskFromArray(ffi.cast("bool *",npArray.ctypes.data),errorType)
 
 
 
