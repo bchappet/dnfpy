@@ -47,6 +47,9 @@ class StatsTracking1(Stats):
         #        self.errorDist,self.shapeMap,self.errorShape,self.activation]
         return [self.errorDist,self.targetCenter,self.barycenter]
 
+    def fitness(self,result):
+        return result[0]
+
     def finalize(self):
         """
         Do something when simulation ends

@@ -78,6 +78,9 @@ class Scenario(Runnable,MapND):
             map.close()
         return []
 
+    def onClick(self,mapName,x,y):
+        pass
+
 
 
 

@@ -6,19 +6,21 @@ from dnfpyUtils.scenarios.scenarioSwitch import ScenarioSwitch
 from dnfpyUtils.scenarios.scenarioTracking import  ScenarioTracking
 from dnfpyUtils.scenarios.scenarioDistracters import ScenarioDistracters
 from dnfpyUtils.scenarios.scenarioStatic2 import ScenarioStatic2
+from dnfpyUtils.scenarios.scenarioStatic import ScenarioStatic
 from dnfpyUtils.models.modelDNF import ModelDNF
 
 from dnfpyUtils.stats.statsMetaModel import StatsMetaModel
+from dnfpyUtils.stats.statsTemplate import StatsTemplate
 from dnfpyUtils.stats.statsTracking1 import StatsTracking1
 
 from dnfpyUtils.optimisation.spso2006 import Spso
 class SpsoDNF(Spso):
     """Particle swarm optimisation class"""
 
-    def __init__(self,**kwargs):
+    def __init__(self,evaluationParamsDict = dict(timeEnd=20,allowedTime=10e10),**kwargs):
         self.modelClass = self.getModelClass()
         self.scenarioClass = self.getScenarioClass()
-        super().__init__(**kwargs)
+        super().__init__(evaluationFunc=self.evaluate,evaluationParamsDict=evaluationParamsDict,**kwargs)
 
     def setModelClass(self,modelClass):
         self.modelClass = modelClass
@@ -37,37 +39,17 @@ class SpsoDNF(Spso):
 
 
     def getListParam(self):
-        return ["iExc","iInh","wExc","wInh"]
+        return ["iExc","iInh","wExc","wInh","h"]
 
     def getBounds(self,d):
         """return (lowerBounds,upperBounds"""
         z = 10e-6
-        lowerBounds = np.array([z,z,z,z])
-        upperBounds = np.array([10,1,1,2])
+        lowerBounds = np.array([z,z,z,z,-1])
+        upperBounds = np.array([10,1,1,2,1])
         return (lowerBounds,upperBounds)
 
     def getStartBounds(self,d):
         return self.getBounds(d)
-
-    def getConstantParamsDict(self):
-        return dict(size=49,dt=0.1,dim=2,model='spike',activation='step')
-
-    def setConstantParamsDict(self,constantParamsDict):
-        self.constantParamsDict = constantParamsDict
-
-    def getEvaluationParamsDict(self):
-        return dict(timeEnd=20,allowedTime=10e10)
-
-
-    def indivToParams(self,indiv):
-        """return the parameters dictionary which will be given to the model"""
-        # listGen = ["iExc","ik = iInh/iExc","wK=wExc/wInh","wInh",
-        paramList = [0] * len(indiv)
-        paramList[0] = indiv[0]
-        paramList[1] = indiv[1]*indiv[0]
-        paramList[2] = indiv[2]*indiv[3]
-        paramList[3] = indiv[3]
-        return self.indivToDict(paramList)
 
 
 
@@ -75,20 +57,16 @@ class SpsoDNF(Spso):
         return self.modelClass(**indiv)
 
     def evaluate(self,indiv):
-        constPar = self.getConstantParamsDict()
-
-        scenarioR = ScenarioRobustness(**constPar)
-        scenarioS = ScenarioSwitch(**constPar)
-        scenarioN = ScenarioNoise(**constPar)
-        scenarioT = ScenarioTracking(**constPar)
-        scenarioD = ScenarioDistracters(**constPar)
-
+        constPar = self.constantParamsDict
         #scenarioList = [scenarioT,scenarioN,scenarioD]
-        scenarioList = [scenarioN,]
+        scenario = ScenarioStatic(**constPar)
+        #scenario = ScenarioNoise(**constPar)
+        scenarioList = [scenario,]
         fitnessList = []
 
         #statistic used
-        statistic = StatsTracking1(**constPar)
+        #statistic = StatsTracking1(**constPar)
+        statistic  =StatsTemplate(**constPar)
 
 
         #indiv.update(self.constantParamsDict)
@@ -100,38 +78,15 @@ class SpsoDNF(Spso):
 
         for scenario in scenarioList:
             #statsMetaModel (error,wellClusterized,time,convergence,maxNbAct,meanNbAct,elapsedTime,errorShape,compEmpty,nbClusterEnd)\
-            (error,)               = runner.launch(model, scenario,statistic, timeEnd,allowedTime)
-            #if convergence == None:
-            #    fitnessList.append(10)
-            #    break
-            #else:
-                #fitnessList.append(errorShape + error*10 + convergence/10.)
+            
+            res = runner.launch(model, scenario,statistic, timeEnd,allowedTime)
+            error = statistic.fitness(res)
             fitnessList.append(error)
+            print()
+            print("evaluate %s"%indiv)
 
-#        if errorR < 1 and errorShapeR < 3. and convergenceR <30:
-#            #print("indiv %s"%indiv)
-#            #print("error %s shape %s convergence %s"%(errorR,errorShapeR,convergenceR))
-#            (errorS,wellClusterizedS,time,convergenceS,maxNbAct,meanNbAct,elapsedTime,errorShapeS)\
-                #            = runner.launch(
-#                model, scenarioS, 6.,allowedTime)
-#            (errorN,wellClusterizedN,time,convergenceN,maxNbAct,meanNbAct,elapsedTime,errorShapeN)\
-                #            = runner.launch(model, scenarioN, timeEnd,allowedTime)
-#        else:
-#            (errorS, wellClusterizedS,errorShapeS,convergenceS) = (10, 10, 10,100)
-#            (errorN, wellClusterizedN,errorNhapeN,convergenceN) = (10, 10, 10,100)
-#
-#        if convergenceS == None:
-#            convergenceS = 100
-#        if convergenceR == None:
-#            convergenceR = 100
-#
-#        fitnessError = (errorR + errorS + errorN )/3.
-#        fitnessCluster = (wellClusterizedR + wellClusterizedS + wellClusterizedN)/3.
-#        fitnessShape = (errorShapeR + errorShapeS + wellClusterizedN)/3.
-#        fitnessConv = (convergenceR + convergenceS + convergenceN)/3.
-        #print("error %s, conv %s, shape %s"%(fitnessError*10,fitnessConv/10.,fitnessShape))
-
-        #return fitnessShape + fitnessError*10 + fitnessConv/10.
+            print(res,error)
+            print()
         return np.mean(np.array(fitnessList))
 
 

@@ -4,6 +4,7 @@ from dnfpy.model.fieldMapND import FieldMapND
 from dnfpy.model.lateralWeightsMapND import LateralWeightsMapND
 from dnfpy.model.lateralWeightsMapExpND import LateralWeightsMapExpND
 from dnfpy.model.lateralWeightsMapLinND import LateralWeightsMapLinND
+from dnfpy.model.lateralWeightsMapStep import LateralWeightsMapStep
 from dnfpy.model.convolutionND import ConvolutionND
 from dnfpy.core.constantMapND import ConstantMapND
 #import matplotlib.pyplot as plt
@@ -34,21 +35,25 @@ class MapDNFND(FieldMapND):
         #                             wInh=wInh,alpha=alpha,nbStep=nbStep)
 
 
+        globalSize = size if wrap else int(np.round(2.0*size))
         if lateral=='dog':
             self.kernel = LateralWeightsMapND(name+"Kernel",mapSize=mapSize,dim=dim,
-                                        globalSize=size,wrap=wrap,
+                                        globalSize=globalSize,wrap=wrap,
                                         iExc=iExc,iInh=iInh,wExc=wExc,
                                         wInh=wInh,alpha=alpha,nbStep=nbStep,fashion=fashion)
         elif lateral=='doe':
             self.kernel = LateralWeightsMapExpND(name+"Kernel",mapSize=mapSize,dim=dim,
-                                        globalSize=size,wrap=wrap,
+                                        globalSize=globalSize,wrap=wrap,
                                         iExc=iExc,iInh=iInh,pExc=wExc,
                                         pInh=wInh,alpha=alpha,nbStep=nbStep,fashion=fashion)
         elif lateral=='dol':
             self.kernel = LateralWeightsMapLinND(name+"Kernel",mapSize=mapSize,dim=dim,
-                                        globalSize=size,wrap=wrap,
+                                        globalSize=globalSize,wrap=wrap,
                                         betaExc=iExc,betaInh=iInh,alphaExc=wExc,
                                         alphaInh=wInh,alpha=alpha,nbStep=nbStep,fashion=fashion)
+        elif lateral=='step':
+            self.kernel = LateralWeightsMapStep(name+"Kernel",mapSize=mapSize,dim=dim,
+                                        globalSize=globalSize,wrap=wrap,iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh)
         else:
             raise("Parameter lateral should be 'dog', 'doe' or 'dol'. %s invalid"%(lateral))
  

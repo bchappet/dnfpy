@@ -13,7 +13,7 @@ def matrix_active(size,x, y, pol):
     matrix = np.zeros([size, size])
     if(len(x) == len(y)):
         for i in range(len(x)):
-            matrix[-y[i], x[i]] = pol[i]*2-1  # matrix[x[i],y[i]] + pol[i]
+            matrix[-y[i], -x[i]] = abs(pol[i])  # matrix[x[i],y[i]] + pol[i]
     else:
         print("error x,y missmatch")
     return matrix

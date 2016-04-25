@@ -51,5 +51,10 @@ class Stats(Runnable):
             map.close()
         return []
 
+    def fitness(self,result):
+        """
+        return the fitness of the scenario computed form the array returned by finalize
+        """
+        return None;
 
 

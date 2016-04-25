@@ -83,7 +83,7 @@ class RsdnfMap(Map2D):
                 self.setActivation(activation)
 
             if errorType == 'transient':
-                self.setFaults(errorProb,self.errorType)
+                self.setFaults(errorProb)
 
             self.lib.nstep(1)
             self.lib.getRegArray(self.Reg.NB_BIT_RECEIVED,self._data)

@@ -19,7 +19,7 @@ class ConvolutionND(MapND):
     def _compute(self,source,size,kernel,wrap,dim):
 
         if dim == 2:
-            border = cv2.BORDER_WRAP if wrap else cv2.BORDER_DEFAULT
+            border = cv2.BORDER_WRAP if wrap else cv2.BORDER_CONSTANT
             self._data = cv2.filter2D(source,-1,cv2.flip(kernel,-1),anchor=(-1,-1),borderType=border)
         elif dim == 1:
             border = 'wrap' if wrap else 'reflect'

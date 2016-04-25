@@ -20,6 +20,27 @@ class ErrorShape(Trajectory):
     """
     def _compute(self,shapeMap,activationMap):
         """
+        25/04/2016
+        """
+        if self.getArg('time') > 2:
+            if np.sum(shapeMap) > 0 :
+                outsideBadAct = np.sum((shapeMap - activationMap) == -1)/np.sum(shapeMap==0)
+                #print(np.sum(shapeMap))
+                insideBadAct = np.sum(1 - activationMap[shapeMap>0])/np.sum(shapeMap)
+                error = outsideBadAct + insideBadAct
+            elif np.sum(activationMap) > 0:
+                error = np.sum(activationMap)/activationMap.size
+            else:
+                error = 0
+            self._data = error
+            self.trace.append(error)
+                
+
+        
+
+
+    def _compute3(self,shapeMap,activationMap):
+        """
         15/11/15
         RMSE : np.sqrt(np.sum((y^ - y)^2/n)
         """

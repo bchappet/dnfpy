@@ -39,6 +39,10 @@ class StatsTemplate(Stats):
         return [self.simpleShape,self.errorShape]
 
 
+    def fitness(self,result):
+        [rmse,nanRatio,timeEnd] = result
+        return rmse
+
 
     def finalize(self):
         timeEnd = self.errorShape.getArg('time')

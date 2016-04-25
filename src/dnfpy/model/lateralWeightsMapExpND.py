@@ -10,7 +10,7 @@ class LateralWeightsMapExpND(MapND):
                 pExc_=1,pInh_=1,iExc_=1,iInh_=1,nbStep=0,fashion='chappet',**kwargs):
         super().__init__(
             name=name,size=globalSize,globalSize=globalSize,
-            mapSize = mapSize,nbStep=nbStep,
+            mapSize = mapSize,nbStep=nbStep,dim=dim,
             dt=dt,wrap=wrap,
             iExc_=iExc_,iInh_=iInh_,pExc_=pExc_,pInh_=pInh_,
             pExc=pExc, pInh=pInh,iExc=iExc,iInh=iInh,alpha=alpha,

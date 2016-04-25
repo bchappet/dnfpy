@@ -7,7 +7,7 @@ from dnfpy.core.constantMapND import ConstantMapND
 import numpy as np
 
 class ModelDNF1D(Model,Renderable):
-    def initMaps(self,size=49,model="cnft",activation="step",nbStep=0,dim=2,
+    def initMaps(self,size=49,model="cnft",activation="step",nbStep=0,dim=2,dt=0.1,
                  iExc=1.25,iInh=0.7,wExc=0.1,wInh=10.,alpha=10.,th=0.75,h=0,noiseI=0.01,
                  iStim1=0.1,beta=8,tau=0.64,lateral='dog',fashion='chappet',**kwargs
                  ):
@@ -19,8 +19,8 @@ class ModelDNF1D(Model,Renderable):
         #input[size/2] = 1
         #self.aff = ConstantMapND("Inputs",size,value=input)
                
-        self.field = MapDNFND("Potential",size,dim=dim,model=model,activation=activation,nbStep=nbStep,
-               iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,alpha=alpha,th=th,h=h,beta=beta,tau=tau,lateral=lateral,fashion=fashion)
+        self.field = MapDNFND("Potential",size,dim=dim,model=model,activation=activation,nbStep=nbStep,dt=dt,
+               iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,alpha=alpha,th=th,h=h,beta=beta,tau=tau,lateral=lateral,fashion=fashion,**kwargs)
         #self.field.addChildren(aff=self.aff)
         #return the roots
         roots =  [self.field]
@@ -32,4 +32,4 @@ class ModelDNF1D(Model,Renderable):
         return ret
 
     def onClick(self,mapName,x,y):
-        print("clicked on %s, at coord %s,%s"%(unicode(mapName),x,y))
+        print("clicked on %s, at coord %s,%s"%(mapName,x,y))

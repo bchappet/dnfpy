@@ -153,6 +153,16 @@ def linNd(size,wrap,alpha,beta,center):
     print("alpha :",alpha," beta ",beta)
     return np.maximum(-alpha*(np.fabs(distX)) + beta,0)
 
+def stepND(size,wrap,intensity,width,center):
+    dim = len(center) #nb Dim
+    distI = generateWrappedDistance(size,center,wrap);
+    sumDistSquared = np.zeros((size,)*dim)
+    for dist in distI:
+            sumDistSquared += dist
+ 
+    return np.where(sumDistSquared > width , 0,intensity)
+    
+
 
 def cosTraj(time,center,radius,period,phase):
     """Definie a cosinus trajectory"""

@@ -5,14 +5,13 @@ import numpy as np
 import random
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui, QtCore
-from dnfpyUtils.optimisation.worker import Worker
+from dnfpyUtils.optimisation.worker import Worker,WorkerManager
 import time
-from multiprocessing import Queue
 
 def rosen(indiv,*args):
         x = indiv['x']
         y = indiv['y']
-        #time.sleep(0.0)
+        time.sleep(.1)
 
         return x**2 + (1-y)**2 +(2-indiv["z"])**2 + \
                     (5-indiv["a"])**2 + (10 - indiv["b"])**2
@@ -22,8 +21,9 @@ def rosen(indiv,*args):
 def testConstr(indiv,cst):
 #    print(cst)
 #    print(indiv['x'] ,indiv['y'])
-    ret =  np.abs(indiv['x'] - indiv['y']) < cst
-    return 0 if ret  else 1
+#    ret =  np.abs(indiv['x'] - indiv['y']) < cst
+#    return 0 if ret  else 1
+    return 0
 
 
 
@@ -45,7 +45,7 @@ class PSO():
     #             phiP=-0.4040,phiG=2.03249,nbThread=8,argv=[""]): good
     #def __init__(self,view,swarmSize=100,nbEvaluationMax=1000,omega=0.9,
     #             phiP=1.0,phiG=1.0,nbThread=8,argv=[""]):
-    def __init__(self,swarmSize=100,nbEvaluationMax=1000,omega=0.721347,
+    def __init__(self,swarmSize=20,nbEvaluationMax=1000,omega=0.721347,
                  phiP=1.193147,phiG=1.193147,nbThread=8,verbose=0,objective=0.0):
         #self.triggerUpdate.connect(view.updateData)
 
@@ -70,18 +70,9 @@ class PSO():
         self.phiG = phiG #Swarm's best weight
         self.nbDim = len(self.listParam)
 
-        #save for plot
+        self.manager = WorkerManager(nbThread,self.evaluate,self.handleFitness,self.constraintsFunc,self.args) 
+        self.evaluationNb = 0 
 
-        self.workerList = []
-        for i in range(nbThread):
-            self.workerList.append(self.initWorker(i))
-
-        self.workerResultsQueue = Queue() #will store tuple: (particleId,fitness)
-        self.inProcessPart = []
-
-
-    def initWorker(self,i):
-        return Worker(i,self.evaluate,self.constraintsFunc,self.onWorkerResult,self.args)
 
 
     def getFunc(self):
@@ -152,64 +143,19 @@ class PSO():
             kwargs[self.listParam[i]] = paramList[i]
         kwargs.update(self.constantParamsDict)
         return kwargs
-
-    def requestWorker(self,i,waitingTask):
-        if i not in self.inProcessPart:
-            while(not(self.workerResultsQueue.empty())):
-                tup = self.workerResultsQueue.get()
-                waitingTask(*tup)
-
-            for i_worker in range(len(self.workerList)):
-                worker = self.workerList[i_worker]
-                if not(worker.is_alive()):
-                    newWorker =  self.initWorker(i_worker)
-                    self.workerList[i_worker] = newWorker
-                    self.inProcessPart.append(i)
-                    return newWorker
-
-           #we treat the queue instead of sleeping
-            else:
-                time.sleep(0.01)
-        else:
-            return
-
-
-        return self.requestWorker(i,waitingTask)
-
-    def finishWork(self,task):
-        for worker in self.workerList:
-            if worker.is_alive():
-                worker.join()
-        while(not(self.workerResultsQueue.empty())):
-            tup = self.workerResultsQueue.get()
-            task(*tup)
-
-    def onWorkerResult(self,i,newFitness):
-        self.workerResultsQueue.put((i,newFitness))
-
-    def runEvaluation(self,i,indiv):
-        #request a worker for particle i. If no worker are available wait.
-        #If a worker already works on i, return None, i will not be evaluated again
-        worker = self.requestWorker(i,waitingTask=self.handleFitness)
-        if worker:
-            worker.evaluate(i,indiv)
-
+      
     def evaluate(self,indiv,*args):
         return self.func(indiv,*args)
 
 
-
-    def addFitness(self,i,newFitness):
-        self.inProcessPart.remove(i)
-        if not(np.isnan(newFitness)):
-            self.fitness[i] = newFitness
-            self.p[i,:] = self.x[i,:]
-        else:
-            pass
-
     def handleFitness(self,i,newFitness):
+        if np.isnan(self.fitness[i]): #first evaluation
+            if not(np.isnan(newFitness)):
+                self.fitness[i] = newFitness
+                self.p[i,:] = self.x[i,:]
+
         #update best known position
-        if not(np.isnan(newFitness)) and newFitness < self.fitness[i]:
+        elif not(np.isnan(newFitness)) and newFitness < self.fitness[i]:
                 #update particle's best known fitness
                 self.fitness[i] = newFitness
                 #update particle's best known position
@@ -221,7 +167,7 @@ class PSO():
                     if self.verbose == 1:
                         print("##bestFitness : %s, indiv: %s, i : %s"%(self.bestFitness,self.indivToParams(self.x[self.bestIndex,:]),i))
 
-        self.inProcessPart.remove(i)
+        self.manager.inProcessPart.remove(i)
 
         self.evaluationNb += 1
         if self.verbose == 2:
@@ -256,11 +202,9 @@ class PSO():
         #compute fitness of initial particle position
         self.fitness = np.ones((self.swarmSize))*np.nan
         for i in range(self.swarmSize):
-            worker = self.requestWorker(i,waitingTask=self.addFitness)
-            if worker:
-               worker.evaluate(i,self.indivToParams(self.x[i,:]))
+            self.manager.runEvaluation(i,self.indivToParams(self.x[i,:]))
 
-        self.finishWork(self.addFitness)
+        self.manager.finishWork()
 
         #determine fitness and index of best particles
         if np.all(np.isnan(self.fitness)):
@@ -285,7 +229,7 @@ class PSO():
         while self.evaluationNb < self.nbEvaluationMax and (np.isnan(self.bestFitness) or  self.bestFitness > self.acceptableFitness):
             #pick index from a random particle in the swarm
             i = -1
-            while(i not in self.inProcessPart and i== -1):
+            while(i not in self.manager.inProcessPart and i== -1):
                 i = random.randint(0,self.swarmSize-1)
             #pick random weights between [O,1)
             rP = random.random()
@@ -309,7 +253,7 @@ class PSO():
             #compute fitness
 
             params = self.indivToParams(self.x[i,:])
-            self.runEvaluation(i,params)
+            self.manager.runEvaluation(i,params)
             #self.handleFitness(i,self.evaluate(self.indivToDict(self.x[i,:])))
 
         #return best solution
@@ -439,7 +383,7 @@ if __name__ == "__main__":
     import sys
     #app = QtGui.QApplication([""])
     #view = QtApp()
-    model = PSO(swarmSize=100,nbEvaluationMax=1000,nbThread=1,verbose=2)
+    model = PSO(swarmSize=20,nbEvaluationMax=10000,nbThread=8,verbose=1)
     print(model.run())
     #view.setModel(model)
     #model.start()
