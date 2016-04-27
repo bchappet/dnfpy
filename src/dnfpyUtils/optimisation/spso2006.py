@@ -66,7 +66,6 @@ class Spso:
         (self.lowerBounds,self.upperBounds)= self.bounds
         (self.startLow,self.startUp) = self.bounds
         self.manager = WorkerManager(nbThread,evaluationFunc,self.handleFitness,constraintsFunc,args) 
-        self.reset()
 
     def reset(self):
         self.constructNeighbors()
@@ -109,7 +108,7 @@ class Spso:
         #self.f[i] = self.evaluate(self.indivToParams(self.x[i]))
 
     def handleFitness(self,i,fitness):
-        print(i,self.indivToParams(self.x[i]),fitness)
+        #print(i,self.indivToParams(self.x[i]),fitness)
         if np.isnan(self.f[i]) :
             self.f[i] = fitness
             if np.isnan(self.bestF) or self.f[i] < self.bestF:

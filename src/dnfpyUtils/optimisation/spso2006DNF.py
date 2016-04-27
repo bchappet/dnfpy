@@ -1,4 +1,5 @@
 import numpy as np
+from getClassUtils import getClassFromName
 import dnfpy.controller.runner as runner
 from dnfpyUtils.scenarios.scenarioRobustness import ScenarioRobustness
 from dnfpyUtils.scenarios.scenarioNoise import ScenarioNoise
@@ -17,76 +18,31 @@ from dnfpyUtils.optimisation.spso2006 import Spso
 class SpsoDNF(Spso):
     """Particle swarm optimisation class"""
 
-    def __init__(self,evaluationParamsDict = dict(timeEnd=20,allowedTime=10e10),**kwargs):
-        self.modelClass = self.getModelClass()
-        self.scenarioClass = self.getScenarioClass()
+    def __init__(self,scenarioName,statsName,modelName,evaluationParamsDict = dict(timeEnd=20,allowedTime=10e10),**kwargs):
         super().__init__(evaluationFunc=self.evaluate,evaluationParamsDict=evaluationParamsDict,**kwargs)
+        self.scenarioClass = getClassFromName(scenarioName, 'scenarios')
+        self.statsClass = getClassFromName(statsName,'stats')
+        self.modelClass = getClassFromName(modelName, "models")
 
-    def setModelClass(self,modelClass):
-        self.modelClass = modelClass
-
-    def getModelClass(self):
-        return ModelDNF
-
-    def setScenarioClass(self,scenarioClass):
-        self.scenarioClass = scenarioClass
-
-    def getScenarioClass(self):
-        return ScenarioTracking
 
     def getExecutionBounds(self):
         return (1)
 
 
-    def getListParam(self):
-        return ["iExc","iInh","wExc","wInh","h"]
-
-    def getBounds(self,d):
-        """return (lowerBounds,upperBounds"""
-        z = 10e-6
-        lowerBounds = np.array([z,z,z,z,-1])
-        upperBounds = np.array([10,1,1,2,1])
-        return (lowerBounds,upperBounds)
-
-    def getStartBounds(self,d):
-        return self.getBounds(d)
-
-
-
-    def getModel(self,indiv):
-        return self.modelClass(**indiv)
 
     def evaluate(self,indiv):
         constPar = self.constantParamsDict
-        #scenarioList = [scenarioT,scenarioN,scenarioD]
-        scenario = ScenarioStatic(**constPar)
-        #scenario = ScenarioNoise(**constPar)
+        scenario = self.scenarioClass(**constPar)
         scenarioList = [scenario,]
         fitnessList = []
-
-        #statistic used
-        #statistic = StatsTracking1(**constPar)
-        statistic  =StatsTemplate(**constPar)
-
-
-        #indiv.update(self.constantParamsDict)
-        #print("evaluate %s"%indiv)
-        model =  self.getModel(indiv)
-
+        statistic  =self.statsClass(**constPar)
+        model =  self.modelClass(**indiv)
         timeEnd = self.evaluationParamsDict['timeEnd']
         allowedTime = self.evaluationParamsDict['allowedTime']
-
         for scenario in scenarioList:
-            #statsMetaModel (error,wellClusterized,time,convergence,maxNbAct,meanNbAct,elapsedTime,errorShape,compEmpty,nbClusterEnd)\
-            
             res = runner.launch(model, scenario,statistic, timeEnd,allowedTime)
             error = statistic.fitness(res)
             fitnessList.append(error)
-            print()
-            print("evaluate %s"%indiv)
-
-            print(res,error)
-            print()
         return np.mean(np.array(fitnessList))
 
 

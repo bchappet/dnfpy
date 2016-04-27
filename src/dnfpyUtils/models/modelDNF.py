@@ -16,7 +16,7 @@ class ModelDNF(Model,Renderable):
 
 
     """
-    def initMaps(self,size=49,model="cnft",activation="step",nbStep=0,
+    def initMaps(self,size=49,model="cnft",activation="step",nbStep=0,dim=2,wrap=True,
                  iExc=1.25,iInh=0.7,wExc=0.1,wInh=10.,alpha=10.,th=0.75,h=0,lateral='dog',noiseI=0.01,
                  dt=0.1,**kwargs
                  ):
@@ -26,8 +26,8 @@ class ModelDNF(Model,Renderable):
         #self.aff = InputMap("Inputs",size,dt=dt,noiseI=noiseI)
                             #iStim1 = 0, iStim2 = 0,noiseI=1.,noise_dt=1e10)
                
-        self.field = MapDNFND("Potential",size,dt=dt,dim=2,model=model,activation=activation,nbStep=nbStep, \
-                        iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,th=th,h=h,lateral=lateral)
+        self.field = MapDNFND("Potential",size,dt=dt,dim=dim,model=model,activation=activation,nbStep=nbStep, \
+                        iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,th=th,h=h,lateral=lateral,wrap=wrap)
         #self.field.addChildren(aff=self.aff)
         #return the roots
         roots =  [self.field]
@@ -40,4 +40,4 @@ class ModelDNF(Model,Renderable):
         return ret
 
     def onClick(self,mapName,x,y):
-        print("clicked on %s, at coord %s,%s"%(unicode(mapName),x,y))
+        print("clicked on %s, at coord %s,%s"%((mapName),x,y))

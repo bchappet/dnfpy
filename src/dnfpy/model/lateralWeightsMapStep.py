@@ -30,7 +30,7 @@ class LateralWeightsMapStep(MapND):
         center = ((size//2),)*dim
 
         if fashion == 'chappet':
-            kernFunc = utils.stepND
+            kernFunc = utils.stepNd
         elif fashion == 'fix':
             kernFunc = utils.stepFix #TODO
 

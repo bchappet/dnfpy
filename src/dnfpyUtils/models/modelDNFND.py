@@ -1,12 +1,11 @@
 
-from dnfpy.model.inputMap1D import InputMap
 from dnfpy.view.renderable import Renderable
 from dnfpy.model.model import Model
 from dnfpy.model.mapDNFND import MapDNFND
 from dnfpy.core.constantMapND import ConstantMapND
 import numpy as np
 
-class ModelDNF1D(Model,Renderable):
+class ModelDNF(Model,Renderable):
     def initMaps(self,size=49,model="cnft",activation="step",nbStep=0,dim=2,dt=0.1,
                  iExc=1.25,iInh=0.7,wExc=0.1,wInh=10.,alpha=10.,th=0.75,h=0,noiseI=0.01,
                  iStim1=0.1,beta=8,tau=0.64,lateral='dog',fashion='chappet',**kwargs

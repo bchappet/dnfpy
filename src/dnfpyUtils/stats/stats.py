@@ -57,4 +57,7 @@ class Stats(Runnable):
         """
         return None;
 
+    
+    def onClick(self,mapName,x,y):
+        pass
 

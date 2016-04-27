@@ -59,9 +59,9 @@ class InputMap(FuncWithoutKeywords):
         if straight:
             direction = np.float32([1]*dim)
             self.track1 = StraightTrack(self.getName()+"_track0",size=size,dim=dim,dt=tck_dt,wrap=wrap,intensity=iStim1,width=wStim,
-                                    direction=direction,start=np.array([0.2,]),speed=speed)
+                                    direction=direction,start=np.array([0.2,0.2]),speed=speed)
             self.track2 = StraightTrack(self.getName()+"_track1",size=size,dim=dim,dt=tck_dt,wrap=wrap,intensity=iStim2,width=wStim,
-                                    direction=direction,start=np.array([0.6,]),speed=speed)
+                                    direction=direction,start=np.array([0.5,0.5]),speed=speed)
         else:
             self.track1 = self.newTrack(0,size,dim,tck_dt,wrap,iStim1,wStim,tck_radius,periodStim)
             self.track2 = self.newTrack(1,size,dim,tck_dt,wrap,iStim2,wStim,tck_radius,periodStim)

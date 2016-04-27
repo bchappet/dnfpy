@@ -1,4 +1,5 @@
 from dnfpyUtils.scenarios.scenarioTracking import ScenarioTracking
+import numpy as np
 class ScenarioStatic2(ScenarioTracking):
     def __init__(self,timeStim=1.5,**kwargs):
         super().__init__(**kwargs)
@@ -27,7 +28,10 @@ class ScenarioStatic2(ScenarioTracking):
         self.track1 = model.getMap("Inputs_track1")
         self.track1.setParams(intensity=1.)
 
-        #model.getMap("Inputs").setParamsRec(noiseI=0.)
+        try:
+            model.getMap("TargetList").setData(np.array([0,1]))
+        except:
+            pass
 
 
     def _apply(self):

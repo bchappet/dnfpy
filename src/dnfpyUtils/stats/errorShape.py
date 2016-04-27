@@ -22,10 +22,11 @@ class ErrorShape(Trajectory):
         """
         25/04/2016
         """
+        assert(shapeMap.shape == activationMap.shape)
+
         if self.getArg('time') > 2:
             if np.sum(shapeMap) > 0 :
                 outsideBadAct = np.sum((shapeMap - activationMap) == -1)/np.sum(shapeMap==0)
-                #print(np.sum(shapeMap))
                 insideBadAct = np.sum(1 - activationMap[shapeMap>0])/np.sum(shapeMap)
                 error = outsideBadAct + insideBadAct
             elif np.sum(activationMap) > 0:
