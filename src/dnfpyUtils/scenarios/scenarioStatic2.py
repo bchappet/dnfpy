@@ -35,6 +35,7 @@ class ScenarioStatic2(ScenarioTracking):
 
 
     def _apply(self):
-        if self.isTime(self.timeStim):
-            self.track0.setParams(intensity=0.)
-            self.track1.setParams(intensity=0.)
+        pass
+        #if self.isTime(self.timeStim):
+        #    self.track0.setParams(intensity=0.)
+        #    self.track1.setParams(intensity=0.)

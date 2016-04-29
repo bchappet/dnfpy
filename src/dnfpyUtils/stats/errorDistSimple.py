@@ -34,3 +34,4 @@ class ErrorDistSimple(Trajectory):
         self._data = error
         self.trace.append(error)
 
+

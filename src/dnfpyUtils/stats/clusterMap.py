@@ -82,7 +82,7 @@ class ClusterMap(Map2D):
         maxArr = np.max(np_arr)
         coords = np.where(np_arr > maxArr/1.2)
         self.nbActivation = len(coords[0])
-        print(self.nbActivation)
+        #print(self.nbActivation)
         #if nbActivation > 0 and nbActivation < np_arr.shape[0]*1.6:
         
         #print(expectedNumberOfCluster,clustSize_)

@@ -8,6 +8,9 @@ class BarycenterMap(MapND):
             map : map (child)
         Output:
             coordinate of the barycenter normalized (tuple of size dim) 
+        Limitcases:
+            if map empty : return (nan)*dim
+
 
         """
         def __init__(self,name,dim=1,dt=0.1,**kwargs):

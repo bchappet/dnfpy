@@ -24,14 +24,18 @@ class WorkingMemoryShift(Scenario):
                 iStim1=self.iLow,iStim2=self.iLow,noiseI=0.01,nbDistr=0,distr_dt=0.5)
 
         self.track0,self.track1 = self.input.getTracks()
+        self.targetList = None
 
         return [self.input,]
 
     def applyContext(self):
         super().applyContext()
         if self.runner.isPresent("stats"):
-            self.targetList = self.runner.getMap("TargetList")
-            self.targetList.setData([])
+            try:
+                self.targetList = self.runner.getMap("TargetList")
+                self.targetList.setData([])
+            except:
+                print("targetList not found")
 
     def reset(self):
         super().reset()
@@ -40,14 +44,14 @@ class WorkingMemoryShift(Scenario):
     def _apply(self,):
         if self.isTime(1.0):
             self.track0.setParams(intensity=self.iHigh)
-            if self.runner.isPresent("stats"):
+            if self.targetList:
                 self.targetList.setData([0,])
         elif self.isTime(5.0):
             self.track0.setParams(intensity=self.iLow)
         elif self.isTime(10.0):
             self.track1.setParams(intensity=self.iHigh)
             self.track1.setParamsRec(speed=0.02)
-            if self.runner.isPresent("stats"):
+            if self.targetList:
                 self.targetList.setData([0,1])
         elif self.isTime(20.0):
             self.track1.setParams(intensity=self.iLow)

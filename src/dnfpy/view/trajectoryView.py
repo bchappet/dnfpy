@@ -82,7 +82,7 @@ class TrajectoryView(ArrayView):
             #assert(len(self.data[0][0]) == 2)
             assert(len(self.maxPt) == 2)
             assert(len(self.minPt) == 2)
-            assert(not(np.isnan(self.maxPt).any()))
+#            assert(not(np.isnan(self.maxPt).any()))
 
     def paintEvent(self, event):
         qp = QtGui.QPainter(self)

@@ -14,14 +14,19 @@ class StatsTemplate(Stats):
         inputMap
 
     """
-    def initMaps(self,size=49,dim=1,dt=0.1,shapeThreshold=0.6,**kwargs):
+    def initMaps(self,size=49,dim=1,dt=0.1,shapeThreshold=0.6,model='cnft',**kwargs):
+        """
+        Params:
+            model string in ['cnft','spike'] the same as the model given to Model runnable.
+            The errorShape should be adapted to the model
+        """
 
 
         self.targetList = [0,]
         self.targetListMap = ConstantMap("TargetList",size=size,value=self.targetList)
         self.simpleShape = SimpleShapeMap("SimpleShape",size=size,dim=dim,dt=dt,shapeThreshold=shapeThreshold)
         self.simpleShape.addChildren(targetList=self.targetListMap)
-        self.errorShape = ErrorShape("errorShape",dt=dt)
+        self.errorShape = ErrorShape("errorShape",dt=dt,model=model)
         self.errorShape.addChildren(shapeMap=self.simpleShape)
 
         return [self.errorShape,]
