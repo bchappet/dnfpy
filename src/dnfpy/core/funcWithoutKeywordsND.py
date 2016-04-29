@@ -8,10 +8,15 @@ class FuncWithoutKeywords(FuncMapND):
     To put constant arg: use addComputeArgs
     """
 
-    def __init__(self,func,name,size,dt=0.1,**kwargs):
+    def __init__(self,func,name,size,dt=0.1,paramList=[],**kwargs):
+        """
+        paramList : optional list which can be used by somme function
+
+        """
         super(FuncWithoutKeywords,self).__init__(func,name,size,dt=dt,**kwargs)
         self._computeMapList = [] #map to use as arg must be child
         self.childrenStatesList = [] #data of children
+        self.paramList = paramList
 
 
     def addChildren(self,*kwargs):
@@ -30,7 +35,11 @@ class FuncWithoutKeywords(FuncMapND):
 
 
     def _compute_with_params(self):
-        self._compute(self._childrenStatesList)
+        if len(self.paramList) > 0:
+            param_state = self._subDictionary(self.paramList).values()
+            self._data = self._func(self._childrenStatesList,param_state)
+        else:
+            self._data = self._func(self._childrenStatesList)
         self.nb_computation += 1
         self.last_computation_args = self._getChildrenStatesList
         self.last_computation_dictionary = self._computeMapList
@@ -41,7 +50,7 @@ class FuncWithoutKeywords(FuncMapND):
 
 
     def _compute(self,args):
-        self._data = self._func(args)
+        pass
 
     def _getChildrenStatesList(self,mapList):
         return [map.getData() for map in mapList]

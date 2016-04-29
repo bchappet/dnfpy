@@ -46,8 +46,8 @@ class Scenario(Runnable,MapND):
         """
         When everything is constructed or when reset
         """
-        field = self.runner.getMap("Potential")
-        field.addChildren(aff=self.input)
+        model = self.runner.getRunnable("model")
+        model.onAfferentMapChange(self.input)
 
 
     def getArrays(self):

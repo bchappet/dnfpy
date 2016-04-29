@@ -1,68 +1,62 @@
-from dnfpy.model.inputMap import InputMap
+from dnfpy.core.funcMapND import FuncMapND
+from dnfpy.core.funcWithoutKeywordsND import FuncWithoutKeywords
+import dnfpy.core.utilsND as utils
 from dnfpy.view.renderable import Renderable
 from dnfpy.model.model import Model
-from dnfpy.model.mapDNF import MapDNF
-from dnfpy.stats.statsList import StatsList
-from dnfpy.model.receptiveFieldMap import ReceptiveFieldMap
-from dnfpy.core.funcWithoutKeywords import FuncWithoutKeywords
-import dnfpy.core.utils as utils
-from dnfpy.core.constantMap import ConstantMap
-from dnfpy.model.activationMap import ActivationMap
+from dnfpy.model.mapDNFND import MapDNFND
 
 class ModelDNF_WM(Model,Renderable):
-    def initMaps(self,size=49,model="spike",nbStep=0):
-        """We initiate the map and link them"""
-        #Create maps
-        self.input = InputMap("Inputs",size)
-        self.field = MapDNF("DNF",size,model=model,nbStep=nbStep)
-        self.field.addChildren(aff=self.input)
+    """
+    28/04/2016
+    Benoit Chappet de Vangel
+    The ambition is to make a sequential scene exploration with two DNF maps
 
-        mapSize = 0.3
-        #FEF
-        self.fef = MapDNF("FEF",size,mapSize=mapSize,model=model,
-                             iExc=2.0,iInh=1.2,
-                             wExc=0.12/2.,wInh=0.28/2.,h=-0.2)
-        #WM
-        self.wm = ReceptiveFieldMap("FEF->WM",size,intensity=3.4,width=0.08)
-        self.wm.addChildren(source=self.fef.getActivation())
-        self.wm_act = ActivationMap("WM_act",size,model=model)
-        self.wm_act.addChildren(field=self.wm)
+    Maps :
+        field : dnf for the focus it will choose a target from the input
+        wm : dnf to save the previously focused stimuli it will inhibit the field in return
+        to force the focus on another stimulu
 
-        #WM -> FEF
-        self.WM_FEF = ReceptiveFieldMap("WM->FEF",size,intensity=1.8,width=0.1)
-        self.WM_FEF.addChildren(source=self.wm_act)
+    """
+    def initMaps(self,size=49,model="cnft",activation="step",nbStep=0,dim=2,wrap=True,
+                 iExc=1.25,iInh=0.7,wExc=0.1,wInh=10.,alpha=10.,
+                 iExc_wm=1.25,iInh_wm=0.7,wExc_wm=0.1,wInh_wm=10.,
+                 wFocus=0.5,wInput=0.5,wAffInh = 1.0,
+                 th=0.75,h=0,lateral='dog',
+                 dt=0.1,**kwargs
+                 ):
+        """
+        Main parameters are for the neural field (focus)
+        _wm extension are for the Working Memory
+        wFocus : weight of focus in afferent WM
+        wInput : weight of input in afferent WM
+        wAffInh : weight of inhibitino in return from WM to focus
+        """
+        self.field = MapDNFND("",size,dt=dt,dim=dim,model=model,activation=activation,nbStep=nbStep, \
+                        iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,th=th,h=h,lateral=lateral,wrap=wrap,wAffInh=wAffInh)
+        self.wm    = MapDNFND("wm",size,dt=dt,dim=dim,model=model,activation=activation,nbStep=nbStep, \
+                        iExc=iExc_wm,iInh=iInh_wm,wExc=wExc_wm,wInh=wInh_wm,th=th,h=h,lateral=lateral,wrap=wrap)
 
-        #DNF_ACT -> FEF
-        self.DNF_FEF = ReceptiveFieldMap("DNF->FEF",size,intensity=1.,width=0.1)
-        self.DNF_FEF.addChildren(source=self.field.getActivation())
+        self.afferentWM = FuncWithoutKeywords(utils.weightedSumArrays,'focus+input',size,dim=dim,dt=dt,paramList=['wFocus','wInput'],wFocus=wFocus,wInput=wInput)
+        self.afferentWM.addChildren(self.field.act) #we will add input map later
 
-        #INPUT -> FEF
-        self.INPUT_FEF = ReceptiveFieldMap("INPUT->FEF",size,intensity=0.3,width=0.1)
-        self.INPUT_FEF.addChildren(source=self.input)
+        self.field.addChildren(afferentInhibition=self.wm.act)
+        self.wm.addChildren(aff=self.afferentWM)
 
-        #AFF of FEF : sum Input + Focus + WM
-        self.aff_FEF = FuncWithoutKeywords(utils.sumArrays,"FEF_afferent",size)
-        self.aff_FEF.addChildren(self.INPUT_FEF,
-                                 self.DNF_FEF,
-                                 self.WM_FEF)
 
-        self.fef.addChildren(aff=self.aff_FEF)
 
-        #stats
-        self.stats = StatsList(size,self.input,self.fef.getActivation())
+        
         #return the roots
-        roots =  [self.fef.getActivation()]
-        roots.extend(self.stats.getRoots())
+        roots =  [self.field]
         return roots
+
+    def onAfferentMapChange(self,afferentMap):
+        self.field.addChildren(aff=afferentMap)
+        self.afferentWM.addChildren(afferentMap)
 
     #override Renderable
     def getArrays(self):
-        ret =  [self.INPUT_FEF,self.field,self.field.getActivation(),
-                self.DNF_FEF,self.aff_FEF,self.fef,self.fef.getActivation(),
-                self.wm,self.wm_act,self.WM_FEF]
-
-        ret.extend(self.stats.getArrays())
+        ret =  [self.field,self.field.act,self.afferentWM,self.wm,self.wm.act]
         return ret
 
     def onClick(self,mapName,x,y):
-        print("clicked on %s, at coord %s,%s"%(unicode(mapName),x,y))
+        print("clicked on %s, at coord %s,%s"%((mapName),x,y))

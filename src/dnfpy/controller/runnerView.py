@@ -184,14 +184,14 @@ def launch(model, scenario,stats, timeRatio, record=False,pause=False,timeEnd=0)
     runner = RunnerView(view, timeRatio=timeRatio, record=record,pause=pause,timeEnd=timeEnd)
     view.setRunner(runner)
     view.addRenderable(model)
-    runner.addRunnable(model)
+    runner.addRunnable(model,"model")
     if scenario:
         scenario.init(runner)
-        runner.addRunnable(scenario)
+        runner.addRunnable(scenario,"scenario")
         view.addRenderable(scenario)
     if stats:
         stats.init(runner)
-        runner.addRunnable(stats)
+        runner.addRunnable(stats,"stats")
         view.addRenderable(stats)
 
 

@@ -16,7 +16,7 @@ class Runner(object):
     def __init__(self,timeEnd=100,allowedTime=10e10):
         super(Runner,self).__init__()
         self.mapDict = {} #dictionary with every map for fast access
-        self.runnables = [] #list of runnable to run
+        self.runnables = {} #dictinary of runnable to run
 
         self.nbIt = 0
         self.startTime = timer.clock()
@@ -35,9 +35,18 @@ class Runner(object):
             return self.mapDict[mapName]
 
 
-    def addRunnable(self,runnable):
-            self.runnables.append(runnable)
+    def addRunnable(self,runnable,name):
+            self.runnables[name] = runnable
             self.mapDict.update(runnable.getMapDict())
+
+    def getRunnable(self,name):
+        return self.runnables[name]
+
+    def isPresent(self,name):
+        """
+        Return true if runnable name is present
+        """
+        return name in self.runnables.keys()
 
     def updateParam(self,mapName,name,value):
         map = self.mapDict[mapName]
@@ -46,12 +55,12 @@ class Runner(object):
 
     def onClick(self,mapName,x,y):
         mapName = str(mapName)
-        for r in self.runnables:
+        for r in self.runnables.values():
             r.onClick(mapName,x,y)
 
     def onLClick(self,mapName,x,y):
         mapName = str(mapName)
-        for r in self.runnables:
+        for r in self.runnables.values():
             r.onLClick(mapName,x,y)
 
 
@@ -61,14 +70,14 @@ class Runner(object):
 
     def finalize(self):
         ret = []
-        for r in self.runnables:
+        for r in self.runnables.values():
             ret.extend( r.finalize())
         return ret
 
     def __getNameFolder(self):
         import datetime
         name = ""
-        for r in self.runnables:
+        for r in self.runnables.values():
                 name += r.getName()+"_"
         name_uuid = name+datetime.datetime.now().isoformat()
         return name_uuid
@@ -82,7 +91,7 @@ class Runner(object):
         import dnfpy.view.staticViewMatplotlib as mtpl
         import matplotlib.pyplot as plt
         lis = []
-        for r in self.runnables:
+        for r in self.runnables.values():
                 lis.extend(r.getArrays())
 
         timeStr  = str(self.simuTime).replace(".","_")
@@ -138,33 +147,33 @@ class Runner(object):
                     print("could not save: %s" % theMap.getName())
 
     def getNextUpdateTime(self):
-            snut = [r.getNextUpdateTime() for r in self.runnables]
+            snut = [r.getNextUpdateTime() for r in self.runnables.values()]
             return min(snut)
 
 
 
     def step(self):
             if self.simuTime == 0:
-                for r in self.runnables:
+                for r in self.runnables.values():
                     r.firstComputation()
             nextTime = self.getNextUpdateTime()
             self.lastSimuTime = self.simuTime
             self.simuTime = nextTime
-            for r in self.runnables:
+            for r in self.runnables.values():
                 r.updateRunnable(self.simuTime)
 
     def resetSlot(self):
         self.lastUpdateTime = datetime.now()
         self.simuTime = 0.
         self.lastSimuTime = 0.
-        for r in self.runnables:
+        for r in self.runnables.values():
             r.resetRunnable()
 
-        for r in self.runnables:
+        for r in self.runnables.values():
             r.applyContext()
 
     def resetParamsSlot(self):
-        for r in self.runnables:
+        for r in self.runnables.values():
             r.resetParamsRunnable()
 
 
@@ -184,13 +193,13 @@ class Runner(object):
 
 def constructRunner(model,scenario,stats,timeEnd,allowedTime=10e10):
     runner = Runner(timeEnd=timeEnd,allowedTime=allowedTime)
-    runner.addRunnable(model)
+    runner.addRunnable(model,"model")
     if scenario:
         scenario.init(runner)
-        runner.addRunnable(scenario)
+        runner.addRunnable(scenario,"scenario")
     if stats:
         stats.init(runner)
-        runner.addRunnable(stats)
+        runner.addRunnable(stats,"stats")
     return runner
 
 

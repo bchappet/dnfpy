@@ -17,18 +17,18 @@ class MapDNFND(FieldMapND):
     def __init__(self,name,size,dim=1,dt=0.1,wrap=True,
                  tau=0.64,h=0,
                  model='cnft',th=0.75,delta=1.,activation='step',
-                 iExc=1.25,iInh=0.7,wExc=0.1,wInh=1,alpha=10,
+                 iExc=1.25,iInh=0.7,wExc=0.1,wInh=1.0,alpha=10,
                  mapSize=1.,nbStep=0,noiseI=0.0,lateral='dog',
                  fashion='chappet',
                  **kwargs):
-        super(MapDNFND,self).__init__(name,size,dim=dim,dt=dt,wrap=wrap,
+        super(MapDNFND,self).__init__("Potential"+name,size,dim=dim,dt=dt,wrap=wrap,
                     tau=tau,h=h,delta=delta,
                     model=model,th=th,activation=activation,
                     noiseI=noiseI,lateral=lateral,
                     **kwargs)
 
-        self.act = ActivationMapND("Activation",size,dim=dim,dt=dt,type=activation,th=th)
-        self.lat =ConvolutionND("Lateral",size,dim=dim,dt=dt,wrap=wrap)
+        self.act = ActivationMapND("Activation"+name,size,dim=dim,dt=dt,type=activation,th=th)
+        self.lat =ConvolutionND("Lateral"+name,size,dim=dim,dt=dt,wrap=wrap)
         #self.kernel = LateralWeightsMapND(name+"Kernel",mapSize=mapSize,
         #                               globalSize=size,dim=dim,wrap=wrap,
         #                              iExc=iExc,iInh=iInh,wExc=wExc,
@@ -37,22 +37,22 @@ class MapDNFND(FieldMapND):
 
         globalSize = size if wrap else int(np.round(2.0*size))
         if lateral=='dog':
-            self.kernel = LateralWeightsMapND(name+"Kernel",mapSize=mapSize,dim=dim,
+            self.kernel = LateralWeightsMapND("Kernel"+name,mapSize=mapSize,dim=dim,
                                         globalSize=globalSize,wrap=wrap,
                                         iExc=iExc,iInh=iInh,wExc=wExc,
                                         wInh=wInh,alpha=alpha,nbStep=nbStep,fashion=fashion)
         elif lateral=='doe':
-            self.kernel = LateralWeightsMapExpND(name+"Kernel",mapSize=mapSize,dim=dim,
+            self.kernel = LateralWeightsMapExpND("Kernel"+name,mapSize=mapSize,dim=dim,
                                         globalSize=globalSize,wrap=wrap,
                                         iExc=iExc,iInh=iInh,pExc=wExc,
                                         pInh=wInh,alpha=alpha,nbStep=nbStep,fashion=fashion)
         elif lateral=='dol':
-            self.kernel = LateralWeightsMapLinND(name+"Kernel",mapSize=mapSize,dim=dim,
+            self.kernel = LateralWeightsMapLinND("Kernel"+name,mapSize=mapSize,dim=dim,
                                         globalSize=globalSize,wrap=wrap,
                                         betaExc=iExc,betaInh=iInh,alphaExc=wExc,
                                         alphaInh=wInh,alpha=alpha,nbStep=nbStep,fashion=fashion)
         elif lateral=='step':
-            self.kernel = LateralWeightsMapStep(name+"Kernel",mapSize=mapSize,dim=dim,
+            self.kernel = LateralWeightsMapStep("Kernel"+name,mapSize=mapSize,dim=dim,
                                         globalSize=globalSize,wrap=wrap,iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh)
         else:
             raise("Parameter lateral should be 'dog', 'doe' or 'dol'. %s invalid"%(lateral))

@@ -182,12 +182,12 @@ def sumArrays(varlist):
 
     return res
 
-def weightedSumArrays(varlist):
+def weightedSumArrays(maplist,argList):
     res = 0
    # print(varlist)
    # print("======================================")
-    for i in range(0,len(varlist),2):
-        res = np.add(res, varlist[i]*varlist[i+1])
+    for data,w in zip(maplist,argList):
+        res = np.add(res, data*w)
 
     return res
 

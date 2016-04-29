@@ -12,6 +12,11 @@ class Model(Runnable):
         return self.root
 
 
+    def onAfferentMapChange(self,afferentMap):
+        """
+        The input map will be set in the scenario. It will call this method
+        """
+        pass
 
     def initMaps(self,size):
         """
