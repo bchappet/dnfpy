@@ -2,6 +2,9 @@ from dnfpy.core.mapND import MapND
 import numpy as np
 import cv2
 import scipy.ndimage.filters as filter
+import dnfpy.core.utils as utils
+from scipy import signal
+
 
 class ConvolutionND(MapND):
     """
@@ -19,6 +22,10 @@ class ConvolutionND(MapND):
     def _compute(self,source,size,kernel,wrap,dim):
 
         if dim == 2:
+            #if wrap: 
+            #    self._data = utils.conv2(source,kernel)
+            #else:
+            #    self._data = signal.fftconvolve(source,kernel,mode='same')
             border = cv2.BORDER_WRAP if wrap else cv2.BORDER_CONSTANT
             self._data = cv2.filter2D(source,-1,cv2.flip(kernel,-1),anchor=(-1,-1),borderType=border)
         elif dim == 1:

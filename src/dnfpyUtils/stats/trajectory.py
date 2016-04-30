@@ -17,6 +17,7 @@ class Trajectory(Statistic):
     def reset(self):
         super().reset()
         self.trace = []
+        self._data = np.nan
     
 
     def getMean(self):

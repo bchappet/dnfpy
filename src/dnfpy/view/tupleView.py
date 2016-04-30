@@ -34,8 +34,9 @@ class TupleView(TrajectoryView):
         except (IndexError,TypeError):
             points = (points,)
 
-        if dim > 1:
-            assert(len(points[0]) == dim)
+        #if dim > 1:
+            #print(self.map.getName())
+            #assert(len(points[0]) == dim)
         
         #make sure data has the rigth len
         nbCoords = len(points)

@@ -33,19 +33,23 @@ class ObstacleMap(Map2D):
 
 
 class InputMap(FuncWithoutKeywords):
-    """The input are defined here"""
+    """
+    The input are defined here
+    params:
+        event : if true simulate a dvs camera and send event
+    """
     def __init__(self,name,size,dt=0.1,wrap=True,distr_dt=1.,noise_dt=0.1,noiseI=0.01,
                  tck_dt=0.1,iStim1=0.99,iStim2=0.99,wStim=0.1,nbDistr=0,iDistr=0.99,tck_radius=0.3,
                  wDistr=0.1,wStim_=1.0,wDistr_=1.0,tck_radius_=1,periodStim=36,normalize=True,iStim=1.0,
-                 straight=False,
+                 straight=False,events=False,
                  **kwargs):
-        super(InputMap,self).__init__(utils.sumArrays,name,size,dt=dt,
+        super().__init__(utils.sumArrays,name,size,dt=dt,
                 wrap=wrap,distr_dt=distr_dt,noise_dt=noise_dt,noiseI=noiseI,
                 tck_dt = tck_dt,iStim1 = iStim1, iStim2 = iStim2, wStim = wStim ,wDistr=wDistr,
                 nbDistr = nbDistr ,iDistr=iDistr,tck_radius = tck_radius,
                 wStim_=wStim_,wDist_=wDistr_,tck_radius_=tck_radius_,periodStim=periodStim,
                                       iStim=iStim,straight=straight,
-                normalize=normalize,
+                normalize=normalize,events=events,
                 **kwargs)
 
 

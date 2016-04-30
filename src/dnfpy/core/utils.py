@@ -132,3 +132,8 @@ def matrixTranslation(array,tx,ty):
     return cv2.warpAffine(array,M,(cols,rows))
 
 
+def conv2(a, b):
+    '''
+    Computes the circular convolution of the (real-valued) matrices a and b.
+    '''
+    return np.fft.ifftshift(np.fft.ifft2(np.fft.fft2(a) * np.fft.fft2(b))).real

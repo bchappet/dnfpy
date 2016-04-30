@@ -50,9 +50,9 @@ class StatsTemplate(Stats):
 
 
     def finalize(self):
-        timeEnd = self.errorShape.getArg('time')
+        self.timeEnd = self.errorShape.getArg('time')
         lenTrace = len(self.errorShape.trace)
         nbNan = np.sum(np.isnan(self.errorShape.getTrace()))
         nanRatio = 1-(lenTrace - nbNan)/lenTrace
-        return [self.errorShape.getRMSE(),nanRatio,timeEnd]
+        return [self.errorShape.getRMSE(),nanRatio,self.timeEnd]
 

@@ -18,11 +18,11 @@ class ModelDNF(Model,Renderable):
     """
     def initMaps(self,size=49,model="cnft",activation="step",nbStep=0,dim=2,wrap=True,
                  iExc=1.25,iInh=0.7,wExc=0.1,wInh=10.,alpha=10.,th=0.75,h=0.0,lateral='dog',noiseI=0.01,
-                 dt=0.1,**kwargs
+                 dt=0.1,tau=0.64,**kwargs
                  ):
         """We initiate the map and link them"""
         self.field = MapDNFND("",size,dt=dt,dim=dim,model=model,activation=activation,nbStep=nbStep, \
-                        iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,th=th,h=h,lateral=lateral,wrap=wrap)
+                        iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,th=th,h=h,lateral=lateral,wrap=wrap,tau=tau)
         #return the roots
         roots =  [self.field]
         return roots

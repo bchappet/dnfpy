@@ -4,8 +4,6 @@ from dnfpy.model.inputMap1D import InputMap
 
 class WorkingMemoryShift(Scenario):
     """
-    From FIX 2013
-
     One static tracks from 10 to 40
     one shifting track form 25 to 40
     Intensity : 
@@ -17,11 +15,12 @@ class WorkingMemoryShift(Scenario):
 
 
     """
-    def initMaps(self,size=49,dim=2,dt=0.1,wrap=True,**kwargs):
-        self.iLow = 0.3
-        self.iHigh = 1.0
+    def initMaps(self,size=49,dim=2,dt=0.1,wrap=True,trackSpeed=0.01,iLow=0.3,iHigh=1.0,**kwargs):
+        self.iLow = iLow
+        self.iHigh = iHigh
+        self.trackSpeed = trackSpeed
         self.input = InputMap("Inputs",size,dt=dt,dim=dim,wrap=wrap,straight=True,speed=0.0,
-                iStim1=self.iLow,iStim2=self.iLow,noiseI=0.01,nbDistr=0,distr_dt=0.5)
+                iStim1=self.iLow,iStim2=self.iLow,noiseI=0.1,nbDistr=1,distr_dt=1.0)
 
         self.track0,self.track1 = self.input.getTracks()
         self.targetList = None
@@ -50,7 +49,7 @@ class WorkingMemoryShift(Scenario):
             self.track0.setParams(intensity=self.iLow)
         elif self.isTime(10.0):
             self.track1.setParams(intensity=self.iHigh)
-            self.track1.setParamsRec(speed=0.02)
+            self.track1.setParamsRec(speed=self.trackSpeed)
             if self.targetList:
                 self.targetList.setData([0,1])
         elif self.isTime(20.0):

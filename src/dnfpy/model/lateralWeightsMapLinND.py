@@ -3,9 +3,10 @@ import math
 from dnfpy.core.map2D import Map2D
 import numpy as np
 from dnfpy.core.funcMap2D import FuncMap2D
+from dnfpy.model.lateralWeightsMapND import LateralWeightsMap
 
 
-class LateralWeightsMapLinND(Map2D):
+class LateralWeightsMapLin(LateralWeightsMap):
     """
     Map describing the lateral weights of the dynamic neural fields
     The lateral weights are usually a sum of excitatory and inhibitory weights
@@ -21,7 +22,7 @@ class LateralWeightsMapLinND(Map2D):
                  betaExc=1.25,betaInh=0.7,alphaExc=0.1,alphaInh=10,alpha=10,
                  alphaExc_=1,alphaInh_=1,betaExc_=1,betaInh_=1,nbStep=0.0,
                  **kwargs):
-        super(LateralWeightsMapLinND,self).__init__(
+        super().__init__(
             name=name,size=globalSize,globalSize=globalSize,
             mapSize = mapSize,nbStep=nbStep,
             dt=dt,wrap=wrap,
@@ -35,14 +36,6 @@ class LateralWeightsMapLinND(Map2D):
         self.kernelInh = FuncMap2D(utils.lin2d,name+"_inh",size,dt=dt,centerX=center,
                               centerY=center,wrap=wrap,alpha=alphaInh_,beta=betaInh_)
         self.addChildren(exc=self.kernelExc,inh=self.kernelInh)
-
-    def _compute(self,exc,inh,nbStep):
-        ret = exc - inh
-        if nbStep > 0:
-            ret = utils.discretize(ret,nbStep=nbStep)
-        else:
-            pass
-        self._data = ret
 
     @staticmethod
     def getScaledParams(size,globalSize,mapSize,alpha,alphaExc,alphaInh,betaExc,betaInh):

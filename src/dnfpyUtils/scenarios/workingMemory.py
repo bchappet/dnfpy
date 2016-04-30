@@ -28,20 +28,26 @@ class WorkingMemory(Scenario):
 
     def applyContext(self):
         super().applyContext()
-        self.simpleShape = self.runner.getMap("SimpleShape")
-        self.targetList = self.runner.getMap("TargetList")
-        self.targetList.setData([])
+        if self.runner.isPresent("stats"):
+            try:
+                self.targetList = self.runner.getMap("TargetList")
+                self.targetList.setData([])
+            except:
+                print("targetList not found")
+
 
         
     def _apply(self,):
         if self.isTime(10.0):
             self.track0.setParams(intensity=self.iHigh)
-            self.targetList.setData([0,])
+            if self.targetList:
+                self.targetList.setData([0,])
         elif self.isTime(15.0):
             self.track0.setParams(intensity=self.iLow)
         elif self.isTime(25.0):
             self.track1.setParams(intensity=self.iHigh)
-            self.targetList.setData([0,1])
+            if self.targetList:
+                self.targetList.setData([0,1])
         elif self.isTime(30.0):
             self.track1.setParams(intensity=self.iLow)
 

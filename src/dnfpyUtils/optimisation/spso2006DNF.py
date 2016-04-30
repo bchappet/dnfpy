@@ -32,16 +32,21 @@ class SpsoDNF(Spso):
 
     def evaluate(self,indiv):
         constPar = self.constantParamsDict
-        scenario = self.scenarioClass(**constPar)
+        scenario = self.scenarioClass(**indiv)
         scenarioList = [scenario,]
         fitnessList = []
-        statistic  =self.statsClass(**constPar)
+        statistic  =self.statsClass(**indiv)
         model =  self.modelClass(**indiv)
         timeEnd = self.evaluationParamsDict['timeEnd']
         allowedTime = self.evaluationParamsDict['allowedTime']
         for scenario in scenarioList:
             res = runner.launch(model, scenario,statistic, timeEnd,allowedTime)
             error = statistic.fitness(res)
+            simuTime = statistic.timeEnd
+            if simuTime < timeEnd:
+                error = 100
+            #print("simuTime",simuTime)
+            #print("error",error)
             fitnessList.append(error)
         return np.mean(np.array(fitnessList))
 

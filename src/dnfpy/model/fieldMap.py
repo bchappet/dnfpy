@@ -22,7 +22,7 @@ class FieldMap(Map2D):
             self._data = self._data + dt/tau*(-self._data + h + aff ) +  1/tau*delta*lat + noise
             
         else:
-            print("Invalid model option : " + model)
+            raise Exception("Invalid model option : " + model)
 
         if resetLat:
                 self.getChild('lat').resetLat()

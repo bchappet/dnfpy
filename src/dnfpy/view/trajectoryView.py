@@ -19,6 +19,7 @@ class TrajectoryView(ArrayView):
     def __init__(self,  map, runner,mapView):
         self.reset()
         self.curveSize = 200
+        self.nbTraj = 0#nb trace to display (the number of trace might be changing : we save the max number
         super(TrajectoryView,self).__init__(map,runner,mapView)
         self.color_cycle = [QtGui.QColor(0,0,0),QtGui.QColor(0,0,255),QtGui.QColor(0,255,0),QtGui.QColor(255,0,0)]
 
@@ -41,30 +42,41 @@ class TrajectoryView(ArrayView):
         except TypeError:
             points = (points,)
         
-        #make sure data has the rigth len
-        while len(self.data) < len(points):
-                self.data.append([])
+        #make sure data has the rigth len append nan otherwise
+        if len(points) > self.nbTraj:
+            self.nbTraj = len(points)
+            while len(self.data) < self.nbTraj:
+                    self.data.append([])
+        assert(len(self.data) == self.nbTraj)
 
 
         self.time = self.map.getArg("time")
         for i in range(len(points)):
             self.data[i].append(np.array([self.time,points[i]]))
 
-        self.updateMinMax()
-        if len(self.data[0]) > self.curveSize: #max point on the curve
-            for i in range(len(self.data)):
-                del self.data[i][0]
+        if self.nbTraj > 0:
+            self.updateMinMax()
+            if len(self.data[0]) > self.curveSize: #max point on the curve
+                for i in range(len(self.data)):
+                    del self.data[i][0]
 
     def updateMinMax(self,mode='global'):
 
-            minTmp = np.nanmin(np.nanmin(self.data,axis=1),axis=0)
-            maxTmp = np.nanmax(np.nanmax(self.data,axis=1),axis=0) #global max for x and y
+            #problem is that the number of trace might be changing with time
+            minTmpL = []
+            maxTmpL = []
+            for  i in range(self.nbTraj):
+                minTmpL.append(np.nanmin(self.data[i],axis=0))
+                maxTmpL.append(np.nanmax(self.data[i],axis=0)) #global max for x and y
+
+            minTmp = np.nanmin(minTmpL,axis=0)
+            maxTmp = np.nanmax(maxTmpL,axis=0)
 
             if mode == 'global':
-                    self.maxPt[1] = np.maximum(self.maxPt[1],maxTmp[1])
-                    self.minPt[1] = np.minimum(self.minPt[1],minTmp[1])
-                    self.maxPt[0] = maxTmp[0]
-                    self.minPt[0] = minTmp[0]
+                self.maxPt[1] = self.maxPt[1] if self.maxPt[1] > maxTmp[1] or np.isnan(maxTmp[1]) else maxTmp[1]
+                self.minPt[1] = self.minPt[1] if self.minPt[1] < minTmp[1] or np.isnan(minTmp[1]) else minTmp[1]
+                self.maxPt[0] = maxTmp[0]
+                self.minPt[0] = minTmp[0]
                     
             else:
                 if (maxTmp != minTmp).all():
@@ -82,7 +94,7 @@ class TrajectoryView(ArrayView):
             #assert(len(self.data[0][0]) == 2)
             assert(len(self.maxPt) == 2)
             assert(len(self.minPt) == 2)
-#            assert(not(np.isnan(self.maxPt).any()))
+            #assert(not(np.isnan(self.maxPt).any()))
 
     def paintEvent(self, event):
         qp = QtGui.QPainter(self)

@@ -5,7 +5,7 @@ import numpy as np
 from dnfpy.core.funcMapND import FuncMapND
 
 
-class LateralWeightsMapND(MapND):
+class LateralWeightsMap(MapND):
     """
     Map describing the lateral weights of the dynamic neural fields
     The lateral weights are usually a sum of excitatory and inhibitory weights
@@ -19,16 +19,19 @@ class LateralWeightsMapND(MapND):
                 wExc_=1,wInh_=1,iExc_=1,iInh_=1,nbStep=0,
                 fashion='chappet',
                  **kwargs):
-        super(LateralWeightsMapND,self).__init__(
+        super().__init__(
             name=name,size=globalSize,dim=dim,globalSize=globalSize,
             mapSize = mapSize,nbStep=nbStep,
             dt=dt,wrap=wrap,iExc=iExc,
             wExc_=wExc_,wInh_=wInh_,iExc_=iExc_,iInh_=iInh_,
             iInh=iInh,wExc=wExc,wInh=wInh,alpha=alpha,**kwargs)
+
         size = self.getArg('size')
         dim = self.getArg('dim')
-        center = ((size//2),)*dim
+        self.center = ((size//2),)*dim
+        self.initKernel(name,size,dim,dt,self.center,wrap,fashion)
 
+    def initKernel(self,name,size,dim,dt,center,wrap,fashion):
         if fashion == 'chappet':
             kernFunc = utils.gaussNd
         elif fashion == 'fix':
@@ -40,14 +43,14 @@ class LateralWeightsMapND(MapND):
                               wrap=wrap,intensity=iInh_,width=wInh_)
         self.addChildren(exc=self.kernelExc,inh=self.kernelInh)
 
-    def _compute(self,exc,inh,nbStep):
+    def _compute(self,exc,inh,nbStep,size,dim):
         ret = exc - inh
         if nbStep > 0:
             ret = utils.discretize(ret,nbStep=nbStep)
         else:
             pass
-        #ensure that theris no self activation?? 
-        #ret[center] = 0
+        #ensure that there is no self activation?? 
+        ret[self.center] = 0
         self._data = ret
 
     @staticmethod
