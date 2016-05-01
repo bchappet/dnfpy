@@ -1,4 +1,3 @@
-from dnfpy.model.inputMap import InputMap
 from dnfpy.view.renderable import Renderable
 from dnfpy.model.model import Model
 from dnfpy.model.mapDNFND import MapDNFND

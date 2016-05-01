@@ -16,3 +16,11 @@ class ScenarioTracking(Scenario):
         self.input = InputMap("Inputs",size,dt=dt,dim=dim,iStim1=iStim1,iStim2=iStim2,noise_dt=dt,tck_dt=dt)
         return [self.input,]
 
+    def applyContext(self):
+        super().applyContext()
+        if self.runner.isPresent("stats"):
+            try:
+                self.targetList = self.runner.getMap("TargetList")
+                self.targetList.setData([0,])
+            except:
+                print("targetList not found")

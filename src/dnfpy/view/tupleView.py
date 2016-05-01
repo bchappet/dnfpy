@@ -29,6 +29,7 @@ class TupleView(TrajectoryView):
         try:#test that it is a tuple of coords
             if dim == 2:
                 x = points[0][0]
+                self.shiftY = False
             elif dim == 1:
                 x = points[0]    
         except (IndexError,TypeError):
@@ -55,8 +56,8 @@ class TupleView(TrajectoryView):
         points = np.array(points)
 
         self.updateMinMax()
-        if len(self.data[0]) > self.curveSize: #max point on the curve
-            for i in range(len(self.data)):
+        for i in range(len(self.data)):
+            if len(self.data[i]) > self.curveSize: #max point on the curve
                 del self.data[i][0]
 
     def updateMinMax(self):

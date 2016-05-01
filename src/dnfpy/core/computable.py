@@ -54,9 +54,14 @@ class Computable(object):
     def getArgs(self,*keys):
         """
         Public:
-            Return a subDictionary of self.__dictionary
+            Return the value of the keys
         """
-        return self._subDictionary(list(keys))
+        try:
+            ret =  [self.__dictionary[k] for k in keys]
+        except Exception as e:
+            print("in class %s"%self)
+            raise e
+        return ret
 
     def rmArg(self,key):
         """

@@ -53,7 +53,7 @@ class BarycenterMapList(MapND):
             if targetCenterList (nan)*dim
 
         """
-        def __init__(self,name,sizeMap=49,clustSize=0.5,dim=1,dt=0.1,**kwargs):
+        def __init__(self,name,sizeMap=49,clustSize=0.3,dim=1,dt=0.1,**kwargs):
                 super().__init__(name=name,size=0,dim=dim,dt=dt,sizeMap=sizeMap,clustSize=clustSize,clustSize_=10,
                         **kwargs)
 

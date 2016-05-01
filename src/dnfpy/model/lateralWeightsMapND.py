@@ -38,9 +38,9 @@ class LateralWeightsMap(MapND):
             kernFunc = utils.gaussFix
 
         self.kernelExc = FuncMapND(kernFunc,name+"_exc",size,dim=dim,dt=dt,center=center,
-                              wrap=wrap,intensity=iExc_,width=wExc_)
+                              wrap=wrap,intensity=-1,width=-1)
         self.kernelInh = FuncMapND(kernFunc,name+"_inh",size,dim=dim,dt=dt,center=center,
-                              wrap=wrap,intensity=iInh_,width=wInh_)
+                              wrap=wrap,intensity=-1,width=-1)
         self.addChildren(exc=self.kernelExc,inh=self.kernelInh)
 
     def _compute(self,exc,inh,nbStep,size,dim):
@@ -62,15 +62,11 @@ class LateralWeightsMap(MapND):
         iExc_ = iExc/(globalSize**dim) * (40**dim)/alpha
         iInh_ = iInh/(globalSize**dim) * (40**dim)/alpha
         #print(size,globalSize,mapSize,dim,alpha,iExc,iInh,wExc,wInh)
-
         #print(iExc_,iInh_,wExc_,wInh_)
-
         return dict(size=size,wExc_=wExc_,wInh_=wInh_,iExc_=iExc_,iInh_=iInh_)
 
-
     def _onParamsUpdate(self,size,globalSize,mapSize,dim,alpha,iExc,iInh,wExc,wInh):
-        return LateralWeightsMapND.getScaledParams(size,globalSize,mapSize,dim,alpha,iExc,iInh,wExc,wInh)
-
+        return LateralWeightsMap.getScaledParams(size,globalSize,mapSize,dim,alpha,iExc,iInh,wExc,wInh)
 
     def _childrenParamsUpdate(self,iExc_,iInh_,wExc_,wInh_):
         self.kernelExc.setParams(intensity=iExc_,width=wExc_)

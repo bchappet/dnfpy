@@ -22,6 +22,7 @@ class TrajectoryView(ArrayView):
         self.nbTraj = 0#nb trace to display (the number of trace might be changing : we save the max number
         super(TrajectoryView,self).__init__(map,runner,mapView)
         self.color_cycle = [QtGui.QColor(0,0,0),QtGui.QColor(0,0,255),QtGui.QColor(0,255,0),QtGui.QColor(255,0,0)]
+        self.shiftY = True
 
     def reset(self):
         self.data = [] #[curve,time,xy]
@@ -41,8 +42,8 @@ class TrajectoryView(ArrayView):
             iterator = iter(points)
         except TypeError:
             points = (points,)
-        
-        #make sure data has the rigth len append nan otherwise
+
+        #make sure data has the rigth len
         if len(points) > self.nbTraj:
             self.nbTraj = len(points)
             while len(self.data) < self.nbTraj:
@@ -54,7 +55,7 @@ class TrajectoryView(ArrayView):
         for i in range(len(points)):
             self.data[i].append(np.array([self.time,points[i]]))
 
-        if self.nbTraj > 0:
+        if len(points) > 0:
             self.updateMinMax()
             if len(self.data[0]) > self.curveSize: #max point on the curve
                 for i in range(len(self.data)):
@@ -103,10 +104,10 @@ class TrajectoryView(ArrayView):
         qp.drawText(event.rect(),  QtCore.Qt.AlignBottom,  "%f" %self.minPt[1])
 
 
+        #print value : last tuple
         value = [str(self.data[x][-1]) for x in range(len(self.data))]
         value = ', '.join(value)
         qp.drawText(event.rect(),  QtCore.Qt.AlignCenter,  "%s" %value)
-
         qp.drawText(event.rect(),  QtCore.Qt.AlignRight,  "%f" %self.maxPt[0])
 
         if len(self.data[0]) > 1:
@@ -120,23 +121,30 @@ class TrajectoryView(ArrayView):
                 i1 = 0
                 while i1 < len(self.data[j]) and np.isnan(self.data[j][i1]).all() :
                     i1 = i1 +1
-                prevPtNp = self.scale(self.data[j][i1],sizeWH)
-                prevPt = QtCore.QPoint(prevPtNp[0],prevPtNp[1])
-                #plot the rest non nan (TODO remove nan before plotting (if we don't need data for stats))
-                for i in range(i1+1,len(self.data[j])):
-                    thePoint = self.data[j][i]
-                    if np.isnan(thePoint).any():
-                        pass
-                    else:
-                        newPtnp = self.scale(thePoint,sizeWH)
-                        newPt = QtCore.QPoint(newPtnp[0],newPtnp[1])
-                        qp.drawLine(prevPt,newPt)
-                        prevPt = newPt
+                if i1 != len(self.data[j]):
+                    prevPtNp = self.scale(self.data[j][i1],sizeWH)
+                    prevPt = QtCore.QPoint(prevPtNp[0],prevPtNp[1])
+                    #plot the rest non nan (TODO remove nan before plotting (if we don't need data for stats))
+                    for i in range(i1+1,len(self.data[j])):
+                        thePoint = self.data[j][i]
+                        if len(thePoint)==0 or  np.isnan(thePoint).any():
+                            pass
+                        else:
+                            newPtnp = self.scale(thePoint,sizeWH)
+                            newPt = QtCore.QPoint(newPtnp[0],newPtnp[1])
+                            qp.drawLine(prevPt,newPt)
+                            prevPt = newPt
 
 
     def scale(self,pt,sizeWH):
-        scaled = (pt - self.minPt)/(self.maxPt-self.minPt)
-        shifted = np.array([scaled[0], 1 - scaled[1]])
+        scaled = np.zeros_like(pt)
+        for i in range(len(pt)):
+            if self.maxPt[i] - self.minPt[i] != 0 :
+                scaled[i] = (pt[i] - self.minPt[i])/(self.maxPt[i]-self.minPt[i])
+            else:
+                scaled[i] = self.minPt[i]
+
+        shifted = np.array([scaled[0], 1 - scaled[1]]) if self.shiftY else scaled
         return  np.round(shifted*sizeWH).astype(np.int)
 
 

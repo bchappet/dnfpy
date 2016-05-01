@@ -28,7 +28,7 @@ class StatsTracking2(Stats):
         self.targetCenter = TargetCenterList("Target",dim=dim,inputMap=inputMap,inputSize=size)
         self.targetCenter.addChildren(targetList=self.targetListMap)
 
-        self.barycenter = BarycenterMapList("Barycentre",dim=dim,dt=dt)
+        self.barycenter = BarycenterMapList("Barycentre",dim=dim,dt=dt,sizeMap=size)
         self.barycenter.addChildren(map=activationMap,targetCenterList=self.targetCenter)
 
         self.errorDist = ErrorDistSimpleList("ErrorDist",dt=dt,sizeMap=size,wrap=True)
@@ -50,7 +50,8 @@ class StatsTracking2(Stats):
         return [self.errorDist,self.targetCenter,self.barycenter]
 
     def fitness(self,result):
-        return result[0]
+        (error,self.timeEnd,meanOutsideAct,elapsedTime)=result
+        return error+meanOutsideAct
 
     def finalize(self):
         """

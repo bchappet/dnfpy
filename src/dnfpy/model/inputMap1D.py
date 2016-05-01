@@ -38,6 +38,7 @@ class InputMap(FuncWithoutKeywords):
                  tck_dt=0.1,iStim1=0.99,iStim2=0.99,wStim=0.1,nbDistr=0,iDistr=0.99,tck_radius=0.3,
                  wDistr=0.1,wStim_=1.0,wDistr_=1.0,tck_radius_=1,periodStim=36,normalize=True,iStim=1.0,
                  straight=False,speed=0.04,
+                 dvs=False,tauDVS=0.1,thDVS=1.0,
                  **kwargs):
         super(InputMap,self).__init__(utils.sumArrays,name,size,dim=dim,dt=dt,
                 wrap=wrap,distr_dt=distr_dt,noise_dt=noise_dt,noiseI=noiseI,
@@ -45,8 +46,9 @@ class InputMap(FuncWithoutKeywords):
                 nbDistr = nbDistr ,iDistr=iDistr,tck_radius = tck_radius,
                 wStim_=wStim_,wDist_=wDistr_,tck_radius_=tck_radius_,periodStim=periodStim,
                                       iStim=iStim,straight=straight,speed=speed,
-                normalize=normalize,
+                normalize=normalize,dvs=dvs,tauDVS=tauDVS,thDVS=thDVS,
                 **kwargs)
+
 
 
         self.distrs = DistrMap("Distracters",size,dim=dim,dt=distr_dt,wrap=wrap,
@@ -74,10 +76,20 @@ class InputMap(FuncWithoutKeywords):
         self.addChildren(self.track1,self.track2,self.noise,self.distrs)
 
 
-    def _compute(self,args):
-        super(InputMap,self)._compute(args)
+    def _compute(self,args,params):
+        super()._compute(args,params)
         if self.getArg('normalize'):
             self._data = np.clip(self._data,-1,1)
+        if self.getArg('dvs'):
+            dt,tauDVS,thDVS = self.getArgs('dt','tauDVS','thDVS')
+            self.dvsPotential += dt/tauDVS*(self._data - self.dvsPotential)
+            self._data = np.where(self.dvsPotential >= thDVS,1.0,0.0)
+
+    def reset(self):
+        super().reset()
+        if self.getArg('dvs'):
+            size,dim = self.getArgs('size','dim')
+            self.dvsPotential = np.zeros((size,)*dim)
 
 
 

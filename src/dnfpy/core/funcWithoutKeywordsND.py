@@ -37,9 +37,10 @@ class FuncWithoutKeywords(FuncMapND):
     def _compute_with_params(self):
         if len(self.paramList) > 0:
             param_state = self._subDictionary(self.paramList).values()
-            self._data = self._func(self._childrenStatesList,param_state)
         else:
-            self._data = self._func(self._childrenStatesList)
+            param_state = None
+
+        self._compute(self._childrenStatesList,param_state)
         self.nb_computation += 1
         self.last_computation_args = self._getChildrenStatesList
         self.last_computation_dictionary = self._computeMapList
@@ -49,8 +50,11 @@ class FuncWithoutKeywords(FuncMapND):
         self._compute_with_params()
 
 
-    def _compute(self,args):
-        pass
+    def _compute(self,args,params):
+        if params:
+            self._data = self._func(args,params)
+        else:
+            self._data = self._func(args)
 
     def _getChildrenStatesList(self,mapList):
         return [map.getData() for map in mapList]

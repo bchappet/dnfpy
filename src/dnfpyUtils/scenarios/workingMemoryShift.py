@@ -4,23 +4,23 @@ from dnfpy.model.inputMap1D import InputMap
 
 class WorkingMemoryShift(Scenario):
     """
-    One static tracks from 10 to 40
-    one shifting track form 25 to 40
-    Intensity : 
-        track0 0.3 then at 10s 1 then 15 0.3
-        track0 0.3 then at 30s 1 then 35 0.3
-    Width = 0.1
+    The working memory is optimised in a scene exploration framework ie
+
+    Transient stimulis iHigh should trigger an autoactivated bubble as fast as possible
+    The bubble sould follow the stimulus afterward even if there are moving
+    The input distracters should be weak (not more than iLow)
+    But should desapear if intensityLow disapears
 
 
 
 
     """
-    def initMaps(self,size=49,dim=2,dt=0.1,wrap=True,trackSpeed=0.01,iLow=0.3,iHigh=1.0,**kwargs):
+    def initMaps(self,size=49,dim=2,dt=0.1,wrap=True,trackSpeed=0.04,iLow=0.3,iHigh=1.0,**kwargs):
         self.iLow = iLow
         self.iHigh = iHigh
         self.trackSpeed = trackSpeed
         self.input = InputMap("Inputs",size,dt=dt,dim=dim,wrap=wrap,straight=True,speed=0.0,
-                iStim1=self.iLow,iStim2=self.iLow,noiseI=0.1,nbDistr=1,distr_dt=1.0)
+                iStim1=self.iLow,iStim2=self.iLow,noiseI=0.01,nbDistr=0,distr_dt=1.0,iDistr=iLow)
 
         self.track0,self.track1 = self.input.getTracks()
         self.targetList = None
@@ -41,21 +41,27 @@ class WorkingMemoryShift(Scenario):
 
         
     def _apply(self,):
-        if self.isTime(1.0):
+        if self.isTime(6.0):
             self.track0.setParams(intensity=self.iHigh)
-            if self.targetList:
-                self.targetList.setData([0,])
-        elif self.isTime(5.0):
-            self.track0.setParams(intensity=self.iLow)
-        elif self.isTime(10.0):
             self.track1.setParams(intensity=self.iHigh)
-            self.track1.setParamsRec(speed=self.trackSpeed)
             if self.targetList:
                 self.targetList.setData([0,1])
-        elif self.isTime(20.0):
+        if self.isTime(7.0):
+            self.track0.setParams(intensity=self.iLow)
             self.track1.setParams(intensity=self.iLow)
+        elif self.isTime(12.0):
+            self.track0.setParamsRec(speed=self.trackSpeed,direction=[1,0])
+            self.track1.setParamsRec(speed=self.trackSpeed/2)
         elif self.isTime(30.0):
+            self.track0.setParamsRec(speed=0.0)
             self.track1.setParamsRec(speed=0.0)
+        elif self.isTime(35.0):
+            self.track0.setParams(intensity=0.0)
+            self.track1.setParams(intensity=0.0)
+        elif self.isTime(35.5):#give 0.5 sec to remove act
+            if self.targetList:
+                self.targetList.setData([])
+
 
 
         

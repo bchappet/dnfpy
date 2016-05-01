@@ -18,11 +18,10 @@ class ModelDNF_WM(Model,Renderable):
 
     """
     def initMaps(self,size=49,model="cnft",activation="step",nbStep=0,dim=2,wrap=True,
-                 iExc=1.25,iInh=0.7,wExc=0.1,wInh=10.,alpha=10.,
-                 iExc_wm=1.25,iInh_wm=0.7,wExc_wm=0.1,wInh_wm=10.,
-                 wFocus=0.5,wInput=0.5,wAffInh = 1.0,
-                 th=0.75,h=0,lateral='dog',
-                 dt=0.1,**kwargs
+                 iExc=0.73,iInh=0.7,wExc=0.1,wInh=2.,alpha=10.,h=0.0,tau=0.2,
+                 iExc_wm=0.08,iInh_wm=0.03,wExc_wm=0.16,wInh_wm=0.43,h_wm=-0.08,tau_wm=0.16,
+                 wFocus=0.7,wInput=0.3,wAffInh = 1.0,
+                 th=0.75,lateral='dog',dt=0.1,**kwargs
                  ):
         """
         Main parameters are for the neural field (focus)
@@ -32,9 +31,9 @@ class ModelDNF_WM(Model,Renderable):
         wAffInh : weight of inhibitino in return from WM to focus
         """
         self.field = MapDNFND("",size,dt=dt,dim=dim,model=model,activation=activation,nbStep=nbStep, \
-                        iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,th=th,h=h,lateral=lateral,wrap=wrap,wAffInh=wAffInh)
+                        iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,th=th,h=h,tau=tau,lateral=lateral,wrap=wrap,wAffInh=wAffInh)
         self.wm    = MapDNFND("wm",size,dt=dt,dim=dim,model=model,activation=activation,nbStep=nbStep, \
-                        iExc=iExc_wm,iInh=iInh_wm,wExc=wExc_wm,wInh=wInh_wm,th=th,h=h,lateral=lateral,wrap=wrap)
+                        iExc=iExc_wm,iInh=iInh_wm,wExc=wExc_wm,wInh=wInh_wm,th=th,h=h_wm,tau=tau_wm,lateral=lateral,wrap=wrap)
 
         self.afferentWM = FuncWithoutKeywords(utils.weightedSumArrays,'focus+input',size,dim=dim,dt=dt,paramList=['wFocus','wInput'],wFocus=wFocus,wInput=wInput)
         self.afferentWM.addChildren(self.field.act) #we will add input map later
@@ -55,7 +54,7 @@ class ModelDNF_WM(Model,Renderable):
 
     #override Renderable
     def getArrays(self):
-        ret =  [self.field,self.field.act,self.afferentWM,self.wm,self.wm.act]
+        ret =  [self.field,self.field.act,self.field.kernel,self.afferentWM,self.wm,self.wm.act,self.wm.kernel]
         return ret
 
     def onClick(self,mapName,x,y):
