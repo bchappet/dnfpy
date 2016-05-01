@@ -108,7 +108,6 @@ class Runner(object):
 
             except Exception as e:
                 print("could not plot: ",fileName)
-                raise e
 
     def saveArr(self):
         import numpy as np

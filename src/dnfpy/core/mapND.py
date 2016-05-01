@@ -67,6 +67,9 @@ class MapND(Computable):
     def getName(self):
         return self.name
 
+    def setData(self,data):
+        self._data = data
+
     def _compute(self):
         """
             Abstract

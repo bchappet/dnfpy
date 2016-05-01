@@ -13,7 +13,8 @@ class ScenarioTracking(Scenario):
         """
         Initialize the maps and return the roots
         """
-        self.input = InputMap("Inputs",size,dt=dt,dim=dim,iStim1=iStim1,iStim2=iStim2,noise_dt=dt,tck_dt=dt)
+        self.input = InputMap("Inputs",size,dt=dt,dim=dim,iStim1=iStim1,iStim2=iStim2,noise_dt=dt,tck_dt=dt,
+                **kwargs)
         return [self.input,]
 
     def applyContext(self):

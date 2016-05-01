@@ -35,8 +35,7 @@ class StraightTrack(MapND):
                                            dt=dt,wrap=wrap,intensity=intensity,
                                            width=width,direction=direction,
                                            start=start,
-                                           speed=speed,
-                                           speed_=speed_)
+                                           speed=speed,speed_=speed_)
 
 
         

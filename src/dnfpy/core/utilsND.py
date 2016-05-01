@@ -1,3 +1,5 @@
+import cv2
+import scipy.ndimage.filters as filter
 import numpy as np
 import scipy.signal as signal
 from scipy.special import erf
@@ -266,4 +268,13 @@ def gaussSolution(x,k,w):
 def dogSolution(x,kE,kI,wE,wI):
     return gaussSolution(x,kE,wE) - gaussSolution(x,kI,wI)
 
-
+def convolve(source,kernel,wrap=True):
+    dim = len(source.shape)
+    if dim == 2:
+        border = cv2.BORDER_WRAP if wrap else cv2.BORDER_CONSTANT
+        return cv2.filter2D(source,-1,cv2.flip(kernel,-1),anchor=(-1,-1),borderType=border)
+    elif dim == 1:
+        border = 'wrap' if wrap else 'reflect'
+        return filter.convolve(source,kernel,mode=border)
+    else:
+        raise Exception("Dim ",dim, " is not supported")

@@ -5,8 +5,9 @@ import dnfpy.controller.runner as runner
 from getClassUtils import getClassFromName
 import begin #very usefull arg parsing library
 
-#defaultScenario = "WorkingMemoryShift"
-defaultScenario = "Scene"
+defaultScenario = "ScenarioRobustness"
+defaultModel = "ModelDNF"
+#defaultScenario = "ScenarioNoise"
 defaultStats = "StatsTracking2"
 
 
@@ -18,7 +19,7 @@ Scenario: str ScenarioTracking...
 python3 main.py --dim 1 --lat dog --fashion fix --params "{'iExc':1.0,'wExc':2.5,'iInh':0.5,'wInh':4.0}"
 """
 @begin.start
-def main(model = "ModelDNF",size="101",dim="2",tr="0.5",stats=defaultStats,scenario=defaultScenario,params="{}",pause="False",gui="True",timeEnd="400000000",lat="dog",fashion='chappet',dt='0.1',procTime='1e10'):
+def main(model = defaultModel,size="101",dim="2",tr="0.5",stats=defaultStats,scenario=defaultScenario,params="{}",pause="False",gui="True",timeEnd="400000000",lat="dog",fashion='chappet',dt='0.1',procTime='1e10'):
     """
     model : name of the model
     size : resolution for the simulation

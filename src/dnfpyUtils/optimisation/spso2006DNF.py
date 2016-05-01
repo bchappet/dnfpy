@@ -18,11 +18,17 @@ from dnfpyUtils.optimisation.spso2006 import Spso
 class SpsoDNF(Spso):
     """Particle swarm optimisation class"""
 
-    def __init__(self,scenarioName,statsName,modelName,evaluationParamsDict = dict(timeEnd=20,allowedTime=10e10),**kwargs):
+    def __init__(self,scenarioName,statsName,modelName,evaluationParamsDict = dict(timeEnd=20,allowedTime=10e10),scenarioParamsDict={},**kwargs):
         super().__init__(evaluationFunc=self.evaluate,evaluationParamsDict=evaluationParamsDict,**kwargs)
-        self.scenarioClass = getClassFromName(scenarioName, 'scenarios')
+        if isinstance(scenarioName,list):
+            assert(len(scenarioName) == len(scenarioParamsDict))
+        else:
+            scenarioName = [scenarioName,]
+            scenarioParamsDict = [scenarioParamsDict,]
+        self.scenarioClass = [getClassFromName(sn, 'scenarios') for sn in scenarioName]
         self.statsClass = getClassFromName(statsName,'stats')
         self.modelClass = getClassFromName(modelName, "models")
+        self.scenarioParamsDict = scenarioParamsDict
 
 
     def getExecutionBounds(self):
@@ -32,8 +38,12 @@ class SpsoDNF(Spso):
 
     def evaluate(self,indiv):
         constPar = self.constantParamsDict
-        scenario = self.scenarioClass(**indiv)
-        scenarioList = [scenario,]
+        scenarioList = []
+        for i in range(len(self.scenarioClass)):
+            dic = dict(self.scenarioParamsDict[i])
+            dic.update(indiv)
+            scenarioList.append(self.scenarioClass[i](**dic))
+
         fitnessList = []
         statistic  =self.statsClass(**indiv)
         model =  self.modelClass(**indiv)
@@ -49,11 +59,3 @@ class SpsoDNF(Spso):
             #print("error",error)
             fitnessList.append(error)
         return np.mean(np.array(fitnessList))
-
-
-
-
-
-
-
-

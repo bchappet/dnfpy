@@ -35,18 +35,18 @@ class ObstacleMap(MapND):
 class InputMap(FuncWithoutKeywords):
     """The input are defined here"""
     def __init__(self,name,size,dim=1,dt=0.1,wrap=True,distr_dt=1.,noise_dt=0.1,noiseI=0.01,
-                 tck_dt=0.1,iStim1=0.99,iStim2=0.99,wStim=0.1,nbDistr=0,iDistr=0.99,tck_radius=0.3,
+                 tck_dt=0.1,iStims=[1.0,0.95],wStim=0.1,nbDistr=0,iDistr=0.99,tck_radius=0.3,
                  wDistr=0.1,wStim_=1.0,wDistr_=1.0,tck_radius_=1,periodStim=36,normalize=True,iStim=1.0,
-                 straight=False,speed=0.04,
-                 dvs=False,tauDVS=0.1,thDVS=1.0,
+                 straight=False,speed=0.04,nbTrack =2,position=None,
+                 dvs=False,tauDVS=0.1,thDVS=0.7,
                  **kwargs):
-        super(InputMap,self).__init__(utils.sumArrays,name,size,dim=dim,dt=dt,
+        super().__init__(utils.sumArrays,name,size,dim=dim,dt=dt,
                 wrap=wrap,distr_dt=distr_dt,noise_dt=noise_dt,noiseI=noiseI,
-                tck_dt = tck_dt,iStim1 = iStim1, iStim2 = iStim2, wStim = wStim ,wDistr=wDistr,
-                nbDistr = nbDistr ,iDistr=iDistr,tck_radius = tck_radius,
+                tck_dt = tck_dt,  wStim = wStim ,wDistr=wDistr,
+                nbDistr = nbDistr ,iDistr=iDistr,tck_radius = tck_radius,nbTrack=nbTrack,
                 wStim_=wStim_,wDist_=wDistr_,tck_radius_=tck_radius_,periodStim=periodStim,
-                                      iStim=iStim,straight=straight,speed=speed,
-                normalize=normalize,dvs=dvs,tauDVS=tauDVS,thDVS=thDVS,
+                straight=straight,speed=speed,
+                normalize=normalize,dvs=dvs,tauDVS=tauDVS,thDVS=thDVS,position=position,
                 **kwargs)
 
 
@@ -57,23 +57,21 @@ class InputMap(FuncWithoutKeywords):
 
 
         #self.traj = []
+        self.tracks = []
 
         if straight:
             direction = np.float32([1]*dim)
-            self.track1 = StraightTrack(self.getName()+"_track0",size=size,dim=dim,dt=tck_dt,wrap=wrap,intensity=iStim1,width=wStim,
-                                    direction=direction,start=np.array([0.2,0.2]),speed=speed)
-            self.track2 = StraightTrack(self.getName()+"_track1",size=size,dim=dim,dt=tck_dt,wrap=wrap,intensity=iStim2,width=wStim,
-                                    direction=direction,start=np.array([0.5,0.5]),speed=speed)
+            if position == None:
+                dPos = 1/nbTrack
+                position = [np.array((0.2+i*dPos,)*dim) for i in range(nbTrack)]
+            for i in range(nbTrack):
+                self.tracks.append(StraightTrack(self.getName()+"_track"+str(i),size=size,dim=dim,dt=tck_dt,wrap=wrap,intensity=iStims[i],width=wStim,direction=direction,start=position[i],speed=speed))
         else:
-            self.track1 = self.newTrack(0,size,dim,tck_dt,wrap,iStim1,wStim,tck_radius,periodStim)
-            self.track2 = self.newTrack(1,size,dim,tck_dt,wrap,iStim2,wStim,tck_radius,periodStim)
+            for i in range(nbTrack):
+                self.tracks.append(self.newTrack(i,size,dim,tck_dt,wrap,iStims[i],wStim,tck_radius,periodStim))
 
 
-
-
-
-
-        self.addChildren(self.track1,self.track2,self.noise,self.distrs)
+        self.addChildren(self.noise,self.distrs,*self.tracks)
 
 
     def _compute(self,args,params):
@@ -92,18 +90,12 @@ class InputMap(FuncWithoutKeywords):
             self.dvsPotential = np.zeros((size,)*dim)
 
 
-
         #debug:
     def get_nbDistr(self):
         return self.distrs.getArg('number')
 
     def getTracks(self):
-        tracks = []
-        if self.track1:
-            tracks.append(self.track1)
-        if self.track2:
-            tracks.append(self.track2)
-        return tracks
+        return self.tracks
 
     def getWidth(self):
         return self.getArg('wStim_')
@@ -118,29 +110,17 @@ class InputMap(FuncWithoutKeywords):
         return dict(wStim_=wStim_,wDistr_=wDistr_,tck_radius_=tck_radius_)
 
     def _childrenParamsUpdate(self,size,distr_dt,tck_dt,wrap,iDistr,wDistr_,nbDistr,
-                              wStim_,tck_radius_,iStim1,iStim2,noise_dt,noiseI,periodStim):
+                              wStim_,tck_radius_,noise_dt,noiseI,periodStim):
 
-        #self.track1.setParams(wrap=wrap,dt=tck_dt,intensity=iStim1,
-        #                   width=wStim_,periodStim=periodStim)
-        #self.track2.setParams(wrap=wrap,dt=tck_dt,intensity=iStim2,
-        #                   width=wStim_,periodStim=periodStim)
-        #for t in self.traj:
-        #    t.setParams(radius=tck_radius_)
 
         self.noise.setParams(dt=noise_dt,scale=noiseI)
         self.distrs.setParams(dt=distr_dt,wrap=wrap,intensity=iDistr,width=wDistr_,
                         number=nbDistr)
-        if self.track1:
-            self.track1.setParams(dt=tck_dt)
+        for track in self.tracks:
+            track.setParams(dt=tck_dt)
             #TODO do something to avoid this (we got to change dt recursevly in some case)
-            for child in self.track1.getChildren().values():
+            for child in track.getChildren().values():
                     child.setParams(dt=tck_dt)
-
-        if self.track2:
-            self.track2.setParams(dt=tck_dt)
-            for child in self.track2.getChildren().values():
-                    child.setParams(dt=tck_dt)
-            
 
 
 

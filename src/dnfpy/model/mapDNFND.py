@@ -1,13 +1,9 @@
 from dnfpy.model.activationMapND import ActivationMapND
 import numpy as np
 from dnfpy.model.fieldMapND import FieldMapND
-from dnfpy.model.lateralWeightsMapND import LateralWeightsMap
-from dnfpy.model.lateralWeightsMapExpND import LateralWeightsMapExp
-from dnfpy.model.lateralWeightsMapLinND import LateralWeightsMapLin
-from dnfpy.model.lateralWeightsMapStep import LateralWeightsMapStep
 from dnfpy.model.convolutionND import ConvolutionND
 from dnfpy.core.constantMapND import ConstantMapND
-#import matplotlib.pyplot as plt
+from dnfpy.model.lateralConvolution import LateralConvolution
 
 class MapDNFND(FieldMapND):
     """
@@ -28,36 +24,13 @@ class MapDNFND(FieldMapND):
                     **kwargs)
 
         self.act = ActivationMapND("Activation"+name,size,dim=dim,dt=dt,type=activation,th=th)
-        self.lat =ConvolutionND("Lateral"+name,size,dim=dim,dt=dt,wrap=wrap)
+        self.lat =LateralConvolution("Lateral"+name,size,dim=dim,dt=dt,wrap=wrap,nbStep=nbStep,
+                iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,alpha=alpha,fashion=fashion,lateral=lateral)
 
 
-        #globalSize = size if wrap else int(np.round(2.0*size))
-        mapSize = 2.0 if not(wrap) else 1.0
-        globalSize = size
-        if lateral=='dog':
-            self.kernel = LateralWeightsMap("Kernel"+name,mapSize=mapSize,dim=dim,
-                                        globalSize=globalSize,wrap=wrap,
-                                        iExc=iExc,iInh=iInh,wExc=wExc,
-                                        wInh=wInh,alpha=alpha,nbStep=nbStep,fashion=fashion)
-        elif lateral=='doe':
-            self.kernel = LateralWeightsMapExp("Kernel"+name,mapSize=mapSize,dim=dim,
-                                        globalSize=globalSize,wrap=wrap,
-                                        iExc=iExc,iInh=iInh,pExc=wExc,
-                                        pInh=wInh,alpha=alpha,nbStep=nbStep,fashion=fashion)
-        elif lateral=='dol':
-            self.kernel = LateralWeightsMapLin("Kernel"+name,mapSize=mapSize,dim=dim,
-                                        globalSize=globalSize,wrap=wrap,
-                                        betaExc=iExc,betaInh=iInh,alphaExc=wExc,
-                                        alphaInh=wInh,alpha=alpha,nbStep=nbStep,fashion=fashion)
-        elif lateral=='step':
-            self.kernel = LateralWeightsMapStep("Kernel"+name,mapSize=mapSize,dim=dim,
-                                        globalSize=globalSize,wrap=wrap,iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh)
-        else:
-            raise("Parameter lateral should be 'dog', 'doe' or 'dol'. %s invalid"%(lateral))
- 
         self.act.addChildren(field=self)
         self.addChildren(lat=self.lat)
-        self.lat.addChildren(source=self.act,kernel=self.kernel)
+        self.lat.addChildren(source=self.act)
 
     def getActivation(self):
         return self.act
