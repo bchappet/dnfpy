@@ -13,14 +13,18 @@ class Dual(Scenario):
 
 
     """
-    def initMaps(self,size=49,dim=2,dt=0.1,wrap=True,trackSpeed=0.04,thDVS=0.8,**kwargs):
+    def initMaps(self,size=49,dim=2,dt=0.1,wrap=True,trackSpeed=0.04,thDVS=0.8,nbTrack=4,**kwargs):
         self.trackSpeed = trackSpeed
+        self.intensities = [1.0,0.9,0.95,0.87]
+        self.positions = [[0.1,0.2],[0.1,0.4],[0.1,0.8],[0.8,0.45]]
+        self.directions = [[1,0],[1.3,1],[0,-1],[-1,0]]
+        self.speeds = [0.04,0.02,0.03,0.03]
         self.input = InputMap("Inputs",size,dt=dt,dim=dim,wrap=wrap,straight=True,speed=0.0,
-                iStims=[1.0,1.0],noiseI=0.1,nbDistr=0,distr_dt=1.0,iDistr=1.0,
-                thDVS=thDVS,position=[[0.2,0.2],[0.2,0.45]],**kwargs)
+                iStims=self.intensities,noiseI=0.1,nbDistr=0,distr_dt=1.0,iDistr=1.0,
+                thDVS=thDVS,position=self.positions,nbTrack=nbTrack,**kwargs)
         self.focus = InputMap("Focus",size,dt=dt,dim=dim,wrap=wrap,straight=True,speed=0.0,
-                iStims=[0.0,0.0],noiseI=0.1,nbDistr=0,distr_dt=1.0,iDistr=1.0,
-                thDVS=thDVS,position=[[0.2,0.2],[0.2,0.45]],**kwargs)
+                iStims=[0.0,0.0,0.0,0.0],noiseI=0.1,nbDistr=0,distr_dt=1.0,iDistr=1.0,
+                thDVS=thDVS,position=self.positions,nbTrack=nbTrack,**kwargs)
 
         self.targetList = None
         self.dim = dim
@@ -46,17 +50,17 @@ class Dual(Scenario):
         
     def _apply(self,):
         if self.isTime(6.0):
-            for track in self.focus.getTracks():
-                track.setParams(intensity=1.0)
+            for track,i in zip(self.focus.getTracks(),self.intensities):
+                track.setParams(intensity=i)
             if self.targetList:
-                self.targetList.setData([0,1])
+                self.targetList.setData([0,1,2,3])
         if self.isTime(7.0):
             for track in self.focus.getTracks():
                 track.setParams(intensity=0.0)
         elif self.isTime(12.0):
             tracks = self.input.getTracks()
-            tracks[0].setParamsRec(speed=self.trackSpeed,direction=[1,0])
-            tracks[1].setParamsRec(speed=self.trackSpeed/2)
+            for i in range(len(tracks)):
+                tracks[i].setParamsRec(speed=self.speeds[i],direction=self.directions[i])
         elif self.isTime(30.0):
             for track in self.input.getTracks():
                 track.setParamsRec(speed=0.0)

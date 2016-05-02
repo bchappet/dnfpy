@@ -20,7 +20,7 @@ class ModelWM(Model,Renderable):
     """
     def initMaps(self,size=49,model="cnft",activation="step",nbStep=0,dim=2,wrap=True,alpha=10.,
                  iExc_wm=0.08,iInh_wm=0.03,wExc_wm=0.16,wInh_wm=0.43,h_wm=-0.08,tau_wm=0.16,
-                 wFocus=0.7,wInput=0.3,
+                 iFocus=0.7,iInput=0.3,wFocus=0.1,wInput=0.1,
                  th=0.75,lateral='dog',dt=0.1,**kwargs
                  ):
         """
@@ -33,8 +33,8 @@ class ModelWM(Model,Renderable):
         self.wm    = MapDNFND("",size,dt=dt,dim=dim,model=model,activation=activation,nbStep=nbStep, \
                         iExc=iExc_wm,iInh=iInh_wm,wExc=wExc_wm,wInh=wInh_wm,th=th,h=h_wm,tau=tau_wm,lateral=lateral,wrap=wrap)
 
-        self.filteredFocus = LateralConvolution("filterFocus",size,dt=dt,dim=dim,wrap=wrap,lateral=lateral,nbStep=nbStep,iExc = wFocus,wExc=0.1) 
-        self.filteredInput = LateralConvolution("filterInput",size,dt=dt,dim=dim,wrap=wrap,lateral=lateral,nbStep=nbStep,iExc = wInput,wExc=0.1) 
+        self.filteredFocus = LateralConvolution("filterFocus",size,dt=dt,dim=dim,wrap=wrap,lateral=lateral,nbStep=nbStep,iExc = iFocus,wExc=wFocus) 
+        self.filteredInput = LateralConvolution("filterInput",size,dt=dt,dim=dim,wrap=wrap,lateral=lateral,nbStep=nbStep,iExc = iInput,wExc=wInput) 
         self.afferentWM = FuncWithoutKeywords(utils.sumArrays,'focus+input',size,dim=dim,dt=dt)
         self.afferentWM.addChildren(self.filteredFocus,self.filteredInput)
         self.wm.addChildren(aff=self.afferentWM)
