@@ -16,11 +16,11 @@ class StatsTracking2(Stats):
         inputMap
 
     """
-    def initMaps(self,size,dim,dt=0.1,wrap=True,**kwargs):
+    def initMaps(self,size,dim,dt=0.1,wrap=True,mapUnderStats="",**kwargs):
         self.processorTime = time.clock()
 
 
-        activationMap = self.runner.getMap("Activation")
+        activationMap = self.runner.getMap("Activation"+mapUnderStats)
         inputMap = self.runner.getMap("Inputs")
 
         self.targetList = [0,]
@@ -31,7 +31,7 @@ class StatsTracking2(Stats):
         self.barycenter = BarycenterMapList("Barycentre",dim=dim,dt=dt,sizeMap=size)
         self.barycenter.addChildren(map=activationMap,targetCenterList=self.targetCenter)
 
-        self.errorDist = ErrorDistSimpleList("ErrorDist",dt=dt,sizeMap=size,wrap=True)
+        self.errorDist = ErrorDistSimpleList("ErrorDist",dt=dt,sizeMap=size,wrap=wrap)
         self.errorDist.addChildren(target=self.targetCenter,mesured=self.barycenter)
 
         self.timeEnd = None

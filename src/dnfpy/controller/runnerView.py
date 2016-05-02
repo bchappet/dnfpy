@@ -1,4 +1,5 @@
 from dnfpy.view.dynamicViewQt import DisplayModelQt
+import numpy as np
 import warnings
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import pyqtSlot
@@ -176,7 +177,9 @@ class RunnerView(QtCore.QThread, Runner):
         self.lastUpdateTime = now
 
 
-def launch(model, scenario,stats, timeRatio, record=False,pause=False,timeEnd=0):
+def launch(model, scenario,stats, timeRatio, record=False,pause=False,timeEnd=0,seed=None):
+
+    np.random.seed(seed)
     defaultQSS = "stylesheet/default.qss"
     app = QtGui.QApplication([""])
     app.setStyleSheet(open(defaultQSS, 'r').read())

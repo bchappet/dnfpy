@@ -20,8 +20,7 @@ class ModelDNF_WM(Model,Renderable):
     """
     def initMaps(self,size=49,model="cnft",activation="step",nbStep=0,dim=2,wrap=True,alpha=10.,
                  iExc = 0.23,iInh = 0.13,wExc=0.12,wInh=1.60,h=-0.02,tau=0.37,
-                 #iExc=0.16,iInh=0.13,wExc=0.10,wInh=1.60,h=-0.03,tau=0.13,
-                 iExc_wm=0.23,iInh_wm=0.03,wExc_wm=0.12,wInh_wm=0.43,h_wm=-0.08,tau_wm=0.4,
+                 iExc_wm=0.71,iInh_wm=0.28,wExc_wm=0.067,wInh_wm=0.22,h_wm=-0.15,tau_wm=0.27,
                  wFocus=1.3,wInput=0.3,wAffInh = 1.0,
                  th=0.75,lateral='dog',dt=0.1,**kwargs
                  ):

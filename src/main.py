@@ -5,8 +5,8 @@ import dnfpy.controller.runner as runner
 from getClassUtils import getClassFromName
 import begin #very usefull arg parsing library
 
-defaultScenario = "ScenarioRobustness"
-defaultModel = "ModelDNF"
+defaultScenario = "Dual"
+defaultModel = "ModelWM"
 #defaultScenario = "ScenarioNoise"
 defaultStats = "StatsTracking2"
 

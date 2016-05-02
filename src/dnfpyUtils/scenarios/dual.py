@@ -17,10 +17,10 @@ class Dual(Scenario):
         self.trackSpeed = trackSpeed
         self.input = InputMap("Inputs",size,dt=dt,dim=dim,wrap=wrap,straight=True,speed=0.0,
                 iStims=[1.0,1.0],noiseI=0.1,nbDistr=0,distr_dt=1.0,iDistr=1.0,
-                thDVS=thDVS,position=[[0.2,0.2],[0.5,0.5]],**kwargs)
+                thDVS=thDVS,position=[[0.2,0.2],[0.2,0.45]],**kwargs)
         self.focus = InputMap("Focus",size,dt=dt,dim=dim,wrap=wrap,straight=True,speed=0.0,
-                iStims=[0.0,0.0],noiseI=0.0,nbDistr=0,distr_dt=1.0,iDistr=1.0,
-                thDVS=thDVS,position=[[0.2,0.2],[0.5,0.5]],**kwargs)
+                iStims=[0.0,0.0],noiseI=0.1,nbDistr=0,distr_dt=1.0,iDistr=1.0,
+                thDVS=thDVS,position=[[0.2,0.2],[0.2,0.45]],**kwargs)
 
         self.targetList = None
         self.dim = dim
