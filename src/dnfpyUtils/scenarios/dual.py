@@ -17,7 +17,7 @@ class Dual(Scenario):
         self.trackSpeed = trackSpeed
         self.intensities = [1.0,0.9,0.95,0.87]
         self.positions = [[0.1,0.2],[0.1,0.4],[0.1,0.8],[0.8,0.45]]
-        self.directions = [[1,0],[1.3,1],[0,-1],[-1,0]]
+        self.directions = [[1,0],[1,0.8],[0,-1],[-1,0]]
         self.speeds = [0.04,0.03,0.03,0.03]
         self.input = InputMap("Inputs",size,dt=dt,dim=dim,wrap=wrap,straight=True,speed=0.0,
                 iStims=self.intensities,noiseI=0.1,nbDistr=0,distr_dt=1.0,iDistr=1.0,
