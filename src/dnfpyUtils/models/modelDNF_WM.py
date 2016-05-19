@@ -18,11 +18,11 @@ class ModelDNF_WM(Model,Renderable):
         to force the focus on another stimulu
 
     """
-    def initMaps(self,size=49,model="cnft",activation="step",nbStep=0,dim=2,wrap=True,alpha=10.,
+    def initMaps(self,size=49,model="spike",activation="step",nbStep=0,dim=2,wrap=False,alpha=10.,
                  iExc = 0.23,iInh = 0.13,wExc=0.12,wInh=1.60,h=-0.02,tau=0.37,
                  iExc_wm=0.71,iInh_wm=0.28,wExc_wm=0.067,wInh_wm=0.22,h_wm=-0.15,tau_wm=0.27,
                  wFocus=1.3,wInput=0.3,wAffInh = 1.0,
-                 th=0.75,lateral='dog',dt=0.1,**kwargs
+                 th=0.75,lateral='step',dt=0.1,**kwargs
                  ):
         """
         Main parameters are for the neural field (focus)

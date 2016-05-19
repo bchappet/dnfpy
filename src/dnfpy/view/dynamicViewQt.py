@@ -65,7 +65,7 @@ class DisplayModelQt(QtGui.QSplitter, View):
 
         self.layoutH = QtGui.QHBoxLayout(self)
 
-        self.setGeometry(0,  0,  1000,  700)
+        self.setGeometry(0,  0,  1680,  1050)
 
 
     #Override View

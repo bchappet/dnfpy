@@ -26,6 +26,10 @@ def unpackAEDAT2(f):
 
 class AEDatReader(Map2D):
     def __init__(self,name,size,fileName,dt=0.1,tick=1):
+        """
+        tick in us
+        timeStep in us
+        """
         super().__init__(name=name,size=size,fileName=fileName,dt=dt,tick=tick,timeStep=dt/(tick*1e-6))
         self.f = open(fileName,"rb")
         self.lastTimeStamp = None
@@ -76,10 +80,3 @@ class AEDatReader(Map2D):
         fileName = self._init_kwargs['fileName']
         self.f = open(fileName,"rb")
         self.lastTimeStamp = None
-
-
-
-
-
-
-

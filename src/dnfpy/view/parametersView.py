@@ -11,7 +11,7 @@ class ParametersView(QtGui.QWidget):
 
     def addWidget(self,name,widget):
         if self.__nbWidg == 0:
-            self.setMaximumWidth(300)
+            self.setMinimumWidth(300)
         self.__nbWidg += 1
         self.layout.addWidget(widget)
         self.widgetDict.update({name:widget})

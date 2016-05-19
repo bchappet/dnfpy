@@ -53,8 +53,9 @@ class BarycenterMapList(MapND):
             if targetCenterList (nan)*dim
 
         """
-        def __init__(self,name,sizeMap=49,clustSize=0.3,dim=1,dt=0.1,**kwargs):
+        def __init__(self,name,sizeMap=49,clustSize=0.3,dim=1,dt=0.1,convergenceTime=1.0,**kwargs):
                 super().__init__(name=name,size=0,dim=dim,dt=dt,sizeMap=sizeMap,clustSize=clustSize,clustSize_=10,
+                        convergenceTime=convergenceTime,
                         **kwargs)
 
         def reset(self):
@@ -75,6 +76,7 @@ class BarycenterMapList(MapND):
 
                 self._data = [np.array(b)/sizeMap for b in baryList]
                 self.outsideAct.append(nbOutsideAct)
+
 
         def getViewSpace(self):
                 return (1,)*self.getArg('dim')

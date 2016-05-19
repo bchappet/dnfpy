@@ -15,7 +15,7 @@ class Dual(Scenario):
     """
     def initMaps(self,size=49,dim=2,dt=0.1,wrap=True,trackSpeed=0.04,thDVS=0.8,nbTrack=4,**kwargs):
         self.trackSpeed = trackSpeed
-        self.intensities = [1.0,0.9,0.95,0.87]
+        self.intensities = [1.0,0.98,0.96,0.95]
         self.positions = [[0.1,0.2],[0.1,0.4],[0.1,0.8],[0.8,0.45]]
         self.directions = [[1,0],[1,0.8],[0,-1],[-1,0]]
         self.speeds = [0.04,0.03,0.03,0.03]

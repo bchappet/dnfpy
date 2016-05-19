@@ -6,6 +6,7 @@ import time
 from dnfpy.core.constantMap import ConstantMap
 from dnfpyUtils.stats.targetCenterList import TargetCenterList
 from dnfpyUtils.stats.barycenterMapList import BarycenterMapList
+from dnfpyUtils.stats.goodFocus import GoodFocus
 
 
 class StatsTracking2(Stats):
@@ -34,12 +35,16 @@ class StatsTracking2(Stats):
         self.errorDist = ErrorDistSimpleList("ErrorDist",dt=dt,sizeMap=size,wrap=wrap)
         self.errorDist.addChildren(target=self.targetCenter,mesured=self.barycenter)
 
+        #optional map to assert a good focus
+        self.goodFocus = GoodFocus("GoodFocus",dt=dt,barycenterMap=self.barycenter)
+        self.goodFocus.addChildren(targetList=self.targetListMap)
+
         self.timeEnd = None
 
 
 
 
-        return [self.errorDist,]
+        return [self.errorDist,self.goodFocus]
 
     def getArrays(self):
         """
@@ -47,10 +52,10 @@ class StatsTracking2(Stats):
         """
         #return [self.clusters,self.potentialTarget,self.trackedTarget,
         #        self.errorDist,self.shapeMap,self.errorShape,self.activation]
-        return [self.errorDist,self.targetCenter,self.barycenter]
+        return [self.errorDist,self.targetCenter,self.barycenter,self.goodFocus]
 
     def fitness(self,result):
-        (error,self.timeEnd,meanOutsideAct,elapsedTime)=result
+        (error,timeEnd,meanOutsideAct,elapsedTime)=result
         return error+meanOutsideAct
 
     def finalize(self):
