@@ -1,5 +1,4 @@
 import numpy as np
-import dnfpy.view.staticViewMatplotlib as view
 from dnfpy.core.map2D import Map2D
 import time
 
@@ -28,12 +27,13 @@ class DvsMap(Map2D):
     def __init__(self,name,size,dt=0.1,dtype=np.int8,**kwargs):
         super().__init__(name,size,dt=dt,**kwargs)
         host = "127.0.0.1"
-        port = 8888
+        port = 7777
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind((host, port))
 
 
     def _compute(self,size):
+        print("compute")
         x, y, p = self.read_events()
         this_m = matrix_active(size+1,x, y, p)
         self._data =  this_m[:-1,:-1]

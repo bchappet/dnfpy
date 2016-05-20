@@ -29,17 +29,22 @@ class StraightTrack(MapND):
     speed_
     """
     def __init__(self,name,size,dim=1,dt=0.1,wrap=True,intensity=1.,width=0.1,
+                 blink=False,blinkPeriod=0.1,
                  direction=np.float32((1,)*10),start = np.float32((0,)*10),
                  speed=0.01,speed_=(1,)*10):
         super().__init__(name=name,size=size,dim=dim,
                                            dt=dt,wrap=wrap,intensity=intensity,
                                            width=width,direction=direction,
                                            start=start,
+                                           blink=blink,
+                                           blinkPeriod = blinkPeriod,
                                            speed=speed,speed_=speed_)
 
 
         
         self.centerTraj = []
+        self._blinkCounter = 0;#TODO reset
+        self._hidden = False #true when hidden pahse of blinking
         for d in range(dim):
             origin = start[d]*size
             self.centerTraj.append(StraightTraj(name+"_c"+str(d),size=0,dim=0,dt=dt,speed=speed_[d],
@@ -59,9 +64,22 @@ class StraightTrack(MapND):
         for trajI,i in zip(self.centerTraj,range(len(speed_))):
             trajI.setParams(speed=speed_[i])
 
-    def _compute(self,size,wrap,width_,intensity):
-        center = self.getCenter()
-        self._data = utils.gaussNd(size,wrap,intensity,width_,center)
+    def _compute(self,size,wrap,width_,intensity,blink,dt,blinkPeriod):
+        if self._hidden:
+            self._data[...] = 0.0;
+        else:
+            center = self.getCenter()
+            self._data = utils.gaussNd(size,wrap,intensity,width_,center)
+
+        if blink:
+            period = int(round(blinkPeriod/dt))
+            if period//2  == self._blinkCounter:
+                self._hidden = not(self._hidden)
+                self._blinkCounter = 0
+            else:
+                self._blinkCounter += 1
+
+
 
     def getTracks(self):
         return [self,]

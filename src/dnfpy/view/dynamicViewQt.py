@@ -65,7 +65,7 @@ class DisplayModelQt(QtGui.QSplitter, View):
 
         self.layoutH = QtGui.QHBoxLayout(self)
 
-        self.setGeometry(0,  0,  1680,  1050)
+        self.setGeometry(0,  0,  1000,  1000)
 
 
     #Override View
@@ -142,6 +142,8 @@ class DisplayMapsQt(QtGui.QWidget):
 
     def __updateGridSize(self):
         self.nbCols = int(math.ceil(math.sqrt(self.size))) #nb cols in the label matrix
+        if self.nbCols == 0:
+            self.nbCols = 1
         self.nbRows = int(math.ceil(self.size/float(self.nbCols))) #nb rows in the label matrix
 
 

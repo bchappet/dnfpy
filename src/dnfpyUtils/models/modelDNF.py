@@ -28,9 +28,10 @@ class ModelDNF(Model,Renderable):
 
     #override Renderable
     def getArrays(self):
-        ret =  [self.field,self.field.lat.kernel]
-        ret.extend(self.field.getArrays())
-        return ret
+        #ret =  [self.field,self.field.lat.kernel]
+        #ret.extend(self.field.getArrays())
+        #return ret
+        return []
 
     #override Model
     def onAfferentMapChange(self,afferentMap):

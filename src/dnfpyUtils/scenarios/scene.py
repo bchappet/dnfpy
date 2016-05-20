@@ -7,10 +7,10 @@ class Scene(Scenario):
     Scene to be explored
     """
     def initMaps(self,size=49,dim=2,dt=0.1,iStim1=1.0,iStim2=0.95,wrap=True,trackSpeed=0.04,
-            mapUnderStats="",dvs=True,thDVS=0.7,**kwargs):
+            mapUnderStats="",dvs=False,thDVS=0.7,noiseI=0.01,**kwargs):
         self.trackSpeed = trackSpeed
         self.input = InputMap("Inputs",size,dt=dt,dim=dim,wrap=wrap,straight=True,speed=0.0,
-                iStims=[1.,0.95],position=[[0.2,0.2],[0.2,0.45]],noiseI=0.3,nbDistr=0,
+                iStims=[1.,0.95],position=[[0.2,0.2],[0.2,0.45]],noiseI=noiseI,nbDistr=0,
                 distr_dt=1.0,iDistr=1.0,dvs=dvs,thDVS=thDVS,**kwargs)
 
         self.mapUnderStats = mapUnderStats #change the expected target accordingly

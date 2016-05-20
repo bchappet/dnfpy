@@ -38,7 +38,7 @@ class InputMap(FuncWithoutKeywords):
                  tck_dt=0.1,iStims=[1.0,0.95],wStim=0.1,nbDistr=0,iDistr=0.99,tck_radius=0.3,
                  wDistr=0.1,wStim_=1.0,wDistr_=1.0,tck_radius_=1,periodStim=36,normalize=True,iStim=1.0,
                  straight=False,speed=0.04,nbTrack =2,position=None,
-                 dvs=False,tauDVS=0.1,thDVS=0.7,
+                 dvs=False,tauDVS=0.1,thDVS=0.7,blink=False,blinkPeriod=0.02,
                  **kwargs):
         super().__init__(utils.sumArrays,name,size,dim=dim,dt=dt,
                 wrap=wrap,distr_dt=distr_dt,noise_dt=noise_dt,noiseI=noiseI,
@@ -47,6 +47,7 @@ class InputMap(FuncWithoutKeywords):
                 wStim_=wStim_,wDist_=wDistr_,tck_radius_=tck_radius_,periodStim=periodStim,
                 straight=straight,speed=speed,
                 normalize=normalize,dvs=dvs,tauDVS=tauDVS,thDVS=thDVS,position=position,
+                blink=blink,blinkPeriod=blinkPeriod,
                 **kwargs)
 
 
@@ -65,10 +66,10 @@ class InputMap(FuncWithoutKeywords):
                 dPos = 1/nbTrack
                 position = [np.array((0.2+i*dPos,)*dim) for i in range(nbTrack)]
             for i in range(nbTrack):
-                self.tracks.append(StraightTrack(self.getName()+"_track"+str(i),size=size,dim=dim,dt=tck_dt,wrap=wrap,intensity=iStims[i],width=wStim,direction=direction,start=position[i],speed=speed))
+                self.tracks.append(StraightTrack(self.getName()+"_track"+str(i),size=size,dim=dim,dt=tck_dt,wrap=wrap,intensity=iStims[i],width=wStim,direction=direction,start=position[i],speed=speed,blink=blink,blinkPeriod=blinkPeriod))
         else:
             for i in range(nbTrack):
-                self.tracks.append(self.newTrack(i,size,dim,tck_dt,wrap,iStims[i],wStim,tck_radius,periodStim))
+                self.tracks.append(self.newTrack(i,size,dim,tck_dt,wrap,iStims[i],wStim,tck_radius,periodStim,blink,blinkPeriod))
 
 
         self.addChildren(self.noise,self.distrs,*self.tracks)
@@ -82,6 +83,7 @@ class InputMap(FuncWithoutKeywords):
             dt,tauDVS,thDVS = self.getArgs('dt','tauDVS','thDVS')
             self.dvsPotential += dt/tauDVS*(self._data - self.dvsPotential)
             self._data = np.where(self.dvsPotential >= thDVS,1.0,0.0)
+            self.dvsPotential[self._data == 1.0] = 0.0; #reset
 
     def reset(self):
         super().reset()
@@ -124,11 +126,11 @@ class InputMap(FuncWithoutKeywords):
 
 
 
-    def newTrack(self,index,size,dim,tck_dt,wrap,iStim,wStim,tck_radius,periodStim):
+    def newTrack(self,index,size,dim,tck_dt,wrap,iStim,wStim,tck_radius,periodStim,blink,blinkPeriod):
         name = self.getName() +  "_track"+str(index)
         phase = index/2.
         period  = periodStim
         track = CircularTrack(name,size,dim=dim,dt=tck_dt,wrap=wrap,intensity=iStim,
-                    width=wStim,radius=tck_radius,period=period,phase=phase)
+                    width=wStim,radius=tck_radius,period=period,phase=phase,blink=blink,blinkPeriod=blinkPeriod)
 
         return track

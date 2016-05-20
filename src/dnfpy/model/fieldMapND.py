@@ -28,7 +28,7 @@ class FieldMapND(MapND):
             self._data = self._data + dt/tau*(-self._data + h + aff*gainAff - afferentInhibition) +  1.0/tau*delta*lat + noise
         elif model == 'event': #we suppose that every feeding is a spike
             self._data = np.where(self._data > th,0.,self._data) # if x > th => x = 0
-            self._data = self._data + dt/tau*(-self._data + h)+ 1.0/tau*(aff*gainAff - afferentInhibition*lat) + noise
+            self._data = self._data + dt/tau*(-self._data + h)+ 1.0/tau*(aff*gainAff - afferentInhibition+delta*lat) + noise
         else:
             print("Invalid model option : " + model)
 

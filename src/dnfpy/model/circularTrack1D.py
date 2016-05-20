@@ -33,15 +33,20 @@ class CircularTrack(MapND):
     centerY : cos traj
     """
     def __init__(self,name,size,dim=1,dt=0.1,wrap=True,intensity=1.,width=0.1,
-                 radius=0.3,period=36,phase=0.,center=0.,
+                 radius=0.3,period=36,phase=0.,center=0.,blink=False,blinkPeriod=0.2,
                  center_=10,radius_=10):
         super(CircularTrack,self).__init__(name=name,size=size,dim=dim,
                                            dt=dt,wrap=wrap,intensity=intensity,
                                            width=width,radius=radius,center=center,
                                            period=period,phase=phase,
+                                           blink=blink,
+                                           blinkPeriod = blinkPeriod,
                                            center_=center_,radius_=radius_)
 
         self.centerTraj = []
+        self._blinkCounter = 0;#TODO reset
+        self._hidden = False #true when hidden pahse of blinking
+        
         for d in range(dim):
             self.centerTraj.append(FuncMapND(utils.cosTraj,name+"_c"+str(d),1,dim=0,
                         center=center_,period=period,phase=phase+d*0.25,
@@ -60,9 +65,21 @@ class CircularTrack(MapND):
         for traj in self.centerTraj:
             traj.setParams(radius=radius_,center=center_)
 
-    def _compute(self,size,wrap,width_,intensity):
-        center = self.getCenter()
-        self._data = utils.gaussNd(size,wrap,intensity,width_,center)
+    def _compute(self,size,wrap,width_,intensity,blinkPeriod,dt,blink):
+        if self._hidden:
+            self._data[...] = 0.0;
+        else:
+            center = self.getCenter()
+            self._data = utils.gaussNd(size,wrap,intensity,width_,center)
+
+
+        if blink:
+            period = int(round(blinkPeriod/dt))
+            if period//2  == self._blinkCounter:
+                self._hidden = not(self._hidden)
+                self._blinkCounter = 0
+            else:
+                self._blinkCounter += 1
 
 
 
