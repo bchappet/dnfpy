@@ -49,8 +49,6 @@ class LateralWeightsMap(MapND):
             ret = utils.discretize(ret,nbStep=nbStep)
         else:
             pass
-        #ensure that there is no self activation?? 
-        ret[self.center] = 0
         self._data = ret
 
     @staticmethod

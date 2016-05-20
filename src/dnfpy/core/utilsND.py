@@ -75,6 +75,8 @@ def generateWrappedDistance2(size,res,centerX,wrap):
 def gaussNd(size,wrap,intensity,width,center):
     """ Make a  gaussian kernel."""
     dim = len(center) #nb Dim
+    if width <= 0 :
+        return np.zeros((size,)*dim)
     distI = generateWrappedDistance(size,center,wrap);
     sumDistSquared = np.zeros((size,)*dim)
     for dist in distI:
@@ -127,6 +129,8 @@ def gaussianNd(size,res,wrap,intensity,width,center):
 def expNd(size,wrap,intensity,proba,center):
     """Make an Exponential kernel """
     dim = len(center) #nb Dim
+    if width <= 0 :
+        return np.zeros((size,)*dim)
     distI = generateWrappedDistance(size,center,wrap);
     sumDistSquared = np.zeros((size,)*dim)
     for dist in distI:
@@ -157,6 +161,8 @@ def linNd(size,wrap,alpha,beta,center):
 
 def stepNd(size,wrap,intensity,width,center):
     dim = len(center) #nb Dim
+    if width <= 0 :
+        return np.zeros((size,)*dim)
     distI = generateWrappedDistance(size,center,wrap);
     sumDistSquared = np.zeros((size,)*dim)
     for dist in distI:
