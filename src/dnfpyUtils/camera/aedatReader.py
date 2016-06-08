@@ -43,11 +43,12 @@ def unpackAEDAT2(f,p):
     return address,timeStamp,p
 
 class AEDatReader(Map2D):
-    def __init__(self,name,size,fileName,dt=0.1,tick=10):
+    def __init__(self,name,size,fileName,dt=0.1,tick=10,offset=0):
         """
         tick in us
         timeStep in us
         """
+        self.offset = offset
         super().__init__(name=name,size=size,fileName=fileName,dt=dt,tick=tick,timeStep=dt/(tick*1e-6))
 
     def detectFormat(self,f):
@@ -93,7 +94,9 @@ class AEDatReader(Map2D):
         self.dataTmp = np.zeros((128,128))
 
         self.format,self.p = self.detectFormat(self.f)
-        print(self.format)
+        print(self.offset)
+        self.p += self.offset
+        print(self.format,self.p)
         if self.format == "AER-DAT1.0":
             self.addressToCoord = addressToCoordAEDAT1
             self.unpack = unpackAEDAT1

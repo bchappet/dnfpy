@@ -1,6 +1,5 @@
 import numpy as np
-from dnfpy.core.funcMapND import FuncMapND
-import dnfpy.core.utilsND as utils
+import dnfpy.core.utils as utils
 from dnfpy.core.mapND import MapND
 
 

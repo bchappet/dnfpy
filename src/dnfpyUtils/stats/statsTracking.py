@@ -17,11 +17,12 @@ class StatsTracking(Stats):
         inputMap
 
     """
-    def initMaps(self,clustSize=0.2,expectedNbCluster=1,**kwargs):
+    def initMaps(self,size,dim,clustSize=0.2,expectedNbCluster=1,
+            dt=0.1,wrap=True,mapUnderStats="",**kwargs):
         self.processorTime = time.clock()
 
 
-        activationMap = self.runner.getMap("Activation")
+        activationMap = self.runner.getMap("Activation"+mapUnderStats)
         inputMap = self.runner.getMap("Inputs")
         size = inputMap.getArg("size")
         self.dt = inputMap.getArg("dt")

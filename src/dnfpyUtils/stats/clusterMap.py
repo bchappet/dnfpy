@@ -2,10 +2,10 @@ from dnfpy.core.map2D import Map2D
 import numpy as np
 from sklearn.cluster import DBSCAN
 import scipy.spatial.distance as dist
+from dnfpyUtils.stats.statistic import Statistic
 
 
-
-class ClusterMap(Map2D):
+class ClusterMap(Statistic):
     """
     Params:
     "continuity" : float if different of 0.0, we assume that the cluster are continuous
@@ -31,7 +31,6 @@ class ClusterMap(Map2D):
     "nbOutliners" : int nb outliners found at the last compute
     if continuity > 0
     "nbNewCluster": int nb of newly build cluster
-    "nbDiscontinuousCluster": int nb cluster which where outliners
 
     """
     def __init__(self,name,size=0,dt=0.1,threshold=0.4,min_samples=3,
@@ -42,7 +41,10 @@ class ClusterMap(Map2D):
             continuity=continuity,expectedNumberOfCluster=expectedNumberOfCluster,
                                         **kwargs)
 
+        self.trace = []
 
+    def getTrace(self):
+        return self.trace
 
     def reset(self):
         super().reset()
@@ -51,7 +53,6 @@ class ClusterMap(Map2D):
         self.clusterOff = [] #we save the number of iteration that the cluster is off in this list
         self.setArg(nbOutliners=0)
         self.setArg(nbNewCluster=0)
-        self.setArg(nbDiscountinuousCluster=0)
         self.setArg(nbComputationEmpty=0)
         self.sumNbClusterSave = []
         self.setArg(nbClusterSum=0)
@@ -60,10 +61,13 @@ class ClusterMap(Map2D):
         self.nbActivation = 0
         self.diffNbClusterSum = 0 #add |nbClust - expectedNumberOfCluster| at every step
         self._data = []
+        self.trace = []
+        self.dictOutCluster = {} #dict cluster -> output cluster
+        self.outputCluster = []
 
 
-    def _compute(self,size,np_arr,threshold,min_samples,clustSize_,continuity,expectedNumberOfCluster,dt):
-        self.toProf(size,np_arr,threshold,min_samples,clustSize_,continuity,expectedNumberOfCluster,dt)
+    def _compute(self,size,np_arr,threshold,min_samples,clustSize_,continuity,expectedNumberOfCluster,dt,dim):
+        self.toProf(size,np_arr,threshold,min_samples,clustSize_,continuity,expectedNumberOfCluster,dt,dim)
 
     def getMaxNbAct(self):
         if len(self.nbActList) > 0:
@@ -78,7 +82,7 @@ class ClusterMap(Map2D):
             return np.nan
 
     def toProf(self,size,np_arr,threshold,min_samples,clustSize_,continuity,
-               expectedNumberOfCluster,dt):
+               expectedNumberOfCluster,dt,dim):
         maxArr = np.max(np_arr)
         coords = np.where(np_arr > maxArr/1.2)
         self.nbActivation = len(coords[0])
@@ -91,119 +95,79 @@ class ClusterMap(Map2D):
             #print("nbActivation : %s"%self.nbActivation)
             self.nbActList.append(self.nbActivation)
             coordsArray = list(zip(coords[1],coords[0]))
-            nbClust = len(self.clusters)
 
             if continuity > 0:
-                #we add the previous clusters to the coordArray : hence we 'll have the same label
-                for i in range(nbClust):
-                    coordsArray.append(self.clusters[nbClust-1-i])
+                clusters = []
+                #we add the previous valid clusters to the coordArray : hence we 'll have the same label
+                for i in range(len(self._data)):
+                    if not(np.any(np.isnan(self._data[i]))):
+                        clust = {'id':i,'coord':self._data[i]}
+                        coordsArray.insert(0,clust['coord'])
+                        clusters.append(clust)
+                nbClust = len(clusters)
 
 
             
-            coordsArrayNp = np.array(coordsArray)
-            distanceMat = dist.cdist(coordsArrayNp,coordsArrayNp)
-            db = DBSCAN(min_samples=min_samples,eps=clustSize_).fit(distanceMat)
+                coordsArrayNp = np.array(coordsArray)
+                distanceMat = dist.cdist(coordsArrayNp,coordsArrayNp)
+                db = DBSCAN(min_samples=min_samples,eps=clustSize_).fit(distanceMat)
 
-            #set of labels (minus outliners)
-            unique_labels = set(db.labels_) - set([-1])
-            #print(db.labels_)
-            set_label = list(set(db.labels_))
-            #print(set_label)
+                #set of labels (minus outliners)
+                unique_labels = set(db.labels_) - set([-1])
+                #print(db.labels_)
+                set_label = list(set(db.labels_))
+                #print(set_label)
 
-            dictLabel = {} #dictionray {index cluster -> label}
-            self.clusters = []
-            #set the number discontinuous cluster
-            nbDiscontinuousCluster = 0
-            nbNewCluster = 0
-            if continuity > 0:
-                clusterToDelete = [] #if cluster i is deleted, we need to delete self.clusterOff[i]
-                labelToDelete = []
-                #print("nbLabel %s"%len(set_label))
-                for i in range(nbClust): 
+                clusterLabelList = []
+                for i in range(len(clusters)): 
                     #lab =  db.labels_[-1-i]
                     #print("index %s nb %s"%(-1-i,len(set_label)))
                     if i < len(set_label):
-                        lab =  db.labels_[-1-i]#the labels are in the same ordre as the coordArray we added
+                        lab =  db.labels_[i]#the labels are in the same ordre as the coordArray we added
                     else:
-                        #print("to few label!")
-                        clusterToDelete.extend(range(i,nbClust))
+                        print("to few label!")
                         break
 
-                    #print("i : %s. label %s , sum %s"%(i,lab,np.sum(db.labels_==lab)))
-                    #remove clusters from coordsArrayNp
-                    #np.delete(db.labels_,-1-i)
-                    labelToDelete.append(lab)
-                    #set_label.remove(lab)
-                    if lab == -1:
-                        nbDiscontinuousCluster += 1
-
-                    if np.sum(db.labels_ == lab) == 1:
-                        #There is only the artificial activation we introduced => no cluster
-                        #we can allow that only for minClusterFreq
-                        if self.clusterOff[i] > continuity/dt:
-                                #the cluster is deleted
-                                #print("delete " + str(i))
-                                unique_labels = unique_labels - set([lab])
-                                clusterToDelete.append(i)
-                        else:
-                                #the cluster is still allowed
-                                #print("clusterAllowed %s"%i)
-                                self.clusterOff[i] += 1
-                                dictLabel[i] = lab
-                    else:
-                        dictLabel[i] = lab
-                #delete clusterOff
-                clusterToDelete.reverse()
-                for i in clusterToDelete:
-                    #print(" actually delete " + str(i))
-                    del self.clusterOff[i]
-
-
-
-
+                    print("i : %s. label %s , sum %s"%(i,lab,np.sum(db.labels_==lab)))
+                    clusters[i]['label'] = lab
+                    clusterLabelList.append( lab)
 
                 #outliner are the labels which are -1 and not in the cluster list
                 nb_outliners = len(np.where(db.labels_ == -1)[0])
 
                 #update cluster positions
-                for key in dictLabel.keys():
-                    lab = dictLabel[key]
-                    barycenter = self.__getBarycenter(coordsArrayNp,db.labels_,lab)
-                    self.clusters.append(barycenter)
+                for cluster in clusters:
+                    lab = cluster['label']
+                    if lab != -1 :
+                        cluster['coord'] = self.__getBarycenter(coordsArrayNp,db.labels_,lab)
+                    else:
+                        cluster['coord'] = np.array((np.nan,)*dim)
 
                 #check for new cluster
-                for lab in unique_labels -set(dictLabel.values()):
+                nbNewCluster = 0
+                for lab in set(set_label) -set(clusterLabelList):
                     barycenter = self.__getBarycenter(coordsArrayNp,db.labels_,lab)
                     #print("add cluster")
-                    self.clusters.append(barycenter)
-                    self.clusterOff.append(0)
+                    self._data.append(barycenter)
                     nbNewCluster += 1
                 
-                
+                    
                 #print("nb cluster ",len(self.clusters))
                 #print("nb clusterOff ",len(self.clusterOff))
                 self.setArg(nbNewCluster=nbNewCluster)
-                self.setArg(nbDiscontinuousCluster=nbDiscontinuousCluster)
 
-            else:
-                nb_outliners = len(np.where(db.labels_ == -1)[0])
-                for lab in unique_labels:
-                    barycenter = self.__getBarycenter(coordsArrayNp,db.labels_,lab)
-                    self.clusters.append(barycenter)
-
-            self.setArg(nbOutliners=nb_outliners)
-            if len(self.clusters) > expectedNumberOfCluster:
-                self.sumNbClusterSave.append(len(self.clusters))
-                self.setArg(nbClusterSum=np.sum(self.sumNbClusterSave))
-
-            self.diffNbClusterSum += np.abs(len(self.clusters) - self.getArg("expectedNumberOfCluster"))
-
-            self._data = np.array(self.clusters)
+                self.setArg(nbOutliners=nb_outliners)
+ 
+                for cluster in clusters:
+                    self._data[cluster['id']] = cluster['coord']
+                print(self._data)
         elif self.nbActivation == 0:
             self.setArg(nbComputationEmpty=self.getArg("nbComputationEmpty")+1)
         else:
             #to many activation we don't compute cluster
             self._data = np.array([np.array([-1,-1])])
+
+        self.trace.append(np.copy(self._data))
 
 
 

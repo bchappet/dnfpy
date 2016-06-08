@@ -65,7 +65,8 @@ class ModelDNF_WM(Model,Renderable):
     def getArrays(self):
         ret =  [self.focus,self.focus.act,self.focus.lat.kernel,
                 self.afferentWM,self.wm,self.wm.act,self.wm.lat.kernel,
-                self.inputFocus.kernel,self.inputWM.kernel]
+                self.inputFocus.kernel,self.inputWM.kernel,
+                self.wmFocus,self.focusWM]
         return ret
 
     def onClick(self,mapName,x,y):

@@ -34,11 +34,12 @@ def getEgal(data):
                 egal = 1
         return egal
 
-def plotArray(data,showBar=True):
+def plotArray(data,showBar=True,egal=None):
         """
             Plot a np.array, with egalised colorbar
         """
-        egal = getEgal(data)
+        if not(egal):
+            egal = getEgal(data)
 
         ret = plt.imshow(data,interpolation='nearest',cmap='RdYlBu_r',vmin=-egal,vmax=+egal)
         if showBar  and np.sum(data) != 0:

@@ -5,7 +5,6 @@ from PyQt4 import QtGui
 import numpy as np
 import warnings
 
-
 class TrajectoryView(ArrayView):
     """
     For map of dimension 0
@@ -21,7 +20,32 @@ class TrajectoryView(ArrayView):
         self.curveSize = 200
         self.nbTraj = 0#nb trace to display (the number of trace might be changing : we save the max number
         super(TrajectoryView,self).__init__(map,runner,mapView)
-        self.color_cycle = [QtGui.QColor(0,0,0),QtGui.QColor(0,0,255),QtGui.QColor(0,255,0),QtGui.QColor(255,0,0)]
+        #colors = palettable.tableau.GreenOrange_12.colors
+        colors = [[50, 162, 81],
+        [172, 217, 141],
+        [255, 127, 15],
+        [255, 185, 119],
+        [60, 183, 204],
+        [152, 217, 228],
+        [184, 90, 13],
+        [255, 217, 74],
+        [57, 115, 124],
+        [134, 180, 169],
+        [130, 133, 59],
+        [204, 201, 77],
+        [44, 105, 176],
+        [181, 200, 226],
+        [240, 39, 32],
+        [255, 182, 176],
+        [172, 97, 60],
+        [233, 195, 155],
+        [107, 163, 214],
+        [181, 223, 253],
+        [172, 135, 99],
+        [221, 201, 180],
+        [189, 10, 54],
+        [244, 115, 122]]
+        self.color_cycle = [QtGui.QColor(*col) for col in colors]
         self.shiftY = True
 
     def reset(self):
@@ -99,18 +123,18 @@ class TrajectoryView(ArrayView):
 
     def paintEvent(self, event):
         qp = QtGui.QPainter(self)
-        qp.setPen(QtGui.QColor(0,0,0))
-        qp.drawText(event.rect(),  QtCore.Qt.AlignTop,  "%f" %self.maxPt[1])
-        qp.drawText(event.rect(),  QtCore.Qt.AlignBottom,  "%f" %self.minPt[1])
+        #qp.setPen(QtGui.QColor(0,0,0))
+        #qp.drawText(event.rect(),  QtCore.Qt.AlignTop,  "%f" %self.maxPt[1])
+        #qp.drawText(event.rect(),  QtCore.Qt.AlignBottom,  "%f" %self.minPt[1])
 
 
         #print value : last tuple
-        value = [str(self.data[x][-1]) for x in range(len(self.data))]
-        value = ', '.join(value)
-        qp.drawText(event.rect(),  QtCore.Qt.AlignCenter,  "%s" %value)
+        values = [(self.data[x][-1]) for x in range(len(self.data))]
+        value = values[0][1]
+        qp.drawText(event.rect(),  QtCore.Qt.AlignCenter,  "%f" %value)
         qp.drawText(event.rect(),  QtCore.Qt.AlignRight,  "%f" %self.maxPt[0])
 
-        if len(self.data[0]) > 1:
+        if len(self.data) > 0 and len(self.data[0]) > 1:
             size = self.rect().size()
             sizeWH = np.array([size.width(), size.height()])
 

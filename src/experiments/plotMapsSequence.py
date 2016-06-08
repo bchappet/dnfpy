@@ -22,6 +22,8 @@ dt = 0.1
 
 path = sys.argv[1] #name of the save folder
 mapNames = eval(sys.argv[2]) #list of names "['a','b',...]"
+#timeList = eval(sys.argv[3]) #list of time "[1,2]"
+timeList = []
 if len(sys.argv) > 3:
     traceNames = eval(sys.argv[3]) #list of the traces "['ta','tb',...]" if no trace, only the time will be displayed
 else:
@@ -47,14 +49,14 @@ def getTrackCenter(index,time,sizeArray):
 
 
 
-#We create the list of time step
-timeList = [] #list of time step
 
 for filename in glob.glob(os.path.join(path, '*.csv')):
-    mapOfFile = (filename.split('_')[-3]).split('/')[-1]
-    if mapNames[0] == mapOfFile:
-        time = eval(".".join(re.compile("[_\.]").split(filename)[-3:-1]))
-        timeList.append(time)
+    split1 = filename.split('_')
+    if len(split1) == 3:
+        mapOfFile = (split1[-3]).split('/')[-1]
+        if mapNames[0] == mapOfFile:
+            time = eval(".".join(re.compile("[_\.]").split(filename)[-3:-1]))
+            timeList.append(time)
 timeList.sort()
 
 print(mapNames,timeList)
@@ -67,7 +69,8 @@ sizeArray = getArray(mapNames[0],timeList[0]).shape[0]
 grid = gridspec.GridSpec(len(mapNames)+len(traceNames), len(timeList))
 #we need to adjust the size of the grid to be sure that every map fit
 size = 2
-fig = plt.figure(figsize=(size*len(timeList),size*(len(mapNames)+len(traceNames))))
+#fig = plt.figure(figsize=(size*len(timeList),size*(len(mapNames)+len(traceNames))))
+fig = plt.figure(figsize = (9,size*(len(mapNames)+len(traceNames))))
 main_ax = plt.gca()
 
 
@@ -85,8 +88,8 @@ for i in range(len(mapNames)):
             for indexStim in [0,1]:
                 #(x,y) = getTrackCenter(indexStim,time,sizeArray)
 
-                x = getArray("Inputs_track"+str(indexStim)+"_cX",time)
-                y = getArray("Inputs_track"+str(indexStim)+"_cY",time)
+                x = getArray("Inputs_track"+str(indexStim)+"_c0",time)
+                y = getArray("Inputs_track"+str(indexStim)+"_c1",time)
                 (xt,yt) = getTrackCenter(indexStim,time+5,sizeArray)
                 #[xFig,yFig] = axis.transData.transform([x,y])
                 if j==0 and showArrows:
@@ -102,7 +105,7 @@ for i in range(len(mapNames)):
              
         plt.xticks([]), plt.yticks([])
         array = getArray(mapNames[i],timeList[j])
-        img = view.plotArray(array,showBar=False)
+        img = view.plotArray(array,showBar=False,egal=1)
         if i == len(mapNames) -1:
             plt.text(0.5,-0.1,timeList[j],va='center',ha='center',transform=axes.transAxes)
 
@@ -120,15 +123,14 @@ for i in range(len(mapNames)):
         y = infig_position[1]
         width *= rect[2]
         height *= rect[3]
-        print x,y,width,height
+        print(x,y,width,height)
                
         
         subax = fig.add_axes([x,y,width,height],axisbg=axisbg)
 
-        egal = view.getEgal(array)
-        egal = round(egal,2)
+        egal  = 1
         a = np.array([[-egal,egal]])
-        img = view.plotArray(a,showBar=False)
+        img = view.plotArray(a,showBar=False,egal=egal)
         bar = plt.colorbar(shrink=.9)
         plt.gca().set_visible(False)
         #axes.set_visible(False)
@@ -144,15 +146,19 @@ if len(traceNames) > 0:
     lineWidth = 2
 
     traceName = traceNames[0]
-    trace =  np.loadtxt(path + traceName + ".csv",delimiter=",")
+    trace =  np.load(path + traceName + ".csv.npy")
 
     x = np.linspace(0,timeList[-1],len(trace))
-    print(timeList)
-    print(x)
-
     axis = plt.subplot(grid[-1,:])
 
-    plt.plot(x,trace,lw=1,color=color)
+    maxLenTrace = np.max([len(t) for t in trace])
+    balancedTrace = np.ones((len(trace),maxLenTrace))*np.nan
+    for i in range(len(trace)):
+        for j in range(len(trace[i])):
+            balancedTrace[i,j] = trace[i][j]
+
+    for i in range(maxLenTrace):
+        plt.plot(x,balancedTrace[:,i],lw=1,color=color)
     # Hide the right and top spines
     axis.spines['right'].set_visible(False)
     axis.spines['top'].set_visible(False)
@@ -169,7 +175,7 @@ if len(traceNames) > 0:
     ax.yaxis.set_major_formatter(formatter)
     plt.xlim(0,timeList[-1])
 
-    plt.ylim(0,1)
+    plt.ylim(0,0.1)
     ylim = ax.get_ylim()
     plt.ylim(ylim)
 
@@ -192,16 +198,16 @@ if len(traceNames) > 0:
 
     nbIt = len(timeList)
     xto = np.linspace(nbIt,size,nbIt,endpoint=True)
-    print "xfrom : " + str(xfrom)
+    print("xfrom : " + str(xfrom))
 
     xmargin = size /float( nbIt *5)
-    print "xmargin : " + str(xmargin)
+    print("xmargin : " + str(xmargin))
     image = (size - (nbIt-1)*xmargin)/float(nbIt)
-    print "image : " + str(image)
+    print("image : " + str(image))
     xto=np.arange(image/2,size,image+xmargin)
-    print "xto : " + str(xto)
+    print("xto : " + str(xto))
 
-    print "xfrom lenght : " + str(len(xfrom))
+    print("xfrom lenght : " + str(len(xfrom)))
 
 
 

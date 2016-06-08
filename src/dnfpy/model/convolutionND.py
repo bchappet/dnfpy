@@ -2,7 +2,7 @@ from dnfpy.core.mapND import MapND
 import numpy as np
 import cv2
 import scipy.ndimage.filters as filter
-import dnfpy.core.utilsND as utils
+import dnfpy.core.utils as utils
 from scipy import signal
 
 

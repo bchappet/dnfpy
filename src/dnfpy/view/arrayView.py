@@ -6,7 +6,7 @@ import dnfpy.view.plotArrayQt as plotArrayQt
 import pyqtgraph as pg
 from scipy import signal
 from scipy import ndimage
-from dnfpy.core.utilsND import moving_average
+from dnfpy.core.utils import moving_average
 
 
 

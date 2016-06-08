@@ -14,10 +14,13 @@ class Runner(object):
         Attribute:
             model : Model
     """
-    def __init__(self,timeEnd=100,allowedTime=10e10):
+    def __init__(self,timeEnd=100,allowedTime=10e10,saveMapDict={}):
         super(Runner,self).__init__()
         self.mapDict = {} #dictionary with every map for fast access
         self.runnables = {} #dictinary of runnable to run
+
+        self.saveMapDict = saveMapDict # time -> [],map -> []
+        self.timeSave = 0
 
         self.nbIt = 0
         self.startTime = timer.clock()
@@ -88,17 +91,22 @@ class Runner(object):
             os.makedirs(name)
 
 
-    def saveFig(self):
-        import dnfpy.view.staticViewMatplotlib as mtpl
-        import matplotlib.pyplot as plt
-        lis = []
-        for r in self.runnables.values():
-                lis.extend(r.getArrays())
-
+    def __getFolder(self):
         timeStr  = str(self.simuTime).replace(".","_")
         print(timeStr)
         folder = "save/" + self.saveFolder+ "/"
         self.__createDir(folder)
+        return folder,timeStr
+
+
+    def saveFig(self):
+        import dnfpy.view.staticViewMatplotlib as mtpl
+        import matplotlib.pyplot as plt
+        lis = []
+        folder = self.__getFolder()
+        for r in self.runnables.values():
+                lis.extend(r.getArrays())
+
         for theMap in lis:
             fileName = folder+theMap.getName()+"_"+timeStr+".png"
             try:
@@ -110,19 +118,28 @@ class Runner(object):
             except Exception as e:
                 print("could not plot: ",fileName)
 
+       
+
     def saveArr(self):
         import numpy as np
         mapList = self.mapDict.values()
-        timeStr  = str(self.simuTime).replace(".","_")
-        print(timeStr)
-        folder = "save/" + self.saveFolder+ "/"
-        self.__createDir(folder)
+        self._saveArrList(mapList)
 
+    def _saveArrName(self,nameList):
+        mapList = [self.mapDict[name] for name in nameList]
+        self._saveArrList(mapList)
+
+    def _saveArrList(self,mapList):
+        folder,timeStr = self.__getFolder()
         for theMap in mapList:
             print("saving... %s"%theMap.getName())
             if isinstance(theMap,Statistic):
                 fileName = folder+theMap.getName()+".csv"
-                np.savetxt(fileName,theMap.getTrace(),delimiter=",")
+                trace = np.array(theMap.getTrace())
+                if len(trace) > 2 :
+                    np.save(fileName,theMap.getTrace())
+                else:
+                    np.savetxt(fileName,theMap.getTrace(),delimiter=",")
                 print("Saving %s" % fileName)
             else:
                 data = theMap.getData()
@@ -159,6 +176,15 @@ class Runner(object):
             nextTime = self.getNextUpdateTime()
             self.lastSimuTime = self.simuTime
             self.simuTime = nextTime
+            if  len(self.saveMapDict) > 0 and self.timeSave < len(self.saveMapDict['time']):
+                if abs(self.simuTime - self.saveMapDict['time'][self.timeSave]) < 1e-8:
+                    print(self.saveMapDict['name']=='*')
+                    if self.saveMapDict['name'] == '*':
+                        self.saveArr()
+                    else:
+                        self._saveArrName(self.saveMapDict['name'])
+                    self.timeSave += 1
+
             for r in self.runnables.values():
                 r.updateRunnable(self.simuTime)
 
@@ -166,6 +192,7 @@ class Runner(object):
         self.lastUpdateTime = datetime.now()
         self.simuTime = 0.
         self.lastSimuTime = 0.
+        self.timeSave = 0
         for r in self.runnables.values():
             r.resetRunnable()
 
@@ -191,8 +218,8 @@ class Runner(object):
         ret = self.onClose()
         return ret
 
-def constructRunner(model,scenario,stats,timeEnd,allowedTime=10e10):
-    runner = Runner(timeEnd=timeEnd,allowedTime=allowedTime)
+def constructRunner(model,scenario,stats,timeEnd,allowedTime=10e10,saveMapDict = {}):
+    runner = Runner(timeEnd=timeEnd,allowedTime=allowedTime,saveMapDict=saveMapDict)
     runner.addRunnable(model,"model")
     if scenario:
         scenario.init(runner)
@@ -205,12 +232,15 @@ def constructRunner(model,scenario,stats,timeEnd,allowedTime=10e10):
 
 
 
-def launch(model,scenario,stats,timeEnd,allowedTime=10e10,seed=None):
+def launch(model,scenario,stats,timeEnd,allowedTime=10e10,seed=None,save=False,saveMapDict={}):
     """
 
     """
     np.random.seed(seed)
-    runner = constructRunner(model,scenario,stats,timeEnd,allowedTime)
+    runner = constructRunner(model,scenario,stats,timeEnd,allowedTime,saveMapDict)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=RuntimeWarning)
-        return runner.run()
+        ret= runner.run()
+    if save:
+        runner.saveArr()
+    return ret

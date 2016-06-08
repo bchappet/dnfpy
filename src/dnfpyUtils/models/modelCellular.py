@@ -25,7 +25,7 @@ class ModelCellular(Model,Renderable):
     def initMaps(self,size,dim=2,dt=0.1,comp=None,model=None,**kwargs):
 
         if not(comp):
-                comp = 'gameOfLife' 
+            comp = 'gameOfLife' 
 
         computationFunction = getFunctionFromName(comp, 'compute','cellular')
 
@@ -34,7 +34,7 @@ class ModelCellular(Model,Renderable):
         else:
             TheModel = CellularMap
 
-        self.map = TheModel("CellMap",size,dt=dt,computation=computationFunction,**kwargs)
+        self.map = TheModel("CellMap",size,dt=dt,dim=dim,computation=computationFunction,**kwargs)
         return self.map
     #override Renderable
     def getArrays(self):
@@ -44,9 +44,9 @@ class ModelCellular(Model,Renderable):
 
     def onClick(self,mapName,x,y):
         self.map.onClick(x,y)
-        return self.map.name
+        return self.map
 
     def onRClick(self,mapName,x,y):
         self.map.onRClick(x,y)
-        return self.map.name
+        return self.map
 

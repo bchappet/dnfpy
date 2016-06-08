@@ -1,5 +1,5 @@
 import numpy as np
-import dnfpy.core.utilsND as utils
+import dnfpy.core.utils as utils
 
 from dnfpy.core.mapND import MapND
 class MetaModelMap(MapND):

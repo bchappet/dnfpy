@@ -1,10 +1,9 @@
 import numpy as np
 from dnfpy.model.straightTrack import StraightTrack
-from dnfpy.core.funcMapND import FuncMapND
 from dnfpy.model.noiseMapND import NoiseMap
 from dnfpy.model.distrMapND import DistrMap
 from dnfpy.core.funcWithoutKeywordsND import FuncWithoutKeywords
-import dnfpy.core.utilsND as utils
+import dnfpy.core.utils as utils
 from dnfpy.model.circularTrack1D import CircularTrack
 from dnfpy.core.mapND import MapND
 

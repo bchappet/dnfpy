@@ -1,11 +1,7 @@
-from dnfpy.model.inputMap import InputMap
-from dnfpy.model.inputMap import ObstacleMap
-from dnfpy.model.straightTrack import StraightTrack
 import numpy as np
 from dnfpy.core.map2D import Map2D
 from dnfpy.view.renderable import Renderable
 from dnfpy.model.model import Model
-from dnfpy.stats.statsList import StatsList
 from dnfpy.model.activationMap import ActivationMap
 from dnfpy.model.fieldMap import FieldMap
 from dnfpy.model.mapSFA import MapSFA
@@ -46,7 +42,6 @@ class ModelSFA(Model,Renderable):
         dt = 0.1
         wrap=True
         th = 0.75
-        self.input = InputMap("Inputs",size,nbDistr=nbDistr,noiseI=0.01)
 
 
         #self.aff = AffSFA("AffSFA",size,dt=dt,beta=0.20)

@@ -23,6 +23,8 @@ class TupleView(TrajectoryView):
         points =  self.map.getViewData()
         if points is None:
             points = self.map.getData()
+        if len(points) == 0:
+            return
 
 
         dim = self.map.getArg('dim')

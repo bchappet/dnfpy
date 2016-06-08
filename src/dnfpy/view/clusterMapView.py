@@ -1,6 +1,6 @@
 from dnfpy.view.arrayView import ArrayView
 from PyQt4 import QtCore
-import dnfpy.view.plotArrayQt
+import dnfpy.view.plotArrayQt as plotArrayQt
 from PyQt4 import QtGui
 import numpy as np
 

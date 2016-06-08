@@ -1,7 +1,7 @@
 from dnfpy.core.mapND import MapND
 import numpy as np
 
-class ConstantMapND(MapND):
+class ConstantMap(MapND):
     def __init__(self,name,size,value,clickVal=1,**kwargs):
         MapND.__init__(self,name,size,dim=len(value.shape),dt=1e10,value=value,clickVal=clickVal,**kwargs)
 

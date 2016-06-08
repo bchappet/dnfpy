@@ -1,7 +1,7 @@
 import numpy as np
 
 from dnfpy.core.mapND import MapND
-import dnfpy.core.utilsND as utils
+import dnfpy.core.utils as utils
 class SimpleShapeMap(MapND):
         """
         Param:

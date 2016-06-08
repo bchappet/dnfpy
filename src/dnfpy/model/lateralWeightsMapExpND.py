@@ -1,6 +1,6 @@
-import dnfpy.core.utilsND as utils
+import dnfpy.core.utils as utils
 import math
-from dnfpy.core.funcMapND import FuncMapND
+from dnfpy.core.funcMapND import FuncMap
 from dnfpy.core.mapND import MapND
 from dnfpy.model.lateralWeightsMapND import LateralWeightsMap
 
@@ -14,8 +14,8 @@ class LateralWeightsMapExp(LateralWeightsMap):
         elif fashion == 'fix':
             kernFunc = utils.expFix
 
-        self.kernelExc = FuncMapND(kernFunc,name+"_exc",self.size,self.dim,dt=dt,center=self.center,wrap=wrap,intensity=iExc,proba=wExc)
-        self.kernelInh = FuncMapND(kernFunc,name+"_inh",self.size,self.dim,dt=dt,center=self.center,wrap=wrap,intensity=iInh,proba=wInh)
+        self.kernelExc = FuncMap(kernFunc,name+"_exc",self.size,self.dim,dt=dt,center=self.center,wrap=wrap,intensity=iExc,proba=wExc)
+        self.kernelInh = FuncMap(kernFunc,name+"_inh",self.size,self.dim,dt=dt,center=self.center,wrap=wrap,intensity=iInh,proba=wInh)
         self.addChildren(exc=self.kernelExc,inh=self.kernelInh)
 
     @staticmethod

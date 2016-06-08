@@ -1,11 +1,12 @@
-from dnfpy.model.activationMapND import ActivationMapND
+from dnfpy.model.activationMapND import ActivationMap
 import numpy as np
-from dnfpy.model.fieldMapND import FieldMapND
+from dnfpy.model.fieldMapND import FieldMap
 from dnfpy.model.convolutionND import ConvolutionND
-from dnfpy.core.constantMapND import ConstantMapND
-from dnfpy.model.lateralConvolution import LateralConvolution
+from dnfpy.core.constantMapND import ConstantMap
+from dnfpy.model.kernelConvolution import KernelConvolution
+from dnfpy.model.sfaMap import SFAMap
 
-class MapDNFND(FieldMapND):
+class MapDNFND(FieldMap):
     """
     lateral: 'dog','doe','dol' difference of gaussian, difference of exponential or diferrence of linear function
     fashion : 'chappet,'fix' fix fashion is designed to have similar parameters for the kernels
@@ -16,16 +17,25 @@ class MapDNFND(FieldMapND):
                  iExc=1.25,iInh=0.7,wExc=0.1,wInh=1.0,alpha=10,
                  mapSize=1.,nbStep=0,noiseI=0.0,lateral='dog',
                  fashion='chappet',
+                 sfa=False,tauSFA=1.0,mSFA=4.8,beta=0.2,
                  **kwargs):
-        super(MapDNFND,self).__init__("Potential"+name,size,dim=dim,dt=dt,wrap=wrap,
+        super().__init__("Potential"+name,size,dim=dim,dt=dt,wrap=wrap,
                     tau=tau,h=h,delta=delta,
                     model=model,th=th,activation=activation,
                     noiseI=noiseI,lateral=lateral,
+                    beta=beta,
                     **kwargs)
 
-        self.act = ActivationMapND("Activation"+name,size,dim=dim,dt=dt,type=activation,th=th)
-        self.lat =LateralConvolution("Lateral"+name,size,dim=dim,dt=dt,wrap=wrap,nbStep=nbStep,
+        self.act = ActivationMap("Activation"+name,size,dim=dim,dt=dt,type=activation,th=th)
+        self.lat = KernelConvolution("Lateral"+name,size,dim=dim,dt=dt,wrap=wrap,nbStep=nbStep,
                 iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,alpha=alpha,fashion=fashion,lateral=lateral)
+
+        if sfa:
+            self.sfa = SFAMap("SFA"+name,size,dim=dim,tau=tauSFA,dt=dt,m=mSFA)
+            self.sfa.addChildren(pot=self)
+            self.addChildren(sfa=self.sfa)
+        else:
+            self.sfa = None
 
 
         self.act.addChildren(field=self)
@@ -36,10 +46,13 @@ class MapDNFND(FieldMapND):
         return self.act
 
     def getArrays(self):
-        return [
+        li= [
             self.act,
             self.lat,
         ]
+        if self.sfa:
+            li.append(self.sfa)
+        return li
 
 
 if __name__ == "__main__":

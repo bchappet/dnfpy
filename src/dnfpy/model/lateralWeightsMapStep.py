@@ -1,8 +1,8 @@
-import dnfpy.core.utilsND as utils
+import dnfpy.core.utils as utils
 import math
 from dnfpy.core.mapND import MapND
 import numpy as np
-from dnfpy.core.funcMapND import FuncMapND
+from dnfpy.core.funcMapND import FuncMap
 from dnfpy.model.lateralWeightsMapND import LateralWeightsMap
 
 
@@ -22,9 +22,9 @@ class LateralWeightsMapStep(LateralWeightsMap):
         elif fashion == 'fix':
             kernFunc = utils.stepFix #TODO
 
-        self.kernelExc = FuncMapND(kernFunc,name+"_exc",size,dim=dim,dt=dt,center=center,
+        self.kernelExc = FuncMap(kernFunc,name+"_exc",size,dim=dim,dt=dt,center=center,
                               wrap=wrap,intensity=-1,width=-1)
-        self.kernelInh = FuncMapND(kernFunc,name+"_inh",size,dim=dim,dt=dt,center=center,
+        self.kernelInh = FuncMap(kernFunc,name+"_inh",size,dim=dim,dt=dt,center=center,
                               wrap=wrap,intensity=-1,width=-1)
         self.addChildren(exc=self.kernelExc,inh=self.kernelInh)
 

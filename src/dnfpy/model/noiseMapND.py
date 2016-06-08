@@ -1,5 +1,5 @@
 
-from dnfpy.core.funcMapND import FuncMapND
+from dnfpy.core.funcMapND import FuncMap
 import numpy as np
 def randomNormal(scale,shape):
     """because np.random.normal does not support scale = 0"""
@@ -10,7 +10,7 @@ def randomNormal(scale,shape):
         return np.random.normal(0,scale,shape)
 
 
-class NoiseMap(FuncMapND):
+class NoiseMap(FuncMap):
         def __init__(self,name,size,dim=1,dt=0.1,intensity=0.01):
                 super(NoiseMap,self).__init__(randomNormal,name,size,dim=dim,dt=dt,
                                 scale=intensity,shape=(size,)*dim)

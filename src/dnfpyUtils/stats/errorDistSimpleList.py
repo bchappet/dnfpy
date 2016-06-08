@@ -1,7 +1,7 @@
 from dnfpy.core.map2D import Map2D
 import numpy as np
 from dnfpyUtils.stats.trajectoryList import TrajectoryList
-import dnfpy.core.utilsND as utils
+import dnfpy.core.utils as utils
 
 class ErrorDistSimpleList(TrajectoryList):
     """

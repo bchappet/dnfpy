@@ -1,8 +1,8 @@
 from dnfpy.core.mapND import MapND
-from dnfpy.core.funcMapND import FuncMapND
-from dnfpy.core.constantMapND import ConstantMapND
+from dnfpy.core.funcMapND import FuncMap
+from dnfpy.core.constantMapND import ConstantMap
 
-class FuncWithoutKeywords(FuncMapND):
+class FuncWithoutKeywords(FuncMap):
     """To use with a function taking an undifined amount of args
     It can takes only children args
     To put constant arg: use addComputeArgs
@@ -13,7 +13,7 @@ class FuncWithoutKeywords(FuncMapND):
         paramList : optional list which can be used by somme function
 
         """
-        super(FuncWithoutKeywords,self).__init__(func,name,size,dt=dt,**kwargs)
+        super().__init__(func,name,size,dt=dt,**kwargs)
         self._computeMapList = [] #map to use as arg must be child
         self.childrenStatesList = [] #data of children
         self.paramList = paramList
@@ -61,6 +61,6 @@ class FuncWithoutKeywords(FuncMapND):
 
     def addComputeArgs(self,*argNameList):
             for arg in argNameList:
-                    self.addChildren(ConstantMapND(arg,1,self.getArg(arg)))
+                    self.addChildren(ConstantMap(arg,1,self.getArg(arg)))
 
 

@@ -6,7 +6,7 @@ from dnfpy.model.mapDNFND import MapDNFND
 from dnfpy.core.constantMapND import ConstantMapND
 import numpy as np
 import dnfpy.core.utilsND as utils
-from dnfpy.core.funcMapND import FuncMapND
+from dnfpy.core.funcMapND import FuncMap
 
 class ModelBubbleShift1D(Model,Renderable):
     """
@@ -23,7 +23,7 @@ class ModelBubbleShift1D(Model,Renderable):
         #input[size/2] = 1
         #self.aff = ConstantMapND("Inputs",size,value=input)
 
-        self.inh = FuncMapND(utils.gaussNd,"inh",size,dt=0.1,center=size/2,
+        self.inh = FuncMap(utils.gaussNd,"inh",size,dt=0.1,center=size/2,
                               wrap=True,intensity=-1.,width=0.1*size)
         self.aff.addChildren(self.inh)
                

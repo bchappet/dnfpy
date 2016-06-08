@@ -1,7 +1,7 @@
 
 import numpy as np
-from dnfpy.core.funcMapND import FuncMapND
-import dnfpy.core.utilsND as utils
+from dnfpy.core.funcMapND import FuncMap
+import dnfpy.core.utils as utils
 from dnfpy.core.mapND import MapND
 
 
@@ -48,7 +48,7 @@ class CircularTrack(MapND):
         self._hidden = False #true when hidden pahse of blinking
         
         for d in range(dim):
-            self.centerTraj.append(FuncMapND(utils.cosTraj,name+"_c"+str(d),1,dim=0,
+            self.centerTraj.append(FuncMap(utils.cosTraj,name+"_c"+str(d),1,dim=0,
                         center=center_,period=period,phase=phase+d*0.25,
                         dt=dt,radius=radius_))
 

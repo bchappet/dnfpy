@@ -38,12 +38,14 @@ class RunnerView(QtCore.QThread, Runner):
             timeRatio=0.3,
             scenario=None,
             record=False,
-            pause=False):
+            pause=False,
+            save=False,
+            saveMapDict={}):
         """
         model : Model class of
         """
         super(RunnerView, self).__init__()
-        Runner.__init__(self,timeEnd,scenario)
+        Runner.__init__(self,timeEnd,scenario,saveMapDict)
 
         self.view = view
         self.timeRatio = timeRatio
@@ -54,6 +56,7 @@ class RunnerView(QtCore.QThread, Runner):
         #view timing
         self.lastViewUpdate = time.time()
         self.maxFPS = 60.
+        self.save = save
 
     def getTimeRatio(self):
         return self.timeRatio
@@ -81,21 +84,26 @@ class RunnerView(QtCore.QThread, Runner):
     @pyqtSlot(str, int, int)
     def onClickSlot(self, mapName, x, y):
         mapName = str(mapName)
-        for r in self.runnables:
+        for r in self.runnables.values():
             mapToUpdate = r.onClick(mapName, x, y)
             if mapToUpdate:
                 if isinstance(mapToUpdate,list) or isinstance(mapToUpdate,tuple):
                     for map in mapToUpdate:
                         self.triggerParamsUpdate.emit(map.getName())
                 else:
-                    self.triggerParamsUpdate.emit(map)
+                    self.triggerParamsUpdate.emit(mapToUpdate.getName())
 
     @pyqtSlot(str, int, int)
     def onRClickSlot(self, mapName, x, y):
         mapName = str(mapName)
-        mapToUpdate = self.model.onRClick(mapName, x, y)
-        if mapToUpdate:
-            self.triggerParamsUpdate.emit(mapToUpdate)
+        for r in self.runnables.values():
+            mapToUpdate = r.onRClick(mapName, x, y)
+            if mapToUpdate:
+                if isinstance(mapToUpdate,list) or isinstance(mapToUpdate,tuple):
+                    for map in mapToUpdate:
+                        self.triggerParamsUpdate.emit(map.getName())
+                else:
+                    self.triggerParamsUpdate.emit(mapToUpdate.getName())
 
 
     @pyqtSlot()
@@ -152,12 +160,16 @@ class RunnerView(QtCore.QThread, Runner):
             self.step()
             self.__slowDown()
         self.play =False
+        if self.save:
+            self.saveArr()
         print(self.finalize())
         while self.simuTime < 100000000000000:
             while not(self.play):
                 time.sleep(0.1)
             self.step()
             self.__slowDown()
+        if self.save:
+            self.saveArr()
         print(self.finalize())
         
 
@@ -177,14 +189,14 @@ class RunnerView(QtCore.QThread, Runner):
         self.lastUpdateTime = now
 
 
-def launch(model, scenario,stats, timeRatio, record=False,pause=False,timeEnd=0,seed=None):
+def launch(model, scenario,stats, timeRatio, record=False,pause=False,timeEnd=0,seed=None,save=False,saveMapDict={}):
 
     np.random.seed(seed)
     defaultQSS = "stylesheet/default.qss"
     app = QtGui.QApplication([""])
     app.setStyleSheet(open(defaultQSS, 'r').read())
     view = DisplayModelQt()
-    runner = RunnerView(view, timeRatio=timeRatio, record=record,pause=pause,timeEnd=timeEnd)
+    runner = RunnerView(view, timeRatio=timeRatio, record=record,pause=pause,timeEnd=timeEnd,save=save,saveMapDict=saveMapDict)
     view.setRunner(runner)
     view.addRenderable(model)
     runner.addRunnable(model,"model")
@@ -202,4 +214,4 @@ def launch(model, scenario,stats, timeRatio, record=False,pause=False,timeEnd=0,
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=RuntimeWarning)
         runner.start()
-    sys.exit(app.exec_())
+        sys.exit(app.exec_())

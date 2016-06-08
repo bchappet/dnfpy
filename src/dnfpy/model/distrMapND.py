@@ -1,7 +1,5 @@
-
 import numpy as np
-import dnfpy.core.utilsND as utils
-from  dnfpy.core.funcMapND import FuncMapND
+import dnfpy.core.utils as utils
 from dnfpy.core.mapND import MapND
 import random
 

@@ -3,7 +3,7 @@ import scipy.spatial.distance as dist
 from sklearn.cluster import DBSCAN
 
 from dnfpy.core.mapND import MapND
-import dnfpy.core.utilsND as utils
+import dnfpy.core.utils as utils
 
 def getClusterLabels(activation,targetCenterList,clustSize,size):
     """
@@ -53,9 +53,11 @@ class BarycenterMapList(MapND):
             if targetCenterList (nan)*dim
 
         """
-        def __init__(self,name,sizeMap=49,clustSize=0.3,dim=1,dt=0.1,convergenceTime=1.0,**kwargs):
-                super().__init__(name=name,size=0,dim=dim,dt=dt,sizeMap=sizeMap,clustSize=clustSize,clustSize_=10,
-                        convergenceTime=convergenceTime,
+        def __init__(self,name,sizeMap=49,clustSize=0.3,dim=1,dt=0.1,convergenceTime=1.0,actThreshold=0.64,
+                **kwargs):
+                super().__init__(name=name,size=0,dim=dim,dt=dt,
+                        sizeMap=sizeMap,clustSize=clustSize,clustSize_=10,
+                        convergenceTime=convergenceTime,actThreshold=actThreshold,
                         **kwargs)
 
         def reset(self):
@@ -64,13 +66,15 @@ class BarycenterMapList(MapND):
              self._data = [(np.nan,)*dim]
              self.outsideAct = [] #another trace for outside activation
 
-        def _compute(self,map,dim,targetCenterList,clustSize_,sizeMap):
+        def _compute(self,map,dim,targetCenterList,clustSize_,sizeMap,actThreshold):
 
-                if np.sum(map) == 0 or len(targetCenterList) == 0:
+                act = np.where(map>actThreshold,1,0)
+                if np.sum(act) == 0 or len(targetCenterList) == 0:
                     baryList = [(np.nan,)*dim for t in targetCenterList]
-                    nbOutsideAct = np.sum(map)
+                    nbOutsideAct = np.sum(act)
                 else:
-                    labels,coordsArrayNp = getClusterLabels(map,targetCenterList,clustSize_,sizeMap)
+                    labels,coordsArrayNp = getClusterLabels(
+                            act,targetCenterList,clustSize_,sizeMap)
                     baryList = getClusterList(labels,coordsArrayNp,len(targetCenterList))
                     nbOutsideAct = len(getBadLabel(labels,len(targetCenterList)))
 

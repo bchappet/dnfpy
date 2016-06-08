@@ -37,7 +37,7 @@ class StatsTracking2(Stats):
 
         #optional map to assert a good focus
         self.goodFocus = GoodFocus("GoodFocus",dt=dt,barycenterMap=self.barycenter)
-        self.goodFocus.addChildren(targetList=self.targetListMap)
+        self.goodFocus.addChildren(clusterList=self.barycenter)
 
         self.timeEnd = None
 
