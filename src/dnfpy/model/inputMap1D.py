@@ -36,7 +36,7 @@ class InputMap(FuncWithoutKeywords):
     def __init__(self,name,size,dim=1,dt=0.1,wrap=True,distr_dt=1.,noise_dt=0.1,noiseI=0.01,
                  tck_dt=0.1,iStims=[1.0,0.95],wStim=0.1,nbDistr=0,iDistr=0.99,tck_radius=0.3,
                  wDistr=0.1,wStim_=1.0,wDistr_=1.0,tck_radius_=1,periodStim=36,normalize=True,iStim=1.0,
-                 straight=False,speed=0.04,nbTrack =2,position=None,
+                 straight=False,speed=0.04,nbTrack =2,position=None,direction=None,
                  dvs=False,tauDVS=0.1,thDVS=0.7,blink=False,blinkPeriod=0.02,
                  **kwargs):
         super().__init__(utils.sumArrays,name,size,dim=dim,dt=dt,
@@ -44,7 +44,7 @@ class InputMap(FuncWithoutKeywords):
                 tck_dt = tck_dt,  wStim = wStim ,wDistr=wDistr,
                 nbDistr = nbDistr ,iDistr=iDistr,tck_radius = tck_radius,nbTrack=nbTrack,
                 wStim_=wStim_,wDist_=wDistr_,tck_radius_=tck_radius_,periodStim=periodStim,
-                straight=straight,speed=speed,
+                straight=straight,speed=speed,direction=direction,
                 normalize=normalize,dvs=dvs,tauDVS=tauDVS,thDVS=thDVS,position=position,
                 blink=blink,blinkPeriod=blinkPeriod,
                 **kwargs)
@@ -60,12 +60,13 @@ class InputMap(FuncWithoutKeywords):
         self.tracks = []
 
         if straight:
-            direction = np.float32([1]*dim)
-            if position == None:
+            if direction is None:
+                direction = [np.float32([1]*dim) for i in range(nbTrack)]
+            if position is None:
                 dPos = 1/nbTrack
                 position = [np.array((0.2+i*dPos,)*dim) for i in range(nbTrack)]
             for i in range(nbTrack):
-                self.tracks.append(StraightTrack(self.getName()+"_track"+str(i),size=size,dim=dim,dt=tck_dt,wrap=wrap,intensity=iStims[i],width=wStim,direction=direction,start=position[i],speed=speed,blink=blink,blinkPeriod=blinkPeriod))
+                self.tracks.append(StraightTrack(self.getName()+"_track"+str(i),size=size,dim=dim,dt=tck_dt,wrap=wrap,intensity=iStims[i],width=wStim,direction=direction[i],start=position[i],speed=speed,blink=blink,blinkPeriod=blinkPeriod))
         else:
             for i in range(nbTrack):
                 self.tracks.append(self.newTrack(i,size,dim,tck_dt,wrap,iStims[i],wStim,tck_radius,periodStim,blink,blinkPeriod))

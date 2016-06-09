@@ -46,6 +46,10 @@ class StatsTracking2(Stats):
 
         return [self.errorDist,self.goodFocus]
 
+    def resetRunnable(self):
+        super().resetRunnable()
+        self.processorTime = time.clock()
+
     def getArrays(self):
         """
         Return a list of stat map to display
@@ -78,6 +82,9 @@ class StatsTracking2(Stats):
        
         return (error,self.timeEnd,meanOutsideAct,self.elapsedTime)
 
+    @staticmethod
+    def getColumns():
+        return ['error','timeEnd','outsideAct','elapsedTime']
 
 
 

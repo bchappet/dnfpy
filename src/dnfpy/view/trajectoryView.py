@@ -50,6 +50,7 @@ class TrajectoryView(ArrayView):
 
     def reset(self):
         self.data = [] #[curve,time,xy]
+        self.nbTraj = 0
         finfo = np.finfo(float)
         self.maxPt = np.ones((2))*finfo.min
         self.minPt = np.ones((2))*finfo.max
@@ -128,13 +129,14 @@ class TrajectoryView(ArrayView):
         #qp.drawText(event.rect(),  QtCore.Qt.AlignBottom,  "%f" %self.minPt[1])
 
 
-        #print value : last tuple
-        values = [(self.data[x][-1]) for x in range(len(self.data))]
-        value = values[0][1]
-        qp.drawText(event.rect(),  QtCore.Qt.AlignCenter,  "%f" %value)
-        qp.drawText(event.rect(),  QtCore.Qt.AlignRight,  "%f" %self.maxPt[0])
 
         if len(self.data) > 0 and len(self.data[0]) > 1:
+            #print value : last tuple
+            values = [(self.data[x][-1]) for x in range(len(self.data))]
+            value = values[0][1]
+            qp.drawText(event.rect(),  QtCore.Qt.AlignCenter,  "%f" %value)
+            qp.drawText(event.rect(),  QtCore.Qt.AlignRight,  "%f" %self.maxPt[0])
+
             size = self.rect().size()
             sizeWH = np.array([size.width(), size.height()])
 
@@ -143,7 +145,7 @@ class TrajectoryView(ArrayView):
 
                 #take the first non nan point
                 i1 = 0
-                while i1 < len(self.data[j]) and np.isnan(self.data[j][i1]).all() :
+                while i1 < len(self.data[j]) and np.isnan(self.data[j][i1]).any() :
                     i1 = i1 +1
                 if i1 != len(self.data[j]):
                     prevPtNp = self.scale(self.data[j][i1],sizeWH)
@@ -151,13 +153,10 @@ class TrajectoryView(ArrayView):
                     #plot the rest non nan (TODO remove nan before plotting (if we don't need data for stats))
                     for i in range(i1+1,len(self.data[j])):
                         thePoint = self.data[j][i]
-                        if len(thePoint)==0 or  np.isnan(thePoint).any():
-                            pass
-                        else:
-                            newPtnp = self.scale(thePoint,sizeWH)
-                            newPt = QtCore.QPoint(newPtnp[0],newPtnp[1])
-                            qp.drawLine(prevPt,newPt)
-                            prevPt = newPt
+                        newPtnp = self.scale(thePoint,sizeWH)
+                        newPt = QtCore.QPoint(newPtnp[0],newPtnp[1])
+                        qp.drawLine(prevPt,newPt)
+                        prevPt = newPt
 
 
     def scale(self,pt,sizeWH):

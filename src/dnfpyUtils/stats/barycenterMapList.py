@@ -2,15 +2,19 @@ import numpy as np
 import scipy.spatial.distance as dist
 from sklearn.cluster import DBSCAN
 
+from dnfpyUtils.stats.trajectory import Trajectory
 from dnfpy.core.mapND import MapND
 import dnfpy.core.utils as utils
 
-def getClusterLabels(activation,targetCenterList,clustSize,size):
+def getClusterLabels(activation,targetCenterList,clustSize,size,dim):
     """
     Perform DBSCAN on the activation using targetCenterList as seed
     """
     coords = np.where(activation>0)
-    coordsArray = list(zip(coords[1],coords[0]))
+    if dim ==2:
+        coordsArray = list(zip(coords[1],coords[0]))
+    else:
+        coordsArray = list(np.array(coords).T)
     coordsArray.extend(np.array(targetCenterList)*size)
     coordsArrayNp = np.array(coordsArray)
     distanceMat = dist.cdist(coordsArrayNp,coordsArrayNp,'cityblock')
@@ -41,7 +45,7 @@ def getBadLabel(labels,nbTarget):
     return badLabel
 
 
-class BarycenterMapList(MapND):
+class BarycenterMapList(Trajectory):
         """
         Input: 
             map : map (child)
@@ -55,7 +59,7 @@ class BarycenterMapList(MapND):
         """
         def __init__(self,name,sizeMap=49,clustSize=0.3,dim=1,dt=0.1,convergenceTime=1.0,actThreshold=0.64,
                 **kwargs):
-                super().__init__(name=name,size=0,dim=dim,dt=dt,
+                super().__init__(name=name,dim=dim,dt=dt,
                         sizeMap=sizeMap,clustSize=clustSize,clustSize_=10,
                         convergenceTime=convergenceTime,actThreshold=actThreshold,
                         **kwargs)
@@ -74,11 +78,12 @@ class BarycenterMapList(MapND):
                     nbOutsideAct = np.sum(act)
                 else:
                     labels,coordsArrayNp = getClusterLabels(
-                            act,targetCenterList,clustSize_,sizeMap)
+                            act,targetCenterList,clustSize_,sizeMap,dim)
                     baryList = getClusterList(labels,coordsArrayNp,len(targetCenterList))
                     nbOutsideAct = len(getBadLabel(labels,len(targetCenterList)))
 
                 self._data = [np.array(b)/sizeMap for b in baryList]
+                self.trace.append(np.copy(self._data))
                 self.outsideAct.append(nbOutsideAct)
 
 
@@ -86,6 +91,7 @@ class BarycenterMapList(MapND):
                 return (1,)*self.getArg('dim')
 
 
-        def _onParamsUpdate(self,clustSize,sizeMap):
+        def _onParamsUpdate(self,clustSize,sizeMap,dim):
             clustSize_ = clustSize * sizeMap
+            
             return dict(clustSize_=clustSize_)

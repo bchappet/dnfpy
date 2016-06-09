@@ -13,12 +13,14 @@ class WorkingMemoryShift(Scenario):
 
 
     """
-    def initMaps(self,size=49,dim=2,dt=0.1,wrap=True,trackSpeed=0.04,iLow=0.3,iHigh=1.0,**kwargs):
+    def initMaps(self,size=49,dim=2,dt=0.1,wrap=True,trackSpeed=0.04,iLow=0.3,iHigh=1.0,
+            nbDistr=0,noiseI=0.1,distr_dt=1.0,noise_dt=0.1,
+            **kwargs):
         self.iLow = iLow
         self.iHigh = iHigh
         self.trackSpeed = trackSpeed
         self.input = InputMap("Inputs",size,dt=dt,dim=dim,wrap=wrap,straight=True,speed=0.0,
-                iStims=[self.iLow,self.iLow],noiseI=0.1,nbDistr=0,distr_dt=1.0,iDistr=iLow,
+                iStims=[self.iLow,self.iLow],noiseI=noiseI,nbDistr=nbDistr,distr_dt=distr_dt,iDistr=iLow,
                 thDVS=0.4,position=[[0.2,0.2],[0.5,0.5]],**kwargs)
 
         self.track0,self.track1 = self.input.getTracks()
@@ -29,6 +31,9 @@ class WorkingMemoryShift(Scenario):
 
     def applyContext(self):
         super().applyContext()
+        self.track0.setParams(intensity=self.iLow,position=[0.2,0.2],speed=0.0)
+        self.track1.setParams(intensity=self.iLow,position=[0.5,0.5],speed=0.0)
+
         if self.runner.isPresent("stats"):
             try:
                 self.targetList = self.runner.getMap("TargetList")

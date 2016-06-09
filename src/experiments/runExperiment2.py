@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 import operator
 import itertools
 import math
@@ -26,6 +27,9 @@ Arguments:
 
 
 """
+seeds = [7800144, 4934369, 3193457, 9310394, 5818505, 2200090, 7130613,
+        7506852, 1575829, 2157470, 7848565, 8336518, 4377730, 1507080,
+        5641483, 6818955, 6106812, 3691513, 1998071, 1861337]
 
 
 def getParameteterProductList(modelNameList,scenarioNameList,iterationDictModel,iterationDictScenario,iterationDictGlobal):
@@ -106,7 +110,14 @@ class BatchRunner(object):
         #and global
         for key in iterationDictGlobal:
             self.header.append(key)
-        self.header.extend(['it','ErrorDist']) #TODO get the result form the Stats
+
+        #For now one stat and no list in kwstat TODO
+        statClass = getClassFromName(statNameList[0],"stats")
+        parameterDictStat = paramDictStat
+        headerLastPart = statClass.getColumns()
+        self.lenHeaderLastPart = len(headerLastPart)+1
+        self.header.append('it')
+        self.header.extend(headerLastPart) #TODO get the result form the Stats
         self.fileCSV.write(",".join(self.header)+'\n')
 
         logging.info("headerCSV")
@@ -129,9 +140,6 @@ class BatchRunner(object):
 
         parametersProductDict = getParameteterProductList(modelNameList,scenarioNameList,iterationDictModel,iterationDictScenario,iterationDictGlobal)
 
-        #For now one stat and no list in kwstat TODO
-        statClass = getClassFromName(statNameList[0],"stats")
-        parameterDictStat = paramDictStat
         for self.productDict in parametersProductDict:
             print(self.productDict)
             self.modelName = self.productDict["ModelName"]
@@ -152,7 +160,7 @@ class BatchRunner(object):
                 model = modelClass(**parameterDictModel)
                 scenario = scenarioClass(**parameterDictScenario)
                 stat = statClass(**parameterDictStat)
-                th = MyThread(self,threadId,nbThread,nbIterationPerThread[threadId],model,scenario,stat,timeEnd,self.q)
+                th = MyThread(self,threadId,nbThread,nbIterationPerThread[threadId],model,scenario,stat,timeEnd,self.q,seeds[threadId])
                 threadList.append(th)
                 #try:
                 th.start()
@@ -173,7 +181,7 @@ class BatchRunner(object):
 #        logging.info("res %s"%(res,))
 
         resultString = ""
-        for key in self.header[0:-2]:
+        for key in self.header[0:-self.lenHeaderLastPart]:
             resultString += str(self.productDict[key]) + ","
         resultString += str(globalRepetition)+","+ strToCsv(str(res))+"\n"
         logging.info(str(res))
@@ -181,8 +189,9 @@ class BatchRunner(object):
         return resultString
 
 class MyThread (Process):
-    def __init__(self,batchRunner,threadId,nbThreads,nbRepetition,model,scenario,stat,timeEnd,q):
+    def __init__(self,batchRunner,threadId,nbThreads,nbRepetition,model,scenario,stat,timeEnd,q,seed):
         Process.__init__(self)
+        np.random.seed(seed)
         self.batchRunner= batchRunner
         self.q = q
         self.threadId = threadId

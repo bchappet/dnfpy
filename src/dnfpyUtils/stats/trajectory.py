@@ -6,8 +6,8 @@ class Trajectory(Statistic):
     Abstract class for trajectory
     """
 
-    def __init__(self,name,dt=0.1,**kwargs):
-            super().__init__(name=name,size=0,dim=0,dt=dt,**kwargs)
+    def __init__(self,name,dt=0.1,dim=0,**kwargs):
+            super().__init__(name=name,size=0,dim=dim,dt=dt,**kwargs)
             self.trace = [] #save the trace
                 
 

@@ -1,8 +1,8 @@
 import numpy as np
 import dnfpy.core.utils as utils
 
-from dnfpy.core.mapND import MapND
-class TargetCenterList(MapND):
+from dnfpyUtils.stats.trajectory import Trajectory
+class TargetCenterList(Trajectory):
         """
         Input: 
             inputMap (constructor)
@@ -15,7 +15,7 @@ class TargetCenterList(MapND):
 
         """
         def __init__(self,name,inputMap,inputSize,dim=1,dt=0.1,wrap=True,**kwargs):
-                super().__init__(name=name,size=0,dim=dim,dt=dt,wrap=wrap,inputSize=inputSize,**kwargs)
+                super().__init__(name=name,dim=dim,dt=dt,wrap=wrap,inputSize=inputSize,**kwargs)
                 self.inputMap = inputMap
                
         def reset(self):
@@ -30,6 +30,7 @@ class TargetCenterList(MapND):
                 target =  self.inputMap.getTracks()[targetList[i]]
                 li.append(np.array(target.getCenter())/inputSize)
             self._data = li
+            self.trace.append(np.copy(self._data))
 
 
         def getViewSpace(self):

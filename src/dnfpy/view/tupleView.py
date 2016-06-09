@@ -28,7 +28,7 @@ class TupleView(TrajectoryView):
 
 
         dim = self.map.getArg('dim')
-        try:#test that it is a tuple of coords
+        try:#test that it is a tuple of coords by trying to access the next dimension
             if dim == 2:
                 x = points[0][0]
                 self.shiftY = False
@@ -44,13 +44,16 @@ class TupleView(TrajectoryView):
         #make sure data has the rigth len
         nbCoords = len(points)
         while len(self.data) < nbCoords:
+            if len(self.data) == 0:
                 self.data.append([])
+            else:
+                self.data.append(list(np.ones(np.array(self.data[-1]).shape)*np.nan))
 
 
         if dim == 1: #we add time to the tuple
             self.time = self.map.getArg("time")
             for i in range(len(points)):
-                self.data[i].append(np.array([self.time,points[i]]))
+                self.data[i].append(np.array([self.time,points[i][0]]))
         else:
             for i in range(len(points)):
                     self.data[i].append(np.array(points[i]))
