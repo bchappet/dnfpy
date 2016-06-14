@@ -91,12 +91,17 @@ class TrajectoryView(ArrayView):
             #problem is that the number of trace might be changing with time
             minTmpL = []
             maxTmpL = []
-            for  i in range(self.nbTraj):
-                minTmpL.append(np.nanmin(self.data[i],axis=0))
-                maxTmpL.append(np.nanmax(self.data[i],axis=0)) #global max for x and y
+            try:
+                for  i in range(self.nbTraj):
+                        minTmpL.append(np.nanmin(self.data[i],axis=0))
+                        maxTmpL.append(np.nanmax(self.data[i],axis=0)) #global max for x and y
 
-            minTmp = np.nanmin(minTmpL,axis=0)
-            maxTmp = np.nanmax(maxTmpL,axis=0)
+                minTmp = np.nanmin(minTmpL,axis=0)
+                maxTmp = np.nanmax(maxTmpL,axis=0)
+            except Warning:
+                maxTmp = [0,0]
+                minTmp = [0,0]
+                pass #TODO
 
             if mode == 'global':
                 self.maxPt[1] = self.maxPt[1] if self.maxPt[1] > maxTmp[1] or np.isnan(maxTmp[1]) else maxTmp[1]

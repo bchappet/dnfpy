@@ -6,9 +6,14 @@ class ScenarioRobustness(ScenarioTracking):
         self.nbDistr = nbDistr
         self.distr_dt = distr_dt
 
+    def applyContext(self):
+        super().applyContext()
+        self.input.setParamsRec(
+                noiseI=0.01,nbDistr=0,distr_dt=self.distr_dt)
+
 
     def _apply(self):
        super()._apply()
        if self.isTime(2.0):
-            self.runner.getMap("Inputs").setParamsRec(
+            self.input.setParamsRec(
                 noiseI=self.noiseI,nbDistr=self.nbDistr,distr_dt=self.distr_dt)

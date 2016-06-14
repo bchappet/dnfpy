@@ -4,12 +4,15 @@ class ScenarioNoise(ScenarioTracking):
         super().__init__(**kwargs)
         self.noiseI=noiseI
 
+    def applyContext(self):
+        super().applyContext()
+        self.input.setParamsRec(
+                noiseI=0.01,nbDistr=0)
+
+
 
     def _apply(self):
        if self.isTime(2.0):
-            self.runner.getMap("Inputs").setParamsRec(noiseI=self.noiseI)
+            self.input.setParamsRec(noiseI=self.noiseI)
 
 
-    def resetRunnable(self):
-            super().resetRunnable()
-            self.runner.getMap("Inputs").resetParams()

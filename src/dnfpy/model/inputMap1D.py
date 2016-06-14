@@ -38,6 +38,7 @@ class InputMap(FuncWithoutKeywords):
                  wDistr=0.1,wStim_=1.0,wDistr_=1.0,tck_radius_=1,periodStim=36,normalize=True,iStim=1.0,
                  straight=False,speed=0.04,nbTrack =2,position=None,direction=None,
                  dvs=False,tauDVS=0.1,thDVS=0.7,blink=False,blinkPeriod=0.02,
+                 bound=1.0,
                  **kwargs):
         super().__init__(utils.sumArrays,name,size,dim=dim,dt=dt,
                 wrap=wrap,distr_dt=distr_dt,noise_dt=noise_dt,noiseI=noiseI,
@@ -46,7 +47,7 @@ class InputMap(FuncWithoutKeywords):
                 wStim_=wStim_,wDist_=wDistr_,tck_radius_=tck_radius_,periodStim=periodStim,
                 straight=straight,speed=speed,direction=direction,
                 normalize=normalize,dvs=dvs,tauDVS=tauDVS,thDVS=thDVS,position=position,
-                blink=blink,blinkPeriod=blinkPeriod,
+                blink=blink,blinkPeriod=blinkPeriod,bound=bound,
                 **kwargs)
 
 
@@ -78,7 +79,8 @@ class InputMap(FuncWithoutKeywords):
     def _compute(self,args,params):
         super()._compute(args,params)
         if self.getArg('normalize'):
-            self._data = np.clip(self._data,-1,1)
+            bound = self.getArg('bound')
+            self._data = np.clip(self._data,-bound,bound)
         if self.getArg('dvs'):
             dt,tauDVS,thDVS = self.getArgs('dt','tauDVS','thDVS')
             self.dvsPotential += dt/tauDVS*(self._data - self.dvsPotential)

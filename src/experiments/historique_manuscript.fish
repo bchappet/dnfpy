@@ -1,10 +1,38 @@
 
-set paramsWM "'h':-0.02,'tau':0.08,'iExc':2.8,'iInh':1.51,'wExc':0.07,'wInh':0.09,'size':49,'reproductible':False"
+set paramsWM "'h':-0.02,'tau':0.08,'iExc':2.8,'iInh':1.51,'wExc':0.07,'wInh':0.09,'size':49"
+set paramsComp "'h':0.0,'tau':0.138,'iExc':4.393,'iInh':4.268,'wExc':0.379,'wInh':0.623,'size':49,
+                'betaSFA':0.2,'tauSFA':0.382,'mSFA':0.102"
 
-#python3 main.py --params "{$paramsWM}" --scenario WorkingMemoryShift
 #python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsWM}"  --nbThread 8  --scenarios "['WorkingMemoryShift']" --kwscenario "{'trackSpeed':[0.0,0.02,0.04,0.06,0.08,0.1]}" --stats "['StatsTracking2']" --timeEnd 40 --prefix "WM_speed"
 
-python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsWM}"  --nbThread 8  --scenarios "['WorkingMemoryShift']" --kwscenario "{'noiseI':[0.0,0.2,0.4,0.6,0.8,1.0]}" --stats "['StatsTracking2']" --timeEnd 40 --prefix "WM_bignoise"
+#python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsWM}"  --nbThread 8  --scenarios "['WorkingMemoryShift']" --kwscenario "{'noiseI':[0.00,0.02,0.04,0.06,0.08,0.1]}" --stats "['StatsTracking2']" --timeEnd 40 --prefix "WM_noise"
 
-#python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsWM}"  --nbThread 8  --scenarios "['ScenarioTracking','ScenarioRobustness']"
-#python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{}" --prefix "DNFSPFA_tracking"  --nbThread 8  --scenarios "['ScenarioTracking','ScenarioRobustness']"
+#python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsWM}"  --nbThread 8  --scenarios "['WorkingMemoryShift']" --kwscenario "{'nbDistr':[0,1,2,3,4,5]}" --stats "['StatsTracking2']" --timeEnd 40 --prefix "WM_distr"
+
+#python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsComp,'sfa':[False,True]}"  \
+#--nbThread 8  --scenarios "['ScenarioTracking','ScenarioRobustness']"  --stats "['StatsTracking2']" \
+#--timeEnd 40 --prefix "comp_sfa_scenario"
+
+#python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsComp,'tau':[0.1,0.3,0.5,0.7,0.9]}"  \
+#--nbThread 8  --scenarios "['ScenarioTracking','ScenarioRobustness']"  --stats "['StatsTracking2']" \
+#--timeEnd 40 --prefix "comp_tau_scenario"
+
+#python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsComp}"  \
+#--nbThread 8  --scenarios "['ScenarioNoise']"  --stats "['StatsTracking2']" \
+#--kwscenario "{'noiseI':[0.0,0.2,0.4,0.6,0.8,1.0]}" \
+#--timeEnd 40 --prefix "comp_noise"
+
+#python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsComp}"  \
+#--nbThread 8  --scenarios "['ScenarioDistracters']"  --stats "['StatsTracking2']" \
+#--kwscenario "{'nbDistr':[6,7,8,9,10,20,30]}" \
+#--timeEnd 40 --prefix "comp_distr_hard"
+
+#python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsComp}"  \
+#--nbThread 8  --scenarios "['ScenarioRobustness']"  --stats "['StatsTracking2']" \
+#--kwscenario "{'noiseI':[0.0,0.4,0.6,1.0],'nbDistr':[0,3,5,7,10]}" \
+#--timeEnd 40 --prefix "comp_noise_distr"
+
+python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsWM}"  \
+--nbThread 4  --scenarios "['WorkingMemoryShift']"  --stats "['StatsTracking2']" \
+--kwscenario "{'noiseI':[0.0,0.05,0.1,0.15,0.2],'nbDistr':[0,3,5,7,10]}" \
+--timeEnd 40 --prefix "wm_noise_distr"

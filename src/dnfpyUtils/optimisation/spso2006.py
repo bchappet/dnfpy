@@ -62,7 +62,7 @@ class Spso:
 
         self.constantParamsDict = constantParamsDict
         self.evaluationParamsDict = evaluationParamsDict
-        self.d =  len(self.listParam)
+        self.d =  len(self.bounds[0])
         (self.lowerBounds,self.upperBounds)= self.bounds
         (self.startLow,self.startUp) = self.bounds
         self.manager = WorkerManager(nbThread,evaluationFunc,self.handleFitness,constraintsFunc,args) 

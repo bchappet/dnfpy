@@ -5,6 +5,13 @@ class ScenarioDistracters(ScenarioTracking):
         super().__init__(**kwargs)
         self.nbDistr = nbDistr
 
+    def applyContext(self):
+        super().applyContext()
+        self.input.setParamsRec(
+                noiseI=0.01,nbDistr=0)
+
+
+
 
     def _apply(self):
        if self.isTime(2.0):

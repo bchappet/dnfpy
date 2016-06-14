@@ -4,8 +4,8 @@ from dnfpy.core.mapND import MapND
 
 
 class StraightTraj(MapND):
-    def _compute(self,speed,dt,wrap,wrapSize):
-        self._data = (self._data + dt*speed)
+    def _compute(self,speed,dt,wrap,wrapSize,dx):
+        self._data = (self._data + dt*speed/dx)
         if wrap:
             self._data = self._data % wrapSize
 
@@ -44,10 +44,11 @@ class StraightTrack(MapND):
         self.centerTraj = []
         self._blinkCounter = 0;#TODO reset
         self._hidden = False #true when hidden pahse of blinking
+        dx = 1.0/size
         for d in range(dim):
             origin = start[d]*size
             self.centerTraj.append(StraightTraj(name+"_c"+str(d),size=0,dim=0,dt=dt,speed=speed_[d],
-                        wrap=wrap,wrapSize=size,init=origin))
+                        wrap=wrap,wrapSize=size,init=origin,dx=dx))
 
         for trajI,i in zip(self.centerTraj,range(len(self.centerTraj))):
                 self.addChildren(**{'center'+str(i):trajI})
@@ -56,7 +57,7 @@ class StraightTrack(MapND):
         width_ = width * size
         speed_ = []
         for i in range(len(direction)):
-            speed_.append(speed * size*direction[i]) #pixel per sec
+            speed_.append(speed * direction[i]) #pixel per sec
         return dict(width_=width_,speed_=speed_)
 
     def _childrenParamsUpdate(self,speed_):

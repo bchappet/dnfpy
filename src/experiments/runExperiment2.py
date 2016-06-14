@@ -1,4 +1,5 @@
 import sys
+import warnings
 import numpy as np
 import operator
 import itertools
@@ -205,6 +206,7 @@ class MyThread (Process):
             globalRepetition = i* self.nbThreads + self.threadId
             #logging.info("thread %s, thread repetition %s, global repetition %s"%(self.threadId,i,globalRepetition))
             print("thread %s, thread repetition %s, global repetition %s"%(self.threadId,i,globalRepetition))
+            #warnings.filterwarnings('error')
             res = self.runner.run()
             resultString = self.batchRunner.printData(res,globalRepetition)
             self.q.put(resultString)

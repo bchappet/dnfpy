@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 import scipy.spatial.distance as dist
 from sklearn.cluster import DBSCAN
 
@@ -25,8 +26,17 @@ def getBarycenterLabel(coordsArrayNp,labels,lab):
     """
     Return the barycenter of activity with the label "lab"
     """
-    coorBary = coordsArrayNp[np.where(labels == lab)]
-    barycenter = np.mean(coorBary,axis=0)
+    #print(labels,lab)
+    with warnings.catch_warnings():
+        warnings.filterwarnings('error')
+        coorBary = coordsArrayNp[np.where(labels == lab)]
+        try:
+            barycenter = np.mean(coorBary,axis=0)
+        except Warning:
+            print('labels',labels)
+            print(coorBary,lab)
+            raise Exception()
+
     return barycenter
 
 def getClusterList(labels,coordsArrayNp,nbTarget):
@@ -34,9 +44,18 @@ def getClusterList(labels,coordsArrayNp,nbTarget):
     Return the barycenter of the cluster fitting to the targetCenterList
     return a list of coord of same size as targetCenterList
     """
-    labelTargetList = labels[-nbTarget:] #the labels are in the same order as the coordArrayNp
-    labels = labels[:-nbTarget]
-    return [getBarycenterLabel(coordsArrayNp,labels,lab) for lab in labelTargetList]
+    try:
+        labelTargetList = labels[-nbTarget:] #the labels are in the same order as the coordArrayNp
+        labels = labels[:-nbTarget]
+        res = []
+        for lab in labelTargetList:
+            if lab in labels:
+                res.append(getBarycenterLabel(coordsArrayNp,labels,lab))
+    except Exception:
+        print('labelTargetList',labelTargetList)
+        print('nbTarget',nbTarget)
+        raise Exception
+    return res
 
 def getBadLabel(labels,nbTarget):
     #we add outliers and label not in targetCenterList
@@ -79,7 +98,12 @@ class BarycenterMapList(Trajectory):
                 else:
                     labels,coordsArrayNp = getClusterLabels(
                             act,targetCenterList,clustSize_,sizeMap,dim)
-                    baryList = getClusterList(labels,coordsArrayNp,len(targetCenterList))
+                    try:
+                        baryList = getClusterList(labels,coordsArrayNp,len(targetCenterList))
+                    except Exception:
+                        print('labels : ',labels)
+                        print(np.where(act>0))
+                        raise Exception
                     nbOutsideAct = len(getBadLabel(labels,len(targetCenterList)))
 
                 self._data = [np.array(b)/sizeMap for b in baryList]
