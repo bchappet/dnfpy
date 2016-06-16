@@ -76,7 +76,7 @@ class BarycenterMapList(Trajectory):
             if targetCenterList (nan)*dim
 
         """
-        def __init__(self,name,sizeMap=49,clustSize=0.3,dim=1,dt=0.1,convergenceTime=1.0,actThreshold=0.64,
+        def __init__(self,name,sizeMap=49,clustSize=0.3,dim=1,dt=0.1,convergenceTime=1.0,actThreshold=0.5,
                 **kwargs):
                 super().__init__(name=name,dim=dim,dt=dt,
                         sizeMap=sizeMap,clustSize=clustSize,clustSize_=10,

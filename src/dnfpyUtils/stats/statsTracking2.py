@@ -44,7 +44,8 @@ class StatsTracking2(Stats):
 
 
 
-        return [self.errorDist,self.goodFocus]
+
+        return [self.errorDist,self.goodFocus,]#self.lyapunovDerivative]
 
     def resetRunnable(self):
         super().resetRunnable()
