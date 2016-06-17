@@ -38,7 +38,7 @@ class InputMap(FuncWithoutKeywords):
                  wDistr=0.1,wStim_=1.0,wDistr_=1.0,tck_radius_=1,periodStim=36,normalize=True,iStim=1.0,
                  straight=False,speed=0.04,nbTrack =2,position=None,direction=None,
                  dvs=False,tauDVS=0.1,thDVS=0.7,blink=False,blinkPeriod=0.02,
-                 bound=1.0,
+                 bound=1.0,oscil=False,
                  **kwargs):
         super().__init__(utils.sumArrays,name,size,dim=dim,dt=dt,
                 wrap=wrap,distr_dt=distr_dt,noise_dt=noise_dt,noiseI=noiseI,
@@ -70,7 +70,7 @@ class InputMap(FuncWithoutKeywords):
                 self.tracks.append(StraightTrack(self.getName()+"_track"+str(i),size=size,dim=dim,dt=tck_dt,wrap=wrap,intensity=iStims[i],width=wStim,direction=direction[i],start=position[i],speed=speed,blink=blink,blinkPeriod=blinkPeriod))
         else:
             for i in range(nbTrack):
-                self.tracks.append(self.newTrack(i,size,dim,tck_dt,wrap,iStims[i],wStim,tck_radius,periodStim,blink,blinkPeriod))
+                self.tracks.append(self.newTrack(i,size,dim,tck_dt,wrap,iStims[i],wStim,tck_radius,periodStim,blink,blinkPeriod,oscil))
 
 
         self.addChildren(self.noise,self.distrs,*self.tracks)
@@ -128,11 +128,13 @@ class InputMap(FuncWithoutKeywords):
 
 
 
-    def newTrack(self,index,size,dim,tck_dt,wrap,iStim,wStim,tck_radius,periodStim,blink,blinkPeriod):
+    def newTrack(self,index,size,dim,tck_dt,wrap,iStim,wStim,tck_radius,periodStim,
+            blink,blinkPeriod,oscil):
         name = self.getName() +  "_track"+str(index)
         phase = index/2.
         period  = periodStim
         track = CircularTrack(name,size,dim=dim,dt=tck_dt,wrap=wrap,intensity=iStim,
-                    width=wStim,radius=tck_radius,period=period,phase=phase,blink=blink,blinkPeriod=blinkPeriod)
+                    width=wStim,radius=tck_radius,period=period,phase=phase,
+                    blink=blink,blinkPeriod=blinkPeriod,oscil=oscil)
 
         return track

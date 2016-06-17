@@ -34,18 +34,23 @@ class CircularTrack(MapND):
     """
     def __init__(self,name,size,dim=1,dt=0.1,wrap=True,intensity=1.,width=0.1,
                  radius=0.3,period=36,phase=0.,center=0.,blink=False,blinkPeriod=0.2,
-                 center_=10,radius_=10):
+                 center_=10,radius_=10,oscil=False):
         super(CircularTrack,self).__init__(name=name,size=size,dim=dim,
                                            dt=dt,wrap=wrap,intensity=intensity,
                                            width=width,radius=radius,center=center,
                                            period=period,phase=phase,
                                            blink=blink,
-                                           blinkPeriod = blinkPeriod,
+                                           blinkPeriod = blinkPeriod,oscil=oscil,
                                            center_=center_,radius_=radius_)
 
         self.centerTraj = []
         self._blinkCounter = 0;#TODO reset
         self._hidden = False #true when hidden pahse of blinking
+
+        if oscil :
+            self.iTraj = FuncMap(utils.cosTraj,name+"_i",1,dim=0,center=0.7,period=20,
+                phase = 0,dt=dt,radius=0.3)
+            self.addChildren(intensity=self.iTraj)
         
         for d in range(dim):
             self.centerTraj.append(FuncMap(utils.cosTraj,name+"_c"+str(d),1,dim=0,
