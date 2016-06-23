@@ -14,7 +14,7 @@ class WorkingMemoryShift(Scenario):
 
     """
     def initMaps(self,size=49,dim=2,dt=0.1,wrap=True,trackSpeed=0.04,iLow=0.3,iHigh=1.0,
-            nbDistr=5,noiseI=0.2,distr_dt=1.0,noise_dt=0.1,
+            nbDistr=0,noiseI=0.0,distr_dt=1.0,noise_dt=0.1,
             **kwargs):
         self.iLow = iLow
         self.iHigh = iHigh

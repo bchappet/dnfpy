@@ -23,15 +23,21 @@ class FieldMap(MapND):
         self.addChildren(noise=self.noise)
 
 
+
     def _compute(self,model,lat,aff,dt,tau,h,th,leak,delta,resetLat,gainAff,noise,afferentInhibition,wAffInh,sfa,beta):
         if model == 'cnft':
             self._data = self._data + dt/tau*(-leak*self._data + h + aff*gainAff + delta*lat - afferentInhibition*wAffInh - beta*sfa) + noise
         elif model == 'spike':
-            self._data = np.where(self._data > th,0.,self._data) # if x > th => x = 0
+            self._data = np.where(self._data > th,h,self._data) # if x > th => x = h
             self._data = self._data + dt/tau*(-leak*self._data + h + aff*gainAff - afferentInhibition -beta*sfa) +  1.0/tau*delta*lat + noise
         elif model == 'event': #we suppose that every feeding is a spike
-            self._data = np.where(self._data > th,0.,self._data) # if x > th => x = 0
+            self._data = np.where(self._data > th,h,self._data) # if x > th => x = h
             self._data = self._data + dt/tau*(-leak*self._data + h)+ 1.0/tau*(aff*gainAff - afferentInhibition+delta*lat - beta*sfa) + noise
+        elif model == 'pulse':
+            self._data = np.where(self._data > th,h,self._data) # if x > th => x = h
+            tau_vec = np.where(self._data > h,tau,-tau)
+            tau_vec[self._data == h] = 0
+            self._data = self._data + aff + lat - tau_vec
         else:
             print("Invalid model option : " + model)
 
