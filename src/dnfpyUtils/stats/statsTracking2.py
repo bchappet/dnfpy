@@ -61,7 +61,7 @@ class StatsTracking2(Stats):
 
     def fitness(self,result):
         (error,timeEnd,meanOutsideAct,elapsedTime)=result
-        return error+meanOutsideAct
+        return error*100+meanOutsideAct
 
     def finalize(self):
         """
