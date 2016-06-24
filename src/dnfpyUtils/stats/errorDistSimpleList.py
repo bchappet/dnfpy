@@ -25,7 +25,13 @@ class ErrorDistSimpleList(TrajectoryList):
 
     def _compute(self,target,mesured,wrap):
         error = []
-        for t,m in zip(target,mesured):
+        #make sure that there is as many measuered as target
+        mesured_full = []
+        mesured_full.extend(mesured)
+        for i in range(len(target) - len(mesured)):
+            mesured_full.append(np.nan)
+
+        for t,m in zip(target,mesured_full):
             if np.any(np.isnan(t)) and np.any(np.isnan(m)) :
                 dist = 0.0
             elif np.any(np.isnan(t)) or np.any(np.isnan(m)) :
