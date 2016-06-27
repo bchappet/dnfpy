@@ -1,11 +1,11 @@
-
+#!/usr/bin/fish
 set paramsWM "'h':-0.02,'tau':0.08,'iExc':2.8,'iInh':1.51,'wExc':0.07,'wInh':0.09,'size':49"
-set paramsComp "'h':0.0,'tau':0.138,'iExc':4.393,'iInh':4.268,'wExc':0.379,'wInh':0.623,'size':49,
-                'betaSFA':0.2,'tauSFA':0.382,'mSFA':0.102"
-#tau forced to 0.5
-set spikeWM_tau "'dim': 2, 'wInh': 0.076818989260382456, 'activation': 'step', 'iExc': 2.0419905484839278, 'iInh': 1.4790371433882361, 'size': 49, 'tau': 0.5, 'model': 'spike', 'h': 0.43532126093415568, 'wExc': 0.063832937731023637, 'dt': 0.1, 'lateral': 'dog'"
-set spikeComp_tau "'size': 49, 'wExc': 0.20770422544987494, 'wInh': 0.9068255307648978, 'tau': 0.5, 'dt': 0.1, 'iExc': 0.66910641024680828, 'dim': 2, 'iInh': 0.50568635409295715, 'h': 0, 'activation': 'step', 'lateral': 'dog', 'model': 'spike'"
+set paramsComp "'h':0.0,'tau':0.138,'iExc':4.393,'iInh':4.268,'wExc':0.379,'wInh':0.623,'size':49"
 
+set spikeComp1 "'size': 49, 'lateral': 'dog', 'dim': 2, 'dt': 0.1, 'activation': 'step', 'h': 0, 'iInh': 1.2257227318846564, 'wExc': 0.5378432051161548, 'iExc': 1.258482459256403, 'model': 'spike', 'wInh': 1.9637076470086288, 'tau': 0.12769479411269885"
+set spikeComp "'model': 'spike', 'dim': 2, 'activation': 'step', 'iInh': 0.64538669980233787, 'tau': 0.12687111199574119, 'size': 49, 'lateral': 'dog', 'h': 0, 'wExc': 0.47008654993640697, 'iExc': 0.6584865701410707, 'dt': 0.1, 'wInh': 0.76977930800179117"
+
+set spikeWM "'h': -0.017157652027138398, 'iInh': 0.23981903558649234, 'size': 49, 'lateral': 'dog', 'wExc': 0.085545540721353147, 'dt': 0.1, 'activation': 'step', 'wrap': False, 'wInh': 0.09819595184879297, 'tau': 0.11709253722498286, 'dim': 2, 'iExc': 0.34302857865247194, 'model': 'spike'"
 
 
 #python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsWM}"  --nbThread 8  --scenarios "['WorkingMemoryShift']" --kwscenario "{'trackSpeed':[0.0,0.02,0.04,0.06,0.08,0.1]}" --stats "['StatsTracking2']" --timeEnd 40 --prefix "WM_speed"
@@ -33,19 +33,24 @@ set spikeComp_tau "'size': 49, 'wExc': 0.20770422544987494, 'wInh': 0.9068255307
 #--timeEnd 40 --prefix "comp_distr_hard"
 
 #python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsComp}"  \
-#--nbThread 8  --scenarios "['ScenarioRobustness']"  --stats "['StatsTracking2']" \
-#--kwscenario "{'noiseI':[0.0,0.4,0.6,1.0],'nbDistr':[0,3,5,7,10]}" \
+#--nbThread 4  --scenarios "['ScenarioRobustness']"  --stats "['StatsTracking2']" \
+#--kwscenario "{'noiseI':[0.0,0.4,0.6,1.0],'nbDistr':[0,3,5,7]}" \
 #--timeEnd 40 --prefix "comp_noise_distr"
 
-#python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsWM}"  \
-#--nbThread 4  --scenarios "['WorkingMemoryShift']"  --stats "['StatsTracking2']" \
-#--kwscenario "{'noiseI':[0.0,0.05,0.1,0.15,0.2],'nbDistr':[0,3,5,7,10]}" \
-#--timeEnd 40 --prefix "wm_noise_distr"
+python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsWM}"  \
+--nbThread 4  --scenarios "['WorkingMemoryShift']"  --stats "['StatsTracking2']" \
+--kwscenario "{'noiseI':[0.0,0.05,0.1,0.15,0.2],'nbDistr':[0,3,5,7,10]}" \
+--timeEnd 40 --prefix "wm_noise_distr"
 #
 #
 #SPIKING DNF
 
-python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$spikeComp}"  \
---nbThread 8  --scenarios "['ScenarioRobustness']"  --stats "['StatsTracking2']" \
---kwscenario "{'noiseI':[0.0,0.4,0.6,1.0],'nbDistr':[0,3,5,7,10]}" \
---timeEnd 40 --prefix "spike_comp_noise_distr"
+#python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$spikeComp}"  \
+#--nbThread 4  --scenarios "['ScenarioRobustness']"  --stats "['StatsTracking2']" \
+#--kwscenario "{'noiseI':[0.0,0.4,0.6,1.0],'nbDistr':[0,3,5,7,10]}" \
+#--timeEnd 40 --prefix "spike_comp_noise_distr"
+
+#python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$spikeWM}"  \
+#--nbThread 8  --scenarios "['WorkingMemoryShift']"  --stats "['StatsTracking2']" \
+#--kwscenario "{'noiseI':[0.0,0.05,0.1,0.15,0.2],'nbDistr':[0,3,5,7,10]}" \
+#--timeEnd 40 --prefix "spike_wm_noise_distr"

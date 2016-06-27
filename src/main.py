@@ -5,7 +5,8 @@ import dnfpy.controller.runner as runner
 from getClassUtils import getClassFromName
 import begin #very usefull arg parsing library
 
-defaultScenario = "ScenarioTracking"
+#defaultScenario = "ScenarioTracking"
+defaultScenario = "ScenarioRobustness"
 #defaultScenario = "WorkingMemoryShift"
 defaultModel = "ModelDNF"
 defaultStats = "StatsTracking2"
