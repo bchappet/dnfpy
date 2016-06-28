@@ -129,12 +129,12 @@ def gaussianNd(size,res,wrap,intensity,width,center):
 def expNd(size,wrap,intensity,proba,center):
     """Make an Exponential kernel """
     dim = len(center) #nb Dim
-    if width <= 0 :
+    if proba <= 0 :
         return np.zeros((size,)*dim)
     distI = generateWrappedDistance(size,center,wrap);
     sumDistSquared = np.zeros((size,)*dim)
     for dist in distI:
-            sumDistSquared += dist
+            sumDistSquared += abs(dist)
     return intensity * (proba ** (sumDistSquared ) )
 
 
@@ -293,3 +293,12 @@ def convolve(source,kernel,wrap=True):
         return filter.convolve(source,kernel,mode=border)
     else:
         raise Exception("Dim ",dim, " is not supported")
+
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    size = 21
+    center = (size //2,size//2)
+    exp = expNd(size=size,wrap=True,intensity=1,proba=0.98,center=center)
+    plt.imshow(exp)
+    plt.show()
+

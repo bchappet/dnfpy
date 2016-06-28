@@ -26,8 +26,8 @@ class KernelConvolution(ConvolutionND):
         elif lateral=='doe':
             self.kernel = LateralWeightsMapExp("Kernel"+name,mapSize=mapSize,dim=dim,
                                         globalSize=globalSize,wrap=wrap,
-                                        iExc=iExc,iInh=iInh,pExc=wExc,
-                                        pInh=wInh,alpha=alpha,nbStep=nbStep,fashion=fashion)
+                                        iExc=iExc,iInh=iInh,wExc=wExc,
+                                        wInh=wInh,alpha=alpha,nbStep=nbStep,fashion=fashion)
         elif lateral=='dol':
             self.kernel = LateralWeightsMapLin("Kernel"+name,mapSize=mapSize,dim=dim,
                                         globalSize=globalSize,wrap=wrap,

@@ -1,8 +1,9 @@
 #!/usr/bin/fish
-set paramsWM "'h':-0.02,'tau':0.08,'iExc':2.8,'iInh':1.51,'wExc':0.07,'wInh':0.09,'size':49"
+#set paramsWM "'h':-0.02,'tau':0.08,'iExc':2.8,'iInh':1.51,'wExc':0.07,'wInh':0.09,'size':49"
+set paramsWM "'activation': 'sigm', 'beta': 14.906133218303598, 'dt': 0.1, 'lateral': 'dog', 'wrap': False, 'wInh': 0.11361666606738127, 'iInh': 2.3072328003415472, 'model': 'cnft', 'dim': 2, 'size': 49, 'wExc': 0.080912167102385191, 'tau': 0.066010885708270059, 'h': -0.29140668774489337, 'iExc': 4.0424277492796516"
+
 set paramsComp "'h':0.0,'tau':0.138,'iExc':4.393,'iInh':4.268,'wExc':0.379,'wInh':0.623,'size':49"
 
-set spikeComp1 "'size': 49, 'lateral': 'dog', 'dim': 2, 'dt': 0.1, 'activation': 'step', 'h': 0, 'iInh': 1.2257227318846564, 'wExc': 0.5378432051161548, 'iExc': 1.258482459256403, 'model': 'spike', 'wInh': 1.9637076470086288, 'tau': 0.12769479411269885"
 set spikeComp "'model': 'spike', 'dim': 2, 'activation': 'step', 'iInh': 0.64538669980233787, 'tau': 0.12687111199574119, 'size': 49, 'lateral': 'dog', 'h': 0, 'wExc': 0.47008654993640697, 'iExc': 0.6584865701410707, 'dt': 0.1, 'wInh': 0.76977930800179117"
 
 set spikeWM "'h': -0.017157652027138398, 'iInh': 0.23981903558649234, 'size': 49, 'lateral': 'dog', 'wExc': 0.085545540721353147, 'dt': 0.1, 'activation': 'step', 'wrap': False, 'wInh': 0.09819595184879297, 'tau': 0.11709253722498286, 'dim': 2, 'iExc': 0.34302857865247194, 'model': 'spike'"
@@ -39,7 +40,7 @@ set spikeWM "'h': -0.017157652027138398, 'iInh': 0.23981903558649234, 'size': 49
 
 python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsWM}"  \
 --nbThread 4  --scenarios "['WorkingMemoryShift']"  --stats "['StatsTracking2']" \
---kwscenario "{'noiseI':[0.0,0.05,0.1,0.15,0.2],'nbDistr':[0,3,5,7,10]}" \
+--kwscenario "{'noiseI':[0.0,0.05,0.1,0.2],'nbDistr':[0,3,5,7]}" \
 --timeEnd 40 --prefix "wm_noise_distr"
 #
 #
