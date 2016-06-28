@@ -226,7 +226,7 @@ def strToCsv(string):
 
 
 @begin.start
-def main(models = "['ModelDNF1D',]",size="49",dim="2",stats="['StatsTracking1',]",scenarios="['ScenarioTracking',]",params="{}",timeEnd="30",lat="dog",fashion='chappet',dt='0.1',nbRepet='50',prefix='model_scenario_repet',log='default.log',nbThread='8',kwmodel="{}",kwscenario="{}",kwstat="{}"):
+def main(models = "['ModelDNF1D',]",size="49",dim="2",stats="['StatsTracking1',]",scenarios="['ScenarioTracking',]",params="{}",timeEnd="30",fashion='chappet',dt='0.1',nbRepet='50',prefix='model_scenario_repet',log='default.log',nbThread='8',kwmodel="{}",kwscenario="{}",kwstat="{}"):
     """
     --scenario "['ScenarioTracking','ScenarioNoise']" to give several scenario to iterate on
     --kwmodel "{'activation':[step,sigm],}"
@@ -249,7 +249,7 @@ def main(models = "['ModelDNF1D',]",size="49",dim="2",stats="['StatsTracking1',]
     size = int(((math.floor(size/2.)) * 2) + 1)#Ensure size is odd for convolution
     
 
-    kwparams = dict(size=size,dim=dim,lateral=lat,fashion=fashion,dt=dt)
+    kwparams = dict(size=size,dim=dim,fashion=fashion,dt=dt)
     paramDictModel = eval(kwmodel)
     paramDictScenario = eval(kwscenario)
     paramDictStat = eval(kwstat)

@@ -61,8 +61,8 @@ class StatsTracking2(Stats):
 
     def fitness(self,result):
         (error,timeEnd,meanOutsideAct,elapsedTime)=result
-        #return error*100+meanOutsideAct good for SDNF
-        return error*10+meanOutsideAct #good for DNF
+        return error*100+meanOutsideAct #good for SDNF
+        #return error*10+meanOutsideAct #good for DNF
 
     def finalize(self):
         """

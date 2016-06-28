@@ -8,6 +8,7 @@ set spikeComp "'model': 'spike', 'dim': 2, 'activation': 'step', 'iInh': 0.64538
 
 set spikeWM "'h': -0.017157652027138398, 'iInh': 0.23981903558649234, 'size': 49, 'lateral': 'dog', 'wExc': 0.085545540721353147, 'dt': 0.1, 'activation': 'step', 'wrap': False, 'wInh': 0.09819595184879297, 'tau': 0.11709253722498286, 'dim': 2, 'iExc': 0.34302857865247194, 'model': 'spike'"
 
+set doeComp "'activation': 'step', 'wInh': 0.42349918174573897, 'size': 49, 'lateral': 'doe', 'dim': 2, 'iExc': 0.45966561005045875, 'dt': 0.1, 'tau': 0.12452915458052416, 'wExc': 0.11064375112902931, 'h': 0, 'model': 'spike', 'iInh': 0.41112713239240262"
 
 #python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsWM}"  --nbThread 8  --scenarios "['WorkingMemoryShift']" --kwscenario "{'trackSpeed':[0.0,0.02,0.04,0.06,0.08,0.1]}" --stats "['StatsTracking2']" --timeEnd 40 --prefix "WM_speed"
 
@@ -38,20 +39,26 @@ set spikeWM "'h': -0.017157652027138398, 'iInh': 0.23981903558649234, 'size': 49
 #--kwscenario "{'noiseI':[0.0,0.4,0.6,1.0],'nbDistr':[0,3,5,7]}" \
 #--timeEnd 40 --prefix "comp_noise_distr"
 
-python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsWM}"  \
---nbThread 4  --scenarios "['WorkingMemoryShift']"  --stats "['StatsTracking2']" \
---kwscenario "{'noiseI':[0.0,0.05,0.1,0.2],'nbDistr':[0,3,5,7]}" \
---timeEnd 40 --prefix "wm_noise_distr"
+#python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsWM}"  \
+#--nbThread 4  --scenarios "['WorkingMemoryShift']"  --stats "['StatsTracking2']" \
+#--kwscenario "{'noiseI':[0.0,0.05,0.1,0.2],'nbDistr':[0,3,5,7]}" \
+#--timeEnd 40 --prefix "wm_noise_distr"
 #
 #
 #SPIKING DNF
 
 #python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$spikeComp}"  \
 #--nbThread 4  --scenarios "['ScenarioRobustness']"  --stats "['StatsTracking2']" \
-#--kwscenario "{'noiseI':[0.0,0.4,0.6,1.0],'nbDistr':[0,3,5,7,10]}" \
+#--kwscenario "{'noiseI':[0.0,0.4,0.6,1.0],'nbDistr':[0,3,5,7]}" \
 #--timeEnd 40 --prefix "spike_comp_noise_distr"
 
 #python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$spikeWM}"  \
 #--nbThread 8  --scenarios "['WorkingMemoryShift']"  --stats "['StatsTracking2']" \
-#--kwscenario "{'noiseI':[0.0,0.05,0.1,0.15,0.2],'nbDistr':[0,3,5,7,10]}" \
+#--kwscenario "{'noiseI':[0.0,0.05,0.1,0.2],'nbDistr':[0,3,5,7]}" \
 #--timeEnd 40 --prefix "spike_wm_noise_distr"
+
+#Spiking DOE
+python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$doeComp}"  \
+--nbThread 4  --scenarios "['ScenarioRobustness']"  --stats "['StatsTracking2']" \
+--kwscenario "{'noiseI':[0.0,0.4,0.6,1.0],'nbDistr':[0,3,5,7]}" \
+--timeEnd 40 --prefix "doe_comp_noise_distr"
