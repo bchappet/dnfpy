@@ -26,7 +26,7 @@ class StatsTracking2(Stats):
 
         self.targetList = [0,]
         self.targetListMap = ConstantMap("TargetList",size=size,value=self.targetList)
-        self.targetCenter = TargetCenterList("Target",dim=dim,inputMap=inputMap,inputSize=size)
+        self.targetCenter = TargetCenterList("Target",dt=dt,dim=dim,inputMap=inputMap,inputSize=size)
         self.targetCenter.addChildren(targetList=self.targetListMap)
 
         self.barycenter = BarycenterMapList("Barycentre",dim=dim,dt=dt,sizeMap=size)

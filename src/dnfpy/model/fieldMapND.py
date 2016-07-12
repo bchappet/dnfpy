@@ -34,7 +34,6 @@ class FieldMap(MapND):
             self._data = np.where(self._data > th,h,self._data) # if x > th => x = h
             self._data = self._data + dt/tau*(-leak*self._data + h)+ 1.0/tau*(aff*gainAff - afferentInhibition+delta*lat - beta*sfa) + noise
         elif model == 'pulse':
-            #TODO test avec threshold max and min
             self._data = np.where(self._data > th,h,self._data) # if x > th => x = h
             self._data = np.where(self._data < -th,-th,self._data) # if x < -th => x = -th
             tau_vec = np.where(self._data > h,tau,-tau)

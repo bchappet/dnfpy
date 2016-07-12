@@ -1,4 +1,4 @@
-from dnfpy.model.inputMap import InputMap
+from dnfpy.model.inputMap1D import InputMap
 from dnfpy.view.renderable import Renderable
 from dnfpy.model.model import Model
 from dnfpy.cellular.mapDNFBsRsdnf import MapDNFBsRsdnf

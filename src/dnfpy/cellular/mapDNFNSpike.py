@@ -1,6 +1,6 @@
 from dnfpy.model.activationMap import ActivationMap
 import numpy as np
-from dnfpy.model.fieldMap import FieldMap
+from dnfpy.model.fieldMapND import FieldMap
 from dnfpy.cellular.nSpikeConvolution import NSpikeConvolution
 from dnfpy.cellular.rsdnf2LayerConvolution import Rsdnf2LayerConvolution
 
@@ -12,7 +12,7 @@ class MapDNFNSpike(FieldMap):
                  cell = 'NSpike',clkRatio=50,routerType='prng',
                  errorType='none',errorProb=0.0001,
                  **kwargs):
-        super(MapDNFNSpike,self).__init__(name,size,dt=dt,wrap=wrap,tau=tau,h=h,th=th,nspike=nspike,model=model,iExc=iExc,iInh=iInh,pExc=pExc,pInh=pInh,alpha=alpha,reproductible=reproductible,cell=cell,routerType=routerType,
+        super(MapDNFNSpike,self).__init__(name,size,dim=2,dt=dt,wrap=wrap,tau=tau,h=h,th=th,nspike=nspike,model=model,iExc=iExc,iInh=iInh,pExc=pExc,pInh=pInh,alpha=alpha,reproductible=reproductible,cell=cell,routerType=routerType,
                 errorType=errorType,errorProb=errorProb,
                 **kwargs)
         if cell == 'Rsdnf' or cell == 'Rsdnf2' :
