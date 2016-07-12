@@ -10,6 +10,8 @@ set spikeWM "'h': -0.017157652027138398, 'iInh': 0.23981903558649234, 'size': 49
 
 set doeComp "'activation': 'step', 'wInh': 0.42349918174573897, 'size': 49, 'lateral': 'doe', 'dim': 2, 'iExc': 0.45966561005045875, 'dt': 0.1, 'tau': 0.12452915458052416, 'wExc': 0.11064375112902931, 'h': 0, 'model': 'spike', 'iInh': 0.41112713239240262"
 
+set doeWM "'tau': 0.14063256668214399, 'wrap': False, 'wInh': 8.9475694220854379e-05, 'h': -0.007487061085547933, 'lateral': 'doe', 'activation': 'step', 'dt': 0.1, 'iInh': 0.58917091389618548, 'model': 'spike', 'size': 49, 'dim': 2, 'iExc': 0.7892948121825627, 'wExc': 1.1180751779961808e-05"
+
 #python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsWM}"  --nbThread 8  --scenarios "['WorkingMemoryShift']" --kwscenario "{'trackSpeed':[0.0,0.02,0.04,0.06,0.08,0.1]}" --stats "['StatsTracking2']" --timeEnd 40 --prefix "WM_speed"
 
 #python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsWM}"  --nbThread 8  --scenarios "['WorkingMemoryShift']" --kwscenario "{'noiseI':[0.00,0.02,0.04,0.06,0.08,0.1]}" --stats "['StatsTracking2']" --timeEnd 40 --prefix "WM_noise"
@@ -58,7 +60,24 @@ set doeComp "'activation': 'step', 'wInh': 0.42349918174573897, 'size': 49, 'lat
 #--timeEnd 40 --prefix "spike_wm_noise_distr"
 
 #Spiking DOE
-python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$doeComp}"  \
---nbThread 4  --scenarios "['ScenarioRobustness']"  --stats "['StatsTracking2']" \
---kwscenario "{'noiseI':[0.0,0.4,0.6,1.0],'nbDistr':[0,3,5,7]}" \
---timeEnd 40 --prefix "doe_comp_noise_distr"
+#python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$doeComp}"  \
+#--nbThread 4  --scenarios "['ScenarioRobustness']"  --stats "['StatsTracking2']" \
+#--kwscenario "{'noiseI':[0.0,0.4,0.6,1.0],'nbDistr':[0,3,5,7]}" \
+#--timeEnd 40 --prefix "doe_comp_noise_distr"
+
+#recompute new scenario WmCluster
+python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsWM}"  \
+--nbThread 8  --scenarios "['WmCluster']"  --stats "['StatsTracking2']" \
+--kwscenario "{'noiseI':[0.0,0.05,0.1,0.2],'nbDistr':[0,3,5,7]}" \
+--timeEnd 40 --prefix "cnft_wm2_noise_distr"
+
+
+#python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$spikeWM}"  \
+#--nbThread 8  --scenarios "['WmCluster']"  --stats "['StatsTracking2']" \
+#--kwscenario "{'noiseI':[0.0,0.05,0.1,0.2],'nbDistr':[0,3,5,7]}" \
+#--timeEnd 40 --prefix "spike_wm2_noise_distr"
+
+#python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$doeWM}"  \
+#--nbThread 8  --scenarios "['WmCluster']"  --stats "['StatsTracking2']" \
+#--kwscenario "{'noiseI':[0.0,0.05,0.1,0.2],'nbDistr':[0,3,5,7]}" \
+#--timeEnd 40 --prefix "doe_wm2_noise_distr"

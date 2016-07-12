@@ -14,7 +14,7 @@ class WmCluster(Scenario):
 
     """
     def initMaps(self,size=49,dim=2,dt=0.1,wrap=False,trackSpeed=0.04,iLow=0.3,iHigh=1.0,
-            nbDistr=0,noiseI=0.01,distr_dt=1.0,noise_dt=0.1,angle_traj = 0.3,
+            nbDistr=0,noiseI=0.01,distr_dt=1.0,noise_dt=0.1,angle_traj = 0.0,
             **kwargs):
         self.angle_traj = angle_traj
         self.iLow = iLow

@@ -61,12 +61,17 @@ class InputMap(FuncWithoutKeywords):
         self.tracks = []
 
         if straight:
+            #print(position)
             if direction is None:
                 direction = [np.float32([1]*dim) for i in range(nbTrack)]
             if position is None:
                 dPos = 1/nbTrack
                 position = [np.array((0.2+i*dPos,)*dim) for i in range(nbTrack)]
+            else:
+                assert(len(position) == nbTrack)
+
             for i in range(nbTrack):
+                #print(position[i])
                 self.tracks.append(StraightTrack(self.getName()+"_track"+str(i),size=size,dim=dim,dt=tck_dt,wrap=wrap,intensity=iStims[i],width=wStim,direction=direction[i],start=position[i],speed=speed,blink=blink,blinkPeriod=blinkPeriod))
         else:
             for i in range(nbTrack):

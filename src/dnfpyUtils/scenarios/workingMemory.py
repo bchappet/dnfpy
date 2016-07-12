@@ -16,11 +16,11 @@ class WorkingMemory(Scenario):
 
 
     """
-    def initMaps(self,size=49,dim=2,dt=0.1,**kwargs):
+    def initMaps(self,size=49,dim=2,dt=0.1,noiseI=0.1,nbDistr=2, **kwargs):
         self.iLow = 0.3
         self.iHigh = 1.0
         self.input = InputMap("Inputs",size,dt=dt,dim=dim,
-                periodStim=100000,iStim1=self.iLow,iStim2=self.iLow,noiseI=0.1,nbDistr=2,distr_dt=0.5)
+                periodStim=100000,iStim1=self.iLow,iStim2=self.iLow,noiseI=noiseI,nbDistr=nbDistr,distr_dt=0.5)
 
         self.track0,self.track1 = self.input.getTracks()
 

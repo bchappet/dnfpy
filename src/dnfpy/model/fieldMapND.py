@@ -36,7 +36,7 @@ class FieldMap(MapND):
         elif model == 'pulse':
             #TODO test avec threshold max and min
             self._data = np.where(self._data > th,h,self._data) # if x > th => x = h
-            self._data = np.where(self._data < -th,-th,self._data) # if x > th => x = h
+            self._data = np.where(self._data < -th,-th,self._data) # if x < -th => x = -th
             tau_vec = np.where(self._data > h,tau,-tau)
             tau_vec[self._data == h] = 0
             self._data = self._data + aff + lat - tau_vec
