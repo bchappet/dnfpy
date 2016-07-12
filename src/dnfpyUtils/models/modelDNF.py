@@ -1,7 +1,6 @@
 from dnfpy.view.renderable import Renderable
 from dnfpy.model.model import Model
 from dnfpy.model.mapDNFND import MapDNFND
-from dnfpy.model.mapDNF import MapDNF
 
 class ModelDNF(Model,Renderable):
     """
