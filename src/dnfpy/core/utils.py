@@ -156,7 +156,7 @@ def expFix(size,wrap,intensity,proba,center):
 def linNd(size,wrap,alpha,beta,center):
     """Make an linear kernel """
     distX = generateWrappedDistance(size,center,wrap);
-    print("alpha :",alpha," beta ",beta)
+    #print("alpha :",alpha," beta ",beta)
     return np.maximum(-alpha*(np.fabs(distX)) + beta,0)
 
 def stepNd(size,wrap,intensity,width,center):

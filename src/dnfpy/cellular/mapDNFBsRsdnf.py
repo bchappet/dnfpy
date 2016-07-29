@@ -1,6 +1,6 @@
 from dnfpy.model.activationMap import ActivationMap
 import numpy as np
-from dnfpy.model.fieldMap import FieldMap
+from dnfpy.model.fieldMapND import FieldMap
 from dnfpy.cellular.bsRsdnfConvolution import BsRsdnfConvolution
 from dnfpy.cellular.sbsFastConvolution import SbsFastConvolution
 from dnfpy.cellular.sbsFast2LayerConvolution import SbsFast2LayerConvolution
@@ -12,13 +12,14 @@ class MapDNFBsRsdnf(FieldMap):
                  th=0.75,sizeStream=1000,pSpike=0.01,
                  iExc=1.25,iInh=0.7,pExc=0.0043,pInh=0.5,alpha=10,
                  reproductible=True, shift=5,nbSharedBit=31,
+                 model = 'spike',activation='step',
                  **kwargs):
-        super(MapDNFBsRsdnf,self).__init__(name,size,dt=dt,wrap=wrap,
+        super().__init__(name,size,dt=dt,wrap=wrap,dim=2,
                     tau=tau,h=h,
-                    model='spike',th=th,mapType=mapType,
+                    model=model,th=th,mapType=mapType,
                     **kwargs)
 
-        self.act = ActivationMap(name+"_activation",size,dt=dt,model='spike',
+        self.act = ActivationMap("Activation",size,dt=dt,type=activation,
                                  dtype=np.intc,th=th)
         if mapType == "doublefast":
             self.lat = SbsFast2LayerConvolution(name+"_spikePropag.",size,dt=dtPropagation,
@@ -53,9 +54,8 @@ class MapDNFBsRsdnf(FieldMap):
         self.addChildren(lat=self.lat)
         self.lat.addChildren(activation=self.act)
 
-    def _compute(self,model,lat,aff,dt,tau,h,th,mapType):
-        self._data = np.where(self._data > th,0.,self._data) # if x > th => x = 0
-        self._data = self._data + dt/tau*(-self._data + h + aff ) +  1/tau*lat
+    def _compute(self,model,lat,aff,dt,tau,h,th,leak,delta,resetLat,gainAff,noise,afferentInhibition,wAffInh,sfa,beta,mapType):
+        super()._compute(model,lat,aff,dt,tau,h,th,leak,delta,resetLat,gainAff,noise,afferentInhibition,wAffInh,sfa,beta)
         #reset lateral field
         if mapType == "slow":
             self.lat.resetData()

@@ -4,6 +4,7 @@
 #include <router.h>
 #include <module.h>
 #include <cellrsdnf.h>
+#include <register.h>
 
 
 using namespace std;
@@ -14,7 +15,7 @@ TEST_CASE("fisrt register error"){
     int nbBit = cell->getTotalRegSize();
     bool * errors = construct_array<bool>(1,nbBit);
     errors[0] = 1;
-    cell->setErrorMaskFromArray(errors);
+    cell->setErrorMaskFromArray(errors,Register::TRANSIENT);
     
     cell->setRegState(CellRsdnf::ACTIVATED,true);
     int reg = cell->getRegState(CellRsdnf::ACTIVATED);

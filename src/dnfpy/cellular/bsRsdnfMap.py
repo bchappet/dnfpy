@@ -71,7 +71,7 @@ class BsRsdnfMap(Map2D):
             if errorType == 'transient':
                 self.setFaults(errorProb)
 
-            self.lib.nstep(nstep)
+            self.lib.nstep(1)
             self.lib.getRegArray(self.Reg.NB_BIT_RECEIVED,self._data)
 
         def setActivation(self,activation):
@@ -84,9 +84,11 @@ class BsRsdnfMap(Map2D):
             print("nb fault = ",np.sum(bits))
             self.setErrorMaskFromArray(bits)
 
-        def setErrorMaskFromArray(self,array):
-            self.lib.setErrorMaskFromArray(array)
+        #def setErrorMaskFromArray(self,array):
+        #    self.lib.setErrorMaskFromArray(array)
  
+        def setErrorMaskFromArray(self,array,errorType):
+            self.lib.setErrorMaskFromArray(array,errorType)
 
 
         def resetData(self):

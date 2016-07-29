@@ -72,7 +72,7 @@ class RsdnfMap(Map2D):
             self.errorBitSize = self.lib.getTotalRegSize()
             self.errorType = errorType
             if errorType == 'permanent_high' or errorType == 'permanent_low':
-                self.setFaults(errorProb,errorType)
+                self.setFaults(errorProb)
 
         def _compute(self,size,activation,errorType,errorProb):
             self._compute2(size,activation,errorType,errorProb)

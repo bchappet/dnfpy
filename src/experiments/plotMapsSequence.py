@@ -11,7 +11,7 @@ from dnfpy.core.utils import cosTraj
 color = 'black'
 
 showBar = True
-showArrows = False
+showArrows = True
 showCross = True
 #if show arrow
 radius = 0.3
@@ -62,7 +62,9 @@ timeList.sort()
 print(mapNames,timeList)
 
 #get size array
-sizeArray = getArray(mapNames[0],timeList[0]).shape[0]
+shape  = getArray(mapNames[0],timeList[0]).shape
+nbDim = len(shape)
+sizeArray = shape[0]
 
 
 #We prepare the grid
@@ -83,7 +85,9 @@ for i in range(len(mapNames)):
             plt.text(-0.15,0.5,mapNames[i],transform=axes.transAxes,va='center',ha='left',zorder=100,fontsize=12,rotation=90)
 
 
-        if mapNames[i] == "Inputs":
+        if mapNames[i] == "Inputs" and (showArrows or showCross):
+            assert(nbDim == 2) # adapt for dim = 1
+
             time = timeList[j]
             for indexStim in [0,1]:
                 #(x,y) = getTrackCenter(indexStim,time,sizeArray)
@@ -105,7 +109,12 @@ for i in range(len(mapNames)):
              
         plt.xticks([]), plt.yticks([])
         array = getArray(mapNames[i],timeList[j])
-        img = view.plotArray(array,showBar=False,egal=1)
+        if nbDim == 2:
+            img = view.plotArray(array,showBar=False)
+        elif nbDim == 1:
+            img = view.plot(array)
+        else:
+            raise Exception("nbDim > 2 not handeled")
         if i == len(mapNames) -1:
             plt.text(0.5,-0.1,timeList[j],va='center',ha='center',transform=axes.transAxes)
 
@@ -128,7 +137,8 @@ for i in range(len(mapNames)):
         
         subax = fig.add_axes([x,y,width,height],axisbg=axisbg)
 
-        egal  = 1
+        egal  = view.getEgal(array)
+        print('egal',egal)
         a = np.array([[-egal,egal]])
         img = view.plotArray(a,showBar=False,egal=egal)
         bar = plt.colorbar(shrink=.9)

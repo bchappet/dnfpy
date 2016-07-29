@@ -11,14 +11,19 @@ import matplotlib.gridspec as gridspec
 PRECISION = 10000000
 def egaliseColorBar(egal,bar):
     try:
-        bar.set_ticks([__roundUp(-egal),0,__roundDown(+egal)])
+        bar.set_ticks([-egal,0,+egal])
+        #bar.set_ticks_label([__roundUp(-egal),0,__roundDown(+egal)])
     except Exception as e:
         print("Warning : ", e)
 
 def __roundDown(x):
-        return math.floor(x*PRECISION)//PRECISION
+        #return math.floor(x*PRECISION)//PRECISION
+        return round(x,3)
+
 def __roundUp(x):
-        return math.ceil(x*PRECISION)//PRECISION
+        #return math.ceil(x*PRECISION)//PRECISION
+        return round(x,3)
+
 def __finalize():
         plt.xticks([])
         plt.yticks([])
@@ -47,6 +52,13 @@ def plotArray(data,showBar=True,egal=None):
             egaliseColorBar(egal,bar)
         __finalize()
         return ret
+
+def plot(data):
+    """
+    One dimentional field
+    """
+    ret = plt.plot(data)
+    return ret
 
 
 def plotArrays(name_array_dict):

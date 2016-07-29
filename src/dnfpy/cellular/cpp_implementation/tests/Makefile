@@ -14,6 +14,11 @@ OBJS = test_utils.o router.o register.o bitstreamutils.o cellrsdnf.o \
 all : router_t cellrsdnf_t register_t module_t map2d_t bsRsdnfMap_t bitstreamuint_t neuroncasasfast_t \
 	neuroncasasfastMap_t cellbsrsdnf_t
 
+test : router_t cellrsdnf_t register_t module_t map2d_t bsRsdnfMap_t bitstreamuint_t neuroncasasfast_t \
+	neuroncasasfastMap_t cellbsrsdnf_t
+	./router_t & ./cellrsdnf_t & ./register_t & ./module_t & ./map2d_t & ./bsRsdnfMap_t & ./bitstreamuint_t & ./neuroncasasfast_t & ./neuroncasasfastMap_t & ./cellbsrsdnf_t
+
+
 
 %_t : $(OBJS) %_t.cpp  ../module.h
 	$(CC) $(CFLAGS) $(OBJS) -I$(INCLUDES) $@.cpp -o $@

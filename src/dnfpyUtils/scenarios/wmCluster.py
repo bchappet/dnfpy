@@ -24,7 +24,7 @@ class WmCluster(Scenario):
         self.nbDistr = nbDistr
         self.input = InputMap("Inputs",size,dt=dt,dim=dim,wrap=wrap,straight=True,speed=0.0,
                 iStims=[self.iLow,self.iLow],noiseI=0.01,nbDistr=0,distr_dt=distr_dt,iDistr=iLow,
-                thDVS=0.4,position=[[0.1,0.15],[0.1,0.85]],bound=1.0,**kwargs)
+                thDVS=0.4,position=[[0.1,0.15],[0.85,0.85]],bound=1.0,**kwargs)
 
         self.track0,self.track1 = self.input.getTracks()
         self.targetList = None
@@ -37,7 +37,7 @@ class WmCluster(Scenario):
     def applyContext(self):
         super().applyContext()
         self.track0.setParams(intensity=self.iLow,position=[0.1,0.15],speed=0.0)
-        self.track1.setParams(intensity=self.iLow,position=[0.1,0.85],speed=0.0)
+        self.track1.setParams(intensity=self.iLow,position=[0.85,0.85],speed=0.0)
         self.input.setParamsRec(noiseI=0.01,nbDistr=0,bound=1.0)
 
 
@@ -62,7 +62,7 @@ class WmCluster(Scenario):
             self.input.setParamsRec(bound=self.iLow,nbDistr=self.nbDistr,noiseI=self.noiseI)
         elif self.isTime(12.0):
             self.track0.setParamsRec(speed=self.trackSpeed,direction=[1,self.angle_traj])
-            self.track1.setParamsRec(speed=self.trackSpeed,direction=[1,-self.angle_traj])
+            self.track1.setParamsRec(speed=self.trackSpeed,direction=[-1,-self.angle_traj])
         elif self.isTime(self.endShift):
             self.track0.setParamsRec(speed=0.0)
             self.track1.setParamsRec(speed=0.0)

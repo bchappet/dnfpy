@@ -18,6 +18,7 @@ class MapDNFND(FieldMap):
                  mapSize=1.,nbStep=0,noiseI=0.0,lateral='dog',
                  fashion='chappet',
                  sfa=False,tauSFA=1.0,mSFA=4.8,beta=0.2,
+                 errorProb=0.0,errorType='none',
                  **kwargs):
         super().__init__("Potential"+name,size,dim=dim,dt=dt,wrap=wrap,
                     tau=tau,h=h,delta=delta,
@@ -26,7 +27,8 @@ class MapDNFND(FieldMap):
                     beta=beta,
                     **kwargs)
 
-        self.act = ActivationMap("Activation"+name,size,dim=dim,dt=dt,type=activation,th=th)
+        self.act = ActivationMap("Activation"+name,size,dim=dim,dt=dt,type=activation,th=th,
+            errorProb=errorProb,errorType=errorType)
         self.lat = KernelConvolution("Lateral"+name,size,dim=dim,dt=dt,wrap=wrap,nbStep=nbStep,
                 iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,alpha=alpha,fashion=fashion,lateral=lateral)
 

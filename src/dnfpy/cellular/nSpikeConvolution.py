@@ -22,7 +22,7 @@ class NSpikeConvolution(Map2D):
     def __init__(self,name,size,dt=0.1,nspike=20,
                  iExc=1.25,iInh=0.7,pExc=0.0043,pInh=0.4,alpha=10,
                  iExc_=1.,iInh_=1.,pInh_=0.,pExc_=0.,
-                 reproductible=True,cell='NSpike',clkRatio=50,#if cellular model, the cells will be computed 100 time betwenn each computation
+                 reproductible=True,cell='NSpike',clkRatio=400,#if cellular model, the cells will be computed 100 time betwenn each computation
                  routerType='prng',
                  errorType='none',errorProb=0.0001,
                  **kwargs):

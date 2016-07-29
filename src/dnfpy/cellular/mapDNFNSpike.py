@@ -9,7 +9,7 @@ class MapDNFNSpike(FieldMap):
                  tau=0.64,h=0,
                  th=0.75,nspike=20,model='spike',
                  iExc=1.25,iInh=0.7,pExc=0.0043,pInh=0.9,alpha=10,reproductible=True,
-                 cell = 'NSpike',clkRatio=50,routerType='prng',
+                 cell = 'NSpike',clkRatio=400,routerType='prng',
                  errorType='none',errorProb=0.0001,
                  **kwargs):
         super(MapDNFNSpike,self).__init__(name,size,dim=2,dt=dt,wrap=wrap,tau=tau,h=h,th=th,nspike=nspike,model=model,iExc=iExc,iInh=iInh,pExc=pExc,pInh=pInh,alpha=alpha,reproductible=reproductible,cell=cell,routerType=routerType,

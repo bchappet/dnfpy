@@ -1,6 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 #include <module.h>
+#include <register.h>
 
 
 TEST_CASE("incr reg"){
@@ -33,7 +34,7 @@ TEST_CASE("setErrorMaskFromArray"){
         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
         1,
         0,0,1};
-    module->setErrorMaskFromArray(array);
+    module->setErrorMaskFromArray(array,Register::TRANSIENT);
     module->synch();
 
     REQUIRE(module->getRegState(0) == 6);

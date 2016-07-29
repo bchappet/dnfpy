@@ -5,6 +5,31 @@
 #include <iostream>
 
 using namespace std;
+ 
+
+TEST_CASE("precision mask"){
+
+    //init value
+    Register* reg = new Register(257,8);
+    REQUIRE(reg->get() == 1);
+    //set value
+    reg->set(258);
+    reg->synch();
+    REQUIRE(reg->get() == 2);
+    //incr value
+    reg->set(255);
+    reg->synch();
+    REQUIRE(reg->get() == 255);
+    reg->incr(1);
+    reg->synch();
+    REQUIRE(reg->get() == 0);
+
+
+
+
+
+
+}
 
 TEST_CASE("increment register"){
 

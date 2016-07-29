@@ -60,7 +60,6 @@ void CellBsRsdnf::computeState(){
     bool bsSum = false;
     for(ModulePtr in :this->neighbours){
         bsSum |= in->getRegState(BSRouter::BS_OUT);
-        //std::cout << "nb spike received " << nbSpikeReceived << std::endl;
     }
     nbSpikeReceived = bsSum;//number spike received = 1 or 0
 

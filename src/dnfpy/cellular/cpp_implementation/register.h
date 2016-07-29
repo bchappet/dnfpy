@@ -10,7 +10,7 @@ public:
     /**
      * @brief Register init state and next state with val
      * @param val
-     * @param size : number of bit of this register. No size check is done for now.
+     * @param size : number of bit of this register. MAX 32
      */
     Register(const int& val,const int size=16);
 
@@ -68,6 +68,7 @@ private:
     int transientErrorMask; //state = nextState ^ errorMask then is 0
     int permanentHigh; //state = nextState | permanentHigh
     int permanentLow;  //state = nextState & permanentLow
+    int precisionMask; //mask of precision will be of number of bit given by "size" argument of constructor
 };
 
 #endif // REGISTER_H

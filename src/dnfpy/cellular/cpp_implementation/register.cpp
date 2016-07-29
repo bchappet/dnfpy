@@ -1,6 +1,7 @@
 #include "register.h"
 #include <iostream>
 #include <vector>
+#include "bitstreamutils.h"
 
 /**
  * @brief Register init state and next state with val
@@ -8,9 +9,10 @@
  */
 
 Register::Register(const int& val,const int size){
-    this->state = val;
-    this->nextState = val;
-    this->initState = val;
+    this->precisionMask = LOW_MASK[size-1];
+    this->state = val & this->precisionMask;
+    this->nextState = val & this->precisionMask;
+    this->initState = val & this->precisionMask;
     this->size = size;
     this->transientErrorMask = 0;
     this->permanentHigh = 0;
@@ -86,6 +88,6 @@ int Register::getErrorMask(Register::ErrorType errorType){
  */
 
 void Register::set(int val){
-    this->nextState = val;
+    this->nextState = val & this->precisionMask;
 }
 

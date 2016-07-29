@@ -6,7 +6,9 @@ from dnfpy.cellular.mapDNFBsRsdnf import MapDNFBsRsdnf
 class ModelBsRsdnf(Model,Renderable):
     def initMaps(self,size,dt=0.1,sizeStream=100,pSpike=0.1,routerType="uniformCell",
             precisionProba=31,reproductible=False,iExc=1.57,iInh=0.74,pExc=1.3e-5,pInh=0.9,
-                 mapType="fast",shift=5,nbSharedBit=31,**kwargs):
+                 mapType="fast",shift=5,nbSharedBit=31,
+                 model='spike',activation='step',
+                 **kwargs):
         """We initiate the map and link them"""
 
         """
@@ -50,11 +52,15 @@ class ModelBsRsdnf(Model,Renderable):
                                    iExc = iExc,iInh=iInh,
                                    pExc=pExc,pInh=pInh,
                                    shift=shift,nbSharedBit=nbSharedBit,
-                                   mapType=mapType
+                                   mapType=mapType,model=model,activation=activation,
                                    )
         #return the roots
         roots =  [self.field]
         return roots
+
+    #override Model
+    def onAfferentMapChange(self,afferentMap):
+        self.field.addChildren(aff=afferentMap)
 
     #override Renderable
     def getArrays(self):

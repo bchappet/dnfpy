@@ -92,7 +92,8 @@ class Runner(object):
 
 
     def __getFolder(self):
-        timeStr  = str(self.simuTime).replace(".","_")
+        simutime = round(self.simuTime,5)
+        timeStr  = str(simutime).replace(".","_")
         print(timeStr)
         folder = "save/" + self.saveFolder+ "/"
         self.__createDir(folder)
@@ -133,35 +134,38 @@ class Runner(object):
         folder,timeStr = self.__getFolder()
         for theMap in mapList:
             print("saving... %s"%theMap.getName())
-            if isinstance(theMap,Statistic):
-                fileName = folder+theMap.getName()+".csv"
-                trace = np.array(theMap.getTrace())
-                if len(trace) > 2 :
-                    np.save(fileName,theMap.getTrace())
-                else:
-                    np.savetxt(fileName,theMap.getTrace(),delimiter=",")
-                print("Saving %s" % fileName)
-            else:
-                data = theMap.getData()
-                fileName = folder+theMap.getName()+"_"+timeStr
-                if isinstance(data,np.ndarray):
-                    dtype = data.dtype
-                    if dtype == np.ndarray:
-                        os.mkdir(fileName)
-                        (height,width) = (theMap.getArg('size'),)*2
-                        for row in range(height):
-                             for col in range(width):
-                                filename2 = fileName+"/"+str(row)+"_"+str(col)+".csv"
-                                np.savetxt(filename2,data[row,col],delimiter=",")
-                                print("Saving %s" % filename2)
+            try:
+                if isinstance(theMap,Statistic):
+                    fileName = folder+theMap.getName()+".csv"
+                    trace = np.array(theMap.getTrace())
+                    if len(trace) > 2 :
+                        np.save(fileName,theMap.getTrace())
                     else:
-                        np.savetxt(fileName+".csv", data, delimiter=",")
-                        print("Saving %s" % fileName+".csv")
-                elif isinstance(data,float) or isinstance(data,int) or isinstance(data,bool):
-                    np.savetxt(fileName+".csv", np.array([data]), delimiter=",")
-                    print("Saving %s" % fileName+".csv")
+                        np.savetxt(fileName,theMap.getTrace(),delimiter=",")
+                    print("Saving %s" % fileName)
                 else:
-                    print("could not save: %s" % theMap.getName())
+                    data = theMap.getData()
+                    fileName = folder+theMap.getName()+"_"+timeStr
+                    if isinstance(data,np.ndarray):
+                        dtype = data.dtype
+                        if dtype == np.ndarray:
+                            os.mkdir(fileName)
+                            (height,width) = (theMap.getArg('size'),)*2
+                            for row in range(height):
+                                for col in range(width):
+                                    filename2 = fileName+"/"+str(row)+"_"+str(col)+".csv"
+                                    np.savetxt(filename2,data[row,col],delimiter=",")
+                                    print("Saving %s" % filename2)
+                        else:
+                            np.savetxt(fileName+".csv", data, delimiter=",")
+                            print("Saving %s" % fileName+".csv")
+                    elif isinstance(data,float) or isinstance(data,int) or isinstance(data,bool):
+                        np.savetxt(fileName+".csv", np.array([data]), delimiter=",")
+                        print("Saving %s" % fileName+".csv")
+                    else:
+                        print("could not save: %s" % theMap.getName())
+            except Exception as e:
+                print("failure ",e)
 
     def getNextUpdateTime(self):
             snut = [r.getNextUpdateTime() for r in self.runnables.values()]
