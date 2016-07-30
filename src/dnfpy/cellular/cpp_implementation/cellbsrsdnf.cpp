@@ -36,7 +36,7 @@ CellBsRsdnf::CellBsRsdnf(int row, int col,std::string typeRouter) :Module(row,co
     this->regs.push_back(Register(0,1));//SPIKE_BS
     this->regs.push_back(Register(0,10));//NB_BIT_RECEIVED
     this->regs.push_back(Register(0,1));//ACTIVATED
-    this->regs.push_back(Register(0,10));//NB_BIT_TO_GEN
+    this->regs.push_back(Register(0,11));//NB_BIT_TO_GEN
 
 
 }
