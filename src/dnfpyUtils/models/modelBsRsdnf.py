@@ -4,11 +4,12 @@ from dnfpy.model.model import Model
 from dnfpy.cellular.mapDNFBsRsdnf import MapDNFBsRsdnf
 
 class ModelBsRsdnf(Model,Renderable):
-    def initMaps(self,size,dt=0.1,sizeStream=100,pSpike=0.1,routerType="uniformCell",
-            precisionProba=31,reproductible=False,iExc=1.57,iInh=0.74,pExc=1.3e-5,pInh=0.9,
-                 mapType="fast",shift=5,nbSharedBit=31,
-                 model='spike',activation='step',
-                 **kwargs):
+    def initMaps(self,size,dt=0.1,sizeStream=1000,pSpike=0.01,routerType="uniformCell",
+            precisionProba=31,reproductible=False,
+            iExc=1.57,iInh=0.74,wExc=1.3e-5,wInh=0.9,tau=0.64,h=0.0,
+            mapType="doublefast",shift=5,nbSharedBit=31,
+            model='spike',activation='step',
+            **kwargs):
         """We initiate the map and link them"""
 
         """
@@ -30,27 +31,27 @@ class ModelBsRsdnf(Model,Renderable):
         #pSpike=0.1
         #sizeStream=100
         #(iExc,iInh,pExc,pInh) = (1.5735619684700972,0.7466390972842809,1.3e-05,1.0)
-        print("iExc %s, iInh %s, pExc %s, pInh %s"%(iExc,iInh,pExc,pInh))
-        print("precisionProba: %s"%(precisionProba))
-        if mapType == "doublefast":
-            print("double fast : nbSharedBit %s, shift %s"%(nbSharedBit,shift))
+        #print("iExc %s, iInh %s, pExc %s, pInh %s"%(iExc,iInh,wExc,wInh))
+        #print("precisionProba: %s"%(precisionProba))
+        #if mapType == "doublefast":
+        #    print("double fast : nbSharedBit %s, shift %s"%(nbSharedBit,shift))
 
         #Create maps
         #WM
         #self.field = MapDNFBsRsdnf("DNF",size,dt=dt,sizeStream=100,iExc=0.9,pInh=0.02)
         if mapType == "slow":
-            dtPropagation = dt/100  #dt/(sizeStream + 2*size)
+            dtPropagation = dt/(sizeStream + 2*size)
         else:
             dtPropagation = dt;
-        print("sizeStream %s, dtPropagation %s pSpike %s"%(sizeStream,dtPropagation,pSpike))
+        #print("sizeStream %s, dtPropagation %s pSpike %s"%(sizeStream,dtPropagation,pSpike))
         self.field = MapDNFBsRsdnf("Potential",size,dt=dt,dtPropagation=dtPropagation,
                                     precisionProba=precisionProba,
                                     reproductible=reproductible,
                                    sizeStream=sizeStream,
                                    pSpike=pSpike,
                                    routerType=routerType,
-                                   iExc = iExc,iInh=iInh,
-                                   pExc=pExc,pInh=pInh,
+                                   iExc = iExc,iInh=iInh,tau=tau,h=h,
+                                   pExc=wExc,pInh=wInh,
                                    shift=shift,nbSharedBit=nbSharedBit,
                                    mapType=mapType,model=model,activation=activation,
                                    )

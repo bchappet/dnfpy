@@ -73,7 +73,7 @@ class NSpikeConvolution(Map2D):
         pInh_ = normalizeProba(pInh,size)
         iExc_ = normalizeIntensity(iExc,size,alpha,nspike)
         iInh_ = normalizeIntensity(iInh,size,alpha,nspike)
-        #print("pExc_ %s, pInh_ %s, iExc_ %s, iInh_ %s"%(pExc_,pInh_,iExc_,iInh_))
+        print("pExc_ %s, pInh_ %s, iExc_ %s, iInh_ %s"%(pExc_,pInh_,iExc_,iInh_))
 
         return dict(pExc_=pExc_,pInh_=pInh_,iExc_=iExc_,iInh_=iInh_)
 

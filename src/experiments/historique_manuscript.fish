@@ -90,11 +90,11 @@ set doeWM "'tau': 0.14063256668214399, 'wrap': False, 'wInh': 8.9475694220854379
 
 
 
-python3 runExperiment2.py --models "['ModelNSpike']" \
---kwmodel "{$doeWM,'nspike':[500,1000,2000,5000]}"  \
---nbThread 8  --scenarios "['WmCluster']"  --stats "['StatsTracking2']" \
---kwscenario "{'noiseI':0.01,'nbDistr':0}" \
---timeEnd 40 --prefix "nspike_wm2_nspike"
+#python3 runExperiment2.py --models "['ModelNSpike']" \
+#--kwmodel "{$doeWM,'nspike':[500,1000,2000,5000]}"  \
+#--nbThread 8  --scenarios "['WmCluster']"  --stats "['StatsTracking2']" \
+#--kwscenario "{'noiseI':0.01,'nbDistr':0}" \
+#--timeEnd 40 --prefix "nspike_wm2_nspike"
 
 
 #python3 runExperiment2.py --models "['ModelNSpike']" \
@@ -102,3 +102,13 @@ python3 runExperiment2.py --models "['ModelNSpike']" \
 #--nbThread 8  --scenarios "['ScenarioRobustness']"  --stats "['StatsTracking2']" \
 #--kwscenario "{'noiseI':0.4,'nbDistr':5}" \
 #--timeEnd 40 --prefix "nspike_comp_nspike"
+#
+#
+##CASAS
+#
+
+python3 runExperiment2.py --models "['ModelBsRsdnf']" \
+--kwmodel "{$doeComp,'sizeStream':[100,500,1000,1500,2000,5000]}"  \
+--nbThread 8  --scenarios "['ScenarioRobustness']"  --stats "['StatsTracking2']" \
+--kwscenario "{'noiseI':0.4,'nbDistr':5}" \
+--timeEnd 40 --prefix "casas_comp_sizestream"

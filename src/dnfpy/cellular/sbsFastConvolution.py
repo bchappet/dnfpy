@@ -12,12 +12,13 @@ class SbsFastConvolution(Map2D):
                  iExc_=1.,iInh_=1.,pInh_=0.,pExc_=0.,reproductible=True,
                  nstep=1,
                  **kwargs):
-        super(SbsFastConvolution,self).__init__(name,size,dt=dt,
+        super().__init__(name,size,dt=dt,
                 sizeStream=sizeStream,pSpike=pSpike,routerType=routerType,
                 precisionProba=precisionProba,nstep=nstep,
                 iExc=iExc,iInh=iInh,pExc=pExc,pInh=pInh,alpha=alpha,
                 iExc_=iExc_,iInh_=iInh_,pInh_=pInh_,pExc_=pExc_,
                 reproductible=reproductible, **kwargs)
+        print(sizeStream,pSpike)
         self.inh = SbsFastMap(name+"_inh",size,dt=dt,
                     sizeStream=sizeStream,probaSpike=pSpike,probaSynapse=pInh_,
                               reproductible=reproductible,precisionProba=precisionProba,

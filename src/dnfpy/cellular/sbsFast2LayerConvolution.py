@@ -86,7 +86,7 @@ class SbsFast2LayerConvolution(Map2D):
         if reproductible:
              self.lib.initSeed(0)
         else:
-            seed = random.randint(0, sys.maxint)
+            seed = random.randint(0,1000000 )
             self.lib.initSeed(seed)
 
 
