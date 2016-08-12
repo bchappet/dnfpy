@@ -130,7 +130,6 @@ class Rsdnf2LayerConvolution(Map2D):
             self.lib.initSeed(seed)
 
         newDt = self.getArg('baseDt') / clkRatio
-        print(newDt)
         self.setArg(dt=newDt)
 
 

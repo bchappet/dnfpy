@@ -9,7 +9,7 @@ class ModelNSpike(Model,Renderable):
                  #iExc=1.25,iInh=0.7,wExc=0.0043,wInh=0.1,alpha=10,h=0,tau=0.64,
                  iExc=0.46,iInh=0.41,wExc=0.11,wInh=0.42,tau=0.12,h=0,
                  model='spike',reproductible=True,cell='NSpike',clkRatio=1200,routerType='prng',
-                 errorType='none',errorProb=0.0000,delta=1,
+                 errorType='none',errorProb=0.0000,delta=1,shift=10,
 
                  **kwarg
                  ):
@@ -17,7 +17,7 @@ class ModelNSpike(Model,Renderable):
         #Create maps
         self.field = MapDNFNSpike("Potential",size,dt=dt,nspike=nspike,iExc=iExc,iInh=iInh,pExc=wExc,pInh=wInh,model=model,reproductible=reproductible,
                 cell=cell,clkRatio=clkRatio,routerType=routerType,errorType=errorType,errorProb=errorProb,
-                h=h,tau=tau,delta=delta)
+                h=h,tau=tau,delta=delta,shift=shift)
 
 
         #test faults
