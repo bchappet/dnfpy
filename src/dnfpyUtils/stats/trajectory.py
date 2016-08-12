@@ -28,6 +28,18 @@ class Trajectory(Statistic):
 
     def getCount(self):
         return np.sum(~np.isnan(self.trace))
+
+    def getMax(self):
+        return np.max(self.trace)
+
+    def getPercentile(self,percent):
+        return np.nanpercentile(self.trace,percent)
+    
+    def getMin(self):
+        return np.min(self.trace)
+
+    def getStd(self):
+        return np.std(self.trace)
     
     def getTrace(self):
         """

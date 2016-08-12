@@ -123,7 +123,6 @@ public:
 
     template<typename T>
     void setParam(int index,T value){
-
         *((T*)this->params->at(index)) = value;
     }
 

@@ -12,6 +12,11 @@ set doeComp "'activation': 'step', 'wInh': 0.42349918174573897, 'size': 49, 'lat
 
 set doeWM "'tau': 0.14063256668214399, 'wrap': False, 'wInh': 8.9475694220854379e-05, 'h': -0.007487061085547933, 'lateral': 'doe', 'activation': 'step', 'dt': 0.1, 'iInh': 0.58917091389618548, 'model': 'spike', 'size': 49, 'dim': 2, 'iExc': 0.7892948121825627, 'wExc': 1.1180751779961808e-05"
 
+
+set doeCnftComp "'activation': 'step', 'dim': 2, 'tau': 0.35, 'wExc': 0.13645725851230159, 'wInh': 0.93385423894384245, 'iExc': 2.4047890164818435, 'dt': 0.1, 'lateral': 'doe', 'h': 0, 'size': 49, 'wrap': True, 'model': 'cnft', 'iInh': 2.1123543371374418"
+
+set doeCnftWM "'wInh': 0.00033447307388512416, 'iInh': 8.3605780320093235, 'model': 'cnft', 'iExc': 9.6847892915534928, 'dim': 2, 'h': -0.046522162244893007, 'wrap': False, 'size': 49, 'wExc': 0.00012799533528612018, 'lateral': 'doe', 'activation': 'step', 'dt': 0.1, 'tau': 0.051016909478305256"
+
 #python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsWM}"  --nbThread 8  --scenarios "['WorkingMemoryShift']" --kwscenario "{'trackSpeed':[0.0,0.02,0.04,0.06,0.08,0.1]}" --stats "['StatsTracking2']" --timeEnd 40 --prefix "WM_speed"
 
 #python3 runExperiment2.py --models "['ModelDNF']" --kwmodel "{$paramsWM}"  --nbThread 8  --scenarios "['WorkingMemoryShift']" --kwscenario "{'noiseI':[0.00,0.02,0.04,0.06,0.08,0.1]}" --stats "['StatsTracking2']" --timeEnd 40 --prefix "WM_noise"
@@ -105,10 +110,59 @@ set doeWM "'tau': 0.14063256668214399, 'wrap': False, 'wInh': 8.9475694220854379
 #
 #
 ##CASAS
+
+
+#python3 runExperiment2.py --models "['ModelBsRsdnf']" \
+#--kwmodel "{$doeComp,'sizeStream':[100,500,1000,1500,2000,5000]}"  \
+#--nbThread 8  --scenarios "['ScenarioRobustness']"  --stats "['StatsTracking2']" \
+#--kwscenario "{'noiseI':0.4,'nbDistr':5}" \
+#--timeEnd 40 --prefix "casas_comp_sizestream"
+#
+#Check param theoric
+#delta found with science!
 #
 
 python3 runExperiment2.py --models "['ModelBsRsdnf']" \
---kwmodel "{$doeComp,'sizeStream':[100,500,1000,1500,2000,5000]}"  \
+--kwmodel "{$doeComp,'sizeStream':[500,600,700,1000],'delta':0.00125}"  \
 --nbThread 8  --scenarios "['ScenarioRobustness']"  --stats "['StatsTracking2']" \
---kwscenario "{'noiseI':0.4,'nbDistr':5}" \
---timeEnd 40 --prefix "casas_comp_sizestream"
+--kwscenario "{'noiseI':0.4,'nbDistr':3}" \
+--timeEnd 40 --prefix "casas_test_comp_delta_sizestream1"
+
+
+
+
+#
+#CASAS CNFT
+#
+#works but very slow
+#python3 runExperiment2.py --models "['ModelBsRsdnf']" \ 
+#--dt "1e-4" \
+#--kwmodel "{$doeCnftComp,'sizeStream':1}"  \
+#--nbThread 4  --scenarios "['ScenarioRobustness']"  --stats "['StatsTracking2']" \
+#--kwscenario "{'noiseI':0.4,'nbDistr':3}" \
+#--timeEnd 10 --prefix "casasCnft_comp_ss1dt1-4" \
+
+
+#python3 runExperiment2.py --models "['ModelBsRsdnf']" \
+#--dt "[0.1,0.01,0.001]" \
+#--kwmodel "{$doeCnftComp,'sizeStream':[1,10,100,1000]}"  \
+#--nbThread 4  --scenarios "['ScenarioRobustness']"  --stats "['StatsTracking2']" \
+#--kwscenario "{'noiseI':0.4,'nbDistr':3}" \
+#--timeEnd 30 --prefix "casasCnft_comp_sizestreamxdt01" \
+#
+
+#INFLUENCE de DT sur nbActivation
+#python3 runExperiment2.py --models "['ModelDNF']" \
+#--dt "[0.1,0.01,0.001]" \
+#--kwmodel "{$spikeComp}"  \
+#--nbThread 8  --scenarios "['ScenarioRobustness']"  --stats "['StatsNbAct']" \
+#--kwscenario "{'noiseI':0.4,'nbDistr':3}" \
+#--timeEnd 30 --prefix "spike_dog_dt_act" \
+
+#python3 runExperiment2.py --models "['ModelDNF']" \
+#--dt "[0.1,0.01,0.001]"  --size "[35,49,65]" \
+#--kwmodel "{$spikeComp,'tau':[0.3,0.6]}"  \
+#--nbThread 8  --scenarios "['ScenarioRobustness']"  --stats "['StatsNbAct']" \
+#--kwscenario "{'noiseI':0.4,'nbDistr':3}" \
+#--timeEnd 30 --prefix "spike_dog_dtxsizextau_act" \
+

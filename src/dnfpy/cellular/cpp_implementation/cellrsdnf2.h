@@ -16,7 +16,7 @@ public:
     virtual void setDefaultParams(ParamsPtr params) override;
 
 
-    enum CellRsdnf2_Reg{NB_BIT_INH_RECEIVED=3};
+    enum CellRsdnf2_Reg{NB_BIT_INH_RECEIVED=2};
     enum CellRsdnf2_Params {PROBA=1,PRECISION_PROBA=2,PROBA_INH=3,PRECISION_RANDOM=4,NB_BIT_RANDOM=5,SHIFT=6};
 
 

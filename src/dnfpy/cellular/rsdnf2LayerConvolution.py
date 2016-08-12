@@ -17,11 +17,16 @@ class Rsdnf2LayerConvolution(Map2D):
             NB_BIT_RANDOM=5
             SHIFT=6
 
-    class Attributes:
-            NB_BIT_RECEIVED=0
-            ACTIVATED=1
-            DEAD=2
-            NB_BIT_INH_RECEIVED=3
+    class Reg:
+        ACTIVATED=0
+        NB_BIT_RECEIVED=1
+        NB_BIT_INH_RECEIVED=2
+
+
+    class SubReg:
+        BUFFER = 0
+        SPIKE_OUT = 1
+
 
     """
     Children needed: "activation" with map of 0 and 1
@@ -29,7 +34,7 @@ class Rsdnf2LayerConvolution(Map2D):
     def __init__(self,name,size,dt=0.1,nspike=20,precisionProba=31,
                  iExc=1.25,iInh=0.7,pExc=0.0043,pInh=0.4,alpha=10,
                  iExc_=1.,iInh_=1.,pInh_=0.,pExc_=0.,reproductible=True,
-                 nstep=1,shift=0,clkRatio = 50,
+                 nstep=1,shift=4,clkRatio = 50,
                  **kwargs):
         self.lib = HardLib(size,size,"cellrsdnf2","rsdnfconnecter2layer")
         super().__init__(name,size,dt=dt,
@@ -41,6 +46,8 @@ class Rsdnf2LayerConvolution(Map2D):
                 shift=shift,clkRatio=clkRatio,baseDt=dt,
                                                       **kwargs)
         self.newActivation = True #true when we want to get the new activation
+        self.excMap = np.zeros((size,size),dtype=np.intc)
+        self.inhMap = np.zeros((size,size),dtype=np.intc)
 
 
 
@@ -54,28 +61,46 @@ class Rsdnf2LayerConvolution(Map2D):
 
         self.lib.preCompute()
         self.lib.step()
-        self.lib.getArrayAttribute(self.Attributes.NB_BIT_RECEIVED,self.excMap)
-        self.lib.getArrayAttribute(self.Attributes.NB_BIT_INH_RECEIVED,self.inhMap)
+        self.lib.getRegArray(self.Reg.NB_BIT_RECEIVED,self.excMap)
+        self.lib.getRegArray(self.Reg.NB_BIT_INH_RECEIVED,self.inhMap)
         self._data = self.excMap *  iExc_ - self.inhMap * iInh_
 
     def setActivation(self,activation):
-        self.lib.setArrayAttribute(self.Attributes.ACTIVATED,activation)
+        self.lib.setRegArray(self.Reg.ACTIVATED,activation)
+        self.lib.synch()
 
     def reset(self):
-            super().reset()
-            self.resetLat()
+        if self.lib:
+            self.lib.reset()
+        super().reset()
+        size = self.getArg('size')
+        self.newActivation = True #true when we want to get the new activation
+        self.excMap = np.zeros((size,size),dtype=np.intc)
+        self.inhMap = np.zeros((size,size),dtype=np.intc)
 
 
     def resetLat(self):
-        #we reset the data (NB_BIT_RECEIVED) of inh and exc when we integrate it
-        #in the neural's potential
-        size = self._init_kwargs['size']
-        self._data = np.zeros((size,size),dtype=np.intc)
-        self.excMap = np.zeros((size,size),dtype=np.intc)
-        self.inhMap = np.zeros((size,size),dtype=np.intc)
-        if self.lib:
-            self.lib.reset()
-        self.newActivation=True
+            """
+            Reset the  NB_BIT_RECEIVED attribute of the map cells
+            whenever the neuron potential is updated by reading
+            self._data, the resetData method should be called
+            In a fully pipelined BsRSDNF, the neuron potential
+            is updated on every bit reception, the resetData is the called
+            at every computation
+            """
+            size = self.getArg('size')
+            self.lib.setRegArray(self.Reg.NB_BIT_RECEIVED, \
+                                       np.zeros((size,size),dtype=np.intc))
+            self.lib.setRegArray(self.Reg.NB_BIT_INH_RECEIVED, \
+                                       np.zeros((size,size),dtype=np.intc))
+            #reset buffer
+            zeros = np.zeros((size,size,8),dtype=np.intc)
+            self.lib.setArraySubState(self.SubReg.BUFFER,zeros)
+            self.lib.setArraySubState(self.SubReg.SPIKE_OUT,zeros)
+            self.lib.synch()
+            self.newActivation=True
+
+
 
 
 
@@ -105,6 +130,7 @@ class Rsdnf2LayerConvolution(Map2D):
             self.lib.initSeed(seed)
 
         newDt = self.getArg('baseDt') / clkRatio
+        print(newDt)
         self.setArg(dt=newDt)
 
 

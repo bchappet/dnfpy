@@ -92,7 +92,8 @@ class BatchRunner(object):
         print("Saving in %s"%self.fileName)
 
 
-    def run(self,modelNameList,statNameList,scenarioNameList,nbRepetition=100,timeEnd=10,nbThread=3,\
+    def run(self,modelNameList,statNameList,scenarioNameList,
+            nbRepetition=100,timeEnd=10,nbThread=3,allowedTime=1e30,
             paramDictModel={},paramDictScenario={},paramDictStat={},paramDictGlobal={}):
 
         (parameterDictModel,iterationDictModel) = getDictionaryList(paramDictModel)
@@ -120,6 +121,7 @@ class BatchRunner(object):
         self.header.append('it')
         self.header.extend(headerLastPart) #TODO get the result form the Stats
         self.fileCSV.write(",".join(self.header)+'\n')
+        #print(",".join(self.header))
 
         logging.info("headerCSV")
         logging.info(",".join(self.header))
@@ -154,6 +156,7 @@ class BatchRunner(object):
             dictGlobal = {k:self.productDict[k] for k in iterationDictGlobal}
             parameterDictModel.update(dictGlobal)
             parameterDictScenario.update(dictGlobal)
+            parameterDictStat.update(dictGlobal)
             parameterDictStat.update(parameterDictGlobal)
 
             threadList = [] #list of threads
@@ -161,7 +164,7 @@ class BatchRunner(object):
                 model = modelClass(**parameterDictModel)
                 scenario = scenarioClass(**parameterDictScenario)
                 stat = statClass(**parameterDictStat)
-                th = MyThread(self,threadId,nbThread,nbIterationPerThread[threadId],model,scenario,stat,timeEnd,self.q,seeds[threadId])
+                th = MyThread(self,threadId,nbThread,nbIterationPerThread[threadId],model,scenario,stat,timeEnd,self.q,seeds[threadId],allowedTime)
                 threadList.append(th)
                 #try:
                 th.start()
@@ -190,7 +193,8 @@ class BatchRunner(object):
         return resultString
 
 class MyThread (Process):
-    def __init__(self,batchRunner,threadId,nbThreads,nbRepetition,model,scenario,stat,timeEnd,q,seed):
+    def __init__(self,batchRunner,threadId,nbThreads,nbRepetition,
+            model,scenario,stat,timeEnd,q,seed,allowedTime):
         Process.__init__(self)
         np.random.seed(seed)
         self.batchRunner= batchRunner
@@ -198,7 +202,7 @@ class MyThread (Process):
         self.threadId = threadId
         self.nbThreads = nbThreads
         self.nbRepetition = nbRepetition
-        self.runner = runner.constructRunner(model,scenario,stat,timeEnd)
+        self.runner = runner.constructRunner(model,scenario,stat,timeEnd,allowedTime)
 
 
     def run(self):
@@ -226,7 +230,8 @@ def strToCsv(string):
 
 
 @begin.start
-def main(models = "['ModelDNF1D',]",size="49",dim="2",stats="['StatsTracking1',]",scenarios="['ScenarioTracking',]",params="{}",timeEnd="30",fashion='chappet',dt='0.1',nbRepet='50',prefix='model_scenario_repet',log='default.log',nbThread='8',kwmodel="{}",kwscenario="{}",kwstat="{}"):
+def main(models = "['ModelDNF1D',]",size="49",dim="2",stats="['StatsTracking1',]",scenarios="['ScenarioTracking',]",params="{}",timeEnd="30",fashion='chappet',dt='0.1',nbRepet='50',prefix='model_scenario_repet',log='default.log',nbThread='8',kwmodel="{}",kwscenario="{}",kwstat="{}",
+        allowedTime="1e30"):
     """
     --scenario "['ScenarioTracking','ScenarioNoise']" to give several scenario to iterate on
     --kwmodel "{'activation':[step,sigm],}"
@@ -246,7 +251,8 @@ def main(models = "['ModelDNF1D',]",size="49",dim="2",stats="['StatsTracking1',]
     dt = eval(dt)
     dim = eval(dim)
     size = eval(size)
-    size = int(((math.floor(size/2.)) * 2) + 1)#Ensure size is odd for convolution
+    #size = int(((math.floor(size/2.)) * 2) + 1)#Ensure size is odd for convolution
+    allowedTime = eval(allowedTime)
     
 
     kwparams = dict(size=size,dim=dim,fashion=fashion,dt=dt)
@@ -264,6 +270,6 @@ def main(models = "['ModelDNF1D',]",size="49",dim="2",stats="['StatsTracking1',]
                   scenarioNameList=scenarioNameList,nbRepetition=nbRepetition,
                   timeEnd=timeEnd,nbThread=nbThread,paramDictModel=paramDictModel,
                   paramDictScenario=paramDictScenario,paramDictStat=paramDictStat,
-                  paramDictGlobal=kwparams)
+                  paramDictGlobal=kwparams,allowedTime=allowedTime)
     batchRunner.finalize()
 #python3 runExperiment2.py --models "['ModelNSpike',]" --kwmodel "{'model':['spike','cnft'],'nspike':[1,2,3,5,10]}" --scenarios "['ScenarioTracking','ScenarioNoise',]"

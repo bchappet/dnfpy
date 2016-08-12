@@ -44,11 +44,12 @@ void CellRsdnf2::preCompute(){
     unsigned long int randomBitPrecisionMask = this->getParam<uint32_t>(CellRsdnf2::PRECISION_RANDOM);
     unsigned int nbBitProba = this->getParam<unsigned int>(CellRsdnf2::NB_BIT_RANDOM);
     unsigned int shift = this->getParam<unsigned int>(CellRsdnf2::SHIFT);
+    //std::cout << probaSynapseExc << " , " << probaSynapseInh << std::endl;
 
     //we generate only one random integer at each iteration
     u_int32_t randInt = genRandInt(randomBitPrecisionMask);
     for(unsigned int i = 0 ; i < 8 ; ++i){
-        u_int32_t rotatedRandomInt = rotl32( randInt, shift, nbBitProba,randomBitPrecisionMask);
+        randInt = rotl32( randInt, shift, nbBitProba,randomBitPrecisionMask);
         RouterBit* router = (RouterBit*)this->subModules[i].get();
         float proba;
         if( i < 4)
@@ -56,8 +57,8 @@ void CellRsdnf2::preCompute(){
         else
             proba = probaSynapseInh;
 
-        bool randBit = getRandBitFromRandInt(rotatedRandomInt,proba,probaPrecisionMask);
-        router->setAttribute(RouterBit::RANDOM_BIT,&randBit);
+        bool randBit = getRandBitFromRandInt(randInt,proba,probaPrecisionMask);
+        router->setRandomBit(randBit);
 
     }
     
@@ -81,7 +82,6 @@ void CellRsdnf2::computeState(){
     this->setRegState(CellRsdnf2::NB_BIT_INH_RECEIVED,this->getRegState(CellRsdnf2::NB_BIT_INH_RECEIVED) + nbSpikeReceivedInh);
 
     if(this->getRegState(CellRsdnf::ACTIVATED)){
-       // std::cout << "switch off activation" << std::endl;
         this->setRegState(CellRsdnf::ACTIVATED,false);
         for(ModulePtr mod:this->subModules){
             Router* r = ((Router*)mod.get());

@@ -24,4 +24,5 @@ class ScenarioTracking(Scenario):
                 self.targetList = self.runner.getMap("TargetList")
                 self.targetList.setData([0,])
             except:
-                print("targetList not found")
+                pass
+                #print("targetList not found")

@@ -7,7 +7,7 @@ from dnfpy.core.constantMap import ConstantMap
 from dnfpyUtils.stats.targetCenterList import TargetCenterList
 from dnfpyUtils.stats.barycenterMapList import BarycenterMapList
 from dnfpyUtils.stats.goodFocus import GoodFocus
-
+from dnfpyUtils.stats.sumStat import SumStat
 
 class StatsTracking2(Stats):
     """
@@ -41,11 +41,13 @@ class StatsTracking2(Stats):
 
         self.timeEnd = None
 
+        self.sumStat = SumStat('SumAct',dt=dt)
+        self.sumStat.addChildren(map=activationMap)
 
 
 
 
-        return [self.errorDist,self.goodFocus,]#self.lyapunovDerivative]
+        return [self.errorDist,self.goodFocus,self.sumStat]#self.lyapunovDerivative]
 
     def resetRunnable(self):
         super().resetRunnable()
@@ -57,12 +59,12 @@ class StatsTracking2(Stats):
         """
         #return [self.clusters,self.potentialTarget,self.trackedTarget,
         #        self.errorDist,self.shapeMap,self.errorShape,self.activation]
-        return [self.errorDist,self.targetCenter,self.barycenter,self.goodFocus]
+        return [self.errorDist,self.targetCenter,self.barycenter,self.goodFocus,self.sumStat]
 
     def fitness(self,result):
         (error,timeEnd,meanOutsideAct,elapsedTime)=result
-        return error*100+meanOutsideAct #good for SDNF
-        #return error*10+meanOutsideAct #good for DNF
+        #return error*100+meanOutsideAct #good for SDNF
+        return error*10+meanOutsideAct #good for DNF
 
     def finalize(self):
         """
@@ -81,12 +83,17 @@ class StatsTracking2(Stats):
 
         self.elapsedTime = endProcessorTime - self.processorTime
         meanOutsideAct = np.mean(self.barycenter.outsideAct)
+
+        mean = self.sumStat.getMean()
+        max = self.sumStat.getMax()
+        min = self.sumStat.getMin()
+        std = self.sumStat.getStd()
        
-        return (error,self.timeEnd,meanOutsideAct,self.elapsedTime)
+        return (error,self.timeEnd,meanOutsideAct,self.elapsedTime,mean,min,max,std)
 
     @staticmethod
     def getColumns():
-        return ['error','timeEnd','outsideAct','elapsedTime']
+        return ['error','timeEnd','outsideAct','elapsedTime','meanAct','minAct','maxAct','stdAct']
 
 
 

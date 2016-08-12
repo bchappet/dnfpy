@@ -8,15 +8,15 @@ OBJS = test_utils.o router.o register.o bitstreamutils.o cellrsdnf.o \
 	map2d.o rsdnfconnecter.o neumannconnecter.o \
 	cellbsrsdnf.o bsrouter.o carrybsrouter.o \
 	bitstreamuint.o bitstream.o neuroncasasfast.o sbsfastrouter.o \
-	rsdnfconnecter2layer.o 
+	rsdnfconnecter2layer.o  cellrsdnf2.o
 .SECONDARY : $(OBJS) 
 
 all : router_t cellrsdnf_t register_t module_t map2d_t bsRsdnfMap_t bitstreamuint_t neuroncasasfast_t \
-	neuroncasasfastMap_t cellbsrsdnf_t
+	neuroncasasfastMap_t cellbsrsdnf_t rsdnf2layer_map_t 
 
 test : router_t cellrsdnf_t register_t module_t map2d_t bsRsdnfMap_t bitstreamuint_t neuroncasasfast_t \
-	neuroncasasfastMap_t cellbsrsdnf_t
-	./router_t & ./cellrsdnf_t & ./register_t & ./module_t & ./map2d_t & ./bsRsdnfMap_t & ./bitstreamuint_t & ./neuroncasasfast_t & ./neuroncasasfastMap_t & ./cellbsrsdnf_t
+	neuroncasasfastMap_t cellbsrsdnf_t rsdnf2layer_map_t
+	./router_t & ./cellrsdnf_t & ./register_t & ./module_t & ./map2d_t & ./bsRsdnfMap_t & ./bitstreamuint_t & ./neuroncasasfast_t & ./neuroncasasfastMap_t & ./cellbsrsdnf_t & ./rsdnf2layer_map_t
 
 
 

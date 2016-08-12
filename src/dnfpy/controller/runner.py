@@ -193,6 +193,7 @@ class Runner(object):
                 r.updateRunnable(self.simuTime)
 
     def resetSlot(self):
+        self.startTime = timer.clock()
         self.lastUpdateTime = datetime.now()
         self.simuTime = 0.
         self.lastSimuTime = 0.

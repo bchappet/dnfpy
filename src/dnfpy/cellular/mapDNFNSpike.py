@@ -15,6 +15,7 @@ class MapDNFNSpike(FieldMap):
         super(MapDNFNSpike,self).__init__(name,size,dim=2,dt=dt,wrap=wrap,tau=tau,h=h,th=th,nspike=nspike,model=model,iExc=iExc,iInh=iInh,pExc=pExc,pInh=pInh,alpha=alpha,reproductible=reproductible,cell=cell,routerType=routerType,
                 errorType=errorType,errorProb=errorProb,
                 **kwargs)
+        print('MapDNF cell',cell)
         if cell == 'Rsdnf' or cell == 'Rsdnf2' :
             self.setArg(resetLat =True) #we need to reset the lateral wieight for  every new compuation
 

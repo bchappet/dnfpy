@@ -5,10 +5,10 @@ import warnings
 import numpy as np
 
 class ModelNSpike(Model,Renderable):
-    def initMaps(self,size,nspike=10,dt=0.1,rFaults=0.0,
+    def initMaps(self,size,nspike=15,dt=0.1,rFaults=0.0,
                  #iExc=1.25,iInh=0.7,wExc=0.0043,wInh=0.1,alpha=10,h=0,tau=0.64,
                  iExc=0.46,iInh=0.41,wExc=0.11,wInh=0.42,tau=0.12,h=0,
-                 model='spike',reproductible=True,cell='NSpike',clkRatio=400,routerType='prng',
+                 model='spike',reproductible=True,cell='NSpike',clkRatio=1200,routerType='prng',
                  errorType='none',errorProb=0.0000,delta=1,
 
                  **kwarg

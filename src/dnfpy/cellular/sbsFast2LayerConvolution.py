@@ -28,7 +28,7 @@ class SbsFast2LayerConvolution(Map2D):
                  precisionProba=31,
                  iExc=1.25,iInh=0.7,pExc=0.0043,pInh=0.4,alpha=10,
                  iExc_=1.,iInh_=1.,pInh_=0.,pExc_=0.,reproductible=True,
-                 nstep=1,shift=5,nbSharedBit=31,
+                 nstep=1,shift=0,nbSharedBit=31,
                  **kwargs):
         self.lib = HardLib(size,size,"cellsbsfast2","rsdnfconnecter2layer")
         super(SbsFast2LayerConvolution,self).__init__(name,size,dt=dt,

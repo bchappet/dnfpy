@@ -6,9 +6,15 @@
 
 RouterBit::RouterBit(int row,int col) : Router(row,col)
 {
+    //no registre nor param
+    this->randomBit = true;
 
-    this->regs.push_back(Register(true));//RANDOM_BIT
 }
+
+void RouterBit::setRandomBit(bool bit){
+    this->randomBit = bit;
+}
+
 
 
 
@@ -33,7 +39,7 @@ void RouterBit::computeState(){
 
     if(buffer > 0 || nbInput > 0 ){
 
-        if(this->getRegState(RANDOM_BIT)){
+        if(this->randomBit){
             this->setRegState(SPIKE_OUT,true);
 
         }else{

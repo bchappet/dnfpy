@@ -36,7 +36,7 @@ class SbsFastMap(Map2D):
                                             precisionProba=precisionProba,
                                             reproductible=reproductible,
                                             **kwargs)
-            print(sizeStream,probaSpike,precisionProba)
+            #print(sizeStream,probaSpike,precisionProba)
 
 
         def _compute(self,size,activation):
@@ -60,7 +60,7 @@ class SbsFastMap(Map2D):
             self.lib.setMapParam(self.Params.PROBA_SPIKE,probaSpike)
             self.lib.setMapParam(self.Params.PROBA_SYNAPSE,probaSynapse)
             self.lib.setMapParam(self.Params.PRECISION_PROBA,2**precisionProba-1)
-            print("params update")
+            #print("params update")
             if reproductible:
                 self.lib.initSeed(0)
             else:
