@@ -10,6 +10,7 @@ Module::ModulePtr getRouter(std::string typeRouter){
     if(typeRouter.compare("carryRouter") == 0){
         router =  Module::ModulePtr(new CarryBsRouter());
     }else{ //(typeRouter.compare("orRouter") == 0){
+        std::cout << " router or by default " << typeRouter << std::endl;
         router =  Module::ModulePtr(new BSRouter());
     }
     return router;

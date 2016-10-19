@@ -38,26 +38,23 @@ class WorkerManager:
         if a worker already work on i, return null
         """
         if i not in self.inProcessPart:
-            while(not(self.workerResultsQueue.empty())):
-                tup = self.workerResultsQueue.get()
-                self.waitingTask(*tup)
+            newWorker = None
+            while(True):
+                for i_worker in range(len(self.workerList)):
+                    worker = self.workerList[i_worker]
+                    if not(worker.is_alive()):
+                        newWorker =  self.initWorker(i_worker)
+                        self.workerList[i_worker] = newWorker
+                        self.inProcessPart.append(i)
+                        return newWorker
+                #Treat the queue to wait
+                while(not(self.workerResultsQueue.empty())):
+                    tup = self.workerResultsQueue.get()
+                    self.waitingTask(*tup)
 
-            for i_worker in range(len(self.workerList)):
-                worker = self.workerList[i_worker]
-                if not(worker.is_alive()):
-                    newWorker =  self.initWorker(i_worker)
-                    self.workerList[i_worker] = newWorker
-                    self.inProcessPart.append(i)
-                    return newWorker
 
-            #we treat the queue instead of sleeping
-            else:
-                time.sleep(0.01)
         else:
             return
-
-
-        return self.requestWorker(i)
 
     def finishWork(self):
         """

@@ -229,7 +229,8 @@ class Spso:
 
 
 if __name__ == "__main__":
-    pso = Spso(20,nbEvaluationMax=200,evaluationFunc=eggHolder,acceptableFitness=-959.6407,verbose=1)
+    pso = Spso(100,nbEvaluationMax=200,evaluationFunc=eggHolder,acceptableFitness=-959.6407,verbose=1)
+    pso.reset()
     pso.mainLoop()
     #print(pso.epochSummary)
 

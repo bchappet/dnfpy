@@ -4,9 +4,10 @@ from dnfpy.model.model import Model
 from dnfpy.cellular.mapDNFBsRsdnf import MapDNFBsRsdnf
 
 class ModelBsRsdnf(Model,Renderable):
-    def initMaps(self,size,dt=0.1,sizeStream=1000,pSpike=0.01,routerType="uniformCell",
+    def initMaps(self,size,dt=0.1,sizeStream=1500,pSpike=0.01,routerType="orRouter",
             precisionProba=31,reproductible=False,
-            iExc=1.57,iInh=0.74,wExc=1.3e-5,wInh=0.9,tau=0.64,h=0.0,
+            #iExc=1.57,iInh=0.74,wExc=1.3e-5,wInh=0.9,tau=0.64,h=0.0,
+            iExc=0.46,iInh=0.41,wExc=0.11,wInh=0.42,tau=0.12,h=0,
             mapType="doublefast",shift=5,nbSharedBit=31,
             model='spike',activation='step',
             **kwargs):

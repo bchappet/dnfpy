@@ -61,14 +61,30 @@ def plot(data):
     return ret
 
 
-def plotArrays(name_array_dict):
-        """Expect a dictionary {name->array}"""
+def plotArrays(name_array_dict,sameBar = False):
+        """
+        Expect a dictionary {name->array}
+        If sameBar then only one color bar is displayed    
+        """
         i = 0
         size = len(name_array_dict)
         width = int(math.ceil(math.sqrt(size)))
         height = int(math.ceil(size/float(width)))
         f, axarr = plt.subplots(height,width)
         gs = gridspec.GridSpec(height, width)
+
+        if sameBar:
+            egal = 0
+            showBar = False
+            for name in name_array_dict:
+                newEgal = getEgal(name_array_dict[name] )
+                if newEgal > egal:
+                    egal = newEgal
+
+        else:
+            egal = None
+            showBar = True
+            
         for name in name_array_dict:
                 if( i == size-1): #last fig
                         ax = plt.subplot(gs[i//width,i%width :])
@@ -76,11 +92,15 @@ def plotArrays(name_array_dict):
                         ax = plt.subplot(gs[i//width,i%width])
                 array = name_array_dict[name]
                 if len(array.shape) < 3:
-                    plotArray(array)
+                    plotArray(array,egal=egal,showBar=showBar)
                 else:
                     ax.imshow(array)
                 ax.set_title(name)
                 i+=1
+        if sameBar:
+            bar = plt.colorbar(shrink=.92)
+            egaliseColorBar(egal,bar)
+
 
 def show():
     plt.show()

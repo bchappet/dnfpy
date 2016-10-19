@@ -18,7 +18,7 @@ class ModelDNF(Model,Renderable):
     """
     def initMaps(self,size=49,model="spike",activation="step",nbStep=0,dim=2,wrap=True,
                  #iExc=1.25,iInh=0.7,wExc=0.1,wInh=10.,alpha=10.,th=0.75,h=0.0,
-                iInh =  0.64538669980233787, wExc= 0.47008654993640697, iExc= 0.6584865701410707,  wInh= 0.76977930800179117,tau=0.13,
+                iInh =  0.64538669980233787, wExc= 0.47008654993640697, iExc= 0.6584865701410707,  wInh= 0.76977930800179117,tau=0.3,
                  
                  lateral='dog',noiseI=0.01,
                  dt=0.1,h=0,th=0.75,

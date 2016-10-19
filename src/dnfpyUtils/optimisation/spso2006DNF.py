@@ -54,7 +54,7 @@ class SpsoDNF(Spso):
             error = statistic.fitness(res)
             simuTime = statistic.timeEnd
             if simuTime < timeEnd:
-                error = 100
+                error = 9999
             #print("simuTime",simuTime)
             #print("error",error)
             fitnessList.append(error)

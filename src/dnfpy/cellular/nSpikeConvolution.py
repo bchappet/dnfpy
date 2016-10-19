@@ -2,7 +2,7 @@ from dnfpy.cellular.nSpikeMap import NSpikeMap
 from dnfpy.core.constantMap import ConstantMap
 from dnfpy.cellular.rsdnfMap import RsdnfMap
 import numpy as np
-from dnfpy.core.map2D import Map2D
+from dnfpy.core.mapND import MapND
 
 
 def normalizeProba(p,size):
@@ -15,19 +15,19 @@ def normalizeIntensity(i,size,alpha,nspike):
     return res
 
 
-class NSpikeConvolution(Map2D):
+class NSpikeConvolution(MapND):
     """
     Children needed: "activation" with map of 0 and 1 of type np.intc
     """
-    def __init__(self,name,size,dt=0.1,nspike=20,
-                 iExc=1.25,iInh=0.7,pExc=0.0043,pInh=0.4,alpha=10,
+    def __init__(self,name,size,dim=2,dt=0.1,nspike=20,
+                 iExc=1.25,iInh=0.7,wExc=0.0043,wInh=0.4,alpha=10,
                  iExc_=1.,iInh_=1.,pInh_=0.,pExc_=0.,
                  reproductible=True,cell='NSpike',clkRatio=400,#if cellular model, the cells will be computed 100 time betwenn each computation
                  routerType='prng',
                  errorType='none',errorProb=0.0001,
                  **kwargs):
-        super(NSpikeConvolution,self).__init__(name,size,dt=dt,nspike=nspike,
-                iExc=iExc,iInh=iInh,pExc=pExc,pInh=pInh,alpha=alpha,
+        super(NSpikeConvolution,self).__init__(name,size,dim=2,dt=dt,nspike=nspike,
+                iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,alpha=alpha,
                  iExc_=iExc_,iInh_=iInh_,pInh_=pInh_,pExc_=pExc_,
                 reproductible=reproductible,cell=cell,clkRatio=clkRatio,routerType=routerType,
                 errorType=errorType,errorProb=errorProb,
@@ -68,12 +68,12 @@ class NSpikeConvolution(Map2D):
         self.exc.resetData()
 
 
-    def _onParamsUpdate(self,size,alpha,nspike,iExc,iInh,pExc,pInh):
-        pExc_ = normalizeProba(pExc,size)
-        pInh_ = normalizeProba(pInh,size)
+    def _onParamsUpdate(self,size,alpha,nspike,iExc,iInh,wExc,wInh):
+        pExc_ = normalizeProba(wExc,size)
+        pInh_ = normalizeProba(wInh,size)
         iExc_ = normalizeIntensity(iExc,size,alpha,nspike)
         iInh_ = normalizeIntensity(iInh,size,alpha,nspike)
-        #print("pExc_ %s, pInh_ %s, iExc_ %s, iInh_ %s"%(pExc_,pInh_,iExc_,iInh_))
+        print("pExc_ %s, pInh_ %s, iExc_ %s, iInh_ %s"%(pExc_,pInh_,iExc_,iInh_))
 
         return dict(pExc_=pExc_,pInh_=pInh_,iExc_=iExc_,iInh_=iInh_)
 
@@ -99,9 +99,9 @@ if __name__ == "__main__":
 
     uut.reset()
     activation[size//2,size//2] = 1
-    uut.setParams(pExc=1,pInh=1,nspike=20)
+    uut.setParams(wExc=1,wInh=1,nspike=20)
     activation[size//2-5:size//2+5,size//2-5:size//2+5] = 1
-    uut.setParams(nspike=20,pExc=1.0)
+    uut.setParams(nspike=20,wExc=1.0)
 
     dtExc = uut.exc.getArg('dt')
     timeEnd = (100*20 + 200) * dtExc

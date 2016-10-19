@@ -104,7 +104,7 @@ class Runner(object):
         import dnfpy.view.staticViewMatplotlib as mtpl
         import matplotlib.pyplot as plt
         lis = []
-        folder = self.__getFolder()
+        folder,timeStr = self.__getFolder()
         for r in self.runnables.values():
                 lis.extend(r.getArrays())
 

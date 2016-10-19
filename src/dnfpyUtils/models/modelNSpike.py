@@ -15,7 +15,7 @@ class ModelNSpike(Model,Renderable):
                  ):
         """We initiate the map and link them"""
         #Create maps
-        self.field = MapDNFNSpike("Potential",size,dt=dt,nspike=nspike,iExc=iExc,iInh=iInh,pExc=wExc,pInh=wInh,model=model,reproductible=reproductible,
+        self.field = MapDNFNSpike("Potential",size,dt=dt,nspike=nspike,iExc=iExc,iInh=iInh,wExc=wExc,wInh=wInh,model=model,reproductible=reproductible,
                 cell=cell,clkRatio=clkRatio,routerType=routerType,errorType=errorType,errorProb=errorProb,
                 h=h,tau=tau,delta=delta,shift=shift)
 

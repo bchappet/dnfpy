@@ -94,9 +94,12 @@ for i in range(len(mapNames)):
 
                 x = getArray("Inputs_track"+str(indexStim)+"_c0",time)
                 y = getArray("Inputs_track"+str(indexStim)+"_c1",time)
-                (xt,yt) = getTrackCenter(indexStim,time+5,sizeArray)
+                #(xt,yt) = getTrackCenter(indexStim,time+5,sizeArray)
                 #[xFig,yFig] = axis.transData.transform([x,y])
-                if j==0 and showArrows:
+                if j +1 < len(timeList) and showArrows:
+                        xt = getArray("Inputs_track"+str(indexStim)+"_c0",timeList[j+1])
+                        yt = getArray("Inputs_track"+str(indexStim)+"_c1",timeList[j+1])
+                        print("arrow",x,y,xt,yt)
                         axes.annotate("",
                         xy=(xt, yt), xycoords='data',
                         xytext=(x, y), textcoords='data',
@@ -105,7 +108,7 @@ for i in range(len(mapNames)):
                                         ),
                         )
                 if showCross:
-                        marker = axes.scatter([x], [y], marker='+',color=color)
+                        marker = axes.scatter([x], [y], marker='o',color=color)
              
         plt.xticks([]), plt.yticks([])
         array = getArray(mapNames[i],timeList[j])
