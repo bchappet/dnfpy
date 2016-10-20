@@ -10,6 +10,7 @@ register.o map2d.o mooreconnecter.o neumannconnecter.o rsdnfconnecter.o rsdnfcon
 			sequenceConnecter.o \
 			cellrsdnf2.o \
 			routerBit.o \
+			bitstreamfloat.o  bitstreamfloatgenerator.o cellsbsfloat.o sbsfloatrouter.o \
 
 INSTALL_DIR = /usr/bin
 

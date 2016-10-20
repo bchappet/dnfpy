@@ -8,15 +8,17 @@ OBJS = test_utils.o router.o register.o bitstreamutils.o cellrsdnf.o \
 	map2d.o rsdnfconnecter.o neumannconnecter.o \
 	cellbsrsdnf.o bsrouter.o carrybsrouter.o \
 	bitstreamuint.o bitstream.o neuroncasasfast.o sbsfastrouter.o \
-	rsdnfconnecter2layer.o  cellrsdnf2.o
+	rsdnfconnecter2layer.o  cellrsdnf2.o \
+	bitstreamfloat.o  bitstreamfloatgenerator.o cellsbsfloat.o sbsfloatrouter.o \
+
 .SECONDARY : $(OBJS) 
 
 all : router_t cellrsdnf_t register_t module_t map2d_t bsRsdnfMap_t bitstreamuint_t neuroncasasfast_t \
-	neuroncasasfastMap_t cellbsrsdnf_t rsdnf2layer_map_t 
+	neuroncasasfastMap_t cellbsrsdnf_t rsdnf2layer_map_t bitstreamfloat_t cellsbsfloat_t
 
 test : router_t cellrsdnf_t register_t module_t map2d_t bsRsdnfMap_t bitstreamuint_t neuroncasasfast_t \
-	neuroncasasfastMap_t cellbsrsdnf_t rsdnf2layer_map_t
-	./router_t & ./cellrsdnf_t & ./register_t & ./module_t & ./map2d_t & ./bsRsdnfMap_t & ./bitstreamuint_t & ./neuroncasasfast_t & ./neuroncasasfastMap_t & ./cellbsrsdnf_t & ./rsdnf2layer_map_t
+	neuroncasasfastMap_t cellbsrsdnf_t rsdnf2layer_map_t bitstreamfloat_t  cellsbsfloat_t
+	./router_t & ./cellrsdnf_t & ./register_t & ./module_t & ./map2d_t & ./bsRsdnfMap_t & ./bitstreamuint_t & ./neuroncasasfast_t & ./neuroncasasfastMap_t & ./cellbsrsdnf_t & ./rsdnf2layer_map_t & bitstreamfloat_t & cellsbsfloat_t
 
 
 

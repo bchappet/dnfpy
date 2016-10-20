@@ -47,8 +47,8 @@ u_int32_t generateBitChunck32(float proba,u_int32_t precisionMask,unsigned int n
     return res;
 }
 
-std::vector<u_int32_t> generateRotatedBitChunck32(unsigned int nb,std::vector<float> probaVec, unsigned int shift,unsigned int nbCommonBit,
-                                                  u_int32_t randomBitMask,u_int32_t precisionMask){
+std::vector<u_int32_t> generateRotatedBitChunck32(unsigned int nb,std::vector<float> probaVec,
+        unsigned int shift,unsigned int nbCommonBit,u_int32_t randomBitMask,u_int32_t precisionMask){
     std::vector<u_int32_t> res = std::vector<u_int32_t>(nb);
     for(unsigned int i = 0 ; i < 32 ;++i){
         //std::cout << "New Rand Int" << std::endl;
