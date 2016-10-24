@@ -13,7 +13,7 @@ OBJ_FILES = cellgof.o cellrsdnf.o \
 			sequenceConnecter.o \
 			cellrsdnf2.o \
 			routerBit.o \
-			bitstreamfloat.o  bitstreamfloatgenerator.o cellsbsfloat.o sbsfloatrouter.o \
+			bitstreamfloat.o  cellsbsfloat.o sbsfloatrouter.o \
 
 INSTALL_DIR = /usr/bin
 
