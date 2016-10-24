@@ -5,7 +5,10 @@ INCLUDES =
 LIBS =
 OBJ_FILES = cellgof.o cellrsdnf.o \
 			neuroncasasfast.o \
-register.o map2d.o mooreconnecter.o neumannconnecter.o rsdnfconnecter.o rsdnfconnecter2layer.o softsimu.o 	cellsbsfast.o cellsbsfast2.o sbsfastrouter.o bitstream.o bitstreamuint.o bitstreamchar.o   cellnspike.o nspikeconnecter.o  cellbsrsdnf.o bsrouter.o carrybsrouter.o bitstreamutils.o router.o param.o routerSequence.o \
+			register.o map2d.o mooreconnecter.o neumannconnecter.o rsdnfconnecter.o rsdnfconnecter2layer.o \
+		   	softsimu.o 	cellsbsfast.o cellsbsfast2.o sbsfastrouter.o bitstream.o bitstreamuint.o \
+		   	bitstreamchar.o   cellnspike.o nspikeconnecter.o  cellbsrsdnf.o bsrouter.o carrybsrouter.o \
+		   	bitstreamutils.o router.o param.o routerSequence.o \
 			routerSequenceMixte.o \
 			sequenceConnecter.o \
 			cellrsdnf2.o \
