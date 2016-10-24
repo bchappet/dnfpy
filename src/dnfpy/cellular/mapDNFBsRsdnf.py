@@ -3,6 +3,7 @@ import numpy as np
 from dnfpy.model.fieldMapND import FieldMap
 from dnfpy.cellular.bsRsdnfConvolution import BsRsdnfConvolution
 from dnfpy.cellular.sbsFastConvolution import SbsFastConvolution
+from dnfpy.cellular.sbsFloatConvolution import SbsFloatConvolution
 from dnfpy.cellular.sbsFast2LayerConvolution import SbsFast2LayerConvolution
 
 class MapDNFBsRsdnf(FieldMap):
@@ -38,6 +39,15 @@ class MapDNFBsRsdnf(FieldMap):
                                         pExc=pExc,pInh=pInh,iExc=iExc,
                                         iInh=iInh,alpha=alpha,
                                       reproductible=reproductible)
+        elif mapType == "float":
+            self.lat = SbsFloatConvolution(name+"Lateral",size,dt=dtPropagation,
+                                      pSpike=pSpike,
+                                      precisionProba=precisionProba,
+                                      routerType=routerType,
+                                        pExc=pExc,pInh=pInh,iExc=iExc,
+                                        iInh=iInh,alpha=alpha,
+                                      reproductible=reproductible)
+ 
         elif mapType == "slow":
             self.lat = BsRsdnfConvolution(name+"_spikePropag.",size,dt=dtPropagation,
                                       sizeStream=sizeStream,pSpike=pSpike,

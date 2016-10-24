@@ -33,6 +33,7 @@ class StatsTracking1(Stats):
         self.errorDist = ErrorDistSimple("ErrorDist",dt=dt,sizeMap=size,wrap=True)
         self.errorDist.addChildren(target=self.targetCenter,mesured=self.barycenter)
 
+        self.timeEnd = None
 
 
 
@@ -61,6 +62,7 @@ class StatsTracking1(Stats):
 
         #clusterMap = self.clusters
         #error = self.errorDist.getRMSE()
+        self.timeEnd = self.errorDist.getArg('time')
         error = self.errorDist.getMean()
         #simuTime = clusterMap.getArg('time')
         #nbIt = simuTime/self.dt

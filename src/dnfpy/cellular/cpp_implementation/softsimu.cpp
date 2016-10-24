@@ -19,6 +19,7 @@
 #include "cellsbsfast2.h"
 #include "cellrsdnf2.h"
 #include "neuroncasasfast.h"
+#include "cellsbsfloat.h"
 
 std::vector<Map2D*> mapSimuVec;
 Map2D* mapSimu;
@@ -265,6 +266,8 @@ void initCellArrayFromName(Map2D* map,const char* name){
         map->initCellArray<CellRsdnf2>();
     }else if(strcmp(name,"neuroncasasfast")==0){
         map->initCellArray<NeuronCasasFast>();
+    }else if(strcmp(name,"cellsbsfloat")==0){
+        map->initCellArray<CellSBSFloat>();
     }else{
         std::cerr << "unvalid cell name " << name << std::endl;
     }

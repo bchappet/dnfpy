@@ -6,11 +6,11 @@ from getClassUtils import getClassFromName
 import begin #very usefull arg parsing library
 
 #defaultScenario = "ScenarioTracking"
-defaultScenario = "ScenarioRobustness"
+defaultScenario = "WM1" 
 #defaultScenario = "WorkingMemoryShift"
-defaultModel = "ModelDNF"
-#defaultStats = "StatsTracking2"
-defaultStats = "None"
+defaultModel = "ModelBsRsdnf"
+defaultStats = "StatsTracking2"
+#defaultStats = "None"
 
 
 """
